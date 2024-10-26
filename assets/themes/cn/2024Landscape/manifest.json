@@ -1,0 +1,144 @@
+{
+    "displayName": "舞萌DX 2024, Landscape",
+    "name": "cn-2024-landscape",
+    "width": 2560,
+    "height": 1440,
+    "sprites": {
+        "achievement": {
+            "d": "../../common/buddies/achievement/d.png",
+            "c": "../../common/buddies/achievement/c.png",
+            "b": "../../common/buddies/achievement/b.png",
+            "bb": "../../common/buddies/achievement/bb.png",
+            "bbb": "../../common/buddies/achievement/bbb.png",
+            "a": "../../common/buddies/achievement/a.png",
+            "aa": "../../common/buddies/achievement/aa.png",
+            "aaa": "../../common/buddies/achievement/aaa.png",
+            "s": "../../common/buddies/achievement/s.png",
+            "sp": "../../common/buddies/achievement/sp.png",
+            "ss": "../../common/buddies/achievement/ss.png",
+            "ssp": "../../common/buddies/achievement/ssp.png",
+            "sss": "../../common/buddies/achievement/sss.png",
+            "sssp": "../../common/buddies/achievement/sssp.png"
+        },
+        "mode": {
+            "standard": "../../common/versionless/mode/cn/standard.png",
+            "dx": "../../common/versionless/mode/cn/dx.png"
+        },
+        "milestone": {
+            "ap": "../../common/versionless/milestone/ap.png",
+            "app": "../../common/versionless/milestone/app.png",
+            "fc": "../../common/versionless/milestone/fc.png",
+            "fcp": "../../common/versionless/milestone/fcp.png",
+            "fdx": "../../common/versionless/milestone/fdx.png",
+            "fdxp": "../../common/versionless/milestone/fdxp.png",
+            "fs": "../../common/versionless/milestone/fs.png",
+            "fsp": "../../common/versionless/milestone/fsp.png",
+            "sync": "../../common/versionless/milestone/sync.png",
+            "none": "../../common/versionless/milestone/none.png"
+        },
+        "dxRating": {
+            "white": "../../common/versionless/dxRating/cn/white.png",
+            "blue": "../../common/versionless/dxRating/cn/blue.png",
+            "green": "../../common/versionless/dxRating/cn/green.png",
+            "yellow": "../../common/versionless/dxRating/cn/yellow.png",
+            "red": "../../common/versionless/dxRating/cn/red.png",
+            "purple": "../../common/versionless/dxRating/cn/purple.png",
+            "bronze": "../../common/versionless/dxRating/cn/bronze.png",
+            "silver": "../../common/versionless/dxRating/cn/silver.png",
+            "gold": "../../common/versionless/dxRating/cn/gold.png",
+            "platinum": "../../common/versionless/dxRating/cn/platinum.png",
+            "rainbow": "../../common/versionless/dxRating/cn/rainbow.png"
+        },
+        "dxRatingNumberMap": "../../common/versionless/dxRating/numberMap.png",
+        "profile": {
+            "nameplate": "../../common/versionless/nameplate.png",
+            "icon": "../../common/versionless/icon.png"
+        }
+    },
+    "elements": [
+        {
+            "type": "image",
+            "x": 0,
+            "y": -480,
+            "width": 2560,
+            "height": 1920,
+            "path": "../../common/buddies/jp/background.png"
+        },
+        {
+            "type": "image",
+            "x": 570,
+            "y": 70,
+            "width": 468,
+            "height": 643,
+            "path": "../../common/buddies/jp/chara.png"
+        },
+        {
+            "type": "image",
+            "x": 300,
+            "y": 30,
+            "width": 420,
+            "height": 153,
+            "path": "../../common/buddies/jp/laundry.png"
+        },
+        {
+            "type": "image",
+            "x": 336,
+            "y": 50,
+            "width": 350,
+            "height": 350,
+            "path": "../../common/buddies/cn/logo.png"
+        },
+        {
+            "type": "score-grid",
+            "x": 70,
+            "y": 500,
+            "horizontalSize": 3,
+            "verticalSize": 5,
+            "region": "new",
+            "index": 0,
+            "scoreBubble": {
+                "width": 280,
+                "height": 155,
+                "margin": 10,
+                "gap": 20,
+                "color": {
+                    "basic": "#70E262",
+                    "advanced": "#FFBB00",
+                    "expert": "#FF4A5A",
+                    "master": "#A04FDA",
+                    "remaster": "#DDBDF5",
+                    "utage": "#70E262"
+                }
+            }
+        },
+        {
+            "type": "score-grid",
+            "x": 1010,
+            "y": 150,
+            "horizontalSize": 5,
+            "verticalSize": 7,
+            "region": "old",
+            "index": 0,
+            "scoreBubble": {
+                "width": 280,
+                "height": 155,
+                "margin": 10,
+                "gap": 20,
+                "color": {
+                    "basic": "#70E262",
+                    "advanced": "#FFBB00",
+                    "expert": "#FF4A5A",
+                    "master": "#A04FDA",
+                    "remaster": "#DDBDF5",
+                    "utage": "#70E262"
+                }
+            }
+        },
+        {
+            "type": "profile",
+            "x": 110,
+            "y": 345,
+            "height": 129
+        }
+    ]
+}
