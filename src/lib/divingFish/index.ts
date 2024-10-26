@@ -68,14 +68,11 @@ export class DivingFish implements ScoreTrackerAdapter {
     private async get<T>(endpoint: string, data?: any): Promise<any> {
         return await this.axios
             .get(endpoint, { params: data })
-            .then((r) => {
-                console.log(r.data);
-                return r.data;
-            })
+            .then((r) => r.data)
             .catch((e) => {
                 e.response?.data
-                    ? console.log(e.response?.data)
-                    : console.log(e);
+                    ? console.error(e.response?.data)
+                    : console.error(e);
                 return e.response?.data;
             });
     }
