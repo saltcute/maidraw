@@ -8,12 +8,14 @@ const upath = require("upath");
     const fs = require("fs");
 
     const themes = [
-        "jp-buddies-portrait",
-        "jp-buddies-landscape",
+        "jp-prism-landscape",
+        "jp-prism-portrait",
         "jp-buddiesplus-landscape",
         "jp-buddiesplus-portrait",
         "cn-2024-portrait",
-        "cn-2024-landscape"
+        "cn-2024-landscape",
+        "jp-buddies-landscape",
+        "jp-buddies-portrait"
     ]
     for (let theme of themes) {
         const result = await maiDraw.draw(
