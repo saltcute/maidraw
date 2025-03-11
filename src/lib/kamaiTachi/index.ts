@@ -257,17 +257,18 @@ export class KamaiTachi implements ScoreTrackerAdapter {
         const newScores = pbs.filter(
             (v) =>
                 v.chart.versions[0] == currentVersion &&
-                (omnimix ||
+                (omnimix || // Remove omnimix charts unless explicitly enabled
                     !v.chart.versions.find(
-                        (v) => v == `${currentVersion}-omnimix`
+                        (v) => v == `${currentVersion}-omni`
                     ))
         );
         const oldScores = pbs.filter(
             (v) =>
                 v.chart.versions[0] != currentVersion &&
-                (omnimix ||
+                v.chart.versions.includes(currentVersion) &&
+                (omnimix || // Remove omnimix charts unless explicitly enabled
                     !v.chart.versions.find(
-                        (v) => v == `${currentVersion}-omnimix`
+                        (v) => v == `${currentVersion}-omni`
                     ))
         );
         return {
@@ -306,5 +307,20 @@ export class KamaiTachi implements ScoreTrackerAdapter {
             id: number;
             about: string;
         }>(`/api/v1/users/${userId}`);
+    }
+
+    public buddies() {
+        return new KamaiTachi(this.maiDraw, undefined, this.baseURL, "buddies");
+    }
+    public buddiesplus() {
+        return new KamaiTachi(
+            this.maiDraw,
+            undefined,
+            this.baseURL,
+            "buddiesplus"
+        );
+    }
+    public prism() {
+        return new KamaiTachi(this.maiDraw, undefined, this.baseURL, "prism");
     }
 }
