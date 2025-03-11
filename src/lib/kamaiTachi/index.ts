@@ -96,7 +96,8 @@ export class KamaiTachi implements ScoreTrackerAdapter {
     constructor(
         private maiDraw: MaiDraw,
         auth?: never,
-        private baseURL: string = "https://kamai.tachi.ac/"
+        private baseURL: string = "https://kamai.tachi.ac/",
+        private readonly CURRENT_VERSION = "buddiesplus"
     ) {
         this.axios = axios.create({
             baseURL: this.baseURL,
@@ -236,7 +237,7 @@ export class KamaiTachi implements ScoreTrackerAdapter {
     }
     async getPlayerBest50(
         userId: string,
-        currentVersion = "buddiesplus",
+        currentVersion = this.CURRENT_VERSION,
         omnimix = true
     ) {
         const rawPBs = await this.getPlayerPB(userId);
