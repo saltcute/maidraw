@@ -107,7 +107,7 @@ export class MaiDraw {
                 "GenJyuuGothic-Bold.ttf"
             ),
             {
-                family: "Gen Jyuu Gothic",
+                family: "standard-font-title-jp",
             }
         );
         registerFont(
@@ -118,7 +118,7 @@ export class MaiDraw {
                 "Comfortaa-Bold.ttf"
             ),
             {
-                family: "Comfortaa",
+                family: "standard-font-title-latin",
                 weight: "regular",
             }
         );
@@ -126,11 +126,11 @@ export class MaiDraw {
             upath.join(
                 this.assetsPath,
                 "fonts",
-                "kosugi-maru",
-                "KosugiMaru-Regular.ttf"
+                "seurat-db",
+                "FOT-Seurat Pro DB.otf"
             ),
             {
-                family: "Kosugi Maru",
+                family: "standard-font-username",
                 weight: "regular",
             }
         );
@@ -328,7 +328,7 @@ export class MaiDraw {
             textAlign: "left" | "center" | "right" = "left",
             mainColor: string | CanvasGradient | CanvasPattern = "white",
             borderColor: string | CanvasGradient | CanvasPattern = "black",
-            font: string = `"Comfortaa", "Gen Jyuu Gothic"`
+            font: string = `"standard-font-title-latin", "standard-font-title-jp"`
         ) {
             function findMaxFitString(original: string) {
                 const metrics = ctx.measureText(original);
@@ -1232,12 +1232,12 @@ export class MaiDraw {
                             element.y +
                                 element.height * (0.064 + 0.333 + 1 / 4),
                             (element.height * 1) / 6,
-                            (element.height * 1) / 128,
+                            0,
                             ((element.height / 3) * 5.108 * 6) / 5,
                             "left",
                             "black",
                             "black",
-                            "Kosugi Maru"
+                            "standard-font-username"
                         );
                         break;
                     }
