@@ -255,21 +255,14 @@ export class KamaiTachi implements ScoreTrackerAdapter {
             }
         }
         const newScores = pbs.filter(
-            (v) =>
-                v.chart.versions[0] == currentVersion &&
-                (omnimix || // Remove omnimix charts unless explicitly enabled
-                    !v.chart.versions.find(
-                        (v) => v == `${currentVersion}-omni`
-                    ))
+            (v) => v.chart.versions[0] == currentVersion
         );
         const oldScores = pbs.filter(
             (v) =>
                 v.chart.versions[0] != currentVersion &&
-                v.chart.versions.includes(currentVersion) &&
-                (omnimix || // Remove omnimix charts unless explicitly enabled
-                    !v.chart.versions.find(
-                        (v) => v == `${currentVersion}-omni`
-                    ))
+                (v.chart.versions.includes(currentVersion) ||
+                    (omnimix &&
+                        v.chart.versions.includes(`${currentVersion}-omni`)))
         );
         return {
             new: newScores
