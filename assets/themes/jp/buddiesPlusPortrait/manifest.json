@@ -66,10 +66,10 @@
         },
         {
             "type": "image",
-            "x": 980,
-            "y": 175,
-            "width": 600,
-            "height": 503,
+            "x": 680,
+            "y": 220,
+            "width": 900,
+            "height": 695,
             "path": "../../common/buddies/plus/chara.png"
         },
         {
