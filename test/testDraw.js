@@ -8,6 +8,8 @@ const upath = require("upath");
     const fs = require("fs");
 
     const themes = [
+        "jp-prismplus-landscape",
+        "jp-prismplus-portrait",
         "jp-prism-landscape",
         "jp-prism-portrait",
         "jp-buddiesplus-landscape",

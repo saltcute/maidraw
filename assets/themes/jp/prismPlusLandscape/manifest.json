@@ -1,0 +1,144 @@
+{
+    "displayName": "maimai でらっくす PRiSM PLUS, Landscape",
+    "name": "jp-prismplus-landscape",
+    "width": 2560,
+    "height": 1440,
+    "sprites": {
+        "achievement": {
+            "d": "../../common/prism/achievement/d.png",
+            "c": "../../common/prism/achievement/c.png",
+            "b": "../../common/prism/achievement/b.png",
+            "bb": "../../common/prism/achievement/bb.png",
+            "bbb": "../../common/prism/achievement/bbb.png",
+            "a": "../../common/prism/achievement/a.png",
+            "aa": "../../common/prism/achievement/aa.png",
+            "aaa": "../../common/prism/achievement/aaa.png",
+            "s": "../../common/prism/achievement/s.png",
+            "sp": "../../common/prism/achievement/sp.png",
+            "ss": "../../common/prism/achievement/ss.png",
+            "ssp": "../../common/prism/achievement/ssp.png",
+            "sss": "../../common/prism/achievement/sss.png",
+            "sssp": "../../common/prism/achievement/sssp.png"
+        },
+        "mode": {
+            "standard": "../../common/versionless/mode/jp/standard.png",
+            "dx": "../../common/versionless/mode/jp/dx.png"
+        },
+        "milestone": {
+            "ap": "../../common/versionless/milestone/ap.png",
+            "app": "../../common/versionless/milestone/app.png",
+            "fc": "../../common/versionless/milestone/fc.png",
+            "fcp": "../../common/versionless/milestone/fcp.png",
+            "fdx": "../../common/versionless/milestone/fdx.png",
+            "fdxp": "../../common/versionless/milestone/fdxp.png",
+            "fs": "../../common/versionless/milestone/fs.png",
+            "fsp": "../../common/versionless/milestone/fsp.png",
+            "sync": "../../common/versionless/milestone/sync.png",
+            "none": "../../common/versionless/milestone/none.png"
+        },
+        "dxRating": {
+            "white": "../../common/versionless/dxRating/jp/white.png",
+            "blue": "../../common/versionless/dxRating/jp/blue.png",
+            "green": "../../common/versionless/dxRating/jp/green.png",
+            "yellow": "../../common/versionless/dxRating/jp/yellow.png",
+            "red": "../../common/versionless/dxRating/jp/red.png",
+            "purple": "../../common/versionless/dxRating/jp/purple.png",
+            "bronze": "../../common/versionless/dxRating/jp/bronze.png",
+            "silver": "../../common/versionless/dxRating/jp/silver.png",
+            "gold": "../../common/versionless/dxRating/jp/gold.png",
+            "platinum": "../../common/versionless/dxRating/jp/platinum.png",
+            "rainbow": "../../common/versionless/dxRating/jp/rainbow.png"
+        },
+        "dxRatingNumberMap": "../../common/versionless/dxRating/numberMap.png",
+        "profile": {
+            "nameplate": "../../common/versionless/nameplate.png",
+            "icon": "../../common/versionless/icon.png"
+        }
+    },
+    "elements": [
+        {
+            "type": "image",
+            "x": 0,
+            "y": -480,
+            "width": 2560,
+            "height": 1920,
+            "path": "../../common/prism/jp/background.png"
+        },
+        {
+            "type": "image",
+            "x": 534,
+            "y": 70,
+            "width": 720,
+            "height": 633,
+            "path": "../../common/prism/plus/chara.png"
+        },
+        {
+            "type": "image",
+            "x": 368,
+            "y": -3,
+            "width": 287,
+            "height": 212,
+            "path": "../../common/prism/plus/laundry.png"
+        },
+        {
+            "type": "image",
+            "x": 232,
+            "y": 116,
+            "width": 557,
+            "height": 231,
+            "path": "../../common/prism/plus/logo.png"
+        },
+        {
+            "type": "score-grid",
+            "x": 70,
+            "y": 500,
+            "horizontalSize": 3,
+            "verticalSize": 5,
+            "region": "new",
+            "index": 0,
+            "scoreBubble": {
+                "width": 280,
+                "height": 155,
+                "margin": 10,
+                "gap": 20,
+                "color": {
+                    "basic": "#70E262",
+                    "advanced": "#FFBB00",
+                    "expert": "#FF4A5A",
+                    "master": "#A04FDA",
+                    "remaster": "#DDBDF5",
+                    "utage": "#70E262"
+                }
+            }
+        },
+        {
+            "type": "score-grid",
+            "x": 1010,
+            "y": 150,
+            "horizontalSize": 5,
+            "verticalSize": 7,
+            "region": "old",
+            "index": 0,
+            "scoreBubble": {
+                "width": 280,
+                "height": 155,
+                "margin": 10,
+                "gap": 20,
+                "color": {
+                    "basic": "#70E262",
+                    "advanced": "#FFBB00",
+                    "expert": "#FF4A5A",
+                    "master": "#A04FDA",
+                    "remaster": "#DDBDF5",
+                    "utage": "#70E262"
+                }
+            }
+        },
+        {
+            "type": "profile",
+            "x": 110,
+            "y": 345,
+            "height": 129
+        }
+    ]
+}
