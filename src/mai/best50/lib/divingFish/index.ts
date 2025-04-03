@@ -9,6 +9,7 @@ import {
 } from "@maidraw/type";
 import ScoreTrackerAdapter from "..";
 import { MaiChart } from "@maidraw/mai/chart";
+import { Cache } from "memory-cache";
 
 export namespace DivingFish {
     export interface IPlayResult {
@@ -42,26 +43,59 @@ export namespace DivingFish {
     }
     export interface IBest50Response {
         additional_rating: 0;
-        charts: {
-            dx: IPlayResult[];
-            sd: IPlayResult[];
-        };
+        records: IPlayResult[];
         nickname: string;
         plate: string;
         rating: number;
-        user_general_data: null;
         username: string;
+    }
+    export type ISongListResponse = ISongData[];
+    export interface ISongData {
+        basic_info: {
+            title: string;
+            artist: string;
+            genre: string;
+            from: string;
+            is_new: boolean;
+            bpm: number;
+            release_date: string;
+        };
+        charts: {
+            charter: string;
+            /**
+             * Number of each type of notes.
+             *
+             * From 0 to 4, each number represents the number of Tap, Hold, Slide, Touch and Break notes.
+             */
+            notes: [number, number, number, number, number];
+        }[];
+        cids: number[];
+        /**
+         * Internal level of each level of the song.
+         */
+        ds: number[];
+        id: string;
+        /**
+         * Level catergory of each level of the song.
+         */
+        level: string[];
+        title: string;
+        type: "SD" | "DX";
     }
 }
 
 export class DivingFish implements ScoreTrackerAdapter {
+    private cache = new Cache<string, object>();
     private axios: AxiosInstance;
     constructor(
-        auth?: never,
+        auth: string,
         private baseURL: string = "https://www.diving-fish.com/api/maimaidxprober/"
     ) {
         this.axios = axios.create({
             baseURL: this.baseURL,
+            headers: {
+                "Developer-Token": auth,
+            },
         });
     }
     private async get<T>(endpoint: string, data?: any): Promise<any> {
@@ -82,13 +116,13 @@ export class DivingFish implements ScoreTrackerAdapter {
             .catch((e) => e.response?.data);
     }
     async getPlayerBest50(username: string) {
-        const b50 = await this.getPlayerRawBest50(username);
-        if (!b50) {
+        const pbs = await this.getPlayerRawBest50(username);
+        if (!pbs) {
             return null;
         }
         let chartList: IChart[] = [];
         if (MaiChart.hasLocalDatabase()) {
-            chartList = [...b50.charts.dx, ...b50.charts.sd]
+            chartList = pbs.records
                 .map((chart) => {
                     return MaiChart.getLocalChart(
                         chart.song_id,
@@ -96,11 +130,36 @@ export class DivingFish implements ScoreTrackerAdapter {
                     );
                 })
                 .filter((v) => v !== null);
+        } else {
+            chartList = await this.getMaiDrawChartList();
         }
+        const newScores = pbs.records.filter(
+            async (v) =>
+                (await this.getSong(v.song_id.toString()))?.basic_info.is_new
+        );
+        const oldScores = pbs.records.filter(
+            async (v) =>
+                !(await this.getSong(v.song_id.toString()))?.basic_info.is_new
+        );
         return {
-            new: this.toMaiDrawScore(b50.charts.dx, chartList),
-            old: this.toMaiDrawScore(b50.charts.sd, chartList),
+            new: this.toMaiDrawScore(newScores, chartList),
+            old: this.toMaiDrawScore(oldScores, chartList),
         };
+    }
+
+    async getMaiDrawChartList(): Promise<IChart[]> {
+        const songList = await this.getSongList();
+        return songList.flatMap((song) => {
+            return song.charts.map((chart, index) => {
+                return {
+                    id: parseInt(song.id),
+                    name: song.title,
+                    level: song.ds[index],
+                    difficulty: index,
+                    maxDxScore: chart.notes.reduce((p, v) => p + v) * 3,
+                };
+            });
+        });
     }
     async getPlayerInfo(username: string) {
         const b50 = await this.getPlayerRawBest50(username);
@@ -117,11 +176,24 @@ export class DivingFish implements ScoreTrackerAdapter {
         username: string
     ): Promise<DivingFish.IBest50Response> {
         return (
-            await this.post("/query/player", {
+            await this.post("/dev/player/records", {
                 username,
-                b50: true,
             })
         ).data;
+    }
+    async getSong(id: string) {
+        return (await this.getSongList()).find((v) => v.id == id) || null;
+    }
+    async getSongList(): Promise<DivingFish.ISongListResponse> {
+        const cached = this.cache.get(
+            "lxns-songList"
+        ) as DivingFish.ISongListResponse | null;
+        if (cached) return cached;
+        const res = (await this.get(`/music_data`).catch(
+            (e) => []
+        )) as unknown as DivingFish.ISongListResponse;
+        this.cache.put("lxns-songList", res, 1000 * 60 * 60);
+        return res;
     }
     private toMaiDrawScore(
         scores: DivingFish.IPlayResult[],
