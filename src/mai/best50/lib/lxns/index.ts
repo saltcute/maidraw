@@ -9,17 +9,15 @@ import {
     IScore,
 } from "@maidraw/type";
 import ScoreTrackerAdapter from "..";
-import { MaiDraw } from "@maidraw/index";
+import { MaiChart } from "@maidraw/mai/chart";
 
 export class LXNS implements ScoreTrackerAdapter {
     private cache = new Cache<string, object>();
     private axios: AxiosInstance;
     constructor(
-        private maiDraw: MaiDraw,
         private auth: string,
         private baseURL: string = "https://maimai.lxns.net/api/v0/maimai"
     ) {
-        this.maiDraw = maiDraw;
         this.auth = auth;
         this.axios = axios.create({
             baseURL: this.baseURL,
@@ -55,10 +53,10 @@ export class LXNS implements ScoreTrackerAdapter {
         const b50 = await this.getPlayerRawBest50(username);
         if (!b50?.data) return null;
         let chartList: IChart[];
-        if (this.maiDraw.hasLocalDatabase()) {
+        if (MaiChart.hasLocalDatabase()) {
             chartList = [...b50.data.dx, ...b50.data.standard]
                 .map((chart) => {
-                    return this.maiDraw.getLocalChart(
+                    return MaiChart.getLocalChart(
                         chart.id +
                             (chart.type == LXNS.ESongTypes.DX ? 10000 : 0),
                         chart.level_index as unknown as EDifficulty

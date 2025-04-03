@@ -7,7 +7,6 @@ import {
     IScore,
 } from "@maidraw/type";
 import ScoreTrackerAdapter from "..";
-import { MaiDraw } from "@maidraw/index";
 
 export namespace KamaiTachi {
     export interface IResponse<T> {
@@ -94,7 +93,6 @@ export namespace KamaiTachi {
 export class KamaiTachi implements ScoreTrackerAdapter {
     private axios: AxiosInstance;
     constructor(
-        private maiDraw: MaiDraw,
         auth?: never,
         private baseURL: string = "https://kamai.tachi.ac/",
         private readonly CURRENT_VERSION = "buddiesplus"
@@ -303,17 +301,12 @@ export class KamaiTachi implements ScoreTrackerAdapter {
     }
 
     public buddies() {
-        return new KamaiTachi(this.maiDraw, undefined, this.baseURL, "buddies");
+        return new KamaiTachi(undefined, this.baseURL, "buddies");
     }
     public buddiesplus() {
-        return new KamaiTachi(
-            this.maiDraw,
-            undefined,
-            this.baseURL,
-            "buddiesplus"
-        );
+        return new KamaiTachi(undefined, this.baseURL, "buddiesplus");
     }
     public prism() {
-        return new KamaiTachi(this.maiDraw, undefined, this.baseURL, "prism");
+        return new KamaiTachi(undefined, this.baseURL, "prism");
     }
 }

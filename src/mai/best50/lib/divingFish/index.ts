@@ -8,7 +8,7 @@ import {
     IScore,
 } from "@maidraw/type";
 import ScoreTrackerAdapter from "..";
-import { MaiDraw } from "@maidraw/index";
+import { MaiChart } from "@maidraw/mai/chart";
 
 export namespace DivingFish {
     export interface IPlayResult {
@@ -57,7 +57,6 @@ export namespace DivingFish {
 export class DivingFish implements ScoreTrackerAdapter {
     private axios: AxiosInstance;
     constructor(
-        private maiDraw: MaiDraw,
         auth?: never,
         private baseURL: string = "https://www.diving-fish.com/api/maimaidxprober/"
     ) {
@@ -88,10 +87,10 @@ export class DivingFish implements ScoreTrackerAdapter {
             return null;
         }
         let chartList: IChart[] = [];
-        if (this.maiDraw.hasLocalDatabase()) {
+        if (MaiChart.hasLocalDatabase()) {
             chartList = [...b50.charts.dx, ...b50.charts.sd]
                 .map((chart) => {
-                    return this.maiDraw.getLocalChart(
+                    return MaiChart.getLocalChart(
                         chart.song_id,
                         chart.level_index as unknown as EDifficulty
                     );

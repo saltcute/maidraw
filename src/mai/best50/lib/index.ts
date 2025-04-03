@@ -1,8 +1,7 @@
 import { IScore } from "@maidraw/type";
-import { MaiDraw } from "@maidraw/index";
 
 export default abstract class ScoreTrackerAdapter {
-    constructor(maiDraw: MaiDraw, auth?: string) {
+    constructor(auth?: string) {
         throw "Constructor implementation is requred!";
     }
     abstract getPlayerBest50(username: string): Promise<{
