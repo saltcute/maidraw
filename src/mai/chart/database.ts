@@ -7,6 +7,10 @@ import { EDifficulty, IChart } from "@maidraw/type";
 export class Database {
     private static localDatabasePath: string = "";
 
+    public static setLocalDatabasePath(path: string) {
+        this.localDatabasePath = path;
+    }
+
     public static hasLocalDatabase() {
         return fs.existsSync(this.localDatabasePath);
     }
