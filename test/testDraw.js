@@ -3,11 +3,15 @@ const upath = require("upath");
 
 (async () => {
     const { MaiDraw } = require("../dist");
-    const maiDraw = new MaiDraw("../maimai-songs-database");
+    MaiDraw.Maimai.Chart.Database.setLocalDatabasePath(
+        "../maimai-songs-database"
+    );
 
     const fs = require("fs");
 
     const themes = [
+        "jp-finale-landscape",
+        "jp-finale-portrait",
         "jp-prismplus-landscape",
         "jp-prismplus-portrait",
         "jp-prism-landscape",
@@ -17,10 +21,10 @@ const upath = require("upath");
         "cn-2024-portrait",
         "cn-2024-landscape",
         "jp-buddies-landscape",
-        "jp-buddies-portrait"
-    ]
+        "jp-buddies-portrait",
+    ];
     for (let theme of themes) {
-        const result = await maiDraw.draw(
+        const result = await MaiDraw.Maimai.Best50.draw(
             "SALT♪☆＊♀∀＃＆＠",
             16384,
             [
@@ -729,13 +733,18 @@ const upath = require("upath");
             ],
             {
                 scale: 2,
-                theme
+                theme,
             }
         );
         if (result) {
-            fs.writeFileSync(upath.join(__dirname, `${theme}.webp`), await sharp(result).webp({
-                quality: 60,
-            }).toBuffer());
+            fs.writeFileSync(
+                upath.join(__dirname, `${theme}.webp`),
+                await sharp(result)
+                    .webp({
+                        quality: 60,
+                    })
+                    .toBuffer()
+            );
             console.log(`${theme} passed.`);
         } else {
             console.log(`${theme} failed!`);
