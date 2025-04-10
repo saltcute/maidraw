@@ -183,9 +183,13 @@ export class KamaiTachi implements ScoreTrackerAdapter {
                     currentVersion,
                     v.chart.data.displayVersion
                 ) > 0 &&
-                (omnimix || // Omnimix is enabled
-                    (v.chart.versions[0].includes("-omni") && // Included in omnimix folder of the latest version
-                        v.chart.versions[1].includes("-omni"))) // Second last version is also a omnimix folder
+                (omnimix || // Omnimix is enabled, all charts are included.
+                    !(
+                        (
+                            v.chart.versions[0].includes("-omni") && // Alternatively, if omnimix is disabled, check if the chart is included in omnimix folder of the latest version, (which should always happen).
+                            v.chart.versions[1].includes("-omni")
+                        ) // Then check if the second last version is a omnimix folder. If two omnimix folders occur in a row, it is a omnimix chart.
+                    )) // Reject that case.
         );
         return {
             new: newScores
