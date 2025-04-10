@@ -21,6 +21,9 @@ import sharp from "sharp";
 import { globSync } from "glob";
 import ScoreTrackerAdapter from "./lib";
 import { Chart } from "../chart";
+import { LXNS } from "./lib/lxns";
+import { KamaiTachi } from "./lib/kamaiTachi";
+import { DivingFish } from "./lib/divingFish";
 
 export { LXNS } from "./lib/lxns";
 export { KamaiTachi } from "./lib/kamaiTachi";
@@ -73,14 +76,20 @@ class HalfFullWidthConvert {
 }
 
 export class Best50 {
-    private get assetsPath() {
-        return upath.join(__dirname, "..", "assets");
+    static LXNS = LXNS;
+    static KamaiTachi = KamaiTachi;
+    static DivingFish = DivingFish;
+
+    private static readonly DEFAULT_THEME = "jp-prism-landscape";
+
+    private static get assetsPath() {
+        return upath.join(__dirname, "..", "..", "..", "assets");
     }
-    private themes: Record<string, string> = {};
-    hasTheme(name: string): boolean {
+    private static themes: Record<string, string> = {};
+    static hasTheme(name: string): boolean {
         return !!this.themes[name];
     }
-    constructor() {
+    static {
         const manifests = globSync(
             upath.join(this.assetsPath, "themes", "**", "manifest.json")
         );
@@ -90,10 +99,7 @@ export class Best50 {
                 this.themes[manifest.name] = upath.dirname(manifestPath);
             }
         }
-        const loadThemeResult = this.loadTheme("cn-2024-landscape");
-        // const loadThemeResult = this.loadTheme("jp-buddiesplus-portrait");
-        // const loadThemeResult = this.loadTheme("jp-buddiesplus-landscape");
-        // const loadThemeResult = this.loadTheme("jp-buddies-landscape");
+        const loadThemeResult = this.loadTheme(this.DEFAULT_THEME);
         if (!loadThemeResult) {
             console.error("Failed to load theme.");
         }
@@ -134,7 +140,7 @@ export class Best50 {
         );
     }
 
-    private validateManifest(
+    private static validateManifest(
         payload: any,
         path: string
     ): payload is IThemeManifest {
@@ -265,9 +271,9 @@ export class Best50 {
             return true;
         } else return false;
     }
-    private primaryTheme: IThemeManifest | null = null;
-    private primaryThemePath: string | null = null;
-    loadTheme(path: string): boolean {
+    private static primaryTheme: IThemeManifest | null = null;
+    private static primaryThemePath: string | null = null;
+    static loadTheme(path: string): boolean {
         const theme = this.getTheme(path);
         if (theme) {
             this.primaryTheme = theme.manifest;
@@ -275,7 +281,7 @@ export class Best50 {
             return true;
         } else return false;
     }
-    private getTheme(path: string): {
+    private static getTheme(path: string): {
         manifest: IThemeManifest;
         path: string;
     } | null {
@@ -294,7 +300,7 @@ export class Best50 {
         }
         return null;
     }
-    private getThemeFile(path: string, themePath: string): Buffer {
+    private static getThemeFile(path: string, themePath: string): Buffer {
         if (
             typeof path == "string" &&
             fs.existsSync(upath.join(themePath ?? this.primaryThemePath, path))
@@ -304,7 +310,7 @@ export class Best50 {
             );
         else return Buffer.from([]);
     }
-    async draw(
+    static async draw(
         name: string,
         rating: number,
         newScores: IScore[],
@@ -1242,7 +1248,7 @@ export class Best50 {
             return canvas.toBuffer();
         } else return null;
     }
-    async drawWithScoreSource(
+    static async drawWithScoreSource(
         source: ScoreTrackerAdapter,
         username: string,
         options?: { scale?: number; theme?: string }
@@ -1258,7 +1264,7 @@ export class Best50 {
             options
         );
     }
-    private async getRatingNumber(
+    private static async getRatingNumber(
         num: number,
         theme: {
             manifest: IThemeManifest;
