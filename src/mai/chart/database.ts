@@ -4,7 +4,7 @@ import axios from "axios";
 import { Cache } from "memory-cache";
 import { EDifficulty, IChart } from "@maidraw/type";
 
-export class MaiChart {
+export class Database {
     private static localDatabasePath: string = "";
 
     public static hasLocalDatabase() {

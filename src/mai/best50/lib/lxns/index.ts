@@ -9,7 +9,7 @@ import {
     IScore,
 } from "@maidraw/type";
 import ScoreTrackerAdapter from "..";
-import { MaiChart } from "@maidraw/mai/chart";
+import { Chart } from "@maidraw/mai/chart";
 
 export class LXNS implements ScoreTrackerAdapter {
     private cache = new Cache<string, object>();
@@ -53,10 +53,10 @@ export class LXNS implements ScoreTrackerAdapter {
         const b50 = await this.getPlayerRawBest50(username);
         if (!b50?.data) return null;
         let chartList: IChart[];
-        if (MaiChart.hasLocalDatabase()) {
+        if (Chart.Database.hasLocalDatabase()) {
             chartList = [...b50.data.dx, ...b50.data.standard]
                 .map((chart) => {
-                    return MaiChart.getLocalChart(
+                    return Chart.Database.getLocalChart(
                         chart.id +
                             (chart.type == LXNS.ESongTypes.DX ? 10000 : 0),
                         chart.level_index as unknown as EDifficulty

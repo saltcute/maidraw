@@ -8,7 +8,7 @@ import {
     IScore,
 } from "@maidraw/type";
 import ScoreTrackerAdapter from "..";
-import { MaiChart } from "@maidraw/mai/chart";
+import { Chart } from "@maidraw/mai/chart";
 import { Cache } from "memory-cache";
 
 export namespace DivingFish {
@@ -121,10 +121,10 @@ export class DivingFish implements ScoreTrackerAdapter {
             return null;
         }
         let chartList: IChart[] = [];
-        if (MaiChart.hasLocalDatabase()) {
+        if (Chart.Database.hasLocalDatabase()) {
             chartList = pbs.records
                 .map((chart) => {
-                    return MaiChart.getLocalChart(
+                    return Chart.Database.getLocalChart(
                         chart.song_id,
                         chart.level_index as unknown as EDifficulty
                     );

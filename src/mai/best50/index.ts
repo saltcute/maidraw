@@ -5,7 +5,6 @@ import {
     EComboTypes,
     EDifficulty,
     ESyncTypes,
-    IChart,
     IScore,
     IThemeManifest,
 } from "../../type";
@@ -21,7 +20,7 @@ import Color from "color";
 import sharp from "sharp";
 import { globSync } from "glob";
 import ScoreTrackerAdapter from "./lib";
-import { MaiChart } from "../chart";
+import { Chart } from "../chart";
 
 export { LXNS } from "./lib/lxns";
 export { KamaiTachi } from "./lib/kamaiTachi";
@@ -364,7 +363,7 @@ export class Best50 {
                 ctx.strokeText(str, x, y);
             }
         }
-        await MaiChart.cacheJackets([
+        await Chart.Database.cacheJackets([
             ...newScores.map((v) => v.chart.id),
             ...oldScores.map((v) => v.chart.id),
         ]);
@@ -558,11 +557,13 @@ export class Best50 {
                                     );
 
                                     /** Begin Jacket Draw*/
-                                    let jacket = await MaiChart.fecthJacket(
-                                        curScore.chart.id
-                                    );
+                                    let jacket =
+                                        await Chart.Database.fecthJacket(
+                                            curScore.chart.id
+                                        );
                                     if (!jacket)
-                                        jacket = await MaiChart.fecthJacket(0);
+                                        jacket =
+                                            await Chart.Database.fecthJacket(0);
                                     if (jacket) {
                                         const img = new Image();
                                         img.src = jacket;
