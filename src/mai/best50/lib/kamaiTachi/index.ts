@@ -8,94 +8,13 @@ import {
 } from "@maidraw/type";
 import ScoreTrackerAdapter from "..";
 
-export namespace KamaiTachi {
-    export interface IResponse<T> {
-        success: boolean;
-        description: string;
-        body: T;
-    }
-    export interface IChart {
-        chartID: string;
-        data: {
-            inGameID: number;
-        };
-        difficulty: string;
-        isPrimary: boolean;
-        level: string;
-        levelNum: number;
-        playtype: string;
-        songID: number;
-        versions: string[];
-    }
-    export interface ISong {
-        altTitles: string[];
-        artist: string;
-        data: {
-            displayVersion: string;
-            genre: string;
-        };
-        id: number;
-        searchTerms: string[];
-        title: string;
-    }
-    export interface IPb {
-        chartID: string;
-        userID: number;
-        calculatedData: {
-            rate: number;
-        };
-        composedFrom: [
-            {
-                name: string;
-                scoreID: string;
-            },
-            {
-                name: string;
-                scoreID: string;
-            },
-        ];
-        game: string;
-        highlight: boolean;
-        isPrimary: boolean;
-        playtype: string;
-        rankingData: {
-            rank: number;
-            outOf: number;
-            rivalRank: number | null;
-        };
-        scoreData: {
-            percent: number;
-            lamp: string;
-            judgements: {
-                pcrit: number;
-                perfect: number;
-                great: number;
-                good: number;
-                miss: number;
-            };
-            optional: {
-                fast: number;
-                slow: number;
-                maxCombo: number;
-                enumIndexes: any;
-            };
-            grade: string;
-            enumIndexes: {
-                lamp: number;
-                grade: number;
-            };
-        };
-        songID: number;
-        timeAchieved: number;
-    }
-}
-
 export class KamaiTachi implements ScoreTrackerAdapter {
     private axios: AxiosInstance;
     constructor(
         auth?: never,
         private baseURL: string = "https://kamai.tachi.ac/",
-        private readonly CURRENT_VERSION = "buddiesplus"
+        private readonly CURRENT_VERSION: KamaiTachi.EGameVersions = KamaiTachi
+            .EGameVersions.PRISM
     ) {
         this.axios = axios.create({
             baseURL: this.baseURL,
@@ -253,14 +172,20 @@ export class KamaiTachi implements ScoreTrackerAdapter {
             }
         }
         const newScores = pbs.filter(
-            (v) => v.chart.versions[0] == currentVersion
+            (v) => v.chart.data.displayVersion == currentVersion // Assume new scores does not have omnimix charts.
         );
         const oldScores = pbs.filter(
             (v) =>
-                v.chart.versions[0] != currentVersion &&
-                (v.chart.versions.includes(currentVersion) ||
-                    (omnimix &&
-                        v.chart.versions.includes(`${currentVersion}-omni`)))
+                // Chart exists
+                v.chart &&
+                // Chart version is older than current Version
+                KamaiTachi.compareGameVersions(
+                    currentVersion,
+                    v.chart.data.displayVersion
+                ) > 0 &&
+                (omnimix || // Omnimix is enabled
+                    (v.chart.versions[0].includes("-omni") && // Included in omnimix folder of the latest version
+                        v.chart.versions[1].includes("-omni"))) // Second last version is also a omnimix folder
         );
         return {
             new: newScores
@@ -300,13 +225,330 @@ export class KamaiTachi implements ScoreTrackerAdapter {
         }>(`/api/v1/users/${userId}`);
     }
 
-    public buddies() {
-        return new KamaiTachi(undefined, this.baseURL, "buddies");
+    public maimai() {
+        return new KamaiTachi(
+            undefined,
+            this.baseURL,
+            KamaiTachi.EGameVersions.MAIMAI
+        );
     }
-    public buddiesplus() {
-        return new KamaiTachi(undefined, this.baseURL, "buddiesplus");
+    public maimaiPlus() {
+        return new KamaiTachi(
+            undefined,
+            this.baseURL,
+            KamaiTachi.EGameVersions.MAIMAI_PLUS
+        );
+    }
+    public green() {
+        return new KamaiTachi(
+            undefined,
+            this.baseURL,
+            KamaiTachi.EGameVersions.GREEN
+        );
+    }
+    public greenPlus() {
+        return new KamaiTachi(
+            undefined,
+            this.baseURL,
+            KamaiTachi.EGameVersions.GREEN_PLUS
+        );
+    }
+    public orange() {
+        return new KamaiTachi(
+            undefined,
+            this.baseURL,
+            KamaiTachi.EGameVersions.ORANGE
+        );
+    }
+    public orangePlus() {
+        return new KamaiTachi(
+            undefined,
+            this.baseURL,
+            KamaiTachi.EGameVersions.ORANGE_PLUS
+        );
+    }
+    public pink() {
+        return new KamaiTachi(
+            undefined,
+            this.baseURL,
+            KamaiTachi.EGameVersions.PINK
+        );
+    }
+    public pinkPlus() {
+        return new KamaiTachi(
+            undefined,
+            this.baseURL,
+            KamaiTachi.EGameVersions.PINK_PLUS
+        );
+    }
+    public murasaki() {
+        return new KamaiTachi(
+            undefined,
+            this.baseURL,
+            KamaiTachi.EGameVersions.MURASAKI
+        );
+    }
+    public murasakiPlus() {
+        return new KamaiTachi(
+            undefined,
+            this.baseURL,
+            KamaiTachi.EGameVersions.MURASAKI_PLUS
+        );
+    }
+    public milk() {
+        return new KamaiTachi(
+            undefined,
+            this.baseURL,
+            KamaiTachi.EGameVersions.MILK
+        );
+    }
+    public milkPlus() {
+        return new KamaiTachi(
+            undefined,
+            this.baseURL,
+            KamaiTachi.EGameVersions.MILK_PLUS
+        );
+    }
+    public finale() {
+        return new KamaiTachi(
+            undefined,
+            this.baseURL,
+            KamaiTachi.EGameVersions.FINALE
+        );
+    }
+    public dx() {
+        return new KamaiTachi(
+            undefined,
+            this.baseURL,
+            KamaiTachi.EGameVersions.DX
+        );
+    }
+    public dxPlus() {
+        return new KamaiTachi(
+            undefined,
+            this.baseURL,
+            KamaiTachi.EGameVersions.DX_PLUS
+        );
+    }
+    public splash() {
+        return new KamaiTachi(
+            undefined,
+            this.baseURL,
+            KamaiTachi.EGameVersions.SPLASH
+        );
+    }
+    public splashPlus() {
+        return new KamaiTachi(
+            undefined,
+            this.baseURL,
+            KamaiTachi.EGameVersions.SPLASH_PLUS
+        );
+    }
+    public universe() {
+        return new KamaiTachi(
+            undefined,
+            this.baseURL,
+            KamaiTachi.EGameVersions.UNIVERSE
+        );
+    }
+    public universePlus() {
+        return new KamaiTachi(
+            undefined,
+            this.baseURL,
+            KamaiTachi.EGameVersions.UNIVERSE_PLUS
+        );
+    }
+    public festival() {
+        return new KamaiTachi(
+            undefined,
+            this.baseURL,
+            KamaiTachi.EGameVersions.FESTIVAL
+        );
+    }
+    public festivalPlus() {
+        return new KamaiTachi(
+            undefined,
+            this.baseURL,
+            KamaiTachi.EGameVersions.FESTIVAL_PLUS
+        );
+    }
+    public buddies() {
+        return new KamaiTachi(
+            undefined,
+            this.baseURL,
+            KamaiTachi.EGameVersions.BUDDIES
+        );
+    }
+    public buddiesPlus() {
+        return new KamaiTachi(
+            undefined,
+            this.baseURL,
+            KamaiTachi.EGameVersions.BUDDIES_PLUS
+        );
     }
     public prism() {
-        return new KamaiTachi(undefined, this.baseURL, "prism");
+        return new KamaiTachi(
+            undefined,
+            this.baseURL,
+            KamaiTachi.EGameVersions.PRISM
+        );
+    }
+    public prismPlus() {
+        return new KamaiTachi(
+            undefined,
+            this.baseURL,
+            KamaiTachi.EGameVersions.PRISM_PLUS
+        );
+    }
+}
+
+export namespace KamaiTachi {
+    export interface IResponse<T> {
+        success: boolean;
+        description: string;
+        body: T;
+    }
+    export interface IChart {
+        chartID: string;
+        data: {
+            inGameID: number;
+            displayVersion: EGameVersions;
+        };
+        difficulty: string;
+        isPrimary: boolean;
+        level: string;
+        levelNum: number;
+        playtype: string;
+        songID: number;
+        versions: string[];
+    }
+    export interface ISong {
+        altTitles: string[];
+        artist: string;
+        data: {
+            displayVersion: string;
+            genre: string;
+        };
+        id: number;
+        searchTerms: string[];
+        title: string;
+    }
+    export interface IPb {
+        chartID: string;
+        userID: number;
+        calculatedData: {
+            rate: number;
+        };
+        composedFrom: [
+            {
+                name: string;
+                scoreID: string;
+            },
+            {
+                name: string;
+                scoreID: string;
+            },
+        ];
+        game: string;
+        highlight: boolean;
+        isPrimary: boolean;
+        playtype: string;
+        rankingData: {
+            rank: number;
+            outOf: number;
+            rivalRank: number | null;
+        };
+        scoreData: {
+            percent: number;
+            lamp: string;
+            judgements: {
+                pcrit: number;
+                perfect: number;
+                great: number;
+                good: number;
+                miss: number;
+            };
+            optional: {
+                fast: number;
+                slow: number;
+                maxCombo: number;
+                enumIndexes: any;
+            };
+            grade: string;
+            enumIndexes: {
+                lamp: number;
+                grade: number;
+            };
+        };
+        songID: number;
+        timeAchieved: number;
+    }
+
+    export enum EGameVersions {
+        PRISM_PLUS = "maimaiでらっくす PRiSM PLUS",
+        PRISM = "maimaiでらっくす PRiSM",
+        BUDDIES_PLUS = "maimaiでらっくす BUDDiES PLUS",
+        BUDDIES = "maimaiでらっくす BUDDiES",
+        FESTIVAL_PLUS = "maimaiでらっくす FESTiVAL PLUS",
+        FESTIVAL = "maimaiでらっくす FESTiVAL",
+        UNIVERSE_PLUS = "maimaiでらっくす UNiVERSE PLUS",
+        UNIVERSE = "maimaiでらっくす UNiVERSE",
+        SPLASH_PLUS = "maimaiでらっくす Splash PLUS",
+        SPLASH = "maimaiでらっくす Splash",
+        DX_PLUS = "maimaiでらっくす PLUS",
+        DX = "maimaiでらっくす",
+        FINALE = "maimai FiNALE",
+        MILK_PLUS = "maimai MiLK PLUS",
+        MILK = "maimai MiLK",
+        MURASAKI_PLUS = "maimai MURASAKi PLUS",
+        MURASAKI = "maimai MURASAKi",
+        PINK_PLUS = "maimai PiNK PLUS",
+        PINK = "maimai PiNK",
+        ORANGE_PLUS = "maimai ORANGE PLUS",
+        ORANGE = "maimai ORANGE",
+        GREEN_PLUS = "maimai GreeN PLUS",
+        GREEN = "maimai GreeN",
+        MAIMAI_PLUS = "maimai PLUS",
+        MAIMAI = "maimai",
+    }
+    const GameVersions = [
+        EGameVersions.MAIMAI,
+        EGameVersions.MAIMAI_PLUS,
+        EGameVersions.GREEN,
+        EGameVersions.GREEN_PLUS,
+        EGameVersions.ORANGE,
+        EGameVersions.ORANGE_PLUS,
+        EGameVersions.PINK,
+        EGameVersions.PINK_PLUS,
+        EGameVersions.MURASAKI,
+        EGameVersions.MURASAKI_PLUS,
+        EGameVersions.MILK,
+        EGameVersions.MILK_PLUS,
+        EGameVersions.FINALE,
+        EGameVersions.DX,
+        EGameVersions.DX_PLUS,
+        EGameVersions.SPLASH,
+        EGameVersions.SPLASH_PLUS,
+        EGameVersions.UNIVERSE,
+        EGameVersions.UNIVERSE_PLUS,
+        EGameVersions.FESTIVAL,
+        EGameVersions.FESTIVAL_PLUS,
+        EGameVersions.BUDDIES,
+        EGameVersions.BUDDIES_PLUS,
+        EGameVersions.PRISM,
+        EGameVersions.PRISM_PLUS,
+    ];
+    /**
+     * Compare two game versions and calculate which is newer.
+     *
+     * @param a Game version.
+     * @param b Game version.
+     * @returns positive if a is newer, negative if b is newer, 0 if they are the same.
+     */
+    export function compareGameVersions(
+        a: EGameVersions,
+        b: EGameVersions
+    ): number {
+        return GameVersions.indexOf(a) - GameVersions.indexOf(b);
     }
 }
