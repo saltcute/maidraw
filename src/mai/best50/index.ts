@@ -1310,7 +1310,7 @@ export class Best50 {
         return this.draw(profile.name, profile.rating, score.new, score.old, {
             ...options,
             profilePicture:
-                options?.profilePicture == null
+                options?.profilePicture === null
                     ? undefined
                     : options?.profilePicture ||
                       (await source.getPlayerProfilePicture(username)) ||
