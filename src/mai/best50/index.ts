@@ -315,7 +315,7 @@ export class Best50 {
         rating: number,
         newScores: IScore[],
         oldScores: IScore[],
-        options?: { scale?: number; theme?: string }
+        options?: { scale?: number; theme?: string; profilePicture?: Buffer }
     ): Promise<Buffer | null> {
         function drawText(
             ctx: CanvasRenderingContext2D,
@@ -1087,18 +1087,62 @@ export class Best50 {
                             element.height * 6.207,
                             element.height
                         );
-                        const icon = new Image();
-                        icon.src = this.getThemeFile(
-                            currentTheme.sprites.profile.icon,
-                            currentThemePath
+
+                        /* Begin Profile Picture Draw */
+                        ctx.save();
+                        ctx.beginPath();
+                        ctx.roundRect(
+                            element.x + element.height * 0.064,
+                            element.y + element.height * 0.064,
+                            element.height * 0.872,
+                            element.height * 0.872,
+                            (element.height * 0.872) / 16
                         );
+                        ctx.clip();
+                        ctx.fillStyle = "white";
+                        ctx.fill();
+                        const profilePicture =
+                            options?.profilePicture ||
+                            this.getThemeFile(
+                                currentTheme.sprites.profile.icon,
+                                currentThemePath
+                            );
+                        const icon = new Image();
+                        const { dominant } =
+                            await sharp(profilePicture).stats();
+                        icon.src = profilePicture;
+
+                        const cropSize = Math.min(icon.width, icon.height);
                         ctx.drawImage(
                             icon,
+                            (icon.width - cropSize) / 2,
+                            (icon.height - cropSize) / 2,
+                            cropSize,
+                            cropSize,
                             element.x + element.height * 0.064,
                             element.y + element.height * 0.064,
                             element.height * 0.872,
                             element.height * 0.872
                         );
+
+                        if (options?.profilePicture) {
+                            ctx.beginPath();
+                            ctx.roundRect(
+                                element.x + element.height * 0.064,
+                                element.y + element.height * 0.064,
+                                element.height * 0.872,
+                                element.height * 0.872,
+                                (element.height * 0.872) / 16
+                            );
+                            ctx.strokeStyle = Color.rgb(dominant)
+                                .darken(0.3)
+                                .hex();
+                            ctx.lineWidth = element.height / 30;
+                            ctx.stroke();
+                        }
+                        ctx.restore();
+                        /* End Profile Picture Draw */
+
                         const dxRating = new Image();
                         let dxRatingImg: Buffer;
                         switch (true) {
@@ -1188,6 +1232,8 @@ export class Best50 {
                             (element.height / 3) * 5.108,
                             element.height / 3
                         );
+                        /* Start Username Draw */
+                        ctx.beginPath();
                         ctx.roundRect(
                             element.x + element.height * (1 + 1 / 32),
                             element.y +
@@ -1241,6 +1287,7 @@ export class Best50 {
                             "black",
                             "standard-font-username"
                         );
+                        /* End Username Draw*/
                         break;
                     }
                 }
@@ -1251,18 +1298,18 @@ export class Best50 {
     static async drawWithScoreSource(
         source: ScoreTrackerAdapter,
         username: string,
-        options?: { scale?: number; theme?: string }
+        options?: { scale?: number; theme?: string; profilePicture?: Buffer }
     ) {
         const profile = await source.getPlayerInfo(username);
         const score = await source.getPlayerBest50(username);
         if (!profile || !score) return null;
-        return this.draw(
-            profile.name,
-            profile.rating,
-            score.new,
-            score.old,
-            options
-        );
+        return this.draw(profile.name, profile.rating, score.new, score.old, {
+            ...options,
+            profilePicture:
+                options?.profilePicture ||
+                (await source.getPlayerProfilePicture(username)) ||
+                undefined,
+        });
     }
     private static async getRatingNumber(
         num: number,
