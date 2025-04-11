@@ -82,7 +82,7 @@ export class KamaiTachi implements ScoreTrackerAdapter {
         }>(
             `/api/v1/users/${userId}/games/maimaidx/Single/pbs/all`,
             undefined,
-            30 * 1000
+            60 * 1000
         );
     }
     private toMaiDrawScore(
