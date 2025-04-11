@@ -26,19 +26,44 @@ export class LXNS implements ScoreTrackerAdapter {
             },
         });
     }
+    private async getRaw<T>(
+        endpoint: string,
+        data?: any,
+        /**
+         * Cache TTL in milliseconds. Defaults to 30 minutes.
+         */
+        cacheTTL: number = 30 * 60 * 1000,
+        options: axios.AxiosRequestConfig = {}
+    ): Promise<T | undefined> {
+        const cacheKey = `${endpoint}-${JSON.stringify(data)}`;
+        if (cacheTTL > 0) {
+            const cacheContent = this.cache.get(cacheKey);
+            if (cacheContent) return cacheContent as T;
+        }
+        return await this.axios
+            .get(endpoint, { params: data, ...options })
+            .then((r) => {
+                if (cacheTTL > 0) {
+                    this.cache.put(cacheKey, r.data, cacheTTL);
+                }
+                return r.data;
+            })
+            .catch((e) => {
+                return e.response?.data || e;
+            });
+    }
     private async get<T>(
         endpoint: string,
-        data?: any
+        data?: any,
+        cacheTTL: number = 30 * 60 * 1000,
+        options: axios.AxiosRequestConfig = {}
     ): Promise<LXNS.IAPIResponse<T> | undefined> {
-        return await this.axios
-            .get(endpoint, { params: data })
-            .then((r) => r.data)
-            .catch((e) => {
-                e.response?.data
-                    ? console.error(e.response?.data)
-                    : console.error(e);
-                return e.response?.data;
-            });
+        return this.getRaw<LXNS.IAPIResponse<T>>(
+            endpoint,
+            data,
+            cacheTTL,
+            options
+        );
     }
     private async post<T>(
         endpoint: string,
@@ -81,7 +106,9 @@ export class LXNS implements ScoreTrackerAdapter {
     }
     async getPlayerRawBest50(friendCode: string) {
         return await this.get<LXNS.IBest50Response>(
-            `/player/${friendCode}/bests`
+            `/player/${friendCode}/bests`,
+            undefined,
+            60 * 1000
         );
     }
     async getPlayerRawProfile(friendCode: string) {
@@ -105,7 +132,7 @@ export class LXNS implements ScoreTrackerAdapter {
                 };
             }
         )) as unknown as LXNS.ISongListResponse;
-        this.cache.put("lxns-songList", res, 1000 * 60 * 60);
+        this.cache.put("lxns-songList", res, 24 * 60 * 60 * 1000);
         return res;
     }
     async getMaiDrawChartList(): Promise<IChart[]> {
@@ -245,6 +272,22 @@ export class LXNS implements ScoreTrackerAdapter {
             })
             .filter((v) => v !== null);
     }
+    async getPlayerProfilePicture(username: string): Promise<Buffer | null> {
+        const player = await this.getPlayerRawProfile(username);
+        if (!player?.data) return null;
+        const iconInfo = player.data.icon;
+        const iconImage = await this.getRaw<Buffer>(
+            `/maimai/icon/${iconInfo.id}.png`,
+            undefined,
+            24 * 60 * 60 * 1000,
+            {
+                baseURL: "https://assets2.lxns.net",
+                responseType: "arraybuffer",
+            }
+        );
+        if (!iconImage) return null;
+        return iconImage;
+    }
 }
 
 export namespace LXNS {
@@ -376,10 +419,18 @@ export namespace LXNS {
         course_rank: string;
         class_rank: string;
         star: number;
-        icon: any;
-        name_plate: any;
-        frame: any;
+        icon: ICollection;
+        name_plate: ICollection;
+        frame: ICollection;
         upload_time: any;
+    }
+    export interface ICollection {
+        id: number;
+        name: string;
+        color: string;
+        description: string;
+        genre: string;
+        required: any;
     }
     export interface IBest50Response {
         /**

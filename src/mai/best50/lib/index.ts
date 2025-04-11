@@ -12,4 +12,5 @@ export default abstract class ScoreTrackerAdapter {
         name: string;
         rating: number;
     } | null>;
+    abstract getPlayerProfilePicture(username: string): Promise<Buffer | null>;
 }

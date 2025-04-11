@@ -7,8 +7,11 @@ import {
     IScore,
 } from "@maidraw/type";
 import ScoreTrackerAdapter from "..";
+import { Cache } from "memory-cache";
 
 export class KamaiTachi implements ScoreTrackerAdapter {
+    private cache = new Cache<string, object>();
+
     private axios: AxiosInstance;
     constructor(
         auth?: never,
@@ -20,19 +23,47 @@ export class KamaiTachi implements ScoreTrackerAdapter {
             baseURL: this.baseURL,
         });
     }
+    private async getRaw<T>(
+        endpoint: string,
+        data?: any,
+        /**
+         * Cache TTL in milliseconds. Defaults to 30 minutes.
+         */
+        cacheTTL: number = 30 * 60 * 1000,
+        options: axios.AxiosRequestConfig = {}
+    ): Promise<T | undefined> {
+        const cacheKey = `${endpoint}-${JSON.stringify(data)}`;
+        if (cacheTTL > 0) {
+            const cacheContent = this.cache.get(cacheKey);
+            if (cacheContent) return cacheContent as T;
+        }
+        return await this.axios
+            .get(endpoint, { params: data, ...options })
+            .then((r) => {
+                if (cacheTTL > 0) {
+                    this.cache.put(cacheKey, r.data, cacheTTL);
+                }
+                return r.data;
+            })
+            .catch((e) => {
+                return e.response?.data || e;
+            });
+    }
     private async get<T>(
         endpoint: string,
-        data?: any
+        data?: any,
+        /**
+         * Cache TTL in milliseconds. Defaults to 30 minutes.
+         */
+        cacheTTL: number = 30 * 60 * 1000,
+        options: axios.AxiosRequestConfig = {}
     ): Promise<KamaiTachi.IResponse<T> | undefined> {
-        return await this.axios
-            .get(endpoint, { params: data })
-            .then((r) => r.data)
-            .catch((e) => {
-                e.response?.data
-                    ? console.error(e.response?.data)
-                    : console.error(e);
-                return e.response?.data;
-            });
+        return this.getRaw<KamaiTachi.IResponse<T>>(
+            endpoint,
+            data,
+            cacheTTL,
+            options
+        );
     }
     private async post<T>(
         endpoint: string,
@@ -48,7 +79,11 @@ export class KamaiTachi implements ScoreTrackerAdapter {
             charts: KamaiTachi.IChart[];
             pbs: KamaiTachi.IPb[];
             songs: KamaiTachi.ISong[];
-        }>(`/api/v1/users/${userId}/games/maimaidx/Single/pbs/all`);
+        }>(
+            `/api/v1/users/${userId}/games/maimaidx/Single/pbs/all`,
+            undefined,
+            30 * 1000
+        );
     }
     private toMaiDrawScore(
         score: KamaiTachi.IPb,
@@ -228,7 +263,16 @@ export class KamaiTachi implements ScoreTrackerAdapter {
             about: string;
         }>(`/api/v1/users/${userId}`);
     }
-
+    async getPlayerProfilePicture(userId: string) {
+        return (
+            (await this.getRaw<Buffer>(
+                `/api/v1/users/${userId}/pfp`,
+                undefined,
+                2 * 60 * 60 * 1000,
+                { responseType: "arraybuffer" }
+            )) || null
+        );
+    }
     public maimai() {
         return new KamaiTachi(
             undefined,

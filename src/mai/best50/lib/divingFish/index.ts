@@ -98,15 +98,29 @@ export class DivingFish implements ScoreTrackerAdapter {
             },
         });
     }
-    private async get<T>(endpoint: string, data?: any): Promise<any> {
+    private async get<T>(
+        endpoint: string,
+        data?: any,
+        /**
+         * Cache TTL in milliseconds. Defaults to 30 minutes.
+         */
+        cacheTTL: number = 30 * 60 * 1000
+    ): Promise<T | undefined> {
+        const cacheKey = `${endpoint}-${JSON.stringify(data)}`;
+        if (cacheTTL > 0) {
+            const cacheContent = this.cache.get(cacheKey);
+            if (cacheContent) return cacheContent as T;
+        }
         return await this.axios
             .get(endpoint, { params: data })
-            .then((r) => r.data)
+            .then((r) => {
+                if (cacheTTL > 0) {
+                    this.cache.put(cacheKey, r.data, cacheTTL);
+                }
+                return r.data;
+            })
             .catch((e) => {
-                e.response?.data
-                    ? console.error(e.response?.data)
-                    : console.error(e);
-                return e.response?.data;
+                return e.response?.data || e;
             });
     }
     private async post<T>(endpoint: string, data?: any): Promise<any> {
@@ -172,27 +186,27 @@ export class DivingFish implements ScoreTrackerAdapter {
             };
         }
     }
-    async getPlayerRawBest50(
-        username: string
-    ): Promise<DivingFish.IBest50Response> {
-        return (
-            await this.post("/dev/player/records", {
+    async getPlayerRawBest50(username: string) {
+        return await this.get<DivingFish.IBest50Response>(
+            "/dev/player/records",
+            {
                 username,
-            })
-        ).data;
+            },
+            60 * 1000
+        );
     }
     async getSong(id: string) {
         return (await this.getSongList()).find((v) => v.id == id) || null;
     }
     async getSongList(): Promise<DivingFish.ISongListResponse> {
         const cached = this.cache.get(
-            "lxns-songList"
+            "divingfish-songList"
         ) as DivingFish.ISongListResponse | null;
         if (cached) return cached;
         const res = (await this.get(`/music_data`).catch(
             (e) => []
         )) as unknown as DivingFish.ISongListResponse;
-        this.cache.put("lxns-songList", res, 1000 * 60 * 60);
+        this.cache.put("divingfish-songList", res, 24 * 60 * 60 * 1000);
         return res;
     }
     private toMaiDrawScore(
@@ -295,5 +309,8 @@ export class DivingFish implements ScoreTrackerAdapter {
                 dxScore: score.dxScore,
             };
         });
+    }
+    async getPlayerProfilePicture(username: string): Promise<Buffer | null> {
+        return null;
     }
 }
