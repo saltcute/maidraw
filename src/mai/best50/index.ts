@@ -1298,7 +1298,11 @@ export class Best50 {
     static async drawWithScoreSource(
         source: ScoreTrackerAdapter,
         username: string,
-        options?: { scale?: number; theme?: string; profilePicture?: Buffer }
+        options?: {
+            scale?: number;
+            theme?: string;
+            profilePicture?: Buffer | null;
+        }
     ) {
         const profile = await source.getPlayerInfo(username);
         const score = await source.getPlayerBest50(username);
@@ -1306,9 +1310,11 @@ export class Best50 {
         return this.draw(profile.name, profile.rating, score.new, score.old, {
             ...options,
             profilePicture:
-                options?.profilePicture ||
-                (await source.getPlayerProfilePicture(username)) ||
-                undefined,
+                options?.profilePicture == null
+                    ? undefined
+                    : options?.profilePicture ||
+                      (await source.getPlayerProfilePicture(username)) ||
+                      undefined,
         });
     }
     private static async getRatingNumber(
