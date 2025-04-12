@@ -1,4 +1,3 @@
-import axios, { AxiosInstance } from "axios";
 import {
     EAchievementTypes,
     EComboTypes,
@@ -7,79 +6,28 @@ import {
     IScore,
 } from "@maidraw/type";
 import ScoreTrackerAdapter from "..";
-import { Cache } from "memory-cache";
 
-export class KamaiTachi implements ScoreTrackerAdapter {
-    private cache = new Cache<string, object>();
+export class KamaiTachi extends ScoreTrackerAdapter {
+    private readonly CURRENT_VERSION: KamaiTachi.EGameVersions;
+    constructor({
+        baseURL = "https://kamai.tachi.ac/",
+        currentVersion = KamaiTachi.EGameVersions.PRISM,
+    }: {
+        baseURL?: string;
+        currentVersion?: KamaiTachi.EGameVersions;
+    } = {}) {
+        super({ baseURL });
+        this.CURRENT_VERSION = currentVersion;
+    }
 
-    private axios: AxiosInstance;
-    constructor(
-        auth?: never,
-        private baseURL: string = "https://kamai.tachi.ac/",
-        private readonly CURRENT_VERSION: KamaiTachi.EGameVersions = KamaiTachi
-            .EGameVersions.PRISM
-    ) {
-        this.axios = axios.create({
-            baseURL: this.baseURL,
-        });
-    }
-    private async getRaw<T>(
-        endpoint: string,
-        data?: any,
-        /**
-         * Cache TTL in milliseconds. Defaults to 30 minutes.
-         */
-        cacheTTL: number = 30 * 60 * 1000,
-        options: axios.AxiosRequestConfig = {}
-    ): Promise<T | undefined> {
-        const cacheKey = `${endpoint}-${JSON.stringify(data)}`;
-        if (cacheTTL > 0) {
-            const cacheContent = this.cache.get(cacheKey);
-            if (cacheContent) return cacheContent as T;
-        }
-        return await this.axios
-            .get(endpoint, { params: data, ...options })
-            .then((r) => {
-                if (cacheTTL > 0) {
-                    this.cache.put(cacheKey, r.data, cacheTTL);
-                }
-                return r.data;
-            })
-            .catch((e) => {
-                return e.response?.data || e;
-            });
-    }
-    private async get<T>(
-        endpoint: string,
-        data?: any,
-        /**
-         * Cache TTL in milliseconds. Defaults to 30 minutes.
-         */
-        cacheTTL: number = 30 * 60 * 1000,
-        options: axios.AxiosRequestConfig = {}
-    ): Promise<KamaiTachi.IResponse<T> | undefined> {
-        return this.getRaw<KamaiTachi.IResponse<T>>(
-            endpoint,
-            data,
-            cacheTTL,
-            options
-        );
-    }
-    private async post<T>(
-        endpoint: string,
-        data?: any
-    ): Promise<KamaiTachi.IResponse<T> | undefined> {
-        return await this.axios
-            .post(endpoint, data)
-            .then((r) => r.data)
-            .catch((e) => e.response?.data);
-    }
     async getPlayerPB(userId: string) {
-        return this.get<{
-            charts: KamaiTachi.IChart[];
-            pbs: KamaiTachi.IPb[];
-            songs: KamaiTachi.ISong[];
-        }>(
+        return this.get<
+            KamaiTachi.IResponse<{
+                charts: KamaiTachi.IChart[];
+                pbs: KamaiTachi.IPb[];
+                songs: KamaiTachi.ISong[];
+            }>
+        >(
             `/api/v1/users/${userId}/games/maimaidx/Single/pbs/all`,
             undefined,
             60 * 1000
@@ -257,15 +205,17 @@ export class KamaiTachi implements ScoreTrackerAdapter {
         };
     }
     private async getPlayerProfileRaw(userId: string) {
-        return this.get<{
-            username: string;
-            id: number;
-            about: string;
-        }>(`/api/v1/users/${userId}`);
+        return this.get<
+            KamaiTachi.IResponse<{
+                username: string;
+                id: number;
+                about: string;
+            }>
+        >(`/api/v1/users/${userId}`);
     }
     async getPlayerProfilePicture(userId: string) {
         return (
-            (await this.getRaw<Buffer>(
+            (await this.get<Buffer>(
                 `/api/v1/users/${userId}/pfp`,
                 undefined,
                 2 * 60 * 60 * 1000,
@@ -274,179 +224,129 @@ export class KamaiTachi implements ScoreTrackerAdapter {
         );
     }
     public maimai() {
-        return new KamaiTachi(
-            undefined,
-            this.baseURL,
-            KamaiTachi.EGameVersions.MAIMAI
-        );
+        return new KamaiTachi({
+            currentVersion: KamaiTachi.EGameVersions.MAIMAI,
+        });
     }
     public maimaiPlus() {
-        return new KamaiTachi(
-            undefined,
-            this.baseURL,
-            KamaiTachi.EGameVersions.MAIMAI_PLUS
-        );
+        return new KamaiTachi({
+            currentVersion: KamaiTachi.EGameVersions.MAIMAI_PLUS,
+        });
     }
     public green() {
-        return new KamaiTachi(
-            undefined,
-            this.baseURL,
-            KamaiTachi.EGameVersions.GREEN
-        );
+        return new KamaiTachi({
+            currentVersion: KamaiTachi.EGameVersions.GREEN,
+        });
     }
     public greenPlus() {
-        return new KamaiTachi(
-            undefined,
-            this.baseURL,
-            KamaiTachi.EGameVersions.GREEN_PLUS
-        );
+        return new KamaiTachi({
+            currentVersion: KamaiTachi.EGameVersions.GREEN_PLUS,
+        });
     }
     public orange() {
-        return new KamaiTachi(
-            undefined,
-            this.baseURL,
-            KamaiTachi.EGameVersions.ORANGE
-        );
+        return new KamaiTachi({
+            currentVersion: KamaiTachi.EGameVersions.ORANGE,
+        });
     }
     public orangePlus() {
-        return new KamaiTachi(
-            undefined,
-            this.baseURL,
-            KamaiTachi.EGameVersions.ORANGE_PLUS
-        );
+        return new KamaiTachi({
+            currentVersion: KamaiTachi.EGameVersions.ORANGE_PLUS,
+        });
     }
     public pink() {
-        return new KamaiTachi(
-            undefined,
-            this.baseURL,
-            KamaiTachi.EGameVersions.PINK
-        );
+        return new KamaiTachi({
+            currentVersion: KamaiTachi.EGameVersions.PINK,
+        });
     }
     public pinkPlus() {
-        return new KamaiTachi(
-            undefined,
-            this.baseURL,
-            KamaiTachi.EGameVersions.PINK_PLUS
-        );
+        return new KamaiTachi({
+            currentVersion: KamaiTachi.EGameVersions.PINK_PLUS,
+        });
     }
     public murasaki() {
-        return new KamaiTachi(
-            undefined,
-            this.baseURL,
-            KamaiTachi.EGameVersions.MURASAKI
-        );
+        return new KamaiTachi({
+            currentVersion: KamaiTachi.EGameVersions.MURASAKI,
+        });
     }
     public murasakiPlus() {
-        return new KamaiTachi(
-            undefined,
-            this.baseURL,
-            KamaiTachi.EGameVersions.MURASAKI_PLUS
-        );
+        return new KamaiTachi({
+            currentVersion: KamaiTachi.EGameVersions.MURASAKI_PLUS,
+        });
     }
     public milk() {
-        return new KamaiTachi(
-            undefined,
-            this.baseURL,
-            KamaiTachi.EGameVersions.MILK
-        );
+        return new KamaiTachi({
+            currentVersion: KamaiTachi.EGameVersions.MILK,
+        });
     }
     public milkPlus() {
-        return new KamaiTachi(
-            undefined,
-            this.baseURL,
-            KamaiTachi.EGameVersions.MILK_PLUS
-        );
+        return new KamaiTachi({
+            currentVersion: KamaiTachi.EGameVersions.MILK_PLUS,
+        });
     }
     public finale() {
-        return new KamaiTachi(
-            undefined,
-            this.baseURL,
-            KamaiTachi.EGameVersions.FINALE
-        );
+        return new KamaiTachi({
+            currentVersion: KamaiTachi.EGameVersions.FINALE,
+        });
     }
     public dx() {
-        return new KamaiTachi(
-            undefined,
-            this.baseURL,
-            KamaiTachi.EGameVersions.DX
-        );
+        return new KamaiTachi({
+            currentVersion: KamaiTachi.EGameVersions.DX,
+        });
     }
     public dxPlus() {
-        return new KamaiTachi(
-            undefined,
-            this.baseURL,
-            KamaiTachi.EGameVersions.DX_PLUS
-        );
+        return new KamaiTachi({
+            currentVersion: KamaiTachi.EGameVersions.DX_PLUS,
+        });
     }
     public splash() {
-        return new KamaiTachi(
-            undefined,
-            this.baseURL,
-            KamaiTachi.EGameVersions.SPLASH
-        );
+        return new KamaiTachi({
+            currentVersion: KamaiTachi.EGameVersions.SPLASH,
+        });
     }
     public splashPlus() {
-        return new KamaiTachi(
-            undefined,
-            this.baseURL,
-            KamaiTachi.EGameVersions.SPLASH_PLUS
-        );
+        return new KamaiTachi({
+            currentVersion: KamaiTachi.EGameVersions.SPLASH_PLUS,
+        });
     }
     public universe() {
-        return new KamaiTachi(
-            undefined,
-            this.baseURL,
-            KamaiTachi.EGameVersions.UNIVERSE
-        );
+        return new KamaiTachi({
+            currentVersion: KamaiTachi.EGameVersions.UNIVERSE,
+        });
     }
     public universePlus() {
-        return new KamaiTachi(
-            undefined,
-            this.baseURL,
-            KamaiTachi.EGameVersions.UNIVERSE_PLUS
-        );
+        return new KamaiTachi({
+            currentVersion: KamaiTachi.EGameVersions.UNIVERSE_PLUS,
+        });
     }
     public festival() {
-        return new KamaiTachi(
-            undefined,
-            this.baseURL,
-            KamaiTachi.EGameVersions.FESTIVAL
-        );
+        return new KamaiTachi({
+            currentVersion: KamaiTachi.EGameVersions.FESTIVAL,
+        });
     }
     public festivalPlus() {
-        return new KamaiTachi(
-            undefined,
-            this.baseURL,
-            KamaiTachi.EGameVersions.FESTIVAL_PLUS
-        );
+        return new KamaiTachi({
+            currentVersion: KamaiTachi.EGameVersions.FESTIVAL_PLUS,
+        });
     }
     public buddies() {
-        return new KamaiTachi(
-            undefined,
-            this.baseURL,
-            KamaiTachi.EGameVersions.BUDDIES
-        );
+        return new KamaiTachi({
+            currentVersion: KamaiTachi.EGameVersions.BUDDIES,
+        });
     }
     public buddiesPlus() {
-        return new KamaiTachi(
-            undefined,
-            this.baseURL,
-            KamaiTachi.EGameVersions.BUDDIES_PLUS
-        );
+        return new KamaiTachi({
+            currentVersion: KamaiTachi.EGameVersions.BUDDIES_PLUS,
+        });
     }
     public prism() {
-        return new KamaiTachi(
-            undefined,
-            this.baseURL,
-            KamaiTachi.EGameVersions.PRISM
-        );
+        return new KamaiTachi({
+            currentVersion: KamaiTachi.EGameVersions.PRISM,
+        });
     }
     public prismPlus() {
-        return new KamaiTachi(
-            undefined,
-            this.baseURL,
-            KamaiTachi.EGameVersions.PRISM_PLUS
-        );
+        return new KamaiTachi({
+            currentVersion: KamaiTachi.EGameVersions.PRISM_PLUS,
+        });
     }
 }
 

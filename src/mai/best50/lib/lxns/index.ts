@@ -1,5 +1,3 @@
-import axios, { AxiosInstance } from "axios";
-import { Cache } from "memory-cache";
 import {
     EAchievementTypes,
     EComboTypes,
@@ -11,68 +9,16 @@ import {
 import ScoreTrackerAdapter from "..";
 import { Chart } from "@maidraw/mai/chart";
 
-export class LXNS implements ScoreTrackerAdapter {
-    private cache = new Cache<string, object>();
-    private axios: AxiosInstance;
-    constructor(
-        private auth: string,
-        private baseURL: string = "https://maimai.lxns.net/api/v0/maimai"
-    ) {
-        this.auth = auth;
-        this.axios = axios.create({
-            baseURL: this.baseURL,
-            headers: {
-                Authorization: this.auth,
-            },
-        });
-    }
-    private async getRaw<T>(
-        endpoint: string,
-        data?: any,
-        /**
-         * Cache TTL in milliseconds. Defaults to 30 minutes.
-         */
-        cacheTTL: number = 30 * 60 * 1000,
-        options: axios.AxiosRequestConfig = {}
-    ): Promise<T | undefined> {
-        const cacheKey = `${endpoint}-${JSON.stringify(data)}`;
-        if (cacheTTL > 0) {
-            const cacheContent = this.cache.get(cacheKey);
-            if (cacheContent) return cacheContent as T;
-        }
-        return await this.axios
-            .get(endpoint, { params: data, ...options })
-            .then((r) => {
-                if (cacheTTL > 0) {
-                    this.cache.put(cacheKey, r.data, cacheTTL);
-                }
-                return r.data;
-            })
-            .catch((e) => {
-                return e.response?.data || e;
-            });
-    }
-    private async get<T>(
-        endpoint: string,
-        data?: any,
-        cacheTTL: number = 30 * 60 * 1000,
-        options: axios.AxiosRequestConfig = {}
-    ): Promise<LXNS.IAPIResponse<T> | undefined> {
-        return this.getRaw<LXNS.IAPIResponse<T>>(
-            endpoint,
-            data,
-            cacheTTL,
-            options
-        );
-    }
-    private async post<T>(
-        endpoint: string,
-        data?: any
-    ): Promise<LXNS.IAPIResponse<T> | undefined> {
-        return await this.axios
-            .post(endpoint, data)
-            .then((r) => r.data)
-            .catch((e) => e.response?.data);
+export class LXNS extends ScoreTrackerAdapter {
+    constructor({
+        auth,
+        baseURL = "https://maimai.lxns.net/api/v0/maimai",
+    }: {
+        auth: string;
+        baseURL?: string;
+    }) {
+        super({ baseURL });
+        this.axios.defaults.headers.common["Authorization"] = auth;
     }
     async getPlayerBest50(username: string) {
         const b50 = await this.getPlayerRawBest50(username);
@@ -105,14 +51,16 @@ export class LXNS implements ScoreTrackerAdapter {
         };
     }
     async getPlayerRawBest50(friendCode: string) {
-        return await this.get<LXNS.IBest50Response>(
+        return await this.get<LXNS.IAPIResponse<LXNS.IBest50Response>>(
             `/player/${friendCode}/bests`,
             undefined,
             60 * 1000
         );
     }
     async getPlayerRawProfile(friendCode: string) {
-        return await this.get<LXNS.IPlayer>(`/player/${friendCode}`);
+        return await this.get<LXNS.IAPIResponse<LXNS.IPlayer>>(
+            `/player/${friendCode}`
+        );
     }
     async getSong(songId: number): Promise<LXNS.ISong> {
         const songList = await this.getSongList();
@@ -123,15 +71,13 @@ export class LXNS implements ScoreTrackerAdapter {
             "lxns-songList"
         ) as LXNS.ISongListResponse | null;
         if (cached) return cached;
-        const res = (await this.get(`/song/list`, { notes: true }).catch(
-            (e) => {
-                return {
-                    songs: [],
-                    genres: [],
-                    versions: [],
-                };
-            }
-        )) as unknown as LXNS.ISongListResponse;
+        const res = (await this.get<LXNS.ISongListResponse>(`/song/list`, {
+            notes: true,
+        }).catch(() => {})) || {
+            songs: [],
+            genres: [],
+            versions: [],
+        };
         this.cache.put("lxns-songList", res, 24 * 60 * 60 * 1000);
         return res;
     }
@@ -276,7 +222,7 @@ export class LXNS implements ScoreTrackerAdapter {
         const player = await this.getPlayerRawProfile(username);
         if (!player?.data) return null;
         const iconInfo = player.data.icon;
-        const iconImage = await this.getRaw<Buffer>(
+        const iconImage = await this.get<Buffer>(
             `/maimai/icon/${iconInfo.id}.png`,
             undefined,
             24 * 60 * 60 * 1000,

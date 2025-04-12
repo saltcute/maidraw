@@ -84,50 +84,16 @@ export namespace DivingFish {
     }
 }
 
-export class DivingFish implements ScoreTrackerAdapter {
-    private cache = new Cache<string, object>();
-    private axios: AxiosInstance;
-    constructor(
-        auth: string,
-        private baseURL: string = "https://www.diving-fish.com/api/maimaidxprober/"
-    ) {
-        this.axios = axios.create({
-            baseURL: this.baseURL,
-            headers: {
-                "Developer-Token": auth,
-            },
-        });
-    }
-    private async get<T>(
-        endpoint: string,
-        data?: any,
-        /**
-         * Cache TTL in milliseconds. Defaults to 30 minutes.
-         */
-        cacheTTL: number = 30 * 60 * 1000
-    ): Promise<T | undefined> {
-        const cacheKey = `${endpoint}-${JSON.stringify(data)}`;
-        if (cacheTTL > 0) {
-            const cacheContent = this.cache.get(cacheKey);
-            if (cacheContent) return cacheContent as T;
-        }
-        return await this.axios
-            .get(endpoint, { params: data })
-            .then((r) => {
-                if (cacheTTL > 0) {
-                    this.cache.put(cacheKey, r.data, cacheTTL);
-                }
-                return r.data;
-            })
-            .catch((e) => {
-                return e.response?.data || e;
-            });
-    }
-    private async post<T>(endpoint: string, data?: any): Promise<any> {
-        return await this.axios
-            .post(endpoint, data)
-            .then((r) => r.data)
-            .catch((e) => e.response?.data);
+export class DivingFish extends ScoreTrackerAdapter {
+    constructor({
+        auth,
+        baseURL = "https://www.diving-fish.com/api/maimaidxprober/",
+    }: {
+        auth: string;
+        baseURL?: string;
+    }) {
+        super({ baseURL });
+        this.axios.defaults.headers.common["Developer-Token"] = auth;
     }
     async getPlayerBest50(username: string) {
         const pbs = await this.getPlayerRawBest50(username);
