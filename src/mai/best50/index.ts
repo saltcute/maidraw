@@ -6,8 +6,14 @@ import {
     EDifficulty,
     ESyncTypes,
     IScore,
+} from "@maidraw/type";
+import {
+    IThemeImageElement,
     IThemeManifest,
-} from "../../type";
+    IThemeProfileElement,
+    IThemeScoreElement,
+    IThemeTextElement,
+} from "./type";
 import {
     Canvas,
     Image,
@@ -73,6 +79,11 @@ class HalfFullWidthConvert {
             (str, set) => str.replace(this.re(set, "full"), this.toHalf(set)),
             str0
         );
+}
+
+interface ITheme {
+    manifest: IThemeManifest;
+    path: string;
 }
 
 export class Best50 {
@@ -166,6 +177,12 @@ export class Best50 {
         function isHexColor(p: any): p is string {
             if (isString(p)) return /^(?:#[0-9A-F]{6}|#[0-9A-F]{8})$/i.test(p);
             else return false;
+        }
+        function isUndefined(p: any): p is undefined {
+            return typeof p == "undefined";
+        }
+        function isBoolean(p: any): p is boolean {
+            return typeof p == "boolean";
         }
         if (
             isString(payload.displayName) &&
@@ -263,6 +280,33 @@ export class Best50 {
                                 continue;
                             } else return false;
                         }
+                        case "text": {
+                            if (
+                                isNumber(element.size) &&
+                                isString(element.content) &&
+                                (isUndefined(element.width) ||
+                                    isNumber(element.width)) &&
+                                (isUndefined(element.height) ||
+                                    isNumber(element.height)) &&
+                                (isUndefined(element.linebreak) ||
+                                    isBoolean(element.linebreak)) &&
+                                (isUndefined(element.align) ||
+                                    isOneOf(
+                                        element.align,
+                                        "left",
+                                        "center",
+                                        "right"
+                                    )) &&
+                                (isUndefined(element.color) ||
+                                    isString(element.color)) &&
+                                (isUndefined(element.borderColor) ||
+                                    isString(element.borderColor)) &&
+                                (isUndefined(element.font) ||
+                                    isString(element.font))
+                            ) {
+                                continue;
+                            } else return false;
+                        }
                         default:
                             return false;
                     }
@@ -271,13 +315,11 @@ export class Best50 {
             return true;
         } else return false;
     }
-    private static primaryTheme: IThemeManifest | null = null;
-    private static primaryThemePath: string | null = null;
+    private static primaryTheme: ITheme | null = null;
     static loadTheme(path: string): boolean {
         const theme = this.getTheme(path);
         if (theme) {
-            this.primaryTheme = theme.manifest;
-            this.primaryThemePath = theme.path;
+            this.primaryTheme = theme;
             return true;
         } else return false;
     }
@@ -303,13 +345,860 @@ export class Best50 {
     private static getThemeFile(path: string, themePath: string): Buffer {
         if (
             typeof path == "string" &&
-            fs.existsSync(upath.join(themePath ?? this.primaryThemePath, path))
+            fs.existsSync(
+                upath.join(themePath ?? this.primaryTheme?.path, path)
+            )
         )
             return fs.readFileSync(
-                upath.join(themePath ?? this.primaryThemePath, path)
+                upath.join(themePath ?? this.primaryTheme?.path, path)
             );
         else return Buffer.from([]);
     }
+    /* Begin Draw Tools*/
+    private static findMaxFitString(
+        ctx: CanvasRenderingContext2D,
+        original: string,
+        maxWidth: number,
+        lineBreakSuffix = "..."
+    ): string {
+        const metrics = ctx.measureText(original);
+        if (metrics.width <= maxWidth) return original;
+        for (let i = 1; i < original.length; ++i) {
+            let cur = original.slice(0, original.length - i);
+            if (ctx.measureText(cur + lineBreakSuffix).width <= maxWidth) {
+                while (cur[cur.length - 1] == "　") {
+                    cur = cur.substring(0, cur.length - 1);
+                }
+                return cur.trim() + lineBreakSuffix;
+            }
+        }
+        return original;
+    }
+    private static drawText(
+        ctx: CanvasRenderingContext2D,
+        str: string,
+        x: number,
+        y: number,
+        fontSize: number,
+        /**
+         * Line width of the text stroke.
+         */
+        linewidth: number,
+        /**
+         * Max width of the text block.
+         */
+        maxWidth: number,
+        textAlign: "left" | "center" | "right" = "left",
+        mainColor: string | CanvasGradient | CanvasPattern = "white",
+        borderColor: string | CanvasGradient | CanvasPattern = "black",
+        font: string = `"standard-font-title-latin", "standard-font-title-jp"`,
+        lineBreakSuffix = "..."
+    ) {
+        ctx.font = `${fontSize}px ${font}`;
+        str = this.findMaxFitString(ctx, str, maxWidth, lineBreakSuffix);
+        if (linewidth > 0) {
+            ctx.strokeStyle = borderColor;
+            ctx.lineWidth = linewidth;
+            ctx.lineCap = "round";
+            ctx.lineJoin = "round";
+            ctx.textAlign = textAlign;
+            ctx.strokeText(str, x, y);
+        }
+        ctx.fillStyle = mainColor;
+        ctx.font = `${fontSize}px ${font}`;
+        ctx.textAlign = textAlign;
+        ctx.fillText(str, x, y);
+        if (linewidth > 0) {
+            ctx.strokeStyle = mainColor;
+            ctx.lineWidth = linewidth / 8;
+            ctx.lineCap = "round";
+            ctx.lineJoin = "round";
+            ctx.font = `${fontSize}px ${font}`;
+            ctx.textAlign = textAlign;
+            ctx.strokeText(str, x, y);
+        }
+    }
+    private static async drawImageModule(
+        ctx: CanvasRenderingContext2D,
+        theme: ITheme,
+        element: IThemeImageElement
+    ) {
+        const img = new Image();
+        img.src = this.getThemeFile(element.path, theme.path);
+        ctx.drawImage(img, element.x, element.y, element.width, element.height);
+    }
+    private static async drawScoreGridModule(
+        ctx: CanvasRenderingContext2D,
+        theme: ITheme,
+        element: IThemeScoreElement,
+        score: IScore,
+        index: number,
+        x: number,
+        y: number
+    ) {
+        let curColor = "#FFFFFF";
+        switch (score.chart.difficulty) {
+            case EDifficulty.BASIC:
+                curColor = element.scoreBubble.color.basic;
+                break;
+            case EDifficulty.ADVANCED:
+                curColor = element.scoreBubble.color.advanced;
+                break;
+            case EDifficulty.EXPERT:
+                curColor = element.scoreBubble.color.expert;
+                break;
+            case EDifficulty.MASTER:
+                curColor = element.scoreBubble.color.master;
+                break;
+            case EDifficulty.REMASTER:
+                curColor = element.scoreBubble.color.remaster;
+                break;
+            case EDifficulty.UTAGE:
+                curColor = element.scoreBubble.color.utage;
+                break;
+        }
+
+        /** Begin Card Draw */
+        ctx.save();
+        ctx.fillStyle = new Color(curColor).lighten(0.4).hexa();
+        ctx.beginPath();
+        ctx.roundRect(
+            x,
+            y,
+            element.scoreBubble.width,
+            element.scoreBubble.height,
+            (element.scoreBubble.height * 0.806) / 7
+        );
+        ctx.strokeStyle = new Color(curColor).darken(0.3).hexa();
+        ctx.lineWidth = element.scoreBubble.margin / 4;
+        ctx.stroke();
+        ctx.fill();
+        ctx.beginPath();
+        ctx.roundRect(
+            x,
+            y,
+            element.scoreBubble.width,
+            element.scoreBubble.height,
+            (element.scoreBubble.height * 0.806) / 7
+        );
+        ctx.clip();
+
+        /** Begin Main Content Draw */
+        {
+            ctx.save();
+            ctx.beginPath();
+            ctx.roundRect(
+                x,
+                y,
+                element.scoreBubble.width,
+                element.scoreBubble.height * 0.742,
+                (element.scoreBubble.height * 0.806) / 7
+            );
+            ctx.clip();
+            ctx.fillStyle = curColor;
+            ctx.fill();
+
+            const jacketSize = Math.min(
+                element.scoreBubble.width,
+                element.scoreBubble.height * 0.742
+            );
+
+            const jacketMaskGrad = ctx.createLinearGradient(
+                x + jacketSize / 2,
+                y + jacketSize / 2,
+                x + jacketSize,
+                y + jacketSize / 2
+            );
+            jacketMaskGrad.addColorStop(0, new Color(curColor).alpha(0).hexa());
+            jacketMaskGrad.addColorStop(
+                0.25,
+                new Color(curColor).alpha(0.2).hexa()
+            );
+            jacketMaskGrad.addColorStop(1, new Color(curColor).alpha(1).hexa());
+            const jacketMaskGradDark = ctx.createLinearGradient(
+                x + jacketSize / 2,
+                y + jacketSize / 2,
+                x + jacketSize,
+                y + jacketSize / 2
+            );
+            jacketMaskGradDark.addColorStop(
+                0,
+                new Color(curColor).darken(0.3).alpha(0).hexa()
+            );
+            jacketMaskGradDark.addColorStop(
+                0.25,
+                new Color(curColor).darken(0.3).alpha(0.2).hexa()
+            );
+            jacketMaskGradDark.addColorStop(
+                1,
+                new Color(curColor).darken(0.3).alpha(1).hexa()
+            );
+
+            /** Begin Jacket Draw*/
+            let jacket = await Chart.Database.fecthJacket(score.chart.id);
+            if (!jacket) jacket = await Chart.Database.fecthJacket(0);
+            if (jacket) {
+                const img = new Image();
+                img.src = jacket;
+                ctx.drawImage(img, x, y, jacketSize, jacketSize);
+            } else {
+                ctx.fillStyle = "#b6ffab";
+                ctx.fillRect(x, y, jacketSize, jacketSize);
+            }
+            /** End Jacket Draw*/
+
+            /** Begin Jacket Gradient Mask Draw*/ {
+                ctx.fillStyle = jacketMaskGrad;
+                ctx.fillRect(
+                    x + jacketSize / 2,
+                    y,
+                    (jacketSize * 3) / 4,
+                    jacketSize
+                );
+            } /** End Jacket Gradient Mask Draw*/
+
+            ctx.beginPath();
+            ctx.roundRect(
+                x + element.scoreBubble.margin,
+                y + element.scoreBubble.margin,
+                element.scoreBubble.width - element.scoreBubble.margin * 2,
+                element.scoreBubble.height * 0.806 -
+                    element.scoreBubble.margin * 2,
+                (element.scoreBubble.height * 0.806 -
+                    element.scoreBubble.margin * 2) /
+                    7
+            );
+
+            /** Begin Title Draw */ {
+                this.drawText(
+                    ctx,
+                    score.chart.name,
+                    x + (jacketSize * 7) / 8,
+                    y +
+                        element.scoreBubble.margin +
+                        element.scoreBubble.height * 0.806 * 0.144,
+                    element.scoreBubble.height * 0.806 * 0.144,
+                    element.scoreBubble.height * 0.806 * 0.04,
+                    element.scoreBubble.width -
+                        (jacketSize * 7) / 8 -
+                        element.scoreBubble.margin,
+                    "left",
+                    "white",
+                    jacketMaskGradDark
+                );
+            } /** End Title Draw */
+
+            /** Begin Separation Line Draw */ {
+                ctx.beginPath();
+                ctx.roundRect(
+                    x + (jacketSize * 13) / 16,
+                    y +
+                        element.scoreBubble.margin +
+                        element.scoreBubble.height * 0.806 * (0.144 + 0.072),
+                    element.scoreBubble.width -
+                        (jacketSize * 13) / 16 -
+                        element.scoreBubble.margin * 2,
+                    element.scoreBubble.height * 0.806 * 0.02,
+                    element.scoreBubble.height * 0.806 * 0.16
+                );
+                ctx.fillStyle = jacketMaskGradDark;
+                ctx.fill();
+            } /** End Separation Line Draw */
+
+            /** Begin Achievement Rate Draw */
+            this.drawText(
+                ctx,
+                `${score.achievement.toFixed(4)}%`,
+                x -
+                    element.scoreBubble.margin -
+                    element.scoreBubble.height * 0.806 * 0.02 +
+                    element.scoreBubble.width,
+                y +
+                    element.scoreBubble.margin +
+                    element.scoreBubble.height *
+                        0.806 *
+                        (0.144 + 0.144 + 0.208 - 0.04),
+                element.scoreBubble.height * 0.806 * 0.208,
+                element.scoreBubble.height * 0.806 * 0.04,
+                Infinity,
+                "right",
+                "white",
+                new Color(curColor).darken(0.3).hexa()
+            );
+            /** End Achievement Rate Draw */
+
+            /** Begin Achievement Rank Draw */
+            {
+                let rankImg: Buffer;
+                switch (score.achievementRank) {
+                    case EAchievementTypes.D:
+                        rankImg = this.getThemeFile(
+                            theme.manifest.sprites.achievement.d,
+                            theme.path
+                        );
+                        break;
+                    case EAchievementTypes.C:
+                        rankImg = this.getThemeFile(
+                            theme.manifest.sprites.achievement.c,
+                            theme.path
+                        );
+                        break;
+                    case EAchievementTypes.B:
+                        rankImg = this.getThemeFile(
+                            theme.manifest.sprites.achievement.b,
+                            theme.path
+                        );
+                        break;
+                    case EAchievementTypes.BB:
+                        rankImg = this.getThemeFile(
+                            theme.manifest.sprites.achievement.bb,
+                            theme.path
+                        );
+                        break;
+                    case EAchievementTypes.BBB:
+                        rankImg = this.getThemeFile(
+                            theme.manifest.sprites.achievement.bbb,
+                            theme.path
+                        );
+                        break;
+                    case EAchievementTypes.A:
+                        rankImg = this.getThemeFile(
+                            theme.manifest.sprites.achievement.a,
+                            theme.path
+                        );
+                        break;
+                    case EAchievementTypes.AA:
+                        rankImg = this.getThemeFile(
+                            theme.manifest.sprites.achievement.aa,
+                            theme.path
+                        );
+                        break;
+                    case EAchievementTypes.AAA:
+                        rankImg = this.getThemeFile(
+                            theme.manifest.sprites.achievement.aaa,
+                            theme.path
+                        );
+                        break;
+                    case EAchievementTypes.S:
+                        rankImg = this.getThemeFile(
+                            theme.manifest.sprites.achievement.s,
+                            theme.path
+                        );
+                        break;
+                    case EAchievementTypes.SP:
+                        rankImg = this.getThemeFile(
+                            theme.manifest.sprites.achievement.sp,
+                            theme.path
+                        );
+                        break;
+                    case EAchievementTypes.SS:
+                        rankImg = this.getThemeFile(
+                            theme.manifest.sprites.achievement.ss,
+                            theme.path
+                        );
+                        break;
+                    case EAchievementTypes.SSP:
+                        rankImg = this.getThemeFile(
+                            theme.manifest.sprites.achievement.ssp,
+                            theme.path
+                        );
+                        break;
+                    case EAchievementTypes.SSS:
+                        rankImg = this.getThemeFile(
+                            theme.manifest.sprites.achievement.sss,
+                            theme.path
+                        );
+                        break;
+                    default:
+                        rankImg = this.getThemeFile(
+                            theme.manifest.sprites.achievement.sssp,
+                            theme.path
+                        );
+                }
+                const img = new Image();
+                img.src = rankImg;
+                ctx.drawImage(
+                    img,
+                    x + jacketSize,
+                    y +
+                        element.scoreBubble.margin +
+                        element.scoreBubble.height *
+                            0.806 *
+                            (0.144 + 0.144 + 0.208 + 0.02),
+                    element.scoreBubble.height * 0.806 * 0.3 * 2.133,
+                    element.scoreBubble.height * 0.806 * 0.3
+                );
+            }
+            /** End Achievement Rank Draw */
+
+            /** Begin Milestone Draw */
+            {
+                let comboImg: Buffer, syncImg: Buffer;
+                switch (score.combo) {
+                    case EComboTypes.NONE:
+                        comboImg = this.getThemeFile(
+                            theme.manifest.sprites.milestone.none,
+                            theme.path
+                        );
+                        break;
+                    case EComboTypes.FULL_COMBO:
+                        comboImg = this.getThemeFile(
+                            theme.manifest.sprites.milestone.fc,
+                            theme.path
+                        );
+                        break;
+                    case EComboTypes.FULL_COMBO_PLUS:
+                        comboImg = this.getThemeFile(
+                            theme.manifest.sprites.milestone.fcp,
+                            theme.path
+                        );
+                        break;
+                    case EComboTypes.ALL_PERFECT:
+                        comboImg = this.getThemeFile(
+                            theme.manifest.sprites.milestone.ap,
+                            theme.path
+                        );
+                        break;
+                    case EComboTypes.ALL_PERFECT_PLUS:
+                        comboImg = this.getThemeFile(
+                            theme.manifest.sprites.milestone.app,
+                            theme.path
+                        );
+                        break;
+                }
+                switch (score.sync) {
+                    case ESyncTypes.NONE:
+                        syncImg = this.getThemeFile(
+                            theme.manifest.sprites.milestone.none,
+                            theme.path
+                        );
+                        break;
+                    case ESyncTypes.SYNC_PLAY:
+                        syncImg = this.getThemeFile(
+                            theme.manifest.sprites.milestone.sync,
+                            theme.path
+                        );
+                        break;
+                    case ESyncTypes.FULL_SYNC:
+                        syncImg = this.getThemeFile(
+                            theme.manifest.sprites.milestone.fs,
+                            theme.path
+                        );
+                        break;
+                    case ESyncTypes.FULL_SYNC_PLUS:
+                        syncImg = this.getThemeFile(
+                            theme.manifest.sprites.milestone.fsp,
+                            theme.path
+                        );
+                        break;
+                    case ESyncTypes.FULL_SYNC_DX:
+                        syncImg = this.getThemeFile(
+                            theme.manifest.sprites.milestone.fdx,
+                            theme.path
+                        );
+                        break;
+                    case ESyncTypes.FULL_SYNC_DX_PLUS:
+                        syncImg = this.getThemeFile(
+                            theme.manifest.sprites.milestone.fdxp,
+                            theme.path
+                        );
+                        break;
+                }
+                const combo = new Image();
+                combo.src = comboImg;
+                ctx.drawImage(
+                    combo,
+                    x +
+                        (jacketSize * 7) / 8 +
+                        element.scoreBubble.height *
+                            0.806 *
+                            (0.32 * 2.133 + 0.06),
+                    y +
+                        element.scoreBubble.margin +
+                        element.scoreBubble.height *
+                            0.806 *
+                            (0.144 + 0.144 + 0.208 + 0.01),
+                    element.scoreBubble.height * 0.806 * 0.32,
+                    element.scoreBubble.height * 0.806 * 0.32
+                );
+                const sync = new Image();
+                sync.src = syncImg;
+                ctx.drawImage(
+                    sync,
+                    x +
+                        (jacketSize * 7) / 8 +
+                        element.scoreBubble.height *
+                            0.806 *
+                            (0.32 * 2.133 + 0.04 + 0.32),
+                    y +
+                        element.scoreBubble.margin +
+                        element.scoreBubble.height *
+                            0.806 *
+                            (0.144 + 0.144 + 0.208 + 0.01),
+                    element.scoreBubble.height * 0.806 * 0.32,
+                    element.scoreBubble.height * 0.806 * 0.32
+                );
+            }
+            /** End Milestone Draw */
+
+            /** Begin Chart Mode Draw */
+            {
+                const mode = new Image();
+                const chartModeBadgeImg = this.getThemeFile(
+                    score.chart.id > 10000
+                        ? theme.manifest.sprites.mode.dx
+                        : theme.manifest.sprites.mode.standard,
+                    theme.path
+                );
+                const { width, height } =
+                    await sharp(chartModeBadgeImg).metadata();
+                const aspectRatio = (width ?? 0) / (height ?? 1) || 3;
+                mode.src = chartModeBadgeImg;
+                const drawHeight = (jacketSize * 6) / 8;
+                ctx.drawImage(
+                    mode,
+                    x + ((jacketSize * 7) / 8 - drawHeight) / 2,
+                    y +
+                        element.scoreBubble.margin +
+                        element.scoreBubble.height * 0.806 * 0.02,
+                    drawHeight,
+                    drawHeight / aspectRatio
+                );
+            }
+            /** End Chart Mode Draw */
+
+            /** Begin Bests Index Draw */
+            {
+                this.drawText(
+                    ctx,
+                    `#${index + 1}`,
+                    x + element.scoreBubble.margin * 2,
+                    y + jacketSize - element.scoreBubble.margin * 2,
+                    element.scoreBubble.height * 0.806 * 0.128,
+                    element.scoreBubble.height * 0.806 * 0.04,
+                    Infinity,
+                    "left",
+                    "white",
+                    new Color(curColor).darken(0.3).hexa()
+                );
+            }
+            /** End Bests Index Draw */
+
+            ctx.restore();
+        }
+        /** End Main Content Draw */
+
+        /** Begin Difficulty & DX Rating Draw */
+        {
+            this.drawText(
+                ctx,
+                `${score.chart.level.toFixed(1)}  ↑${score.dxRating.toFixed(0)}`,
+                x + element.scoreBubble.margin * 2,
+                y + element.scoreBubble.height * (0.806 + (1 - 0.806) / 2),
+                element.scoreBubble.height * 0.806 * 0.128,
+                element.scoreBubble.height * 0.806 * 0.04,
+                Infinity,
+                "left",
+                "white",
+                new Color(curColor).darken(0.3).hexa()
+            );
+
+            if (score.chart.maxDxScore) {
+                this.drawText(
+                    ctx,
+                    `${score.dxScore}/${score.chart.maxDxScore}`,
+                    x +
+                        element.scoreBubble.width -
+                        element.scoreBubble.margin * 2,
+                    y + element.scoreBubble.height * (0.806 + (1 - 0.806) / 2),
+                    element.scoreBubble.height * 0.806 * 0.128,
+                    element.scoreBubble.height * 0.806 * 0.04,
+                    Infinity,
+                    "right",
+                    "white",
+                    new Color(curColor).darken(0.3).hexa()
+                );
+            }
+        }
+        /** End Difficulty & DX Rating Draw */
+
+        ctx.restore();
+        /** End Card Draw */
+    }
+    private static async drawProfileModule(
+        ctx: CanvasRenderingContext2D,
+        theme: ITheme,
+        element: IThemeProfileElement,
+        username: string,
+        rating: number,
+        profilePicture?: Buffer
+    ) {
+        const nameplate = new Image();
+        nameplate.src = this.getThemeFile(
+            theme.manifest.sprites.profile.nameplate,
+            theme.path
+        );
+        ctx.drawImage(
+            nameplate,
+            element.x,
+            element.y,
+            element.height * 6.207,
+            element.height
+        );
+
+        /* Begin Profile Picture Draw */
+        {
+            ctx.save();
+            ctx.beginPath();
+            ctx.roundRect(
+                element.x + element.height * 0.064,
+                element.y + element.height * 0.064,
+                element.height * 0.872,
+                element.height * 0.872,
+                (element.height * 0.872) / 16
+            );
+            ctx.clip();
+            ctx.fillStyle = "white";
+            ctx.fill();
+            const icon = new Image();
+            const pfp =
+                profilePicture ||
+                this.getThemeFile(
+                    theme.manifest.sprites.profile.icon,
+                    theme.path
+                );
+            const { dominant } = await sharp(pfp).stats();
+            icon.src = pfp;
+
+            const cropSize = Math.min(icon.width, icon.height);
+            ctx.drawImage(
+                icon,
+                (icon.width - cropSize) / 2,
+                (icon.height - cropSize) / 2,
+                cropSize,
+                cropSize,
+                element.x + element.height * 0.064,
+                element.y + element.height * 0.064,
+                element.height * 0.872,
+                element.height * 0.872
+            );
+
+            if (profilePicture) {
+                ctx.beginPath();
+                ctx.roundRect(
+                    element.x + element.height * 0.064,
+                    element.y + element.height * 0.064,
+                    element.height * 0.872,
+                    element.height * 0.872,
+                    (element.height * 0.872) / 16
+                );
+                ctx.strokeStyle = Color.rgb(dominant).darken(0.3).hex();
+                ctx.lineWidth = element.height / 30;
+                ctx.stroke();
+            }
+            ctx.restore();
+        }
+        /* End Profile Picture Draw */
+
+        /* Begin DX Rating Draw */
+        {
+            const dxRating = new Image();
+            let dxRatingImg: Buffer;
+            switch (true) {
+                case rating > 15000: {
+                    dxRatingImg = this.getThemeFile(
+                        theme.manifest.sprites.dxRating.rainbow,
+                        theme.path
+                    );
+                    break;
+                }
+                case rating > 14500: {
+                    dxRatingImg = this.getThemeFile(
+                        theme.manifest.sprites.dxRating.platinum,
+                        theme.path
+                    );
+                    break;
+                }
+                case rating > 14000: {
+                    dxRatingImg = this.getThemeFile(
+                        theme.manifest.sprites.dxRating.gold,
+                        theme.path
+                    );
+                    break;
+                }
+                case rating > 13000: {
+                    dxRatingImg = this.getThemeFile(
+                        theme.manifest.sprites.dxRating.silver,
+                        theme.path
+                    );
+                    break;
+                }
+                case rating > 12000: {
+                    dxRatingImg = this.getThemeFile(
+                        theme.manifest.sprites.dxRating.bronze,
+                        theme.path
+                    );
+                    break;
+                }
+                case rating > 10000: {
+                    dxRatingImg = this.getThemeFile(
+                        theme.manifest.sprites.dxRating.purple,
+                        theme.path
+                    );
+                    break;
+                }
+                case rating > 8000: {
+                    dxRatingImg = this.getThemeFile(
+                        theme.manifest.sprites.dxRating.red,
+                        theme.path
+                    );
+                    break;
+                }
+                case rating > 6000: {
+                    dxRatingImg = this.getThemeFile(
+                        theme.manifest.sprites.dxRating.yellow,
+                        theme.path
+                    );
+                    break;
+                }
+                case rating > 4000: {
+                    dxRatingImg = this.getThemeFile(
+                        theme.manifest.sprites.dxRating.green,
+                        theme.path
+                    );
+                    break;
+                }
+                case rating > 2000: {
+                    dxRatingImg = this.getThemeFile(
+                        theme.manifest.sprites.dxRating.blue,
+                        theme.path
+                    );
+                    break;
+                }
+                default: {
+                    dxRatingImg = this.getThemeFile(
+                        theme.manifest.sprites.dxRating.white,
+                        theme.path
+                    );
+                    break;
+                }
+            }
+            dxRating.src = dxRatingImg;
+            ctx.drawImage(
+                dxRating,
+                element.x + element.height,
+                element.y + element.height * 0.064,
+                (element.height / 3) * 5.108,
+                element.height / 3
+            );
+        }
+        /* End DX Rating Draw */
+
+        /* Begin Username Draw */
+        {
+            ctx.beginPath();
+            ctx.roundRect(
+                element.x + element.height * (1 + 1 / 32),
+                element.y + element.height * (0.064 + 0.333 + 1 / 32),
+                ((element.height / 3) * 5.108 * 6) / 5,
+                (element.height * 7) / 24,
+                element.height / 20
+            );
+            ctx.fillStyle = "white";
+            ctx.strokeStyle = Color.rgb(180, 180, 180).hex();
+            ctx.lineWidth = element.height / 32;
+            ctx.stroke();
+            ctx.fill();
+
+            const ratingImgBuffer = await this.getRatingNumber(rating, theme);
+            if (ratingImgBuffer) {
+                const { width, height } =
+                    await sharp(ratingImgBuffer).metadata();
+                if (width && height) {
+                    const aspectRatio = width / height;
+                    const image = new Image();
+                    image.src = ratingImgBuffer;
+                    const drawHeight = (element.height * 7) / 32;
+                    ctx.drawImage(
+                        image,
+                        element.x + element.height * 1.785,
+                        element.y + element.height * 0.12,
+                        drawHeight * aspectRatio * 0.8,
+                        drawHeight
+                    );
+                }
+            }
+
+            this.drawText(
+                ctx,
+                HalfFullWidthConvert.toFullWidth(username),
+                element.x + element.height * (1 + 1 / 16),
+                element.y + element.height * (0.064 + 0.333 + 1 / 4),
+                (element.height * 1) / 6,
+                0,
+                ((element.height / 3) * 5.108 * 6) / 5,
+                "left",
+                "black",
+                "black",
+                "standard-font-username"
+            );
+        }
+        /* End Username Draw*/
+    }
+    private static async drawTextModule(
+        ctx: CanvasRenderingContext2D,
+        theme: ITheme,
+        element: IThemeTextElement
+    ) {
+        let infiniteWideLines = element.content.split("\n");
+        let lines: string[] = [];
+        if (element.linebreak) {
+            for (let originalContent of infiniteWideLines) {
+                while (originalContent.length) {
+                    const line = this.findMaxFitString(
+                        ctx,
+                        originalContent,
+                        element.width || Infinity,
+                        ""
+                    );
+                    originalContent = originalContent.replace(line, "").trim();
+                    lines.push(line.trim());
+                }
+            }
+        } else {
+            for (const originalContent of infiniteWideLines) {
+                lines.push(
+                    this.findMaxFitString(
+                        ctx,
+                        originalContent,
+                        element.width || Infinity
+                    )
+                );
+            }
+        }
+        for (let i = 0; i < lines.length; ++i) {
+            const line = lines[i];
+            this.drawText(
+                ctx,
+                line,
+                element.x,
+                element.y + i * element.size * 1.3,
+                element.size,
+                element.size / 6,
+                element.width || Infinity,
+                element.align,
+                element.color || "#FFFFFF",
+                element.borderColor
+                    ? element.borderColor
+                    : Color.rgb(element.color || "#FFFFFF")
+                          .darken(0.3)
+                          .hex(),
+                element.font,
+                element.linebreak ? "" : "..."
+            );
+        }
+    }
+    /* End Draw Tools*/
     static async draw(
         name: string,
         rating: number,
@@ -317,977 +1206,79 @@ export class Best50 {
         oldScores: IScore[],
         options?: { scale?: number; theme?: string; profilePicture?: Buffer }
     ): Promise<Buffer | null> {
-        function drawText(
-            ctx: CanvasRenderingContext2D,
-            str: string,
-            x: number,
-            y: number,
-            fontSize: number,
-            linewidth: number,
-            maxWidth: number,
-            textAlign: "left" | "center" | "right" = "left",
-            mainColor: string | CanvasGradient | CanvasPattern = "white",
-            borderColor: string | CanvasGradient | CanvasPattern = "black",
-            font: string = `"standard-font-title-latin", "standard-font-title-jp"`
-        ) {
-            function findMaxFitString(original: string) {
-                const metrics = ctx.measureText(original);
-                if (metrics.width <= maxWidth) return original;
-                for (let i = 1; i < original.length; ++i) {
-                    let cur = original.slice(0, original.length - i);
-                    if (ctx.measureText(cur + "...").width <= maxWidth) {
-                        while (cur[cur.length - 1] == "　") {
-                            cur = cur.substring(0, cur.length - 1);
-                        }
-                        return cur.trim() + "...";
-                    }
-                }
-                return original;
-            }
-
-            ctx.font = `${fontSize}px ${font}`;
-            str = findMaxFitString(str);
-            if (linewidth > 0) {
-                ctx.strokeStyle = borderColor;
-                ctx.lineWidth = linewidth;
-                ctx.lineCap = "round";
-                ctx.lineJoin = "round";
-                ctx.textAlign = textAlign;
-                ctx.strokeText(str, x, y);
-            }
-            ctx.fillStyle = mainColor;
-            ctx.font = `${fontSize}px ${font}`;
-            ctx.textAlign = textAlign;
-            ctx.fillText(str, x, y);
-            if (linewidth > 0) {
-                ctx.strokeStyle = mainColor;
-                ctx.lineWidth = linewidth / 8;
-                ctx.lineCap = "round";
-                ctx.lineJoin = "round";
-                ctx.font = `${fontSize}px ${font}`;
-                ctx.textAlign = textAlign;
-                ctx.strokeText(str, x, y);
-            }
-        }
         await Chart.Database.cacheJackets([
             ...newScores.map((v) => v.chart.id),
             ...oldScores.map((v) => v.chart.id),
         ]);
-        let currentTheme = this.primaryTheme,
-            currentThemePath = this.primaryThemePath;
+        let currentTheme = this.primaryTheme;
         if (options?.theme) {
             const theme = this.getTheme(options.theme);
             if (theme) {
-                currentTheme = theme.manifest;
-                currentThemePath = theme.path;
+                currentTheme = theme;
             }
         }
-        if (currentTheme && currentThemePath) {
+        if (currentTheme) {
             const canvas = new Canvas(
-                currentTheme.width * (options?.scale ?? 1),
-                currentTheme.height * (options?.scale ?? 1)
+                currentTheme.manifest.width * (options?.scale ?? 1),
+                currentTheme.manifest.height * (options?.scale ?? 1)
             );
             const ctx = canvas.getContext("2d");
             if (options?.scale) ctx.scale(options.scale, options.scale);
             ctx.imageSmoothingEnabled = true;
-            for (const element of currentTheme.elements) {
+            for (const element of currentTheme.manifest.elements) {
                 switch (element.type) {
                     case "image": {
-                        const img = new Image();
-                        img.src = this.getThemeFile(
-                            element.path,
-                            currentThemePath
-                        );
-                        ctx.drawImage(
-                            img,
-                            element.x,
-                            element.y,
-                            element.width,
-                            element.height
-                        );
+                        await this.drawImageModule(ctx, currentTheme, element);
                         break;
                     }
                     case "score-grid": {
-                        const promises: Promise<void>[] = [];
                         for (
-                            let cury = element.y,
-                                curindex = element.index,
-                                i = 0;
+                            let y = element.y, index = element.index, i = 0;
                             i < element.verticalSize;
                             ++i,
-                                cury +=
+                                y +=
                                     element.scoreBubble.height +
                                     element.scoreBubble.gap
                         ) {
                             for (
-                                let curx = element.x, j = 0;
+                                let x = element.x, j = 0;
                                 j < element.horizontalSize;
                                 ++j,
-                                    ++curindex,
-                                    curx +=
+                                    ++index,
+                                    x +=
                                         element.scoreBubble.width +
                                         element.scoreBubble.gap
                             ) {
-                                let curScore: IScore | undefined;
+                                let curScore;
                                 if (element.region == "new")
-                                    curScore = newScores[curindex];
-                                else curScore = oldScores[curindex];
-                                if (curScore) {
-                                    let curColor = "#FFFFFF";
-                                    switch (curScore.chart.difficulty) {
-                                        case EDifficulty.BASIC:
-                                            curColor =
-                                                element.scoreBubble.color.basic;
-                                            break;
-                                        case EDifficulty.ADVANCED:
-                                            curColor =
-                                                element.scoreBubble.color
-                                                    .advanced;
-                                            break;
-                                        case EDifficulty.EXPERT:
-                                            curColor =
-                                                element.scoreBubble.color
-                                                    .expert;
-                                            break;
-                                        case EDifficulty.MASTER:
-                                            curColor =
-                                                element.scoreBubble.color
-                                                    .master;
-                                            break;
-                                        case EDifficulty.REMASTER:
-                                            curColor =
-                                                element.scoreBubble.color
-                                                    .remaster;
-                                            break;
-                                        case EDifficulty.UTAGE:
-                                            curColor =
-                                                element.scoreBubble.color.utage;
-                                            break;
-                                    }
-
-                                    /** Begin Card Draw */
-                                    ctx.save();
-                                    ctx.fillStyle = new Color(curColor)
-                                        .lighten(0.4)
-                                        .hexa();
-                                    ctx.beginPath();
-                                    ctx.roundRect(
-                                        curx,
-                                        cury,
-                                        element.scoreBubble.width,
-                                        element.scoreBubble.height,
-                                        (element.scoreBubble.height * 0.806) / 7
-                                    );
-                                    ctx.strokeStyle = new Color(curColor)
-                                        .darken(0.3)
-                                        .hexa();
-                                    ctx.lineWidth =
-                                        element.scoreBubble.margin / 4;
-                                    ctx.stroke();
-                                    ctx.fill();
-                                    ctx.beginPath();
-                                    ctx.roundRect(
-                                        curx,
-                                        cury,
-                                        element.scoreBubble.width,
-                                        element.scoreBubble.height,
-                                        (element.scoreBubble.height * 0.806) / 7
-                                    );
-                                    ctx.clip();
-
-                                    /** Begin Main Content Draw */
-                                    ctx.save();
-                                    ctx.beginPath();
-                                    ctx.roundRect(
-                                        curx,
-                                        cury,
-                                        element.scoreBubble.width,
-                                        element.scoreBubble.height * 0.742,
-                                        (element.scoreBubble.height * 0.806) / 7
-                                    );
-                                    ctx.clip();
-                                    ctx.fillStyle = curColor;
-                                    ctx.fill();
-
-                                    const jacketSize = Math.min(
-                                        element.scoreBubble.width,
-                                        element.scoreBubble.height * 0.742
-                                    );
-
-                                    const jacketMaskGrad =
-                                        ctx.createLinearGradient(
-                                            curx + jacketSize / 2,
-                                            cury + jacketSize / 2,
-                                            curx + jacketSize,
-                                            cury + jacketSize / 2
-                                        );
-                                    jacketMaskGrad.addColorStop(
-                                        0,
-                                        new Color(curColor).alpha(0).hexa()
-                                    );
-                                    jacketMaskGrad.addColorStop(
-                                        0.25,
-                                        new Color(curColor).alpha(0.2).hexa()
-                                    );
-                                    jacketMaskGrad.addColorStop(
-                                        1,
-                                        new Color(curColor).alpha(1).hexa()
-                                    );
-                                    const jacketMaskGradDark =
-                                        ctx.createLinearGradient(
-                                            curx + jacketSize / 2,
-                                            cury + jacketSize / 2,
-                                            curx + jacketSize,
-                                            cury + jacketSize / 2
-                                        );
-                                    jacketMaskGradDark.addColorStop(
-                                        0,
-                                        new Color(curColor)
-                                            .darken(0.3)
-                                            .alpha(0)
-                                            .hexa()
-                                    );
-                                    jacketMaskGradDark.addColorStop(
-                                        0.25,
-                                        new Color(curColor)
-                                            .darken(0.3)
-                                            .alpha(0.2)
-                                            .hexa()
-                                    );
-                                    jacketMaskGradDark.addColorStop(
-                                        1,
-                                        new Color(curColor)
-                                            .darken(0.3)
-                                            .alpha(1)
-                                            .hexa()
-                                    );
-
-                                    /** Begin Jacket Draw*/
-                                    let jacket =
-                                        await Chart.Database.fecthJacket(
-                                            curScore.chart.id
-                                        );
-                                    if (!jacket)
-                                        jacket =
-                                            await Chart.Database.fecthJacket(0);
-                                    if (jacket) {
-                                        const img = new Image();
-                                        img.src = jacket;
-                                        ctx.drawImage(
-                                            img,
-                                            curx,
-                                            cury,
-                                            jacketSize,
-                                            jacketSize
-                                        );
-                                    } else {
-                                        ctx.fillStyle = "#b6ffab";
-                                        ctx.fillRect(
-                                            curx,
-                                            cury,
-                                            jacketSize,
-                                            jacketSize
-                                        );
-                                    }
-                                    /** End Jacket Draw*/
-
-                                    /** Begin Jacket Gradient Mask Draw*/ {
-                                        ctx.fillStyle = jacketMaskGrad;
-                                        ctx.fillRect(
-                                            curx + jacketSize / 2,
-                                            cury,
-                                            (jacketSize * 3) / 4,
-                                            jacketSize
-                                        );
-                                    } /** End Jacket Gradient Mask Draw*/
-
-                                    ctx.beginPath();
-                                    ctx.roundRect(
-                                        curx + element.scoreBubble.margin,
-                                        cury + element.scoreBubble.margin,
-                                        element.scoreBubble.width -
-                                            element.scoreBubble.margin * 2,
-                                        element.scoreBubble.height * 0.806 -
-                                            element.scoreBubble.margin * 2,
-                                        (element.scoreBubble.height * 0.806 -
-                                            element.scoreBubble.margin * 2) /
-                                            7
-                                    );
-
-                                    /** Begin Title Draw */ {
-                                        drawText(
-                                            ctx,
-                                            curScore.chart.name,
-                                            curx + (jacketSize * 7) / 8,
-                                            cury +
-                                                element.scoreBubble.margin +
-                                                element.scoreBubble.height *
-                                                    0.806 *
-                                                    0.144,
-                                            element.scoreBubble.height *
-                                                0.806 *
-                                                0.144,
-                                            element.scoreBubble.height *
-                                                0.806 *
-                                                0.04,
-                                            element.scoreBubble.width -
-                                                (jacketSize * 7) / 8 -
-                                                element.scoreBubble.margin,
-                                            "left",
-                                            "white",
-                                            jacketMaskGradDark
-                                        );
-                                    } /** End Title Draw */
-
-                                    /** Begin Separation Line Draw */ {
-                                        ctx.beginPath();
-                                        ctx.roundRect(
-                                            curx + (jacketSize * 13) / 16,
-                                            cury +
-                                                element.scoreBubble.margin +
-                                                element.scoreBubble.height *
-                                                    0.806 *
-                                                    (0.144 + 0.072),
-                                            element.scoreBubble.width -
-                                                (jacketSize * 13) / 16 -
-                                                element.scoreBubble.margin * 2,
-                                            element.scoreBubble.height *
-                                                0.806 *
-                                                0.02,
-                                            element.scoreBubble.height *
-                                                0.806 *
-                                                0.16
-                                        );
-                                        ctx.fillStyle = jacketMaskGradDark;
-                                        ctx.fill();
-                                    } /** End Separation Line Draw */
-
-                                    /** Begin Achievement Rate Draw */
-                                    drawText(
-                                        ctx,
-                                        `${curScore.achievement.toFixed(4)}%`,
-                                        curx -
-                                            element.scoreBubble.margin -
-                                            element.scoreBubble.height *
-                                                0.806 *
-                                                0.02 +
-                                            element.scoreBubble.width,
-                                        cury +
-                                            element.scoreBubble.margin +
-                                            element.scoreBubble.height *
-                                                0.806 *
-                                                (0.144 + 0.144 + 0.208 - 0.04),
-                                        element.scoreBubble.height *
-                                            0.806 *
-                                            0.208,
-                                        element.scoreBubble.height *
-                                            0.806 *
-                                            0.04,
-                                        Infinity,
-                                        "right",
-                                        "white",
-                                        new Color(curColor).darken(0.3).hexa()
-                                    );
-                                    /** End Achievement Rate Draw */
-
-                                    /** Begin Achievement Rank Draw */
-                                    {
-                                        let rankImg: Buffer;
-                                        switch (curScore.achievementRank) {
-                                            case EAchievementTypes.D:
-                                                rankImg = this.getThemeFile(
-                                                    currentTheme.sprites
-                                                        .achievement.d,
-                                                    currentThemePath
-                                                );
-                                                break;
-                                            case EAchievementTypes.C:
-                                                rankImg = this.getThemeFile(
-                                                    currentTheme.sprites
-                                                        .achievement.c,
-                                                    currentThemePath
-                                                );
-                                                break;
-                                            case EAchievementTypes.B:
-                                                rankImg = this.getThemeFile(
-                                                    currentTheme.sprites
-                                                        .achievement.b,
-                                                    currentThemePath
-                                                );
-                                                break;
-                                            case EAchievementTypes.BB:
-                                                rankImg = this.getThemeFile(
-                                                    currentTheme.sprites
-                                                        .achievement.bb,
-                                                    currentThemePath
-                                                );
-                                                break;
-                                            case EAchievementTypes.BBB:
-                                                rankImg = this.getThemeFile(
-                                                    currentTheme.sprites
-                                                        .achievement.bbb,
-                                                    currentThemePath
-                                                );
-                                                break;
-                                            case EAchievementTypes.A:
-                                                rankImg = this.getThemeFile(
-                                                    currentTheme.sprites
-                                                        .achievement.a,
-                                                    currentThemePath
-                                                );
-                                                break;
-                                            case EAchievementTypes.AA:
-                                                rankImg = this.getThemeFile(
-                                                    currentTheme.sprites
-                                                        .achievement.aa,
-                                                    currentThemePath
-                                                );
-                                                break;
-                                            case EAchievementTypes.AAA:
-                                                rankImg = this.getThemeFile(
-                                                    currentTheme.sprites
-                                                        .achievement.aaa,
-                                                    currentThemePath
-                                                );
-                                                break;
-                                            case EAchievementTypes.S:
-                                                rankImg = this.getThemeFile(
-                                                    currentTheme.sprites
-                                                        .achievement.s,
-                                                    currentThemePath
-                                                );
-                                                break;
-                                            case EAchievementTypes.SP:
-                                                rankImg = this.getThemeFile(
-                                                    currentTheme.sprites
-                                                        .achievement.sp,
-                                                    currentThemePath
-                                                );
-                                                break;
-                                            case EAchievementTypes.SS:
-                                                rankImg = this.getThemeFile(
-                                                    currentTheme.sprites
-                                                        .achievement.ss,
-                                                    currentThemePath
-                                                );
-                                                break;
-                                            case EAchievementTypes.SSP:
-                                                rankImg = this.getThemeFile(
-                                                    currentTheme.sprites
-                                                        .achievement.ssp,
-                                                    currentThemePath
-                                                );
-                                                break;
-                                            case EAchievementTypes.SSS:
-                                                rankImg = this.getThemeFile(
-                                                    currentTheme.sprites
-                                                        .achievement.sss,
-                                                    currentThemePath
-                                                );
-                                                break;
-                                            default:
-                                                rankImg = this.getThemeFile(
-                                                    currentTheme.sprites
-                                                        .achievement.sssp,
-                                                    currentThemePath
-                                                );
-                                        }
-                                        const img = new Image();
-                                        img.src = rankImg;
-                                        ctx.drawImage(
-                                            img,
-                                            curx + jacketSize,
-                                            cury +
-                                                element.scoreBubble.margin +
-                                                element.scoreBubble.height *
-                                                    0.806 *
-                                                    (0.144 +
-                                                        0.144 +
-                                                        0.208 +
-                                                        0.02),
-                                            element.scoreBubble.height *
-                                                0.806 *
-                                                0.3 *
-                                                2.133,
-                                            element.scoreBubble.height *
-                                                0.806 *
-                                                0.3
-                                        );
-                                    }
-                                    /** End Achievement Rank Draw */
-
-                                    /** Begin Milestone Draw */
-                                    {
-                                        let comboImg: Buffer, syncImg: Buffer;
-                                        switch (curScore.combo) {
-                                            case EComboTypes.NONE:
-                                                comboImg = this.getThemeFile(
-                                                    currentTheme.sprites
-                                                        .milestone.none,
-                                                    currentThemePath
-                                                );
-                                                break;
-                                            case EComboTypes.FULL_COMBO:
-                                                comboImg = this.getThemeFile(
-                                                    currentTheme.sprites
-                                                        .milestone.fc,
-                                                    currentThemePath
-                                                );
-                                                break;
-                                            case EComboTypes.FULL_COMBO_PLUS:
-                                                comboImg = this.getThemeFile(
-                                                    currentTheme.sprites
-                                                        .milestone.fcp,
-                                                    currentThemePath
-                                                );
-                                                break;
-                                            case EComboTypes.ALL_PERFECT:
-                                                comboImg = this.getThemeFile(
-                                                    currentTheme.sprites
-                                                        .milestone.ap,
-                                                    currentThemePath
-                                                );
-                                                break;
-                                            case EComboTypes.ALL_PERFECT_PLUS:
-                                                comboImg = this.getThemeFile(
-                                                    currentTheme.sprites
-                                                        .milestone.app,
-                                                    currentThemePath
-                                                );
-                                                break;
-                                        }
-                                        switch (curScore.sync) {
-                                            case ESyncTypes.NONE:
-                                                syncImg = this.getThemeFile(
-                                                    currentTheme.sprites
-                                                        .milestone.none,
-                                                    currentThemePath
-                                                );
-                                                break;
-                                            case ESyncTypes.SYNC_PLAY:
-                                                syncImg = this.getThemeFile(
-                                                    currentTheme.sprites
-                                                        .milestone.sync,
-                                                    currentThemePath
-                                                );
-                                                break;
-                                            case ESyncTypes.FULL_SYNC:
-                                                syncImg = this.getThemeFile(
-                                                    currentTheme.sprites
-                                                        .milestone.fs,
-                                                    currentThemePath
-                                                );
-                                                break;
-                                            case ESyncTypes.FULL_SYNC_PLUS:
-                                                syncImg = this.getThemeFile(
-                                                    currentTheme.sprites
-                                                        .milestone.fsp,
-                                                    currentThemePath
-                                                );
-                                                break;
-                                            case ESyncTypes.FULL_SYNC_DX:
-                                                syncImg = this.getThemeFile(
-                                                    currentTheme.sprites
-                                                        .milestone.fdx,
-                                                    currentThemePath
-                                                );
-                                                break;
-                                            case ESyncTypes.FULL_SYNC_DX_PLUS:
-                                                syncImg = this.getThemeFile(
-                                                    currentTheme.sprites
-                                                        .milestone.fdxp,
-                                                    currentThemePath
-                                                );
-                                                break;
-                                        }
-                                        const combo = new Image();
-                                        combo.src = comboImg;
-                                        ctx.drawImage(
-                                            combo,
-                                            curx +
-                                                (jacketSize * 7) / 8 +
-                                                element.scoreBubble.height *
-                                                    0.806 *
-                                                    (0.32 * 2.133 + 0.06),
-                                            cury +
-                                                element.scoreBubble.margin +
-                                                element.scoreBubble.height *
-                                                    0.806 *
-                                                    (0.144 +
-                                                        0.144 +
-                                                        0.208 +
-                                                        0.01),
-                                            element.scoreBubble.height *
-                                                0.806 *
-                                                0.32,
-                                            element.scoreBubble.height *
-                                                0.806 *
-                                                0.32
-                                        );
-                                        const sync = new Image();
-                                        sync.src = syncImg;
-                                        ctx.drawImage(
-                                            sync,
-                                            curx +
-                                                (jacketSize * 7) / 8 +
-                                                element.scoreBubble.height *
-                                                    0.806 *
-                                                    (0.32 * 2.133 +
-                                                        0.04 +
-                                                        0.32),
-                                            cury +
-                                                element.scoreBubble.margin +
-                                                element.scoreBubble.height *
-                                                    0.806 *
-                                                    (0.144 +
-                                                        0.144 +
-                                                        0.208 +
-                                                        0.01),
-                                            element.scoreBubble.height *
-                                                0.806 *
-                                                0.32,
-                                            element.scoreBubble.height *
-                                                0.806 *
-                                                0.32
-                                        );
-                                    }
-                                    /** End Milestone Draw */
-
-                                    /** Begin Chart Mode Draw */
-                                    {
-                                        const mode = new Image();
-                                        const chartModeBadgeImg =
-                                            this.getThemeFile(
-                                                curScore.chart.id > 10000
-                                                    ? currentTheme.sprites.mode
-                                                          .dx
-                                                    : currentTheme.sprites.mode
-                                                          .standard,
-                                                currentThemePath
-                                            );
-                                        const { width, height } =
-                                            await sharp(
-                                                chartModeBadgeImg
-                                            ).metadata();
-                                        const aspectRatio =
-                                            (width ?? 0) / (height ?? 1) || 3;
-                                        mode.src = chartModeBadgeImg;
-                                        const drawHeight = (jacketSize * 6) / 8;
-                                        ctx.drawImage(
-                                            mode,
-                                            curx +
-                                                ((jacketSize * 7) / 8 -
-                                                    drawHeight) /
-                                                    2,
-                                            cury +
-                                                element.scoreBubble.margin +
-                                                element.scoreBubble.height *
-                                                    0.806 *
-                                                    0.02,
-                                            drawHeight,
-                                            drawHeight / aspectRatio
-                                        );
-                                    }
-                                    /** End Chart Mode Draw */
-
-                                    /** Begin Bests Index Draw */ {
-                                        drawText(
-                                            ctx,
-                                            `#${curindex + 1}`,
-                                            curx +
-                                                element.scoreBubble.margin * 2,
-                                            cury +
-                                                jacketSize -
-                                                element.scoreBubble.margin * 2,
-                                            element.scoreBubble.height *
-                                                0.806 *
-                                                0.128,
-                                            element.scoreBubble.height *
-                                                0.806 *
-                                                0.04,
-                                            Infinity,
-                                            "left",
-                                            "white",
-                                            new Color(curColor)
-                                                .darken(0.3)
-                                                .hexa()
-                                        );
-                                    } /** End Bests Index Draw */
-
-                                    ctx.restore();
-                                    /** End Main Content Draw */
-
-                                    /** Begin Difficulty & DX Rating Draw */ {
-                                        drawText(
-                                            ctx,
-                                            `${curScore.chart.level.toFixed(1)}  ↑${curScore.dxRating.toFixed(0)}`,
-                                            curx +
-                                                element.scoreBubble.margin * 2,
-                                            cury +
-                                                element.scoreBubble.height *
-                                                    (0.806 + (1 - 0.806) / 2),
-                                            element.scoreBubble.height *
-                                                0.806 *
-                                                0.128,
-                                            element.scoreBubble.height *
-                                                0.806 *
-                                                0.04,
-                                            Infinity,
-                                            "left",
-                                            "white",
-                                            new Color(curColor)
-                                                .darken(0.3)
-                                                .hexa()
-                                        );
-
-                                        if (curScore.chart.maxDxScore) {
-                                            drawText(
-                                                ctx,
-                                                `${curScore.dxScore}/${curScore.chart.maxDxScore}`,
-                                                curx +
-                                                    element.scoreBubble.width -
-                                                    element.scoreBubble.margin *
-                                                        2,
-                                                cury +
-                                                    element.scoreBubble.height *
-                                                        (0.806 +
-                                                            (1 - 0.806) / 2),
-                                                element.scoreBubble.height *
-                                                    0.806 *
-                                                    0.128,
-                                                element.scoreBubble.height *
-                                                    0.806 *
-                                                    0.04,
-                                                Infinity,
-                                                "right",
-                                                "white",
-                                                new Color(curColor)
-                                                    .darken(0.3)
-                                                    .hexa()
-                                            );
-                                        }
-                                    } /** End Difficulty & DX Rating Draw */
-
-                                    ctx.restore();
-                                }
+                                    curScore = newScores[index];
+                                else curScore = oldScores[index];
+                                await this.drawScoreGridModule(
+                                    ctx,
+                                    currentTheme,
+                                    element,
+                                    curScore,
+                                    index,
+                                    x,
+                                    y
+                                );
                             }
                         }
                         break;
                     }
                     case "profile": {
-                        const nameplate = new Image();
-                        nameplate.src = this.getThemeFile(
-                            currentTheme.sprites.profile.nameplate,
-                            currentThemePath
-                        );
-                        ctx.drawImage(
-                            nameplate,
-                            element.x,
-                            element.y,
-                            element.height * 6.207,
-                            element.height
-                        );
-
-                        /* Begin Profile Picture Draw */
-                        ctx.save();
-                        ctx.beginPath();
-                        ctx.roundRect(
-                            element.x + element.height * 0.064,
-                            element.y + element.height * 0.064,
-                            element.height * 0.872,
-                            element.height * 0.872,
-                            (element.height * 0.872) / 16
-                        );
-                        ctx.clip();
-                        ctx.fillStyle = "white";
-                        ctx.fill();
-                        const profilePicture =
-                            options?.profilePicture ||
-                            this.getThemeFile(
-                                currentTheme.sprites.profile.icon,
-                                currentThemePath
-                            );
-                        const icon = new Image();
-                        const { dominant } =
-                            await sharp(profilePicture).stats();
-                        icon.src = profilePicture;
-
-                        const cropSize = Math.min(icon.width, icon.height);
-                        ctx.drawImage(
-                            icon,
-                            (icon.width - cropSize) / 2,
-                            (icon.height - cropSize) / 2,
-                            cropSize,
-                            cropSize,
-                            element.x + element.height * 0.064,
-                            element.y + element.height * 0.064,
-                            element.height * 0.872,
-                            element.height * 0.872
-                        );
-
-                        if (options?.profilePicture) {
-                            ctx.beginPath();
-                            ctx.roundRect(
-                                element.x + element.height * 0.064,
-                                element.y + element.height * 0.064,
-                                element.height * 0.872,
-                                element.height * 0.872,
-                                (element.height * 0.872) / 16
-                            );
-                            ctx.strokeStyle = Color.rgb(dominant)
-                                .darken(0.3)
-                                .hex();
-                            ctx.lineWidth = element.height / 30;
-                            ctx.stroke();
-                        }
-                        ctx.restore();
-                        /* End Profile Picture Draw */
-
-                        const dxRating = new Image();
-                        let dxRatingImg: Buffer;
-                        switch (true) {
-                            case rating > 15000: {
-                                dxRatingImg = this.getThemeFile(
-                                    currentTheme.sprites.dxRating.rainbow,
-                                    currentThemePath
-                                );
-                                break;
-                            }
-                            case rating > 14500: {
-                                dxRatingImg = this.getThemeFile(
-                                    currentTheme.sprites.dxRating.platinum,
-                                    currentThemePath
-                                );
-                                break;
-                            }
-                            case rating > 14000: {
-                                dxRatingImg = this.getThemeFile(
-                                    currentTheme.sprites.dxRating.gold,
-                                    currentThemePath
-                                );
-                                break;
-                            }
-                            case rating > 13000: {
-                                dxRatingImg = this.getThemeFile(
-                                    currentTheme.sprites.dxRating.silver,
-                                    currentThemePath
-                                );
-                                break;
-                            }
-                            case rating > 12000: {
-                                dxRatingImg = this.getThemeFile(
-                                    currentTheme.sprites.dxRating.bronze,
-                                    currentThemePath
-                                );
-                                break;
-                            }
-                            case rating > 10000: {
-                                dxRatingImg = this.getThemeFile(
-                                    currentTheme.sprites.dxRating.purple,
-                                    currentThemePath
-                                );
-                                break;
-                            }
-                            case rating > 8000: {
-                                dxRatingImg = this.getThemeFile(
-                                    currentTheme.sprites.dxRating.red,
-                                    currentThemePath
-                                );
-                                break;
-                            }
-                            case rating > 6000: {
-                                dxRatingImg = this.getThemeFile(
-                                    currentTheme.sprites.dxRating.yellow,
-                                    currentThemePath
-                                );
-                                break;
-                            }
-                            case rating > 4000: {
-                                dxRatingImg = this.getThemeFile(
-                                    currentTheme.sprites.dxRating.green,
-                                    currentThemePath
-                                );
-                                break;
-                            }
-                            case rating > 2000: {
-                                dxRatingImg = this.getThemeFile(
-                                    currentTheme.sprites.dxRating.blue,
-                                    currentThemePath
-                                );
-                                break;
-                            }
-                            default: {
-                                dxRatingImg = this.getThemeFile(
-                                    currentTheme.sprites.dxRating.white,
-                                    currentThemePath
-                                );
-                                break;
-                            }
-                        }
-                        dxRating.src = dxRatingImg;
-                        ctx.drawImage(
-                            dxRating,
-                            element.x + element.height,
-                            element.y + element.height * 0.064,
-                            (element.height / 3) * 5.108,
-                            element.height / 3
-                        );
-                        /* Start Username Draw */
-                        ctx.beginPath();
-                        ctx.roundRect(
-                            element.x + element.height * (1 + 1 / 32),
-                            element.y +
-                                element.height * (0.064 + 0.333 + 1 / 32),
-                            ((element.height / 3) * 5.108 * 6) / 5,
-                            (element.height * 7) / 24,
-                            element.height / 20
-                        );
-                        ctx.fillStyle = "white";
-                        ctx.strokeStyle = Color.rgb(180, 180, 180).hex();
-                        ctx.lineWidth = element.height / 32;
-                        ctx.stroke();
-                        ctx.fill();
-
-                        const ratingImgBuffer = await this.getRatingNumber(
-                            rating,
-                            {
-                                manifest: currentTheme,
-                                path: currentThemePath,
-                            }
-                        );
-                        if (ratingImgBuffer) {
-                            const { width, height } =
-                                await sharp(ratingImgBuffer).metadata();
-                            if (width && height) {
-                                const aspectRatio = width / height;
-                                const image = new Image();
-                                image.src = ratingImgBuffer;
-                                const drawHeight = (element.height * 7) / 32;
-                                ctx.drawImage(
-                                    image,
-                                    element.x + element.height * 1.785,
-                                    element.y + element.height * 0.12,
-                                    drawHeight * aspectRatio * 0.8,
-                                    drawHeight
-                                );
-                            }
-                        }
-
-                        drawText(
+                        await this.drawProfileModule(
                             ctx,
-                            HalfFullWidthConvert.toFullWidth(name),
-                            element.x + element.height * (1 + 1 / 16),
-                            element.y +
-                                element.height * (0.064 + 0.333 + 1 / 4),
-                            (element.height * 1) / 6,
-                            0,
-                            ((element.height / 3) * 5.108 * 6) / 5,
-                            "left",
-                            "black",
-                            "black",
-                            "standard-font-username"
+                            currentTheme,
+                            element,
+                            name,
+                            rating,
+                            options?.profilePicture
                         );
-                        /* End Username Draw*/
+                        break;
+                    }
+                    case "text": {
+                        await this.drawTextModule(ctx, currentTheme, element);
                         break;
                     }
                 }
@@ -1317,13 +1308,7 @@ export class Best50 {
                       undefined,
         });
     }
-    private static async getRatingNumber(
-        num: number,
-        theme: {
-            manifest: IThemeManifest;
-            path: string;
-        }
-    ) {
+    private static async getRatingNumber(num: number, theme: ITheme) {
         async function getRaingDigit(
             map: Buffer,
             digit: number,
