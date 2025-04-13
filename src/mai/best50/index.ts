@@ -1253,15 +1253,17 @@ export class Best50 {
                                 if (element.region == "new")
                                     curScore = newScores[index];
                                 else curScore = oldScores[index];
-                                await this.drawScoreGridModule(
-                                    ctx,
-                                    currentTheme,
-                                    element,
-                                    curScore,
-                                    index,
-                                    x,
-                                    y
-                                );
+                                if (curScore) {
+                                    await this.drawScoreGridModule(
+                                        ctx,
+                                        currentTheme,
+                                        element,
+                                        curScore,
+                                        index,
+                                        x,
+                                        y
+                                    );
+                                }
                             }
                         }
                         break;
