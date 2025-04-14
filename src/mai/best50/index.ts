@@ -961,6 +961,12 @@ export class Best50 {
             ctx.fillStyle = "white";
             ctx.fill();
             const icon = new Image();
+            try {
+                sharp(profilePicture);
+            } catch {
+                // Unknown profile picture binary
+                profilePicture = undefined;
+            }
             const pfp =
                 profilePicture ||
                 this.getThemeFile(
@@ -968,7 +974,7 @@ export class Best50 {
                     theme.path
                 );
             const { dominant } = await sharp(pfp).stats();
-            icon.src = pfp;
+            icon.src = await sharp(pfp).png().toBuffer();
 
             const cropSize = Math.min(icon.width, icon.height);
             ctx.drawImage(
