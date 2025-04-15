@@ -1,8 +1,50 @@
 import { IScore } from "@maidraw/type";
 import axios, { AxiosInstance } from "axios";
-import { Cache } from "memory-cache";
+import { Cache as MemCache } from "memory-cache";
+import { createClient } from "redis";
 
 import Bunyan from "bunyan";
+
+class Cache {
+    private memCache;
+    private redisClient;
+
+    private isRedisAvailable = true;
+    constructor() {
+        this.memCache = new MemCache<string, any>();
+        this.redisClient = createClient();
+        this.redisClient.on("error", (e) => {
+            console.error("Redis error", e);
+            this.isRedisAvailable = false;
+        });
+        this.redisClient.connect();
+    }
+    async get(key: string) {
+        if (this.isRedisAvailable) {
+            const redisValue = await this.redisClient.get(key);
+            if (redisValue) {
+                try {
+                    return JSON.parse(redisValue);
+                } catch {
+                    return Buffer.from(redisValue, "base64");
+                }
+            }
+        } else return this.memCache.get(key);
+    }
+    async put(key: string, value: any, ttl: number) {
+        if (this.isRedisAvailable) {
+            if (Buffer.isBuffer(value)) {
+                await this.redisClient.set(key, value.toString("base64"), {
+                    EX: Math.floor(ttl / 1000),
+                });
+            } else {
+                await this.redisClient.set(key, JSON.stringify(value), {
+                    EX: Math.floor(ttl / 1000),
+                });
+            }
+        } else this.memCache.put(key, value, ttl);
+    }
+}
 
 export default abstract class ScoreTrackerAdapter {
     protected logger = new Bunyan({
@@ -36,7 +78,7 @@ export default abstract class ScoreTrackerAdapter {
         ],
     });
 
-    private static _cache = new Cache<string, object>();
+    private static _cache = new Cache();
     protected get cache() {
         return ScoreTrackerAdapter._cache;
     }
@@ -56,7 +98,7 @@ export default abstract class ScoreTrackerAdapter {
     ): Promise<T | undefined> {
         const cacheKey = `${this.axios.defaults.baseURL}${endpoint}${data ? `-${JSON.stringify(data).substring(0, this.MAX_LOG_LENGTH)}` : ""}`;
         if (cacheTTL > 0) {
-            const cacheContent = this.cache.get(cacheKey);
+            const cacheContent = await this.cache.get(cacheKey);
             if (cacheContent) {
                 this.logger.trace(
                     `GET ${endpoint}${data ? ` ${JSON.stringify(data).substring(0, this.MAX_LOG_LENGTH)}` : ""}, cache HIT`
@@ -67,9 +109,9 @@ export default abstract class ScoreTrackerAdapter {
         const beginTimestamp = Date.now();
         const res = await this.axios
             .get(endpoint, { params: data, ...options })
-            .then((r) => {
+            .then(async (r) => {
                 if (cacheTTL > 0) {
-                    this.cache.put(cacheKey, r.data, cacheTTL);
+                    await this.cache.put(cacheKey, r.data, cacheTTL);
                 }
                 return r.data;
             })

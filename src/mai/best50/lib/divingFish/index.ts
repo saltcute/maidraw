@@ -165,9 +165,9 @@ export class DivingFish extends ScoreTrackerAdapter {
         return (await this.getSongList()).find((v) => v.id == id) || null;
     }
     async getSongList(): Promise<DivingFish.ISongListResponse> {
-        const cached = this.cache.get(
+        const cached = (await this.cache.get(
             "divingfish-songList"
-        ) as DivingFish.ISongListResponse | null;
+        )) as DivingFish.ISongListResponse | null;
         if (cached) return cached;
         const res = (await this.get(`/music_data`).catch(
             (e) => []

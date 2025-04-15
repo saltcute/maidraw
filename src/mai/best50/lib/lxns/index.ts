@@ -67,9 +67,9 @@ export class LXNS extends ScoreTrackerAdapter {
         return songList.songs.filter((song) => song.id === songId)[0];
     }
     async getSongList(): Promise<LXNS.ISongListResponse> {
-        const cached = this.cache.get(
+        const cached = (await this.cache.get(
             "lxns-songList"
-        ) as LXNS.ISongListResponse | null;
+        )) as LXNS.ISongListResponse | null;
         if (cached) return cached;
         const res = (await this.get<LXNS.ISongListResponse>(`/song/list`, {
             notes: true,
