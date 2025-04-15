@@ -1587,18 +1587,35 @@ export class Best50 {
                                 "1.0": 21,
                             };
                             const base = getRatingBase(scores);
-                            const sssTarget = Object.entries(
-                                MILESTONES_SSS
-                            ).find(([_, rating]) => base >= rating)?.[0];
-                            const ssspTarget = Object.entries(
-                                MILESTONES_SSSP
-                            ).find(([_, rating]) => base >= rating)?.[0];
+                            let sssTarget, ssspTarget;
+                            for (const level in MILESTONES_SSSP) {
+                                const rating = MILESTONES_SSSP[level];
+                                if (base >= rating) {
+                                    if (level == "15.0") {
+                                        ssspTarget = undefined;
+                                    } else {
+                                        ssspTarget = level;
+                                    }
+                                    break;
+                                }
+                            }
+                            for (const level in MILESTONES_SSS) {
+                                const rating = MILESTONES_SSS[level];
+                                if (base >= rating) {
+                                    if (level == "15.0") {
+                                        sssTarget = undefined;
+                                    } else {
+                                        sssTarget = level;
+                                    }
+                                    break;
+                                }
+                            }
                             if (sssTarget && ssspTarget)
                                 return `Next rating boost: lv. ${(parseFloat(ssspTarget) + 0.1).toFixed(1)} SSS+/${(parseFloat(sssTarget) + 0.1).toFixed(1)} SSS`;
                             else if (sssTarget)
                                 return `Next rating boost: lv. ${(parseFloat(sssTarget) + 0.1).toFixed(1)} SSS`;
                             else if (ssspTarget)
-                                return `Next rating boost: lv. ${(parseFloat(ssspTarget) + 0.1).toFixed(1)} SSS`;
+                                return `Next rating boost: lv. ${(parseFloat(ssspTarget) + 0.1).toFixed(1)} SSS+`;
                             else return "Good job!";
                         }
                         await this.drawTextModule(ctx, currentTheme, element, {
