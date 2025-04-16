@@ -1077,10 +1077,8 @@ export class Best50 {
         } = { type: "new" }
     ): Promise<Buffer | null> {
         let currentTheme = this.primaryTheme;
-        console.log(options.theme);
         if (options?.theme) {
-            console.log(options.theme + options.type);
-            let theme = this.getTheme(options.theme + options.type);
+            let theme = this.getTheme(options.theme + "-" + options.type);
             if (theme) {
                 currentTheme = theme;
             }
