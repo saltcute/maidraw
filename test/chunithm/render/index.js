@@ -12,37 +12,16 @@ const { KamaiTachi } = require("../../../dist/chu/bests/lib/kamaiTachi");
     const fs = require("fs");
     const themes = ["jp-verse-landscape"];
     const source = kamai.luminousPlus();
-    const username = "bento";
+    const username = "salt";
     const options = {
-        // scale: 1,
+        scale: 2,
     };
     for (let theme of themes) {
-        const profile = await source.getPlayerInfo(username);
-        const score = await source.getPlayerBest50(username);
-        if (!profile || !score) return null;
-        const result = await MaiDraw.Chuni.Best50.draw(
-            profile.name,
-            profile.rating,
-            score.new,
-            score.old,
-            {
-                ...options,
-                profilePicture:
-                    options?.profilePicture === null
-                        ? undefined
-                        : options?.profilePicture ||
-                          (await source.getPlayerProfilePicture(username)) ||
-                          undefined,
-            }
+        const result = await MaiDraw.Chuni.Best50.drawWithScoreSource(
+            source,
+            username,
+            options
         );
-        // const result = await MaiDraw.Chuni.Best50.drawWithScoreSource(
-        //     kamai.luminousPlus(),
-        //     "bento",
-        //     {
-        //         scale: 2,
-        //     }
-        // );
-        console.log(result);
         if (result instanceof Buffer) {
             fs.writeFileSync(
                 upath.join(__dirname, `${theme}.webp`),
