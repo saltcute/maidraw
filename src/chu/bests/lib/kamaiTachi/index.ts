@@ -235,7 +235,7 @@ export class KamaiTachi extends ScoreTrackerAdapter {
                         v.chart.versions[1].includes("-omni")
                     ))
         );
-        const recentScores = pbs.filter(
+        const recentScores = recents.filter(
             (v) =>
                 v.chart &&
                 KamaiTachi.compareGameVersions(
@@ -248,16 +248,53 @@ export class KamaiTachi extends ScoreTrackerAdapter {
                         v.chart.versions[1].includes("-omni")
                     ))
         );
+        function ratingGuardSimulation(scores: IScore[]) {
+            let r30: {
+                score: IScore;
+                order: number;
+            }[] = [];
+            for (let i = 0; i < scores.length; i++) {
+                const score = scores[i];
+                if (r30.length < 30) {
+                    r30.push({ score, order: i });
+                } else {
+                    switch (score.rank) {
+                        case EAchievementTypes.SSS:
+                        case EAchievementTypes.SSSP:
+                            while (r30.length > 30) {
+                                r30.shift();
+                            }
+                            if (r30.length >= 30) {
+                                const best10 = r30.sort((a, b) =>
+                                    a.score.rating == b.score.rating
+                                        ? a.score.score - a.score.score
+                                        : a.score.rating - b.score.rating
+                                );
+                                for (let j = 0; j < r30.length; ++j) {
+                                    if (!best10.includes(r30[j])) {
+                                        r30[j] = { score, order: i };
+                                        break;
+                                    }
+                                }
+                                r30 = r30.sort((a, b) => a.order - b.order);
+                                break;
+                            }
+                        default:
+                            r30.push({ score, order: i });
+                            while (r30.length > 30) {
+                                r30.shift();
+                            }
+                    }
+                }
+            }
+            return r30.slice(0, 10).map((v) => v.score);
+        }
         return {
-            recent: recentScores
-                .sort((a, b) =>
-                    b.pb.calculatedData.rating - a.pb.calculatedData.rating
-                        ? b.pb.calculatedData.rating -
-                          a.pb.calculatedData.rating
-                        : b.pb.scoreData.score - a.pb.scoreData.score
+            recent: ratingGuardSimulation(
+                recentScores.map((v) =>
+                    this.toMaiDrawScore(v.pb, v.chart, v.song)
                 )
-                .slice(0, 10)
-                .map((v) => this.toMaiDrawScore(v.pb, v.chart, v.song)),
+            ),
             best: bestScores
                 .sort((a, b) =>
                     b.pb.calculatedData.rating - a.pb.calculatedData.rating
