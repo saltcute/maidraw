@@ -20,42 +20,18 @@ export interface IThemeSprites {
         aa: string;
         aaa: string;
         s: string;
-        sp: string;
         ss: string;
         ssp: string;
         sss: string;
         sssp: string;
     };
-    mode: {
-        standard: string;
-        dx: string;
-    };
     milestone: {
-        ap: string;
-        app: string;
+        aj: string;
+        ajc: string;
         fc: string;
-        fcp: string;
-        fdx: string;
-        fdxp: string;
-        fs: string;
-        fsp: string;
-        sync: string;
         none: string;
     };
-    dxRating: {
-        white: string;
-        blue: string;
-        green: string;
-        yellow: string;
-        red: string;
-        purple: string;
-        bronze: string;
-        silver: string;
-        gold: string;
-        platinum: string;
-        rainbow: string;
-    };
-    dxRatingNumberMap: string;
+    ratingNumberMap: string;
     profile: {
         icon: string;
         nameplate: string;
@@ -95,8 +71,8 @@ export interface IThemeScoreElement extends IThemeElement {
             advanced: string;
             expert: string;
             master: string;
-            remaster: string;
-            utage: string;
+            ultima: string;
+            worldsEnd: string;
         };
     };
 }

@@ -4,9 +4,8 @@ import {
     EAchievementTypes,
     EComboTypes,
     EDifficulty,
-    ESyncTypes,
     IScore,
-} from "@maidraw/mai/type";
+} from "@maidraw/chu/type";
 import {
     IThemeImageElement,
     IThemeManifest,
@@ -26,11 +25,9 @@ import Color from "color";
 import sharp from "sharp";
 import { globSync } from "glob";
 import ScoreTrackerAdapter from "./lib";
-import { Chart } from "../chart";
-import { LXNS } from "./lib/lxns";
 import { KamaiTachi } from "./lib/kamaiTachi";
-import { DivingFish } from "./lib/divingFish";
 import stringFormat from "string-template";
+import { Chart } from "@maidraw/chu/chart";
 
 class HalfFullWidthConvert {
     private static readonly charsets = {
@@ -84,11 +81,9 @@ interface ITheme {
 }
 
 export class Best50 {
-    static LXNS = LXNS;
     static KamaiTachi = KamaiTachi;
-    static DivingFish = DivingFish;
 
-    private static readonly DEFAULT_THEME = "jp-prism-landscape";
+    private static readonly DEFAULT_THEME = "jp-verse-landscape";
 
     private static get assetsPath() {
         return upath.join(__dirname, "..", "..", "..", "assets");
@@ -102,7 +97,7 @@ export class Best50 {
             upath.join(
                 this.assetsPath,
                 "themes",
-                "maimai",
+                "chunithm",
                 "**",
                 "manifest.json"
             )
@@ -203,41 +198,19 @@ export class Best50 {
             isFileExist(payload.sprites.achievement.aa) &&
             isFileExist(payload.sprites.achievement.aaa) &&
             isFileExist(payload.sprites.achievement.s) &&
-            isFileExist(payload.sprites.achievement.sp) &&
             isFileExist(payload.sprites.achievement.ss) &&
             isFileExist(payload.sprites.achievement.ssp) &&
             isFileExist(payload.sprites.achievement.sss) &&
             isFileExist(payload.sprites.achievement.sssp) &&
-            isObject(payload.sprites.mode) &&
-            isFileExist(payload.sprites.mode.standard) &&
-            isFileExist(payload.sprites.mode.dx) &&
             isObject(payload.sprites.milestone) &&
-            isFileExist(payload.sprites.milestone.ap) &&
-            isFileExist(payload.sprites.milestone.app) &&
+            isFileExist(payload.sprites.milestone.aj) &&
+            isFileExist(payload.sprites.milestone.ajc) &&
             isFileExist(payload.sprites.milestone.fc) &&
-            isFileExist(payload.sprites.milestone.fcp) &&
-            isFileExist(payload.sprites.milestone.fdx) &&
-            isFileExist(payload.sprites.milestone.fdxp) &&
-            isFileExist(payload.sprites.milestone.fs) &&
-            isFileExist(payload.sprites.milestone.fsp) &&
-            isFileExist(payload.sprites.milestone.sync) &&
             isFileExist(payload.sprites.milestone.none) &&
-            isObject(payload.sprites.dxRating) &&
-            isFileExist(payload.sprites.dxRating.white) &&
-            isFileExist(payload.sprites.dxRating.blue) &&
-            isFileExist(payload.sprites.dxRating.green) &&
-            isFileExist(payload.sprites.dxRating.yellow) &&
-            isFileExist(payload.sprites.dxRating.red) &&
-            isFileExist(payload.sprites.dxRating.purple) &&
-            isFileExist(payload.sprites.dxRating.bronze) &&
-            isFileExist(payload.sprites.dxRating.silver) &&
-            isFileExist(payload.sprites.dxRating.gold) &&
-            isFileExist(payload.sprites.dxRating.platinum) &&
-            isFileExist(payload.sprites.dxRating.rainbow) &&
             isObject(payload.sprites.profile) &&
             isFileExist(payload.sprites.profile.icon) &&
             isFileExist(payload.sprites.profile.nameplate) &&
-            isFileExist(payload.sprites.dxRatingNumberMap) &&
+            isFileExist(payload.sprites.ratingNumberMap) &&
             isArray(payload.elements)
         ) {
             for (const element of payload.elements) {
@@ -270,10 +243,8 @@ export class Best50 {
                                 ) &&
                                 isHexColor(element.scoreBubble.color.expert) &&
                                 isHexColor(element.scoreBubble.color.master) &&
-                                isHexColor(
-                                    element.scoreBubble.color.remaster
-                                ) &&
-                                isHexColor(element.scoreBubble.color.utage)
+                                isHexColor(element.scoreBubble.color.ultima) &&
+                                isHexColor(element.scoreBubble.color.worldsEnd)
                             ) {
                                 continue;
                             } else return false;
@@ -330,7 +301,9 @@ export class Best50 {
         manifest: IThemeManifest;
         path: string;
     } | null {
-        if (!fs.existsSync(upath.join(path, "manifest.json"))) {
+        if (
+            !fs.existsSync(upath.join(this.assetsPath, path, "manifest.json"))
+        ) {
             path = this.themes[path] ?? "";
         } else path = upath.join(this.assetsPath, path);
         if (fs.existsSync(upath.join(path, "manifest.json"))) {
@@ -343,7 +316,7 @@ export class Best50 {
         }
         return null;
     }
-    private static getThemeFile(path: string, themePath?: string): Buffer {
+    private static getThemeFile(path: string, themePath: string): Buffer {
         if (
             typeof path == "string" &&
             fs.existsSync(
@@ -451,11 +424,11 @@ export class Best50 {
             case EDifficulty.MASTER:
                 curColor = element.scoreBubble.color.master;
                 break;
-            case EDifficulty.REMASTER:
-                curColor = element.scoreBubble.color.remaster;
+            case EDifficulty.ULTIMA:
+                curColor = element.scoreBubble.color.ultima;
                 break;
-            case EDifficulty.UTAGE:
-                curColor = element.scoreBubble.color.utage;
+            case EDifficulty.WORLDS_END:
+                curColor = element.scoreBubble.color.worldsEnd;
                 break;
         }
 
@@ -609,7 +582,7 @@ export class Best50 {
             /** Begin Achievement Rate Draw */
             this.drawText(
                 ctx,
-                `${score.achievement.toFixed(4)}%`,
+                score.score.toFixed(0),
                 x -
                     element.scoreBubble.margin -
                     element.scoreBubble.height * 0.806 * 0.02 +
@@ -631,7 +604,7 @@ export class Best50 {
             /** Begin Achievement Rank Draw */
             {
                 let rankImg: Buffer;
-                switch (score.achievementRank) {
+                switch (score.rank) {
                     case EAchievementTypes.D:
                         rankImg = this.getThemeFile(
                             theme.manifest.sprites.achievement.d,
@@ -686,12 +659,6 @@ export class Best50 {
                             theme.path
                         );
                         break;
-                    case EAchievementTypes.SP:
-                        rankImg = this.getThemeFile(
-                            theme.manifest.sprites.achievement.sp,
-                            theme.path
-                        );
-                        break;
                     case EAchievementTypes.SS:
                         rankImg = this.getThemeFile(
                             theme.manifest.sprites.achievement.ss,
@@ -720,21 +687,21 @@ export class Best50 {
                 img.src = rankImg;
                 ctx.drawImage(
                     img,
-                    x + jacketSize,
+                    x + jacketSize * (13 / 16),
                     y +
                         element.scoreBubble.margin +
                         element.scoreBubble.height *
                             0.806 *
-                            (0.144 + 0.144 + 0.208 + 0.02),
-                    element.scoreBubble.height * 0.806 * 0.3 * 2.133,
-                    element.scoreBubble.height * 0.806 * 0.3
+                            (0.144 + 0.144 - 0.01),
+                    element.scoreBubble.height * 0.806 * 0.2 * 3,
+                    element.scoreBubble.height * 0.806 * 0.2
                 );
             }
             /** End Achievement Rank Draw */
 
             /** Begin Milestone Draw */
             {
-                let comboImg: Buffer, syncImg: Buffer;
+                let comboImg: Buffer;
                 switch (score.combo) {
                     case EComboTypes.NONE:
                         comboImg = this.getThemeFile(
@@ -748,125 +715,55 @@ export class Best50 {
                             theme.path
                         );
                         break;
-                    case EComboTypes.FULL_COMBO_PLUS:
+                    case EComboTypes.ALL_JUSTICE:
                         comboImg = this.getThemeFile(
-                            theme.manifest.sprites.milestone.fcp,
+                            theme.manifest.sprites.milestone.aj,
                             theme.path
                         );
                         break;
-                    case EComboTypes.ALL_PERFECT:
+                    case EComboTypes.ALL_JUSTICE_CRITICAL:
                         comboImg = this.getThemeFile(
-                            theme.manifest.sprites.milestone.ap,
-                            theme.path
-                        );
-                        break;
-                    case EComboTypes.ALL_PERFECT_PLUS:
-                        comboImg = this.getThemeFile(
-                            theme.manifest.sprites.milestone.app,
+                            theme.manifest.sprites.milestone.ajc,
                             theme.path
                         );
                         break;
                 }
-                switch (score.sync) {
-                    case ESyncTypes.NONE:
-                        syncImg = this.getThemeFile(
-                            theme.manifest.sprites.milestone.none,
-                            theme.path
-                        );
-                        break;
-                    case ESyncTypes.SYNC_PLAY:
-                        syncImg = this.getThemeFile(
-                            theme.manifest.sprites.milestone.sync,
-                            theme.path
-                        );
-                        break;
-                    case ESyncTypes.FULL_SYNC:
-                        syncImg = this.getThemeFile(
-                            theme.manifest.sprites.milestone.fs,
-                            theme.path
-                        );
-                        break;
-                    case ESyncTypes.FULL_SYNC_PLUS:
-                        syncImg = this.getThemeFile(
-                            theme.manifest.sprites.milestone.fsp,
-                            theme.path
-                        );
-                        break;
-                    case ESyncTypes.FULL_SYNC_DX:
-                        syncImg = this.getThemeFile(
-                            theme.manifest.sprites.milestone.fdx,
-                            theme.path
-                        );
-                        break;
-                    case ESyncTypes.FULL_SYNC_DX_PLUS:
-                        syncImg = this.getThemeFile(
-                            theme.manifest.sprites.milestone.fdxp,
-                            theme.path
-                        );
-                        break;
-                }
+                ctx.fillStyle = "#e8eaec";
+                ctx.roundRect(
+                    x -
+                        element.scoreBubble.height * 0.806 * 0.32 * 3 -
+                        element.scoreBubble.margin -
+                        element.scoreBubble.height * 0.806 * 0.02 +
+                        element.scoreBubble.width,
+                    y +
+                        element.scoreBubble.margin +
+                        element.scoreBubble.height *
+                            0.806 *
+                            (0.144 + 0.144 + 0.208 + 0.1),
+                    element.scoreBubble.height * 0.806 * 0.32 * 3,
+                    (element.scoreBubble.height * 0.806 * 0.32 * 3) / 6.7,
+                    (element.scoreBubble.height * 0.806 * 0.32 * 3) / 56
+                );
+                ctx.fill();
                 const combo = new Image();
                 combo.src = comboImg;
                 ctx.drawImage(
                     combo,
-                    x +
-                        (jacketSize * 7) / 8 +
-                        element.scoreBubble.height *
-                            0.806 *
-                            (0.32 * 2.133 + 0.06),
+                    x -
+                        element.scoreBubble.height * 0.806 * 0.32 * 3 -
+                        element.scoreBubble.margin -
+                        element.scoreBubble.height * 0.806 * 0.02 +
+                        element.scoreBubble.width,
                     y +
                         element.scoreBubble.margin +
                         element.scoreBubble.height *
                             0.806 *
-                            (0.144 + 0.144 + 0.208 + 0.01),
-                    element.scoreBubble.height * 0.806 * 0.32,
-                    element.scoreBubble.height * 0.806 * 0.32
-                );
-                const sync = new Image();
-                sync.src = syncImg;
-                ctx.drawImage(
-                    sync,
-                    x +
-                        (jacketSize * 7) / 8 +
-                        element.scoreBubble.height *
-                            0.806 *
-                            (0.32 * 2.133 + 0.04 + 0.32),
-                    y +
-                        element.scoreBubble.margin +
-                        element.scoreBubble.height *
-                            0.806 *
-                            (0.144 + 0.144 + 0.208 + 0.01),
-                    element.scoreBubble.height * 0.806 * 0.32,
-                    element.scoreBubble.height * 0.806 * 0.32
+                            (0.144 + 0.144 + 0.208 + 0.1),
+                    element.scoreBubble.height * 0.806 * 0.32 * 3,
+                    (element.scoreBubble.height * 0.806 * 0.32 * 3) / 6.7
                 );
             }
             /** End Milestone Draw */
-
-            /** Begin Chart Mode Draw */
-            {
-                const mode = new Image();
-                const chartModeBadgeImg = this.getThemeFile(
-                    score.chart.id > 10000
-                        ? theme.manifest.sprites.mode.dx
-                        : theme.manifest.sprites.mode.standard,
-                    theme.path
-                );
-                const { width, height } =
-                    await sharp(chartModeBadgeImg).metadata();
-                const aspectRatio = (width ?? 0) / (height ?? 1) || 3;
-                mode.src = chartModeBadgeImg;
-                const drawHeight = (jacketSize * 6) / 8;
-                ctx.drawImage(
-                    mode,
-                    x + ((jacketSize * 7) / 8 - drawHeight) / 2,
-                    y +
-                        element.scoreBubble.margin +
-                        element.scoreBubble.height * 0.806 * 0.02,
-                    drawHeight,
-                    drawHeight / aspectRatio
-                );
-            }
-            /** End Chart Mode Draw */
 
             /** Begin Bests Index Draw */
             {
@@ -889,11 +786,11 @@ export class Best50 {
         }
         /** End Main Content Draw */
 
-        /** Begin Difficulty & DX Rating Draw */
+        /** Begin Difficulty & Rating Draw */
         {
             this.drawText(
                 ctx,
-                `${score.chart.level.toFixed(1)}  ↑${score.dxRating.toFixed(0)}`,
+                `lv. ${score.chart.level.toFixed(1)}`,
                 x + element.scoreBubble.margin * 2,
                 y + element.scoreBubble.height * (0.806 + (1 - 0.806) / 2),
                 element.scoreBubble.height * 0.806 * 0.128,
@@ -904,24 +801,20 @@ export class Best50 {
                 new Color(curColor).darken(0.3).hexa()
             );
 
-            if (score.chart.maxDxScore) {
-                this.drawText(
-                    ctx,
-                    `${score.dxScore}/${score.chart.maxDxScore}`,
-                    x +
-                        element.scoreBubble.width -
-                        element.scoreBubble.margin * 2,
-                    y + element.scoreBubble.height * (0.806 + (1 - 0.806) / 2),
-                    element.scoreBubble.height * 0.806 * 0.128,
-                    element.scoreBubble.height * 0.806 * 0.04,
-                    Infinity,
-                    "right",
-                    "white",
-                    new Color(curColor).darken(0.3).hexa()
-                );
-            }
+            this.drawText(
+                ctx,
+                `+${score.rating.toFixed(2)}`,
+                x + element.scoreBubble.width - element.scoreBubble.margin * 2,
+                y + element.scoreBubble.height * (0.806 + (1 - 0.806) / 2),
+                element.scoreBubble.height * 0.806 * 0.128,
+                element.scoreBubble.height * 0.806 * 0.04,
+                Infinity,
+                "right",
+                "white",
+                new Color(curColor).darken(0.3).hexa()
+            );
         }
-        /** End Difficulty & DX Rating Draw */
+        /** End Difficulty & Rating Draw */
 
         ctx.restore();
         /** End Card Draw */
@@ -943,7 +836,7 @@ export class Best50 {
             nameplate,
             element.x,
             element.y,
-            element.height * 6.207,
+            element.height * 2.526,
             element.height
         );
 
@@ -952,11 +845,11 @@ export class Best50 {
             ctx.save();
             ctx.beginPath();
             ctx.roundRect(
-                element.x + element.height * 0.064,
-                element.y + element.height * 0.064,
-                element.height * 0.872,
-                element.height * 0.872,
-                (element.height * 0.872) / 16
+                element.x + element.height * 2.0,
+                element.y + element.height * 0.3,
+                element.height * 0.45,
+                element.height * 0.45,
+                0
             );
             ctx.clip();
             ctx.fillStyle = "white";
@@ -984,166 +877,123 @@ export class Best50 {
                 (icon.height - cropSize) / 2,
                 cropSize,
                 cropSize,
-                element.x + element.height * 0.064,
-                element.y + element.height * 0.064,
-                element.height * 0.872,
-                element.height * 0.872
+                element.x + element.height * 2.0,
+                element.y + element.height * 0.3,
+                element.height * 0.45,
+                element.height * 0.45
             );
 
             if (profilePicture) {
                 ctx.beginPath();
                 ctx.roundRect(
-                    element.x + element.height * 0.064,
-                    element.y + element.height * 0.064,
-                    element.height * 0.872,
-                    element.height * 0.872,
-                    (element.height * 0.872) / 16
+                    element.x + element.height * 2.0,
+                    element.y + element.height * 0.3,
+                    element.height * 0.45,
+                    element.height * 0.45,
+                    0
                 );
                 ctx.strokeStyle = Color.rgb(dominant).darken(0.3).hex();
-                ctx.lineWidth = element.height / 30;
+                ctx.lineWidth = element.height / 128;
                 ctx.stroke();
             }
             ctx.restore();
         }
         /* End Profile Picture Draw */
 
-        /* Begin DX Rating Draw */
-        {
-            const dxRating = new Image();
-            let dxRatingImg: Buffer;
-            switch (true) {
-                case rating > 15000: {
-                    dxRatingImg = this.getThemeFile(
-                        theme.manifest.sprites.dxRating.rainbow,
-                        theme.path
-                    );
-                    break;
-                }
-                case rating > 14500: {
-                    dxRatingImg = this.getThemeFile(
-                        theme.manifest.sprites.dxRating.platinum,
-                        theme.path
-                    );
-                    break;
-                }
-                case rating > 14000: {
-                    dxRatingImg = this.getThemeFile(
-                        theme.manifest.sprites.dxRating.gold,
-                        theme.path
-                    );
-                    break;
-                }
-                case rating > 13000: {
-                    dxRatingImg = this.getThemeFile(
-                        theme.manifest.sprites.dxRating.silver,
-                        theme.path
-                    );
-                    break;
-                }
-                case rating > 12000: {
-                    dxRatingImg = this.getThemeFile(
-                        theme.manifest.sprites.dxRating.bronze,
-                        theme.path
-                    );
-                    break;
-                }
-                case rating > 10000: {
-                    dxRatingImg = this.getThemeFile(
-                        theme.manifest.sprites.dxRating.purple,
-                        theme.path
-                    );
-                    break;
-                }
-                case rating > 8000: {
-                    dxRatingImg = this.getThemeFile(
-                        theme.manifest.sprites.dxRating.red,
-                        theme.path
-                    );
-                    break;
-                }
-                case rating > 6000: {
-                    dxRatingImg = this.getThemeFile(
-                        theme.manifest.sprites.dxRating.yellow,
-                        theme.path
-                    );
-                    break;
-                }
-                case rating > 4000: {
-                    dxRatingImg = this.getThemeFile(
-                        theme.manifest.sprites.dxRating.green,
-                        theme.path
-                    );
-                    break;
-                }
-                case rating > 2000: {
-                    dxRatingImg = this.getThemeFile(
-                        theme.manifest.sprites.dxRating.blue,
-                        theme.path
-                    );
-                    break;
-                }
-                default: {
-                    dxRatingImg = this.getThemeFile(
-                        theme.manifest.sprites.dxRating.white,
-                        theme.path
-                    );
-                    break;
-                }
-            }
-            dxRating.src = dxRatingImg;
-            ctx.drawImage(
-                dxRating,
-                element.x + element.height,
-                element.y + element.height * 0.064,
-                (element.height / 3) * 5.108,
-                element.height / 3
-            );
-        }
-        /* End DX Rating Draw */
-
         /* Begin Username Draw */
         {
             ctx.beginPath();
             ctx.roundRect(
-                element.x + element.height * (1 + 1 / 32),
-                element.y + element.height * (0.064 + 0.333 + 1 / 32),
-                ((element.height / 3) * 5.108 * 6) / 5,
-                (element.height * 7) / 24,
-                element.height / 20
+                element.x + element.height * (21 / 32),
+                element.y + element.height * 0.3,
+                element.x + element.height * (65 / 64),
+                element.height * 0.45,
+                0
             );
-            ctx.fillStyle = "white";
-            ctx.strokeStyle = Color.rgb(180, 180, 180).hex();
+            ctx.fillStyle = "rgba(255, 255, 255, 0.45)";
             ctx.lineWidth = element.height / 32;
-            ctx.stroke();
             ctx.fill();
 
-            const ratingImgBuffer = await this.getRatingNumber(rating, theme);
-            if (ratingImgBuffer) {
-                const { width, height } =
-                    await sharp(ratingImgBuffer).metadata();
-                if (width && height) {
-                    const aspectRatio = width / height;
-                    const image = new Image();
-                    image.src = ratingImgBuffer;
-                    const drawHeight = (element.height * 7) / 32;
-                    ctx.drawImage(
-                        image,
-                        element.x + element.height * 1.785,
-                        element.y + element.height * 0.12,
-                        drawHeight * aspectRatio * 0.8,
-                        drawHeight
-                    );
-                }
-            }
+            // const ratingImgBuffer = await this.getRatingNumber(rating, theme);
+            // if (ratingImgBuffer) {
+            //     const { width, height } =
+            //         await sharp(ratingImgBuffer).metadata();
+            //     if (width && height) {
+            //         const aspectRatio = width / height;
+            //         const image = new Image();
+            //         image.src = ratingImgBuffer;
+            //         const drawHeight = (element.height * 7) / 32;
+            //         ctx.drawImage(
+            //             image,
+            //             element.x + element.height * 2.0,
+            //             element.y + element.height * 0.3,
+            //             drawHeight * aspectRatio * 0.8,
+            //             drawHeight
+            //         );
+            //     }
+            // }
+            this.drawText(
+                ctx,
+                "Lv.",
+                element.x + element.height * (43 / 64),
+                element.y + element.height * (0.3 + 1 / 4),
+                (element.height * 1) / 16,
+                0,
+                ((element.height / 3) * 5.108 * 3.1) / 5,
+                "left",
+                "black",
+                "black",
+                "standard-font-username"
+            );
+            this.drawText(
+                ctx,
+                "99",
+                element.x + element.height * (49 / 64),
+                element.y + element.height * (0.3 + 1 / 4),
+                (element.height * 1) / 11,
+                0,
+                ((element.height / 3) * 5.108 * 3.1) / 5,
+                "left",
+                "black",
+                "black",
+                "standard-font-username"
+            );
 
             this.drawText(
                 ctx,
                 HalfFullWidthConvert.toFullWidth(username),
-                element.x + element.height * (1 + 1 / 16),
-                element.y + element.height * (0.064 + 0.333 + 1 / 4),
+                element.x + element.height * (56 / 64),
+                element.y + element.height * (0.3 + 1 / 4),
                 (element.height * 1) / 6,
                 0,
-                ((element.height / 3) * 5.108 * 6) / 5,
+                element.height * (65 / 64),
+                "left",
+                "black",
+                "black",
+                "standard-font-username"
+            );
+
+            this.drawText(
+                ctx,
+                "RATING",
+                element.x + element.height * (43 / 64),
+                element.y + element.height * (47 / 64),
+                (element.height * 4) / 44,
+                0,
+                ((element.height / 3) * 5.108 * 3.1) / 5,
+                "left",
+                "black",
+                "black",
+                "standard-font-username"
+            );
+            this.drawText(
+                ctx,
+                rating.toFixed(2),
+                element.x + element.height * (67 / 64),
+                element.y + element.height * (47 / 64),
+                (element.height * 3) / 22,
+                0,
+                ((element.height / 3) * 5.108 * 3.1) / 5,
                 "left",
                 "black",
                 "black",
@@ -1291,7 +1141,7 @@ export class Best50 {
                         function getRatingBase(scores: IScore[]) {
                             return (
                                 scores
-                                    .map((v) => v.dxRating)
+                                    .map((v) => v.rating)
                                     .sort((a, b) => a - b)[0] || 0
                             );
                         }
@@ -1299,343 +1149,22 @@ export class Best50 {
                             if (scores.length <= 0) return 0;
                             return (
                                 scores
-                                    .map((v) => v.dxRating)
+                                    .map((v) => v.rating)
                                     .reduce((sum, v) => (sum += v)) /
                                 scores.length
                             );
-                        }
-                        function getMilestone(scores: IScore[]) {
-                            const MILESTONES_SSSP: Record<string, number> = {
-                                "15.0": 337,
-                                "14.9": 335,
-                                "14.8": 333,
-                                "14.7": 330,
-                                "14.6": 328,
-                                "14.5": 326,
-                                "14.4": 324,
-                                "14.3": 321,
-                                "14.2": 319,
-                                "14.1": 317,
-                                "14.0": 315,
-                                "13.9": 312,
-                                "13.8": 310,
-                                "13.7": 308,
-                                "13.6": 306,
-                                "13.5": 303,
-                                "13.4": 301,
-                                "13.3": 299,
-                                "13.2": 297,
-                                "13.1": 294,
-                                "13.0": 292,
-                                "12.9": 290,
-                                "12.8": 288,
-                                "12.7": 285,
-                                "12.6": 283,
-                                "12.5": 281,
-                                "12.4": 279,
-                                "12.3": 276,
-                                "12.2": 274,
-                                "12.1": 272,
-                                "12.0": 270,
-                                "11.9": 267,
-                                "11.8": 265,
-                                "11.7": 263,
-                                "11.6": 261,
-                                "11.5": 258,
-                                "11.4": 256,
-                                "11.3": 254,
-                                "11.2": 252,
-                                "11.1": 249,
-                                "11.0": 247,
-                                "10.9": 245,
-                                "10.8": 243,
-                                "10.7": 240,
-                                "10.6": 238,
-                                "10.5": 236,
-                                "10.4": 234,
-                                "10.3": 231,
-                                "10.2": 229,
-                                "10.1": 227,
-                                "10.0": 225,
-                                "9.9": 222,
-                                "9.8": 220,
-                                "9.7": 218,
-                                "9.6": 216,
-                                "9.5": 213,
-                                "9.4": 211,
-                                "9.3": 209,
-                                "9.2": 207,
-                                "9.1": 204,
-                                "9.0": 202,
-                                "8.9": 200,
-                                "8.8": 198,
-                                "8.7": 195,
-                                "8.6": 193,
-                                "8.5": 191,
-                                "8.4": 189,
-                                "8.3": 186,
-                                "8.2": 184,
-                                "8.1": 182,
-                                "8.0": 180,
-                                "7.9": 177,
-                                "7.8": 175,
-                                "7.7": 173,
-                                "7.6": 171,
-                                "7.5": 168,
-                                "7.4": 166,
-                                "7.3": 164,
-                                "7.2": 162,
-                                "7.1": 159,
-                                "7.0": 157,
-                                "6.9": 155,
-                                "6.8": 153,
-                                "6.7": 150,
-                                "6.6": 148,
-                                "6.5": 146,
-                                "6.4": 144,
-                                "6.3": 141,
-                                "6.2": 139,
-                                "6.1": 137,
-                                "6.0": 135,
-                                "5.9": 132,
-                                "5.8": 130,
-                                "5.7": 128,
-                                "5.6": 126,
-                                "5.5": 123,
-                                "5.4": 121,
-                                "5.3": 119,
-                                "5.2": 117,
-                                "5.1": 114,
-                                "5.0": 112,
-                                "4.9": 110,
-                                "4.8": 108,
-                                "4.7": 105,
-                                "4.6": 103,
-                                "4.5": 101,
-                                "4.4": 99,
-                                "4.3": 96,
-                                "4.2": 94,
-                                "4.1": 92,
-                                "4.0": 90,
-                                "3.9": 87,
-                                "3.8": 85,
-                                "3.7": 83,
-                                "3.6": 81,
-                                "3.5": 78,
-                                "3.4": 76,
-                                "3.3": 74,
-                                "3.2": 72,
-                                "3.1": 69,
-                                "3.0": 67,
-                                "2.9": 65,
-                                "2.8": 63,
-                                "2.7": 60,
-                                "2.6": 58,
-                                "2.5": 56,
-                                "2.4": 54,
-                                "2.3": 51,
-                                "2.2": 49,
-                                "2.1": 47,
-                                "2.0": 45,
-                                "1.9": 42,
-                                "1.8": 40,
-                                "1.7": 38,
-                                "1.6": 36,
-                                "1.5": 33,
-                                "1.4": 31,
-                                "1.3": 29,
-                                "1.2": 27,
-                                "1.1": 24,
-                                "1.0": 22,
-                            };
-                            const MILESTONES_SSS: Record<string, number> = {
-                                "15.0": 324,
-                                "14.9": 321,
-                                "14.8": 319,
-                                "14.7": 317,
-                                "14.6": 315,
-                                "14.5": 313,
-                                "14.4": 311,
-                                "14.3": 308,
-                                "14.2": 306,
-                                "14.1": 304,
-                                "14.0": 302,
-                                "13.9": 300,
-                                "13.8": 298,
-                                "13.7": 295,
-                                "13.6": 293,
-                                "13.5": 291,
-                                "13.4": 289,
-                                "13.3": 287,
-                                "13.2": 285,
-                                "13.1": 282,
-                                "13.0": 280,
-                                "12.9": 278,
-                                "12.8": 276,
-                                "12.7": 274,
-                                "12.6": 272,
-                                "12.5": 270,
-                                "12.4": 267,
-                                "12.3": 265,
-                                "12.2": 263,
-                                "12.1": 261,
-                                "12.0": 259,
-                                "11.9": 257,
-                                "11.8": 254,
-                                "11.7": 252,
-                                "11.6": 250,
-                                "11.5": 248,
-                                "11.4": 246,
-                                "11.3": 244,
-                                "11.2": 241,
-                                "11.1": 239,
-                                "11.0": 237,
-                                "10.9": 235,
-                                "10.8": 233,
-                                "10.7": 231,
-                                "10.6": 228,
-                                "10.5": 226,
-                                "10.4": 224,
-                                "10.3": 222,
-                                "10.2": 220,
-                                "10.1": 218,
-                                "10.0": 216,
-                                "9.9": 213,
-                                "9.8": 211,
-                                "9.7": 209,
-                                "9.6": 207,
-                                "9.5": 205,
-                                "9.4": 203,
-                                "9.3": 200,
-                                "9.2": 198,
-                                "9.1": 196,
-                                "9.0": 194,
-                                "8.9": 192,
-                                "8.8": 190,
-                                "8.7": 187,
-                                "8.6": 185,
-                                "8.5": 183,
-                                "8.4": 181,
-                                "8.3": 179,
-                                "8.2": 177,
-                                "8.1": 174,
-                                "8.0": 172,
-                                "7.9": 170,
-                                "7.8": 168,
-                                "7.7": 166,
-                                "7.6": 164,
-                                "7.5": 162,
-                                "7.4": 159,
-                                "7.3": 157,
-                                "7.2": 155,
-                                "7.1": 153,
-                                "7.0": 151,
-                                "6.9": 149,
-                                "6.8": 146,
-                                "6.7": 144,
-                                "6.6": 142,
-                                "6.5": 140,
-                                "6.4": 138,
-                                "6.3": 136,
-                                "6.2": 133,
-                                "6.1": 131,
-                                "6.0": 129,
-                                "5.9": 127,
-                                "5.8": 125,
-                                "5.7": 123,
-                                "5.6": 120,
-                                "5.5": 118,
-                                "5.4": 116,
-                                "5.3": 114,
-                                "5.2": 112,
-                                "5.1": 110,
-                                "5.0": 108,
-                                "4.9": 105,
-                                "4.8": 103,
-                                "4.7": 101,
-                                "4.6": 99,
-                                "4.5": 97,
-                                "4.4": 95,
-                                "4.3": 92,
-                                "4.2": 90,
-                                "4.1": 88,
-                                "4.0": 86,
-                                "3.9": 84,
-                                "3.8": 82,
-                                "3.7": 79,
-                                "3.6": 77,
-                                "3.5": 75,
-                                "3.4": 73,
-                                "3.3": 71,
-                                "3.2": 69,
-                                "3.1": 66,
-                                "3.0": 64,
-                                "2.9": 62,
-                                "2.8": 60,
-                                "2.7": 58,
-                                "2.6": 56,
-                                "2.5": 54,
-                                "2.4": 51,
-                                "2.3": 49,
-                                "2.2": 47,
-                                "2.1": 45,
-                                "2.0": 43,
-                                "1.9": 41,
-                                "1.8": 38,
-                                "1.7": 36,
-                                "1.6": 34,
-                                "1.5": 32,
-                                "1.4": 30,
-                                "1.3": 28,
-                                "1.2": 25,
-                                "1.1": 23,
-                                "1.0": 21,
-                            };
-                            const base = getRatingBase(scores);
-                            let sssTarget, ssspTarget;
-                            for (const level in MILESTONES_SSSP) {
-                                const rating = MILESTONES_SSSP[level];
-                                if (base >= rating) {
-                                    if (level == "15.0") {
-                                        ssspTarget = undefined;
-                                    } else {
-                                        ssspTarget = level;
-                                    }
-                                    break;
-                                }
-                            }
-                            for (const level in MILESTONES_SSS) {
-                                const rating = MILESTONES_SSS[level];
-                                if (base >= rating) {
-                                    if (level == "15.0") {
-                                        sssTarget = undefined;
-                                    } else {
-                                        sssTarget = level;
-                                    }
-                                    break;
-                                }
-                            }
-                            if (sssTarget && ssspTarget)
-                                return `Next rating boost: lv. ${(parseFloat(ssspTarget) + 0.1).toFixed(1)} SSS+/${(parseFloat(sssTarget) + 0.1).toFixed(1)} SSS`;
-                            else if (sssTarget)
-                                return `Next rating boost: lv. ${(parseFloat(sssTarget) + 0.1).toFixed(1)} SSS`;
-                            else if (ssspTarget)
-                                return `Next rating boost: lv. ${(parseFloat(ssspTarget) + 0.1).toFixed(1)} SSS+`;
-                            else return "Good job!";
                         }
                         await this.drawTextModule(ctx, currentTheme, element, {
                             username: HalfFullWidthConvert.toFullWidth(name),
                             rating: rating.toFixed(0),
                             newScoreRatingAvg:
-                                getRatingAvg(newScores).toFixed(0),
+                                getRatingAvg(newScores).toFixed(2),
                             oldScoreRatingAvg:
-                                getRatingAvg(oldScores).toFixed(0),
+                                getRatingAvg(oldScores).toFixed(2),
                             newScoreRatingBase:
-                                getRatingBase(newScores).toFixed(0),
+                                getRatingBase(newScores).toFixed(2),
                             oldScoreRatingBase:
-                                getRatingBase(oldScores).toFixed(0),
-                            newScoreMilestone: getMilestone(newScores),
-                            oldScoreMilestone: getMilestone(oldScores),
+                                getRatingBase(oldScores).toFixed(2),
                         });
                         break;
                     }
@@ -1685,7 +1214,7 @@ export class Best50 {
         }
         if (theme.manifest) {
             const map = this.getThemeFile(
-                theme.manifest.sprites.dxRatingNumberMap,
+                theme.manifest.sprites.ratingNumberMap,
                 theme.path
             );
             const { width, height } = await sharp(map).metadata();
@@ -1693,6 +1222,9 @@ export class Best50 {
             const unitWidth = width / 4,
                 unitHeight = height / 4;
             let digits: (Buffer | null)[] = [];
+            while (num != Math.floor(num)) {
+                num *= 10;
+            }
             while (num > 0) {
                 digits.push(
                     await getRaingDigit(map, num % 10, unitWidth, unitHeight)

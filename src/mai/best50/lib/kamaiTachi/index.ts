@@ -4,7 +4,7 @@ import {
     EDifficulty,
     ESyncTypes,
     IScore,
-} from "@maidraw/type";
+} from "@maidraw/mai/type";
 import ScoreTrackerAdapter from "..";
 
 export class KamaiTachi extends ScoreTrackerAdapter {

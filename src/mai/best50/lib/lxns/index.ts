@@ -5,7 +5,7 @@ import {
     ESyncTypes,
     IChart,
     IScore,
-} from "@maidraw/type";
+} from "@maidraw/mai/type";
 import ScoreTrackerAdapter from "..";
 import { Chart } from "@maidraw/mai/chart";
 

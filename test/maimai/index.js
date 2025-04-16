@@ -2,7 +2,7 @@ const sharp = require("sharp");
 const upath = require("upath");
 
 (async () => {
-    const { MaiDraw } = require("../dist");
+    const { MaiDraw } = require("../../dist");
     MaiDraw.Maimai.Chart.Database.setLocalDatabasePath(
         "../maimai-songs-database"
     );

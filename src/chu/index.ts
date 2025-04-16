@@ -1,11 +1,11 @@
-import { Best50 } from "./best50";
+import { Best50 } from "./bests";
 import { Chart } from "./chart";
 
 import Bunyan from "bunyan";
 
-export class Maimai {
+export class Chuni {
     public static logger = new Bunyan({
-        name: "maidraw.maimai",
+        name: "maidraw.chuni",
         streams: [
             {
                 stream: process.stdout,

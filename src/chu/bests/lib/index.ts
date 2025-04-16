@@ -1,7 +1,9 @@
-import { Cache } from "@maidraw/lib/cache";
-import { Maimai } from "@maidraw/mai";
-import { IScore } from "@maidraw/mai/type";
+import { Chuni } from "@maidraw/chu";
+import { IScore } from "@maidraw/chu/type";
 import axios, { AxiosInstance } from "axios";
+
+import Bunyan from "bunyan";
+import { Cache } from "memory-cache";
 
 export default abstract class ScoreTrackerAdapter {
     private static _cache = new Cache();
@@ -26,7 +28,7 @@ export default abstract class ScoreTrackerAdapter {
         if (cacheTTL > 0) {
             const cacheContent = await this.cache.get(cacheKey);
             if (cacheContent) {
-                Maimai.logger.trace(
+                Chuni.logger.trace(
                     `GET ${endpoint}${data ? ` ${JSON.stringify(data).substring(0, this.MAX_LOG_LENGTH)}` : ""}, cache HIT`
                 );
                 return cacheContent as T;
@@ -45,7 +47,7 @@ export default abstract class ScoreTrackerAdapter {
                 return e.response?.data || e;
             });
         const timeDifference = Date.now() - beginTimestamp;
-        Maimai.logger.trace(
+        Chuni.logger.trace(
             `GET ${endpoint}${data ? ` ${JSON.stringify(data).substring(0, this.MAX_LOG_LENGTH)}` : ""}, cache MISS, took ${timeDifference}ms`
         );
         return res;
@@ -60,7 +62,7 @@ export default abstract class ScoreTrackerAdapter {
             .then((r) => r.data)
             .catch((e) => e.response?.data);
         const timeDifference = Date.now() - beginTimestamp;
-        Maimai.logger.trace(
+        Chuni.logger.trace(
             `POST ${endpoint}${data ? ` ${JSON.stringify(data).substring(0, this.MAX_LOG_LENGTH)}` : ""}, took ${timeDifference}ms`
         );
         return res;
