@@ -33,6 +33,19 @@ export class KamaiTachi extends ScoreTrackerAdapter {
             60 * 1000
         );
     }
+    async getPlayerRecentPB(userId: string) {
+        return this.get<
+            KamaiTachi.IResponse<{
+                charts: KamaiTachi.IChart[];
+                pbs: KamaiTachi.IPb[];
+                songs: KamaiTachi.ISong[];
+            }>
+        >(
+            `/api/v1/users/${userId}/games/chunithm/Single/scores/recent`,
+            undefined,
+            60 * 1000
+        );
+    }
     private toMaiDrawScore(
         score: KamaiTachi.IPb,
         chart: KamaiTachi.IChart,
@@ -163,6 +176,96 @@ export class KamaiTachi extends ScoreTrackerAdapter {
                         : b.pb.scoreData.score - a.pb.scoreData.score
                 )
                 .slice(0, 30)
+                .map((v) => this.toMaiDrawScore(v.pb, v.chart, v.song)),
+            best: pbs
+                .sort((a, b) =>
+                    b.pb.calculatedData.rating - a.pb.calculatedData.rating
+                        ? b.pb.calculatedData.rating -
+                          a.pb.calculatedData.rating
+                        : b.pb.scoreData.score - a.pb.scoreData.score
+                )
+                .slice(0, 50)
+                .map((v) => this.toMaiDrawScore(v.pb, v.chart, v.song)),
+        };
+    }
+    async getPlayerRecent40(
+        userId: string,
+        currentVersion = this.CURRENT_VERSION,
+        omnimix = true
+    ) {
+        const rawPBs = await this.getPlayerPB(userId);
+        const rawRecents = await this.getPlayerRecentPB(userId);
+        if (!rawPBs?.body || !rawRecents?.body) return null;
+        const pbs: {
+            chart: KamaiTachi.IChart;
+            song: KamaiTachi.ISong;
+            pb: KamaiTachi.IPb;
+        }[] = [];
+        const recents: {
+            chart: KamaiTachi.IChart;
+            song: KamaiTachi.ISong;
+            pb: KamaiTachi.IPb;
+        }[] = [];
+        for (const pb of rawPBs.body.pbs) {
+            let chart = rawPBs.body.charts.find((v) => v.chartID == pb.chartID);
+            let song = rawPBs.body.songs.find((v) => v.id == pb.songID);
+            if (chart && song) {
+                pbs.push({ pb, chart, song });
+            }
+        }
+        for (const recent of rawPBs.body.pbs) {
+            let chart = rawRecents.body.charts.find(
+                (v) => v.chartID == recent.chartID
+            );
+            let song = rawRecents.body.songs.find((v) => v.id == recent.songID);
+            if (chart && song) {
+                recents.push({ pb: recent, chart, song });
+            }
+        }
+        const bestScores = pbs.filter(
+            (v) =>
+                v.chart &&
+                KamaiTachi.compareGameVersions(
+                    currentVersion,
+                    v.song.data.displayVersion
+                ) >= 0 &&
+                (omnimix ||
+                    !(
+                        v.chart.versions[0].includes("-omni") &&
+                        v.chart.versions[1].includes("-omni")
+                    ))
+        );
+        const recentScores = pbs.filter(
+            (v) =>
+                v.chart &&
+                KamaiTachi.compareGameVersions(
+                    currentVersion,
+                    v.song.data.displayVersion
+                ) >= 0 &&
+                (omnimix ||
+                    !(
+                        v.chart.versions[0].includes("-omni") &&
+                        v.chart.versions[1].includes("-omni")
+                    ))
+        );
+        return {
+            recent: recentScores
+                .sort((a, b) =>
+                    b.pb.calculatedData.rating - a.pb.calculatedData.rating
+                        ? b.pb.calculatedData.rating -
+                          a.pb.calculatedData.rating
+                        : b.pb.scoreData.score - a.pb.scoreData.score
+                )
+                .slice(0, 10)
+                .map((v) => this.toMaiDrawScore(v.pb, v.chart, v.song)),
+            best: bestScores
+                .sort((a, b) =>
+                    b.pb.calculatedData.rating - a.pb.calculatedData.rating
+                        ? b.pb.calculatedData.rating -
+                          a.pb.calculatedData.rating
+                        : b.pb.scoreData.score - a.pb.scoreData.score
+                )
+                .slice(0, 50)
                 .map((v) => this.toMaiDrawScore(v.pb, v.chart, v.song)),
         };
     }

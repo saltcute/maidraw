@@ -6,17 +6,19 @@ const { KamaiTachi } = require("../../../dist/chu/bests/lib/kamaiTachi");
     const kamai = new KamaiTachi();
     const { MaiDraw } = require("../../../dist");
     MaiDraw.Chuni.Chart.Database.setLocalDatabasePath(
-        "../maimai-songs-database"
+        "/home/xuanjiap/apps/maimai-songs-database"
     );
 
     const fs = require("fs");
-    const themes = ["jp-verse-landscape"];
+    const themes = ["jp-verse-landscape-recents", "jp-verse-landscape-new"];
     const source = kamai.verse();
-    const username = "codex";
-    const options = {
-        scale: 2,
-    };
+    const username = "rhythmik";
     for (let theme of themes) {
+        const options = {
+            scale: 2,
+            type: theme.endsWith("-new") ? "new" : "recents",
+            theme,
+        };
         const result = await MaiDraw.Chuni.Best50.drawWithScoreSource(
             source,
             username,

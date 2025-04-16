@@ -83,7 +83,7 @@ interface ITheme {
 export class Best50 {
     static KamaiTachi = KamaiTachi;
 
-    private static readonly DEFAULT_THEME = "jp-verse-landscape";
+    private static readonly DEFAULT_THEME = "jp-verse-landscape-new";
 
     private static primaryTheme: ITheme | null = null;
     static loadTheme(path: string): boolean {
@@ -912,13 +912,12 @@ export class Best50 {
             ctx.beginPath();
             ctx.roundRect(
                 element.x + element.height * (21 / 32),
-                element.y + element.height * 0.3,
-                element.x + element.height * (65 / 64),
-                element.height * 0.45,
+                element.y + element.height * (11 / 32),
+                element.height * (85 / 64),
+                element.height * (13 / 32),
                 0
             );
             ctx.fillStyle = "rgba(255, 255, 255, 0.45)";
-            ctx.lineWidth = element.height / 32;
             ctx.fill();
 
             // const ratingImgBuffer = await this.getRatingNumber(rating, theme);
@@ -971,7 +970,7 @@ export class Best50 {
                 HalfFullWidthConvert.toFullWidth(username),
                 element.x + element.height * (56 / 64),
                 element.y + element.height * (0.3 + 1 / 4),
-                (element.height * 1) / 6,
+                (element.height * 1) / 8,
                 0,
                 element.height * (65 / 64),
                 "left",
@@ -985,7 +984,7 @@ export class Best50 {
                 "RATING",
                 element.x + element.height * (43 / 64),
                 element.y + element.height * (47 / 64),
-                (element.height * 4) / 44,
+                (element.height * 7) / 88,
                 0,
                 ((element.height / 3) * 5.108 * 3.1) / 5,
                 "left",
@@ -998,7 +997,7 @@ export class Best50 {
                 rating.toFixed(2),
                 element.x + element.height * (67 / 64),
                 element.y + element.height * (47 / 64),
-                (element.height * 3) / 22,
+                (element.height * 5) / 44,
                 0,
                 ((element.height / 3) * 5.108 * 3.1) / 5,
                 "left",
@@ -1069,11 +1068,23 @@ export class Best50 {
         rating: number,
         newScores: IScore[],
         oldScores: IScore[],
-        options?: { scale?: number; theme?: string; profilePicture?: Buffer }
+        options: {
+            scale?: number;
+            theme?: string;
+            profilePicture?: Buffer;
+            bestScores?: IScore[];
+            type: "new" | "recents";
+        } = { type: "new" }
     ): Promise<Buffer | null> {
         let currentTheme = this.primaryTheme;
+        console.log(options.theme);
         if (options?.theme) {
-            const theme = this.getTheme(options.theme);
+            console.log(options.theme + options.type);
+            let theme = this.getTheme(options.theme + options.type);
+            if (theme) {
+                currentTheme = theme;
+            }
+            theme = this.getTheme(options.theme);
             if (theme) {
                 currentTheme = theme;
             }
@@ -1145,33 +1156,38 @@ export class Best50 {
                         break;
                     }
                     case "text": {
-                        function getRatingBase(scores: IScore[]) {
-                            return (
-                                scores
-                                    .map((v) => v.rating)
-                                    .sort((a, b) => a - b)[0] || 0
+                        function getNaiveRating(length: number) {
+                            const bestScores = options?.bestScores;
+                            if (!bestScores) return 0;
+                            return getRatingAvg(
+                                bestScores.slice(0, length),
+                                length
                             );
                         }
-                        function getRatingAvg(scores: IScore[]) {
+                        function getRatingAvg(
+                            scores: IScore[],
+                            length: number
+                        ) {
                             if (scores.length <= 0) return 0;
                             return (
                                 scores
                                     .map((v) => v.rating)
-                                    .reduce((sum, v) => (sum += v)) /
-                                scores.length
+                                    .reduce((sum, v) => (sum += v)) / length
                             );
                         }
                         await this.drawTextModule(ctx, currentTheme, element, {
                             username: HalfFullWidthConvert.toFullWidth(name),
-                            rating: rating.toFixed(0),
-                            newScoreRatingAvg:
-                                getRatingAvg(newScores).toFixed(2),
-                            oldScoreRatingAvg:
-                                getRatingAvg(oldScores).toFixed(2),
-                            newScoreRatingBase:
-                                getRatingBase(newScores).toFixed(2),
-                            oldScoreRatingBase:
-                                getRatingBase(oldScores).toFixed(2),
+                            rating: rating.toFixed(2),
+                            naiveBest30: getNaiveRating(30).toFixed(2),
+                            naiveBest50: getNaiveRating(50).toFixed(2),
+                            newScoreRatingAvg: getRatingAvg(
+                                newScores,
+                                options.type == "recents" ? 10 : 20
+                            ).toFixed(2),
+                            oldScoreRatingAvg: getRatingAvg(
+                                oldScores.slice(0, 30),
+                                30
+                            ).toFixed(2),
                         });
                         break;
                     }
@@ -1183,16 +1199,32 @@ export class Best50 {
     static async drawWithScoreSource(
         source: ScoreTrackerAdapter,
         username: string,
-        options?: {
+        options: {
             scale?: number;
             theme?: string;
             profilePicture?: Buffer | null;
-        }
+            type: "new" | "recents";
+        } = { type: "recents" }
     ) {
         const profile = await source.getPlayerInfo(username);
-        const score = await source.getPlayerBest50(username);
-        if (!profile || !score) return null;
-        return this.draw(profile.name, profile.rating, score.new, score.old, {
+        if (!profile) return null;
+        let newScores: IScore[],
+            oldScores: IScore[],
+            bestScores: IScore[] | undefined;
+        if (options.type == "new") {
+            const score = await source.getPlayerBest50(username);
+            if (!score) return null;
+            newScores = score.new;
+            oldScores = score.old;
+            bestScores = score.best;
+        } else if (options.type == "recents") {
+            const score = await source.getPlayerRecent40(username);
+            if (!score) return null;
+            newScores = score.recent;
+            oldScores = score.best;
+            bestScores = score.best;
+        } else return null;
+        return this.draw(profile.name, profile.rating, newScores, oldScores, {
             ...options,
             profilePicture:
                 options?.profilePicture === null
@@ -1200,6 +1232,7 @@ export class Best50 {
                     : options?.profilePicture ||
                       (await source.getPlayerProfilePicture(username)) ||
                       undefined,
+            bestScores,
         });
     }
     private static async getRatingNumber(num: number, theme: ITheme) {

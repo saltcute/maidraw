@@ -2,7 +2,6 @@ import { Chuni } from "@maidraw/chu";
 import { IScore } from "@maidraw/chu/type";
 import axios, { AxiosInstance } from "axios";
 
-import Bunyan from "bunyan";
 import { Cache } from "memory-cache";
 
 export default abstract class ScoreTrackerAdapter {
@@ -67,9 +66,14 @@ export default abstract class ScoreTrackerAdapter {
         );
         return res;
     }
+    abstract getPlayerRecent40(username: string): Promise<{
+        recent: IScore[];
+        best: IScore[];
+    } | null>;
     abstract getPlayerBest50(username: string): Promise<{
         new: IScore[];
         old: IScore[];
+        best?: IScore[];
     } | null>;
     abstract getPlayerInfo(username: string): Promise<{
         name: string;
