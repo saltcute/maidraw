@@ -85,6 +85,14 @@ export class Best50 {
 
     private static readonly DEFAULT_THEME = "jp-verse-landscape";
 
+    private static primaryTheme: ITheme | null = null;
+    static loadTheme(path: string): boolean {
+        const theme = this.getTheme(path);
+        if (theme) {
+            this.primaryTheme = theme;
+            return true;
+        } else return false;
+    }
     private static get assetsPath() {
         return upath.join(__dirname, "..", "..", "..", "assets");
     }
@@ -287,14 +295,6 @@ export class Best50 {
                     }
                 }
             }
-            return true;
-        } else return false;
-    }
-    private static primaryTheme: ITheme | null = null;
-    static loadTheme(path: string): boolean {
-        const theme = this.getTheme(path);
-        if (theme) {
-            this.primaryTheme = theme;
             return true;
         } else return false;
     }
@@ -1071,7 +1071,6 @@ export class Best50 {
         oldScores: IScore[],
         options?: { scale?: number; theme?: string; profilePicture?: Buffer }
     ): Promise<Buffer | null> {
-        console.log(this.primaryTheme);
         let currentTheme = this.primaryTheme;
         if (options?.theme) {
             const theme = this.getTheme(options.theme);

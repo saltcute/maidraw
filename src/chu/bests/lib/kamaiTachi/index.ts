@@ -174,7 +174,7 @@ export class KamaiTachi extends ScoreTrackerAdapter {
         [...scores.new, ...scores.old].forEach((v) => (rating += v.rating));
         return {
             name: profile?.body.username,
-            rating: rating / (scores.new.length + scores.old.length),
+            rating: rating / 50,
         };
     }
     private async getPlayerProfileRaw(userId: string) {
