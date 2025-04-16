@@ -198,6 +198,7 @@ export class Best50 {
             isFileExist(payload.sprites.achievement.aa) &&
             isFileExist(payload.sprites.achievement.aaa) &&
             isFileExist(payload.sprites.achievement.s) &&
+            isFileExist(payload.sprites.achievement.sp) &&
             isFileExist(payload.sprites.achievement.ss) &&
             isFileExist(payload.sprites.achievement.ssp) &&
             isFileExist(payload.sprites.achievement.sss) &&
@@ -656,6 +657,12 @@ export class Best50 {
                     case EAchievementTypes.S:
                         rankImg = this.getThemeFile(
                             theme.manifest.sprites.achievement.s,
+                            theme.path
+                        );
+                        break;
+                    case EAchievementTypes.SP:
+                        rankImg = this.getThemeFile(
+                            theme.manifest.sprites.achievement.sp,
                             theme.path
                         );
                         break;

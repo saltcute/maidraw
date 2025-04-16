@@ -92,6 +92,8 @@ export class KamaiTachi extends ScoreTrackerAdapter {
                         return EAchievementTypes.AAA;
                     case "S":
                         return EAchievementTypes.S;
+                    case "S+":
+                        return EAchievementTypes.SP;
                     case "SS":
                         return EAchievementTypes.SS;
                     case "SS+":

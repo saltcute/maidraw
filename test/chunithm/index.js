@@ -11,7 +11,7 @@ const { KamaiTachi } = require("../../dist/chu/bests/lib/kamaiTachi");
 
     const fs = require("fs");
     const best50 = await kamai.getPlayerBest50(
-        "codex",
+        "salt",
         KamaiTachi.EGameVersions.CHUNITHM_SUN_PLUS
     );
     const themes = ["jp-verse-landscape"];

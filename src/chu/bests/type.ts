@@ -20,6 +20,7 @@ export interface IThemeSprites {
         aa: string;
         aaa: string;
         s: string;
+        sp: string;
         ss: string;
         ssp: string;
         sss: string;

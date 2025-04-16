@@ -30,6 +30,7 @@ export enum EAchievementTypes {
     AA,
     AAA,
     S,
+    SP,
     SS,
     SSP,
     SSS,
