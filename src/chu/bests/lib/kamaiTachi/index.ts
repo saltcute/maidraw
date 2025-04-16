@@ -269,16 +269,29 @@ export class KamaiTachi extends ScoreTrackerAdapter {
                 .map((v) => this.toMaiDrawScore(v.pb, v.chart, v.song)),
         };
     }
-    async getPlayerInfo(userId: string) {
+    async getPlayerInfo(userId: string, type: "new" | "recents") {
         const profile = await this.getPlayerProfileRaw(userId);
-        const scores = await this.getPlayerBest50(userId);
-        if (!profile?.body || !scores) return null;
-        let rating = 0;
-        [...scores.new, ...scores.old].forEach((v) => (rating += v.rating));
-        return {
-            name: profile?.body.username,
-            rating: rating / 50,
-        };
+        if (type == "new") {
+            const scores = await this.getPlayerBest50(userId);
+            if (!profile?.body || !scores) return null;
+            let rating = 0;
+            [...scores.new, ...scores.old].forEach((v) => (rating += v.rating));
+            return {
+                name: profile?.body.username,
+                rating: rating / 50,
+            };
+        } else if (type == "recents") {
+            const scores = await this.getPlayerRecent40(userId);
+            if (!profile?.body || !scores) return null;
+            let rating = 0;
+            [...scores.recent, ...scores.best.slice(0, 30)].forEach(
+                (v) => (rating += v.rating)
+            );
+            return {
+                name: profile?.body.username,
+                rating: rating / 40,
+            };
+        } else return null;
     }
     private async getPlayerProfileRaw(userId: string) {
         return this.get<

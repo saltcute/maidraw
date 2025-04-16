@@ -1204,7 +1204,7 @@ export class Best50 {
             type: "new" | "recents";
         } = { type: "recents" }
     ) {
-        const profile = await source.getPlayerInfo(username);
+        const profile = await source.getPlayerInfo(username, options.type);
         if (!profile) return null;
         let newScores: IScore[],
             oldScores: IScore[],

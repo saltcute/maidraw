@@ -75,7 +75,10 @@ export default abstract class ScoreTrackerAdapter {
         old: IScore[];
         best?: IScore[];
     } | null>;
-    abstract getPlayerInfo(username: string): Promise<{
+    abstract getPlayerInfo(
+        username: string,
+        type: "new" | "recents"
+    ): Promise<{
         name: string;
         rating: number;
     } | null>;
