@@ -33,11 +33,11 @@ export class KamaiTachi extends ScoreTrackerAdapter {
             60 * 1000
         );
     }
-    async getPlayerRecentPB(userId: string) {
+    async getPlayerRecentScores(userId: string) {
         return this.get<
             KamaiTachi.IResponse<{
                 charts: KamaiTachi.IChart[];
-                pbs: KamaiTachi.IPb[];
+                scores: KamaiTachi.IScore[];
                 songs: KamaiTachi.ISong[];
             }>
         >(
@@ -47,7 +47,7 @@ export class KamaiTachi extends ScoreTrackerAdapter {
         );
     }
     private toMaiDrawScore(
-        score: KamaiTachi.IPb,
+        score: KamaiTachi.IPb | KamaiTachi.IScore,
         chart: KamaiTachi.IChart,
         song: KamaiTachi.ISong
     ): IScore {
@@ -194,7 +194,7 @@ export class KamaiTachi extends ScoreTrackerAdapter {
         omnimix = true
     ) {
         const rawPBs = await this.getPlayerPB(userId);
-        const rawRecents = await this.getPlayerRecentPB(userId);
+        const rawRecents = await this.getPlayerRecentScores(userId);
         if (!rawPBs?.body || !rawRecents?.body) return null;
         const pbs: {
             chart: KamaiTachi.IChart;
@@ -204,7 +204,7 @@ export class KamaiTachi extends ScoreTrackerAdapter {
         const recents: {
             chart: KamaiTachi.IChart;
             song: KamaiTachi.ISong;
-            pb: KamaiTachi.IPb;
+            scores: KamaiTachi.IScore;
         }[] = [];
         for (const pb of rawPBs.body.pbs) {
             let chart = rawPBs.body.charts.find((v) => v.chartID == pb.chartID);
@@ -213,13 +213,13 @@ export class KamaiTachi extends ScoreTrackerAdapter {
                 pbs.push({ pb, chart, song });
             }
         }
-        for (const recent of rawPBs.body.pbs) {
+        for (const recent of rawRecents.body.scores) {
             let chart = rawRecents.body.charts.find(
                 (v) => v.chartID == recent.chartID
             );
             let song = rawRecents.body.songs.find((v) => v.id == recent.songID);
             if (chart && song) {
-                recents.push({ pb: recent, chart, song });
+                recents.push({ scores: recent, chart, song });
             }
         }
         const bestScores = pbs.filter(
@@ -254,8 +254,11 @@ export class KamaiTachi extends ScoreTrackerAdapter {
                 order: number;
             }[] = [];
             for (let i = 0; i < scores.length; i++) {
+                r30 = r30.sort((a, b) => a.order - b.order);
                 const score = scores[i];
+                // console.log(`#${i} ${score.chart.name} Rating: ${score.rating}`);
                 if (r30.length < 30) {
+                    // console.log(`Recents is not full, adding directly to recents.`);
                     r30.push({ score, order: i });
                 } else {
                     switch (score.rank) {
@@ -264,27 +267,39 @@ export class KamaiTachi extends ScoreTrackerAdapter {
                             while (r30.length > 30) {
                                 r30.shift();
                             }
+                            // console.log(`SSS rating guard triggered.`);
                             if (r30.length >= 30) {
-                                const best10 = r30.sort((a, b) =>
-                                    a.score.rating == b.score.rating
-                                        ? b.score.score - a.score.score
-                                        : b.score.rating - a.score.rating
-                                );
+                                const best10 = r30
+                                    .sort((a, b) =>
+                                        a.score.rating == b.score.rating
+                                            ? b.score.score - a.score.score
+                                            : b.score.rating - a.score.rating
+                                    )
+                                    .slice(0, 10);
                                 for (let j = 0; j < r30.length; ++j) {
                                     if (!best10.includes(r30[j])) {
+                                        // console.log(`This score will replace: ${r30[j].score.chart.name}, rating: ${r30[j].score.rating}`);
                                         r30[j] = { score, order: i };
                                         break;
                                     }
                                 }
-                                r30 = r30.sort((a, b) => a.order - b.order);
                                 break;
                             }
                         default:
+                            // console.log(`Pushing to the end of recents.`);
                             r30.push({ score, order: i });
                             while (r30.length > 30) {
+                                // console.log(`Removing the oldest score.`);
                                 r30.shift();
                             }
                     }
+                    // console.log("Current recents:");
+                    // console.log(
+                    //     r30.map(
+                    //         (v) =>
+                    //             `#${v.order} ${v.score.chart.name.slice(0, 4)} ${v.score.rating}`
+                    //     )
+                    // );
                 }
             }
             return r30
@@ -298,9 +313,9 @@ export class KamaiTachi extends ScoreTrackerAdapter {
         }
         return {
             recent: ratingGuardSimulation(
-                recentScores.map((v) =>
-                    this.toMaiDrawScore(v.pb, v.chart, v.song)
-                )
+                recentScores
+                    .reverse()
+                    .map((v) => this.toMaiDrawScore(v.scores, v.chart, v.song))
             ),
             best: bestScores
                 .sort((a, b) =>
@@ -493,16 +508,53 @@ export namespace KamaiTachi {
         searchTerms: string[];
         title: string;
     }
+    export interface IScore {
+        chartID: string;
+        userID: number;
+        calculatedData: {
+            rating: number;
+        };
+        game: string;
+        highlight: boolean;
+        isPrimary: boolean;
+        playtype: string;
+        scoreData: {
+            score: number;
+            lamp: string;
+            judgements: {
+                jcrit: number;
+                justice: number;
+                attack: number;
+                miss: number;
+            };
+            optional: {
+                fast?: number;
+                slow?: number;
+                maxCombo?: number;
+                enumIndexes: {
+                    lamp?: number;
+                    grade?: number;
+                };
+            };
+            grade: string;
+            enumIndexes: {
+                lamp: number;
+                grade: number;
+            };
+        };
+        songID: number;
+        scoreID: string;
+        scoreMeta: any;
+        timeAdded: number;
+        timeAchieved: number;
+        service: string;
+    }
     export interface IPb {
         chartID: string;
         userID: number;
         calculatedData: {
             rating: number;
         };
-        composedFrom: {
-            name: string;
-            scoreID: string;
-        }[];
         game: string;
         highlight: boolean;
         isPrimary: boolean;
@@ -538,6 +590,10 @@ export namespace KamaiTachi {
         };
         songID: number;
         timeAchieved: number;
+        composedFrom: {
+            name: string;
+            scoreID: string;
+        }[];
     }
 
     export enum EGameVersions {

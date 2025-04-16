@@ -12,7 +12,7 @@ const { KamaiTachi } = require("../../../dist/chu/bests/lib/kamaiTachi");
     const fs = require("fs");
     const themes = ["jp-verse-landscape-recents", "jp-verse-landscape-new"];
     const source = kamai.verse();
-    const username = "tluo5458";
+    const username = "salt";
     for (let theme of themes) {
         const options = {
             scale: 2,
