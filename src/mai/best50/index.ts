@@ -1295,13 +1295,15 @@ export class Best50 {
                                     .sort((a, b) => a - b)[0] || 0
                             );
                         }
-                        function getRatingAvg(scores: IScore[]) {
+                        function getRatingAvg(
+                            scores: IScore[],
+                            length: number
+                        ) {
                             if (scores.length <= 0) return 0;
                             return (
                                 scores
                                     .map((v) => v.dxRating)
-                                    .reduce((sum, v) => (sum += v)) /
-                                scores.length
+                                    .reduce((sum, v) => (sum += v)) / length
                             );
                         }
                         function getMilestone(scores: IScore[]) {
@@ -1626,10 +1628,14 @@ export class Best50 {
                         await this.drawTextModule(ctx, currentTheme, element, {
                             username: HalfFullWidthConvert.toFullWidth(name),
                             rating: rating.toFixed(0),
-                            newScoreRatingAvg:
-                                getRatingAvg(newScores).toFixed(0),
-                            oldScoreRatingAvg:
-                                getRatingAvg(oldScores).toFixed(0),
+                            newScoreRatingAvg: getRatingAvg(
+                                newScores,
+                                15
+                            ).toFixed(0),
+                            oldScoreRatingAvg: getRatingAvg(
+                                oldScores,
+                                35
+                            ).toFixed(0),
                             newScoreRatingBase:
                                 getRatingBase(newScores).toFixed(0),
                             oldScoreRatingBase:
