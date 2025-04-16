@@ -1071,10 +1071,7 @@ export class Best50 {
         oldScores: IScore[],
         options?: { scale?: number; theme?: string; profilePicture?: Buffer }
     ): Promise<Buffer | null> {
-        await Chart.Database.cacheJackets([
-            ...newScores.map((v) => v.chart.id),
-            ...oldScores.map((v) => v.chart.id),
-        ]);
+        console.log(this.primaryTheme);
         let currentTheme = this.primaryTheme;
         if (options?.theme) {
             const theme = this.getTheme(options.theme);
@@ -1083,6 +1080,10 @@ export class Best50 {
             }
         }
         if (currentTheme) {
+            await Chart.Database.cacheJackets([
+                ...newScores.map((v) => v.chart.id),
+                ...oldScores.map((v) => v.chart.id),
+            ]);
             const canvas = new Canvas(
                 currentTheme.manifest.width * (options?.scale ?? 1),
                 currentTheme.manifest.height * (options?.scale ?? 1)
