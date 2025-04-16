@@ -267,8 +267,8 @@ export class KamaiTachi extends ScoreTrackerAdapter {
                             if (r30.length >= 30) {
                                 const best10 = r30.sort((a, b) =>
                                     a.score.rating == b.score.rating
-                                        ? a.score.score - a.score.score
-                                        : a.score.rating - b.score.rating
+                                        ? b.score.score - a.score.score
+                                        : b.score.rating - a.score.rating
                                 );
                                 for (let j = 0; j < r30.length; ++j) {
                                     if (!best10.includes(r30[j])) {
@@ -287,7 +287,14 @@ export class KamaiTachi extends ScoreTrackerAdapter {
                     }
                 }
             }
-            return r30.slice(0, 10).map((v) => v.score);
+            return r30
+                .sort((a, b) =>
+                    a.score.rating == b.score.rating
+                        ? b.score.score - a.score.score
+                        : b.score.rating - a.score.rating
+                )
+                .slice(0, 10)
+                .map((v) => v.score);
         }
         return {
             recent: ratingGuardSimulation(
