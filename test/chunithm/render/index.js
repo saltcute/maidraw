@@ -10,22 +10,40 @@ const { KamaiTachi } = require("../../../dist/chu/bests/lib/kamaiTachi");
     );
 
     const fs = require("fs");
-    const best50 = await kamai
-        .luminousPlus()
-        .getPlayerBest50("bento", KamaiTachi.EGameVersions.CHUNITHM_SUN_PLUS);
     const themes = ["jp-verse-landscape"];
+    const source = kamai.luminousPlus();
+    const username = "bento";
+    const options = {
+        // scale: 1,
+    };
     for (let theme of themes) {
+        const profile = await source.getPlayerInfo(username);
+        const score = await source.getPlayerBest50(username);
+        if (!profile || !score) return null;
         const result = await MaiDraw.Chuni.Best50.draw(
-            "CODEX♪☆＊♀∀＃＆＠",
-            16.384,
-            best50.new,
-            best50.old,
+            profile.name,
+            profile.rating,
+            score.new,
+            score.old,
             {
-                scale: 2,
-                theme,
+                ...options,
+                profilePicture:
+                    options?.profilePicture === null
+                        ? undefined
+                        : options?.profilePicture ||
+                          (await source.getPlayerProfilePicture(username)) ||
+                          undefined,
             }
         );
-        if (result) {
+        // const result = await MaiDraw.Chuni.Best50.drawWithScoreSource(
+        //     kamai.luminousPlus(),
+        //     "bento",
+        //     {
+        //         scale: 2,
+        //     }
+        // );
+        console.log(result);
+        if (result instanceof Buffer) {
             fs.writeFileSync(
                 upath.join(__dirname, `${theme}.webp`),
                 await sharp(result)
