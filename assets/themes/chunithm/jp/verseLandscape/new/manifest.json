@@ -113,20 +113,20 @@
         {
             "type": "text",
             "size": 24,
-            "x": 920,
+            "x": 915,
             "y": 278,
             "borderColor": "#226180",
             "align": "left",
-            "content": "NEW\nOLD\nNAIVE 50"
+            "content": "NEW\nOLD\nNAIVE 30/50"
         },
         {
             "type": "text",
             "size": 24,
-            "x": 1050,
+            "x": 1080,
             "y": 278,
             "borderColor": "#226180",
             "align": "left",
-            "content": "scores average: {newScoreRatingAvg}\nscores average: {oldScoreRatingAvg}\nscores average: {naiveBest50}"
+            "content": "average: {newScoreRatingAvg}\naverage: {oldScoreRatingAvg}\naverage: {naiveBest30}/{naiveBest50}"
         }
     ]
 }

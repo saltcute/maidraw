@@ -117,7 +117,16 @@
             "y": 405,
             "borderColor": "#226180",
             "align": "left",
-            "content": "BEST\nRECENT\nNAIVE 50"
+            "content": "RECENT\nBEST\nNAIVE 50"
+        },
+        {
+            "type": "text",
+            "size": 11,
+            "x": 147,
+            "y": 438,
+            "borderColor": "#226180",
+            "align": "left",
+            "content": "NAIVE 30"
         },
         {
             "type": "text",
@@ -126,7 +135,7 @@
             "y": 405,
             "borderColor": "#226180",
             "align": "left",
-            "content": "scores average: {oldScoreRatingAvg}\nscores average: {newScoreRatingAvg}\nscores average: {naiveBest50}"
+            "content": "scores average: {newScoreRatingAvg}\nscores average: {oldScoreRatingAvg}\nscores average: {naiveBest50}"
         }
     ]
 }
