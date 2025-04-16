@@ -11,8 +11,8 @@ const { KamaiTachi } = require("../../../dist/chu/bests/lib/kamaiTachi");
 
     const fs = require("fs");
     const themes = ["jp-verse-landscape"];
-    const source = kamai.luminousPlus();
-    const username = "salt";
+    const source = kamai.verse();
+    const username = "codex";
     const options = {
         scale: 2,
     };
