@@ -511,7 +511,7 @@ export class Best50 {
 
             /** Begin Jacket Draw*/
             let jacket = await Chart.Database.fecthJacket(score.chart.id);
-            if (!jacket) jacket = await Chart.Database.fecthJacket(0);
+            if (!jacket) jacket = await Chart.Database.fecthJacket(-1);
             if (jacket) {
                 const img = new Image();
                 img.src = jacket;
