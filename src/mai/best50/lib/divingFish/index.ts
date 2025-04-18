@@ -97,7 +97,7 @@ export class DivingFish extends ScoreTrackerAdapter {
     }
     async getPlayerBest50(username: string) {
         const pbs = await this.getPlayerRawBest50(username);
-        if (!pbs) {
+        if (!pbs?.records) {
             return null;
         }
         let chartList: IChart[] = [];
