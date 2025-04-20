@@ -1,30 +1,35 @@
 const sharp = require("sharp");
 const upath = require("upath");
-const { KamaiTachi } = require("../../../dist/chu/bests/lib/kamaiTachi");
 
 (async () => {
-    const kamai = new KamaiTachi();
     const { MaiDraw } = require("../../../dist");
-    MaiDraw.Chuni.Chart.Database.setLocalDatabasePath(
+    const kamai = new MaiDraw.Maimai.Best50.KamaiTachi();
+    MaiDraw.Maimai.Chart.Database.setLocalDatabasePath(
         "../maimai-songs-database"
     );
 
     const fs = require("fs");
-    const themes = ["jp-verse-landscape-recents", "jp-verse-landscape-new"];
-    const source = kamai.verse();
-    const username = "salt";
+
+    const themes = ["jp-prismplus-landscape"];
+    const user = "salt";
+    const profile = await kamai.getPlayerInfo(user, {
+        use: "AP",
+    });
+    const score = await kamai.getPlayerBest50(user, {
+        use: "AP",
+    });
     for (let theme of themes) {
-        const options = {
-            scale: 2,
-            type: theme.endsWith("-new") ? "new" : "recents",
-            theme,
-        };
-        const result = await MaiDraw.Chuni.Best50.drawWithScoreSource(
-            source,
-            username,
-            options
+        const result = await MaiDraw.Maimai.Best50.draw(
+            "SALT♪☆＊♀∀＃＆＠",
+            profile.rating,
+            score.new,
+            score.old,
+            {
+                scale: 2,
+                theme,
+            }
         );
-        if (result instanceof Buffer) {
+        if (result) {
             fs.writeFileSync(
                 upath.join(__dirname, `${theme}.webp`),
                 await sharp(result)

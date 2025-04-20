@@ -1,6 +1,16 @@
 switch (process.argv[2]) {
     case "maimai":
-        require("./maimai");
+        switch (process.argv[3]) {
+            case "render":
+                require("./maimai/render");
+                break;
+            case "kamaifilters":
+                require("./maimai/kamaifilters");
+                break;
+            default:
+                console.log("No test found.");
+                break;
+        }
         break;
     case "chunithm":
         switch (process.argv[3]) {
