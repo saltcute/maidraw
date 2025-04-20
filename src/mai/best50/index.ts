@@ -88,6 +88,45 @@ export class Best50 {
     static KamaiTachi = KamaiTachi;
     static DivingFish = DivingFish;
 
+    static readonly RATING_CONSTANTS = {
+        [EAchievementTypes.D]: {
+            [0.4]: 6.4,
+            [0.3]: 4.8,
+            [0.2]: 3.2,
+            [0.1]: 1.6,
+            [0]: 0,
+        },
+        [EAchievementTypes.C]: 13.6,
+        [EAchievementTypes.B]: 13.6,
+        [EAchievementTypes.BB]: 13.6,
+        [EAchievementTypes.BBB]: 13.6,
+        [EAchievementTypes.A]: 13.6,
+        [EAchievementTypes.AA]: 15.2,
+        [EAchievementTypes.AAA]: 16.8,
+        [EAchievementTypes.S]: 20.0,
+        [EAchievementTypes.SP]: 20.3,
+        [EAchievementTypes.SS]: 20.8,
+        [EAchievementTypes.SSP]: 21.1,
+        [EAchievementTypes.SSS]: 21.6,
+        [EAchievementTypes.SSSP]: 22.4,
+    };
+    static readonly RANK_BORDERS = {
+        [EAchievementTypes.D]: [0.0, 0.1, 0.2, 0.3, 0.4],
+        [EAchievementTypes.C]: 0.5,
+        [EAchievementTypes.B]: 0.6,
+        [EAchievementTypes.BB]: 0.7,
+        [EAchievementTypes.BBB]: 0.75,
+        [EAchievementTypes.A]: 0.8,
+        [EAchievementTypes.AA]: 0.9,
+        [EAchievementTypes.AAA]: 0.94,
+        [EAchievementTypes.S]: 0.97,
+        [EAchievementTypes.SP]: 0.98,
+        [EAchievementTypes.SS]: 0.99,
+        [EAchievementTypes.SSP]: 0.995,
+        [EAchievementTypes.SSS]: 1.0,
+        [EAchievementTypes.SSSP]: 1.005,
+    };
+
     private static readonly DEFAULT_THEME = "jp-prism-landscape";
 
     private static get assetsPath() {
@@ -1288,13 +1327,55 @@ export class Best50 {
                         break;
                     }
                     case "text": {
-                        function getRatingBase(scores: IScore[]) {
+                        const getRatingBase = (
+                            scores: IScore[],
+                            length: number
+                        ) => {
+                            if (scores.length < length) return 0;
                             return (
                                 scores
-                                    .map((v) => v.dxRating)
+                                    .slice(0, length)
+                                    .map((v) => {
+                                        let ratingConstant = 0;
+                                        if (
+                                            v.achievementRank ==
+                                            EAchievementTypes.D
+                                        ) {
+                                            if (v.achievement > 40)
+                                                ratingConstant =
+                                                    this.RATING_CONSTANTS[
+                                                        v.achievementRank
+                                                    ]["0.4"];
+                                            if (v.achievement > 30)
+                                                ratingConstant =
+                                                    this.RATING_CONSTANTS[
+                                                        v.achievementRank
+                                                    ]["0.3"];
+                                            if (v.achievement > 20)
+                                                ratingConstant =
+                                                    this.RATING_CONSTANTS[
+                                                        v.achievementRank
+                                                    ]["0.2"];
+                                            if (v.achievement > 10)
+                                                ratingConstant =
+                                                    this.RATING_CONSTANTS[
+                                                        v.achievementRank
+                                                    ]["0.1"];
+                                        } else {
+                                            ratingConstant =
+                                                this.RATING_CONSTANTS[
+                                                    v.achievementRank
+                                                ];
+                                        }
+                                        return (
+                                            (v.achievement / 100) *
+                                            ratingConstant *
+                                            v.chart.level
+                                        );
+                                    })
                                     .sort((a, b) => a - b)[0] || 0
                             );
-                        }
+                        };
                         function getRatingAvg(
                             scores: IScore[],
                             length: number
@@ -1306,323 +1387,45 @@ export class Best50 {
                                     .reduce((sum, v) => (sum += v)) / length
                             );
                         }
-                        function getMilestone(scores: IScore[]) {
-                            const MILESTONES_SSSP: Record<string, number> = {
-                                "15.0": 337,
-                                "14.9": 335,
-                                "14.8": 333,
-                                "14.7": 330,
-                                "14.6": 328,
-                                "14.5": 326,
-                                "14.4": 324,
-                                "14.3": 321,
-                                "14.2": 319,
-                                "14.1": 317,
-                                "14.0": 315,
-                                "13.9": 312,
-                                "13.8": 310,
-                                "13.7": 308,
-                                "13.6": 306,
-                                "13.5": 303,
-                                "13.4": 301,
-                                "13.3": 299,
-                                "13.2": 297,
-                                "13.1": 294,
-                                "13.0": 292,
-                                "12.9": 290,
-                                "12.8": 288,
-                                "12.7": 285,
-                                "12.6": 283,
-                                "12.5": 281,
-                                "12.4": 279,
-                                "12.3": 276,
-                                "12.2": 274,
-                                "12.1": 272,
-                                "12.0": 270,
-                                "11.9": 267,
-                                "11.8": 265,
-                                "11.7": 263,
-                                "11.6": 261,
-                                "11.5": 258,
-                                "11.4": 256,
-                                "11.3": 254,
-                                "11.2": 252,
-                                "11.1": 249,
-                                "11.0": 247,
-                                "10.9": 245,
-                                "10.8": 243,
-                                "10.7": 240,
-                                "10.6": 238,
-                                "10.5": 236,
-                                "10.4": 234,
-                                "10.3": 231,
-                                "10.2": 229,
-                                "10.1": 227,
-                                "10.0": 225,
-                                "9.9": 222,
-                                "9.8": 220,
-                                "9.7": 218,
-                                "9.6": 216,
-                                "9.5": 213,
-                                "9.4": 211,
-                                "9.3": 209,
-                                "9.2": 207,
-                                "9.1": 204,
-                                "9.0": 202,
-                                "8.9": 200,
-                                "8.8": 198,
-                                "8.7": 195,
-                                "8.6": 193,
-                                "8.5": 191,
-                                "8.4": 189,
-                                "8.3": 186,
-                                "8.2": 184,
-                                "8.1": 182,
-                                "8.0": 180,
-                                "7.9": 177,
-                                "7.8": 175,
-                                "7.7": 173,
-                                "7.6": 171,
-                                "7.5": 168,
-                                "7.4": 166,
-                                "7.3": 164,
-                                "7.2": 162,
-                                "7.1": 159,
-                                "7.0": 157,
-                                "6.9": 155,
-                                "6.8": 153,
-                                "6.7": 150,
-                                "6.6": 148,
-                                "6.5": 146,
-                                "6.4": 144,
-                                "6.3": 141,
-                                "6.2": 139,
-                                "6.1": 137,
-                                "6.0": 135,
-                                "5.9": 132,
-                                "5.8": 130,
-                                "5.7": 128,
-                                "5.6": 126,
-                                "5.5": 123,
-                                "5.4": 121,
-                                "5.3": 119,
-                                "5.2": 117,
-                                "5.1": 114,
-                                "5.0": 112,
-                                "4.9": 110,
-                                "4.8": 108,
-                                "4.7": 105,
-                                "4.6": 103,
-                                "4.5": 101,
-                                "4.4": 99,
-                                "4.3": 96,
-                                "4.2": 94,
-                                "4.1": 92,
-                                "4.0": 90,
-                                "3.9": 87,
-                                "3.8": 85,
-                                "3.7": 83,
-                                "3.6": 81,
-                                "3.5": 78,
-                                "3.4": 76,
-                                "3.3": 74,
-                                "3.2": 72,
-                                "3.1": 69,
-                                "3.0": 67,
-                                "2.9": 65,
-                                "2.8": 63,
-                                "2.7": 60,
-                                "2.6": 58,
-                                "2.5": 56,
-                                "2.4": 54,
-                                "2.3": 51,
-                                "2.2": 49,
-                                "2.1": 47,
-                                "2.0": 45,
-                                "1.9": 42,
-                                "1.8": 40,
-                                "1.7": 38,
-                                "1.6": 36,
-                                "1.5": 33,
-                                "1.4": 31,
-                                "1.3": 29,
-                                "1.2": 27,
-                                "1.1": 24,
-                                "1.0": 22,
-                            };
-                            const MILESTONES_SSS: Record<string, number> = {
-                                "15.0": 324,
-                                "14.9": 321,
-                                "14.8": 319,
-                                "14.7": 317,
-                                "14.6": 315,
-                                "14.5": 313,
-                                "14.4": 311,
-                                "14.3": 308,
-                                "14.2": 306,
-                                "14.1": 304,
-                                "14.0": 302,
-                                "13.9": 300,
-                                "13.8": 298,
-                                "13.7": 295,
-                                "13.6": 293,
-                                "13.5": 291,
-                                "13.4": 289,
-                                "13.3": 287,
-                                "13.2": 285,
-                                "13.1": 282,
-                                "13.0": 280,
-                                "12.9": 278,
-                                "12.8": 276,
-                                "12.7": 274,
-                                "12.6": 272,
-                                "12.5": 270,
-                                "12.4": 267,
-                                "12.3": 265,
-                                "12.2": 263,
-                                "12.1": 261,
-                                "12.0": 259,
-                                "11.9": 257,
-                                "11.8": 254,
-                                "11.7": 252,
-                                "11.6": 250,
-                                "11.5": 248,
-                                "11.4": 246,
-                                "11.3": 244,
-                                "11.2": 241,
-                                "11.1": 239,
-                                "11.0": 237,
-                                "10.9": 235,
-                                "10.8": 233,
-                                "10.7": 231,
-                                "10.6": 228,
-                                "10.5": 226,
-                                "10.4": 224,
-                                "10.3": 222,
-                                "10.2": 220,
-                                "10.1": 218,
-                                "10.0": 216,
-                                "9.9": 213,
-                                "9.8": 211,
-                                "9.7": 209,
-                                "9.6": 207,
-                                "9.5": 205,
-                                "9.4": 203,
-                                "9.3": 200,
-                                "9.2": 198,
-                                "9.1": 196,
-                                "9.0": 194,
-                                "8.9": 192,
-                                "8.8": 190,
-                                "8.7": 187,
-                                "8.6": 185,
-                                "8.5": 183,
-                                "8.4": 181,
-                                "8.3": 179,
-                                "8.2": 177,
-                                "8.1": 174,
-                                "8.0": 172,
-                                "7.9": 170,
-                                "7.8": 168,
-                                "7.7": 166,
-                                "7.6": 164,
-                                "7.5": 162,
-                                "7.4": 159,
-                                "7.3": 157,
-                                "7.2": 155,
-                                "7.1": 153,
-                                "7.0": 151,
-                                "6.9": 149,
-                                "6.8": 146,
-                                "6.7": 144,
-                                "6.6": 142,
-                                "6.5": 140,
-                                "6.4": 138,
-                                "6.3": 136,
-                                "6.2": 133,
-                                "6.1": 131,
-                                "6.0": 129,
-                                "5.9": 127,
-                                "5.8": 125,
-                                "5.7": 123,
-                                "5.6": 120,
-                                "5.5": 118,
-                                "5.4": 116,
-                                "5.3": 114,
-                                "5.2": 112,
-                                "5.1": 110,
-                                "5.0": 108,
-                                "4.9": 105,
-                                "4.8": 103,
-                                "4.7": 101,
-                                "4.6": 99,
-                                "4.5": 97,
-                                "4.4": 95,
-                                "4.3": 92,
-                                "4.2": 90,
-                                "4.1": 88,
-                                "4.0": 86,
-                                "3.9": 84,
-                                "3.8": 82,
-                                "3.7": 79,
-                                "3.6": 77,
-                                "3.5": 75,
-                                "3.4": 73,
-                                "3.3": 71,
-                                "3.2": 69,
-                                "3.1": 66,
-                                "3.0": 64,
-                                "2.9": 62,
-                                "2.8": 60,
-                                "2.7": 58,
-                                "2.6": 56,
-                                "2.5": 54,
-                                "2.4": 51,
-                                "2.3": 49,
-                                "2.2": 47,
-                                "2.1": 45,
-                                "2.0": 43,
-                                "1.9": 41,
-                                "1.8": 38,
-                                "1.7": 36,
-                                "1.6": 34,
-                                "1.5": 32,
-                                "1.4": 30,
-                                "1.3": 28,
-                                "1.2": 25,
-                                "1.1": 23,
-                                "1.0": 21,
-                            };
-                            const base = getRatingBase(scores);
-                            let sssTarget, ssspTarget;
-                            for (const level in MILESTONES_SSSP) {
-                                const rating = MILESTONES_SSSP[level];
-                                if (base >= rating) {
-                                    if (level == "15.0") {
-                                        ssspTarget = undefined;
-                                    } else {
-                                        ssspTarget = level;
-                                    }
-                                    break;
-                                }
+                        const getRatingTargetLevel = (
+                            rating: number,
+                            target: EAchievementTypes
+                        ) => {
+                            if (target == EAchievementTypes.D) {
+                                return 0;
                             }
-                            for (const level in MILESTONES_SSS) {
-                                const rating = MILESTONES_SSS[level];
-                                if (base >= rating) {
-                                    if (level == "15.0") {
-                                        sssTarget = undefined;
-                                    } else {
-                                        sssTarget = level;
-                                    }
-                                    break;
-                                }
+                            const naiveNevel =
+                                rating /
+                                (this.RATING_CONSTANTS[target] *
+                                    this.RANK_BORDERS[target]);
+                            return Math.ceil(naiveNevel * 10) / 10;
+                        };
+                        function getMilestone(
+                            scores: IScore[],
+                            length: number
+                        ) {
+                            const base = getRatingBase(scores, length);
+                            let sssTarget, ssspTarget;
+                            const sssLevel = getRatingTargetLevel(
+                                base,
+                                EAchievementTypes.SSS
+                            );
+                            const ssspLevel = getRatingTargetLevel(
+                                base,
+                                EAchievementTypes.SSSP
+                            );
+                            if (sssLevel > 0 && sssLevel < 15) {
+                                sssTarget = sssLevel;
+                            }
+                            if (ssspLevel > 0 && ssspLevel < 15) {
+                                ssspTarget = ssspLevel;
                             }
                             if (sssTarget && ssspTarget)
-                                return `Next rating boost: lv. ${(parseFloat(ssspTarget) + 0.1).toFixed(1)} SSS+/${(parseFloat(sssTarget) + 0.1).toFixed(1)} SSS`;
+                                return `Next rating boost: lv. ${ssspTarget.toFixed(1)} SSS+/${sssTarget.toFixed(1)} SSS`;
                             else if (sssTarget)
-                                return `Next rating boost: lv. ${(parseFloat(sssTarget) + 0.1).toFixed(1)} SSS`;
+                                return `Next rating boost: lv. ${sssTarget.toFixed(1)} SSS`;
                             else if (ssspTarget)
-                                return `Next rating boost: lv. ${(parseFloat(ssspTarget) + 0.1).toFixed(1)} SSS+`;
+                                return `Next rating boost: lv. ${ssspTarget.toFixed(1)} SSS+`;
                             else return "Good job!";
                         }
                         await this.drawTextModule(ctx, currentTheme, element, {
@@ -1636,12 +1439,16 @@ export class Best50 {
                                 oldScores,
                                 35
                             ).toFixed(0),
-                            newScoreRatingBase:
-                                getRatingBase(newScores).toFixed(0),
-                            oldScoreRatingBase:
-                                getRatingBase(oldScores).toFixed(0),
-                            newScoreMilestone: getMilestone(newScores),
-                            oldScoreMilestone: getMilestone(oldScores),
+                            newScoreRatingBase: getRatingBase(
+                                newScores,
+                                15
+                            ).toFixed(0),
+                            oldScoreRatingBase: getRatingBase(
+                                oldScores,
+                                30
+                            ).toFixed(0),
+                            newScoreMilestone: getMilestone(newScores, 15),
+                            oldScoreMilestone: getMilestone(oldScores, 30),
                         });
                         break;
                     }
