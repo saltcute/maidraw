@@ -8,7 +8,7 @@
     "clean": "rimraf dist/*",
     "make": "npm run clean && npm run lint && npm run build",
     "lint": "prettier './src/**/*.ts' --write",
-    "test": "export LOG_LEVEL=trace && npm run make && node ./test/test.js"
+    "test": "export LOG_LEVEL=debug && npm run make && node ./test/test.js"
   },
   "repository": {
     "type": "git",
