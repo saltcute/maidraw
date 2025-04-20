@@ -137,9 +137,51 @@ export class KamaiTachi extends ScoreTrackerAdapter {
     }
     async getPlayerBest50(
         userId: string,
-        currentVersion = this.CURRENT_VERSION,
-        omnimix = true
+        {
+            currentVersion = this.CURRENT_VERSION,
+            omnimix = true,
+            use = "ALL",
+        }: {
+            currentVersion?: KamaiTachi.EGameVersions;
+            omnimix?: boolean;
+            use?: "AP" | "FC" | "ALL";
+        } = {}
     ) {
+        function APFilter(score: {
+            chart: KamaiTachi.IChart;
+            song: KamaiTachi.ISong;
+            pb: KamaiTachi.IPb;
+        }) {
+            return (
+                score.pb.scoreData.lamp == "ALL PERFECT" ||
+                score.pb.scoreData.lamp == "ALL PERFECT+"
+            );
+        }
+        function FCFilter(score: {
+            chart: KamaiTachi.IChart;
+            song: KamaiTachi.ISong;
+            pb: KamaiTachi.IPb;
+        }) {
+            return (
+                score.pb.scoreData.lamp == "FULL COMBO" ||
+                score.pb.scoreData.lamp == "FULL COMBO+"
+            );
+        }
+        function useFilter(score: {
+            chart: KamaiTachi.IChart;
+            song: KamaiTachi.ISong;
+            pb: KamaiTachi.IPb;
+        }) {
+            switch (use) {
+                case "AP":
+                    return APFilter(score);
+                case "FC":
+                    return APFilter(score) || FCFilter(score);
+                case "ALL":
+                default:
+                    return true;
+            }
+        }
         const rawPBs = await this.getPlayerPB(userId);
         if (!rawPBs?.body) return null;
         const pbs: {
@@ -154,26 +196,30 @@ export class KamaiTachi extends ScoreTrackerAdapter {
                 pbs.push({ pb, chart, song });
             }
         }
-        const newScores = pbs.filter(
-            (v) => v.chart.data.displayVersion == currentVersion // Assume new scores does not have omnimix charts.
-        );
-        const oldScores = pbs.filter(
-            (v) =>
-                // Chart exists
-                v.chart &&
-                // Chart version is older than current Version
-                KamaiTachi.compareGameVersions(
-                    currentVersion,
-                    v.chart.data.displayVersion
-                ) > 0 &&
-                (omnimix || // Omnimix is enabled, all charts are included.
-                    !(
-                        (
-                            v.chart.versions[0].includes("-omni") && // Alternatively, if omnimix is disabled, check if the chart is included in omnimix folder of the latest version, (which should always happen).
-                            v.chart.versions[1].includes("-omni")
-                        ) // Then check if the second last version is a omnimix folder. If two omnimix folders occur in a row, it is a omnimix chart.
-                    )) // Reject that case.
-        );
+        const newScores = pbs
+            .filter(
+                (v) => v.chart.data.displayVersion == currentVersion // Assume new scores does not have omnimix charts.
+            )
+            .filter(useFilter);
+        const oldScores = pbs
+            .filter(
+                (v) =>
+                    // Chart exists
+                    v.chart &&
+                    // Chart version is older than current Version
+                    KamaiTachi.compareGameVersions(
+                        currentVersion,
+                        v.chart.data.displayVersion
+                    ) > 0 &&
+                    (omnimix || // Omnimix is enabled, all charts are included.
+                        !(
+                            (
+                                v.chart.versions[0].includes("-omni") && // Alternatively, if omnimix is disabled, check if the chart is included in omnimix folder of the latest version, (which should always happen).
+                                v.chart.versions[1].includes("-omni")
+                            ) // Then check if the second last version is a omnimix folder. If two omnimix folders occur in a row, it is a omnimix chart.
+                        )) // Reject that case.
+            )
+            .filter(useFilter);
         return {
             new: newScores
                 .sort((a, b) =>
@@ -193,9 +239,20 @@ export class KamaiTachi extends ScoreTrackerAdapter {
                 .map((v) => this.toMaiDrawScore(v.pb, v.chart, v.song)),
         };
     }
-    async getPlayerInfo(userId: string) {
+    async getPlayerInfo(
+        userId: string,
+        options: {
+            currentVersion?: KamaiTachi.EGameVersions;
+            omnimix?: boolean;
+            use?: "AP" | "FC" | "ALL";
+        } = {
+            currentVersion: this.CURRENT_VERSION,
+            omnimix: true,
+            use: "ALL",
+        }
+    ) {
         const profile = await this.getPlayerProfileRaw(userId);
-        const scores = await this.getPlayerBest50(userId);
+        const scores = await this.getPlayerBest50(userId, options);
         if (!profile?.body || !scores) return null;
         let dxRating = 0;
         [...scores.new, ...scores.old].forEach((v) => (dxRating += v.dxRating));
