@@ -25,6 +25,19 @@ switch (process.argv[2]) {
                 break;
         }
         break;
+    case "ongeki":
+        switch (process.argv[3]) {
+            case "render":
+                require("./ongeki/render");
+                break;
+            case "jacket":
+                require("./ongeki/jacket");
+                break;
+            default:
+                console.log("No test found.");
+                break;
+        }
+        break;
     default:
         console.log("No test found.");
         break;
