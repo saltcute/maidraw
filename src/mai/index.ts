@@ -1,6 +1,5 @@
-import { Best50 } from "./best50";
-import { Chart } from "./chart";
-
+import * as bests from "./best50";
+import * as chart from "./chart";
 import Bunyan from "bunyan";
 
 export class Maimai {
@@ -34,6 +33,8 @@ export class Maimai {
             },
         ],
     });
-    static Best50 = Best50;
-    static Chart = Chart;
+}
+export namespace Maimai {
+    export import Best50 = bests.Best50;
+    export import Chart = chart.Chart;
 }

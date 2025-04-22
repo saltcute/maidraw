@@ -27,10 +27,11 @@ import sharp from "sharp";
 import { globSync } from "glob";
 import ScoreTrackerAdapter from "./lib";
 import { Chart } from "../chart";
-import { LXNS } from "./lib/lxns";
-import { KamaiTachi } from "./lib/kamaiTachi";
-import { DivingFish } from "./lib/divingFish";
 import stringFormat from "string-template";
+
+import * as lxns from "./lib/lxns";
+import * as kamaiTachi from "./lib/kamaiTachi";
+import * as divingFish from "./lib/divingFish";
 
 class HalfFullWidthConvert {
     private static readonly charsets = {
@@ -84,10 +85,6 @@ interface ITheme {
 }
 
 export class Best50 {
-    static LXNS = LXNS;
-    static KamaiTachi = KamaiTachi;
-    static DivingFish = DivingFish;
-
     static readonly RATING_CONSTANTS = {
         [EAchievementTypes.D]: {
             [0.4]: 6.4,
@@ -1527,4 +1524,9 @@ export class Best50 {
         }
         return null;
     }
+}
+export namespace Best50 {
+    export import LXNS = lxns.LXNS;
+    export import KamaiTachi = kamaiTachi.KamaiTachi;
+    export import DivingFish = divingFish.DivingFish;
 }

@@ -25,9 +25,10 @@ import Color from "color";
 import sharp from "sharp";
 import { globSync } from "glob";
 import ScoreTrackerAdapter from "./lib";
-import { KamaiTachi } from "./lib/kamaiTachi";
 import stringFormat from "string-template";
 import { Chart } from "@maidraw/chu/chart";
+
+import * as kamaiTachi from "./lib/kamaiTachi";
 
 class HalfFullWidthConvert {
     private static readonly charsets = {
@@ -81,8 +82,6 @@ interface ITheme {
 }
 
 export class Best50 {
-    static KamaiTachi = KamaiTachi;
-
     private static readonly DEFAULT_THEME = "jp-verse-landscape-new";
 
     private static primaryTheme: ITheme | null = null;
@@ -1284,4 +1283,7 @@ export class Best50 {
         }
         return null;
     }
+}
+export namespace Best50 {
+    export import KamaiTachi = kamaiTachi.KamaiTachi;
 }

@@ -1,5 +1,5 @@
-import { Database } from "./database";
+import * as database from "./database";
 
-export class Chart {
-    static Database = Database;
+export namespace Chart {
+    export import Database = database.Database;
 }

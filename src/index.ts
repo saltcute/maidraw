@@ -1,9 +1,9 @@
-import { Chuni } from "./chu";
-import { Geki } from "./geki";
-import { Maimai } from "./mai";
+import * as geki from "./geki";
+import * as chu from "./chu";
+import * as mai from "./mai";
 
-export class MaiDraw {
-    static Maimai = Maimai;
-    static Chuni = Chuni;
-    static Geki = Geki;
+export namespace MaiDraw {
+    export import Maimai = mai.Maimai;
+    export import Chuni = chu.Chuni;
+    export import Geki = geki.Geki;
 }

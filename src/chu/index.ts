@@ -1,6 +1,5 @@
-import { Best50 } from "./bests";
-import { Chart } from "./chart";
-
+import * as bests from "./bests";
+import * as chart from "./chart";
 import Bunyan from "bunyan";
 
 export class Chuni {
@@ -34,6 +33,8 @@ export class Chuni {
             },
         ],
     });
-    static Best50 = Best50;
-    static Chart = Chart;
+}
+export namespace Chuni {
+    export import Best50 = bests.Best50;
+    export import Chart = chart.Chart;
 }
