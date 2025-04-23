@@ -9,7 +9,7 @@ const upath = require("upath");
     );
 
     const fs = require("fs");
-    const themes = ["jp-refresh-landscape-refresh"];
+    const themes = ["jp-refresh-landscape-classic", "jp-refresh-landscape-refresh"];
     const source = kamai.brightMemoryAct3();
     const username = "Cuvetan";
     for (let theme of themes) {

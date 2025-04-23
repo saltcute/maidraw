@@ -8,9 +8,10 @@ export class Cache {
     constructor() {
         this.memCache = new MemCache<string, any>();
         this.redisClient = createClient();
-        this.redisClient.on("error", (e) => {
-            console.error("Redis error", e);
+        this.redisClient.on("error", async (e) => {
+            console.error("Redis connection error, using memory-cache");
             this.isRedisAvailable = false;
+            await this.redisClient.disconnect();
         });
         this.redisClient.connect();
     }

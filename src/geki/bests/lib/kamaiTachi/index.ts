@@ -20,6 +20,36 @@ export class KamaiTachi extends ScoreTrackerAdapter {
         this.CURRENT_VERSION = currentVersion;
     }
 
+    getPlatinumScore(score: KamaiTachi.IScore | KamaiTachi.IPb) {
+        const ASSUMED_PLAT_SCORE_RATE = 0;
+        let platScore = 0;
+        if (score.scoreData.optional.platScore)
+            platScore = score.scoreData.optional.platScore;
+        else {
+            platScore =
+                (1 + ASSUMED_PLAT_SCORE_RATE) *
+                score.scoreData.judgements.cbreak;
+            if (score.scoreData.optional.damage)
+                platScore -= 2 * score.scoreData.optional.damage;
+            if (
+                score.scoreData.optional.totalBellCount &&
+                score.scoreData.optional.bellCount
+            )
+                platScore -=
+                    2 *
+                    (score.scoreData.optional.totalBellCount -
+                        score.scoreData.optional.bellCount);
+        }
+        return platScore;
+    }
+
+    getPlatinumScoreRatio(
+        chart: KamaiTachi.IChart,
+        score: KamaiTachi.IScore | KamaiTachi.IPb
+    ) {
+        return this.getPlatinumScore(score) / chart.data.maxPlatScore;
+    }
+
     async getPlayerPB(userId: string) {
         return this.get<
             KamaiTachi.IResponse<{
@@ -97,7 +127,7 @@ export class KamaiTachi extends ScoreTrackerAdapter {
                 }
             })(),
             score: score.scoreData.score,
-            platinumScore: score.scoreData.optional.platScore || 0,
+            platinumScore: this.getPlatinumScore(score),
             rank: (() => {
                 switch (score.scoreData.grade) {
                     case "C":
@@ -255,27 +285,9 @@ export class KamaiTachi extends ScoreTrackerAdapter {
                 .slice(0, 50),
             plat: bestScores
                 .sort((a, b) => {
-                    function getPlatinumScore(
-                        score: KamaiTachi.IScore | KamaiTachi.IPb
-                    ) {
-                        if (score.scoreData.optional.platScore)
-                            return score.scoreData.optional.platScore;
-                        let platScore =
-                            score.scoreData.judgements.cbreak * 2 +
-                            score.scoreData.judgements.break;
-                        if (score.scoreData.optional.damage)
-                            platScore -= score.scoreData.optional.damage;
-                        if (
-                            score.scoreData.optional.totalBellCount &&
-                            score.scoreData.optional.bellCount
-                        )
-                            platScore -=
-                                score.scoreData.optional.totalBellCount -
-                                score.scoreData.optional.bellCount;
-                        return platScore;
-                    }
                     return (
-                        getPlatinumScore(b.pb) - getPlatinumScore(a.pb) ||
+                        this.getPlatinumScoreRatio(b.chart, b.pb) -
+                            this.getPlatinumScoreRatio(a.chart, a.pb) ||
                         b.pb.calculatedData.rating -
                             a.pb.calculatedData.rating ||
                         b.pb.scoreData.score - a.pb.scoreData.score

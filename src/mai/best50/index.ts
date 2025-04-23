@@ -929,7 +929,9 @@ export class Best50 {
         {
             this.drawText(
                 ctx,
-                `${score.chart.level.toFixed(1)}  ↑${score.dxRating.toFixed(0)}`,
+                `${score.chart.level.toFixed(1)}  ↑${score.dxRating.toFixed(
+                    0
+                )}`,
                 x + element.scoreBubble.margin * 2,
                 y + element.scoreBubble.height * (0.806 + (1 - 0.806) / 2),
                 element.scoreBubble.height * 0.806 * 0.128,
@@ -1418,11 +1420,17 @@ export class Best50 {
                                 ssspTarget = ssspLevel;
                             }
                             if (sssTarget && ssspTarget)
-                                return `Next rating boost: lv. ${ssspTarget.toFixed(1)} SSS+/${sssTarget.toFixed(1)} SSS`;
+                                return `Next rating boost: lv. ${ssspTarget.toFixed(
+                                    1
+                                )} SSS+/${sssTarget.toFixed(1)} SSS`;
                             else if (sssTarget)
-                                return `Next rating boost: lv. ${sssTarget.toFixed(1)} SSS`;
+                                return `Next rating boost: lv. ${sssTarget.toFixed(
+                                    1
+                                )} SSS`;
                             else if (ssspTarget)
-                                return `Next rating boost: lv. ${ssspTarget.toFixed(1)} SSS+`;
+                                return `Next rating boost: lv. ${ssspTarget.toFixed(
+                                    1
+                                )} SSS+`;
                             else return "Good job!";
                         }
                         await this.drawTextModule(ctx, currentTheme, element, {

@@ -23,12 +23,23 @@ export default abstract class ScoreTrackerAdapter {
         cacheTTL: number = 30 * 60 * 1000,
         options: axios.AxiosRequestConfig = {}
     ): Promise<T | undefined> {
-        const cacheKey = `${this.axios.defaults.baseURL}${endpoint}${data ? `-${JSON.stringify(data).substring(0, this.MAX_LOG_LENGTH)}` : ""}`;
+        const cacheKey = `${this.axios.defaults.baseURL}${endpoint}${
+            data
+                ? `-${JSON.stringify(data).substring(0, this.MAX_LOG_LENGTH)}`
+                : ""
+        }`;
         if (cacheTTL > 0) {
             const cacheContent = await this.cache.get(cacheKey);
             if (cacheContent) {
                 Geki.logger.trace(
-                    `GET ${endpoint}${data ? ` ${JSON.stringify(data).substring(0, this.MAX_LOG_LENGTH)}` : ""}, cache HIT`
+                    `GET ${endpoint}${
+                        data
+                            ? ` ${JSON.stringify(data).substring(
+                                  0,
+                                  this.MAX_LOG_LENGTH
+                              )}`
+                            : ""
+                    }, cache HIT`
                 );
                 return cacheContent as T;
             }
@@ -47,7 +58,14 @@ export default abstract class ScoreTrackerAdapter {
             });
         const timeDifference = Date.now() - beginTimestamp;
         Geki.logger.trace(
-            `GET ${endpoint}${data ? ` ${JSON.stringify(data).substring(0, this.MAX_LOG_LENGTH)}` : ""}, cache MISS, took ${timeDifference}ms`
+            `GET ${endpoint}${
+                data
+                    ? ` ${JSON.stringify(data).substring(
+                          0,
+                          this.MAX_LOG_LENGTH
+                      )}`
+                    : ""
+            }, cache MISS, took ${timeDifference}ms`
         );
         return res;
     }
@@ -62,7 +80,14 @@ export default abstract class ScoreTrackerAdapter {
             .catch((e) => e.response?.data);
         const timeDifference = Date.now() - beginTimestamp;
         Geki.logger.trace(
-            `POST ${endpoint}${data ? ` ${JSON.stringify(data).substring(0, this.MAX_LOG_LENGTH)}` : ""}, took ${timeDifference}ms`
+            `POST ${endpoint}${
+                data
+                    ? ` ${JSON.stringify(data).substring(
+                          0,
+                          this.MAX_LOG_LENGTH
+                      )}`
+                    : ""
+            }, took ${timeDifference}ms`
         );
         return res;
     }

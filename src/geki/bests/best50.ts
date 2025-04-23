@@ -835,7 +835,7 @@ export class Best50 {
         {
             this.drawText(
                 ctx,
-                `lv. ${score.chart.level.toFixed(1)}`,
+                `${score.chart.level.toFixed(1)}  ↑${score.rating.toFixed(2)}`,
                 x + element.scoreBubble.margin * 2,
                 y + element.scoreBubble.height * (0.806 + (1 - 0.806) / 2),
                 element.scoreBubble.height * 0.806 * 0.128,
@@ -846,18 +846,31 @@ export class Best50 {
                 new Color(curColor).darken(0.3).hexa()
             );
 
-            this.drawText(
-                ctx,
-                `+${score.rating.toFixed(2)}`,
-                x + element.scoreBubble.width - element.scoreBubble.margin * 2,
-                y + element.scoreBubble.height * (0.806 + (1 - 0.806) / 2),
-                element.scoreBubble.height * 0.806 * 0.128,
-                element.scoreBubble.height * 0.806 * 0.04,
-                Infinity,
-                "right",
-                "white",
-                new Color(curColor).darken(0.3).hexa()
-            );
+            if (score.platinumScore && score.chart.maxPlatinumScore)
+                this.drawText(
+                    ctx,
+                    `${score.platinumScore}/${score.chart.maxPlatinumScore}`,
+                    x +
+                        element.scoreBubble.width -
+                        element.scoreBubble.margin * 2,
+                    y + element.scoreBubble.height * (0.806 + (1 - 0.806) / 2),
+                    element.scoreBubble.height * 0.806 * 0.128,
+                    element.scoreBubble.height * 0.806 * 0.04,
+                    Infinity,
+                    "right",
+                    "white",
+                    new Color(curColor).darken(0.3).hexa()
+                );
+            else {
+                if (!score.platinumScore)
+                    console.log(
+                        `${score.chart.name} plat, ${score.platinumScore}`
+                    );
+                if (!score.chart.maxPlatinumScore)
+                    console.log(
+                        `${score.chart.name} max, ${score.platinumScore}`
+                    );
+            }
         }
         /** End Difficulty & Rating Draw */
 
@@ -1278,7 +1291,7 @@ export class Best50 {
                             ).toFixed(2),
                             oldScoreRatingAvg: getRatingAvg(
                                 oldScores,
-                                options.type == "refresh" ? 30 : 50
+                                options.type == "refresh" ? 50 : 30
                             ).toFixed(2),
                             recentOrPlatinumScoreAvg: getRatingAvg(
                                 recentOrPlatinumScores,
