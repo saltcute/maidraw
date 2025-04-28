@@ -1050,70 +1050,70 @@ export class Best50 {
             const dxRating = new Image();
             let dxRatingImg: Buffer;
             switch (true) {
-                case rating > 15000: {
+                case rating >= 15000: {
                     dxRatingImg = this.getThemeFile(
                         theme.manifest.sprites.dxRating.rainbow,
                         theme.path
                     );
                     break;
                 }
-                case rating > 14500: {
+                case rating >= 14500: {
                     dxRatingImg = this.getThemeFile(
                         theme.manifest.sprites.dxRating.platinum,
                         theme.path
                     );
                     break;
                 }
-                case rating > 14000: {
+                case rating >= 14000: {
                     dxRatingImg = this.getThemeFile(
                         theme.manifest.sprites.dxRating.gold,
                         theme.path
                     );
                     break;
                 }
-                case rating > 13000: {
+                case rating >= 13000: {
                     dxRatingImg = this.getThemeFile(
                         theme.manifest.sprites.dxRating.silver,
                         theme.path
                     );
                     break;
                 }
-                case rating > 12000: {
+                case rating >= 12000: {
                     dxRatingImg = this.getThemeFile(
                         theme.manifest.sprites.dxRating.bronze,
                         theme.path
                     );
                     break;
                 }
-                case rating > 10000: {
+                case rating >= 10000: {
                     dxRatingImg = this.getThemeFile(
                         theme.manifest.sprites.dxRating.purple,
                         theme.path
                     );
                     break;
                 }
-                case rating > 8000: {
+                case rating >= 8000: {
                     dxRatingImg = this.getThemeFile(
                         theme.manifest.sprites.dxRating.red,
                         theme.path
                     );
                     break;
                 }
-                case rating > 6000: {
+                case rating >= 6000: {
                     dxRatingImg = this.getThemeFile(
                         theme.manifest.sprites.dxRating.yellow,
                         theme.path
                     );
                     break;
                 }
-                case rating > 4000: {
+                case rating >= 4000: {
                     dxRatingImg = this.getThemeFile(
                         theme.manifest.sprites.dxRating.green,
                         theme.path
                     );
                     break;
                 }
-                case rating > 2000: {
+                case rating >= 2000: {
                     dxRatingImg = this.getThemeFile(
                         theme.manifest.sprites.dxRating.blue,
                         theme.path
