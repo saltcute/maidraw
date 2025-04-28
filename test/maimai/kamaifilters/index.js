@@ -10,7 +10,7 @@ const upath = require("upath");
 
     const fs = require("fs");
 
-    const themes = ["jp-prismplus-landscape"];
+    const themes = ["jp-prism-landscape"];
     const user = "salt";
     const profile = await kamai.getPlayerInfo(user, {
         use: "AP",
@@ -20,7 +20,8 @@ const upath = require("upath");
     });
     for (let theme of themes) {
         const result = await MaiDraw.Maimai.Best50.draw(
-            "SALT♪☆＊♀∀＃＆＠",
+            // "SALT♪☆＊♀∀＃＆＠",
+            "salt",
             profile.rating,
             score.new,
             score.old,
