@@ -5,18 +5,18 @@
     "height": 2515,
     "sprites": {
         "achievement": {
-            "d": "../../../common/refresh/achievement/d.png",
-            "c": "../../../common/refresh/achievement/c.png",
-            "b": "../../../common/refresh/achievement/b.png",
-            "bb": "../../../common/refresh/achievement/bb.png",
-            "bbb": "../../../common/refresh/achievement/bbb.png",
-            "a": "../../../common/refresh/achievement/a.png",
-            "aa": "../../../common/refresh/achievement/aa.png",
-            "aaa": "../../../common/refresh/achievement/aaa.png",
-            "s": "../../../common/refresh/achievement/s.png",
-            "ss": "../../../common/refresh/achievement/ss.png",
-            "sss": "../../../common/refresh/achievement/sss.png",
-            "sssp": "../../../common/refresh/achievement/sssp.png"
+            "d": "../../../common/versionless/achievement/d.png",
+            "c": "../../../common/versionless/achievement/c.png",
+            "b": "../../../common/versionless/achievement/b.png",
+            "bb": "../../../common/versionless/achievement/bb.png",
+            "bbb": "../../../common/versionless/achievement/bbb.png",
+            "a": "../../../common/versionless/achievement/a.png",
+            "aa": "../../../common/versionless/achievement/aa.png",
+            "aaa": "../../../common/versionless/achievement/aaa.png",
+            "s": "../../../common/versionless/achievement/s.png",
+            "ss": "../../../common/versionless/achievement/ss.png",
+            "sss": "../../../common/versionless/achievement/sss.png",
+            "sssp": "../../../common/versionless/achievement/sssp.png"
         },
         "milestone": {
             "ab": "../../../common/versionless/milestone/ab.png",
@@ -38,7 +38,7 @@
             "y": -831,
             "width": 2350,
             "height": 4178,
-            "path": "../../../common/refresh/jp/background.png"
+            "path": "../../../common/refresh/background.png"
         },
         {
             "type": "score-grid",
@@ -117,7 +117,7 @@
             "y": -100,
             "width": 616,
             "height": 500,
-            "path": "../../../common/refresh/jp/logo.png"
+            "path": "../../../common/refresh/logo.png"
         },
         {
             "type": "text",
