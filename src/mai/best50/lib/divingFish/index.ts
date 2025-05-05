@@ -9,7 +9,6 @@ import {
 } from "@maidraw/mai/type";
 import ScoreTrackerAdapter from "..";
 import { Chart } from "@maidraw/mai/chart";
-import { Cache } from "memory-cache";
 
 export namespace DivingFish {
     export interface IPlayResult {
@@ -109,7 +108,16 @@ export class DivingFish extends ScoreTrackerAdapter {
                         chart.level_index as unknown as EDifficulty
                     );
                 })
-                .filter((v) => v !== null);
+                .filter((v) => v !== null)
+                .map((v) => {
+                    return {
+                        id: v.id,
+                        name: v.name,
+                        level: v.level,
+                        difficulty: v.difficulty,
+                        maxDxScore: v.meta.maxDXScore,
+                    };
+                });
         } else {
             chartList = await this.getMaiDrawChartList();
         }

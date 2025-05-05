@@ -33,7 +33,16 @@ export class LXNS extends ScoreTrackerAdapter {
                         chart.level_index as unknown as EDifficulty
                     );
                 })
-                .filter((v) => v !== null);
+                .filter((v) => v !== null)
+                .map((v) => {
+                    return {
+                        id: v.id,
+                        name: v.name,
+                        level: v.level,
+                        difficulty: v.difficulty,
+                        maxDxScore: v.meta.maxDXScore,
+                    };
+                });
         } else {
             chartList = await this.getMaiDrawChartList();
         }

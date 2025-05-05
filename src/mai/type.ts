@@ -1,3 +1,5 @@
+import { Database } from "./chart/database";
+
 export enum EDifficulty {
     BASIC,
     ADVANCED,
