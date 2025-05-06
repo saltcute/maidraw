@@ -1,129 +1,25 @@
 import fs from "fs";
 import upath from "upath";
-import {
-    EAchievementTypes,
-    EComboTypes,
-    EDifficulty,
-    ESyncTypes,
-    IScore,
-} from "@maidraw/mai/type";
-import {
-    IThemeImageElement,
-    IThemeManifest,
-    IThemeProfileElement,
-    IThemeScoreElement,
-    IThemeTextElement,
-} from "./type";
-import {
-    Canvas,
-    Image,
-    registerFont,
-    CanvasRenderingContext2D,
-    CanvasGradient,
-    CanvasPattern,
-} from "canvas";
+import { Canvas, Image, registerFont, CanvasRenderingContext2D } from "canvas";
 import Color from "color";
 import sharp from "sharp";
 import { globSync } from "glob";
-import ScoreTrackerAdapter from "./lib";
+import ScoreTrackerAdapter from "../lib";
 import { Chart } from "../chart";
 import stringFormat from "string-template";
 
-import * as lxns from "./lib/lxns";
-import * as kamaiTachi from "./lib/kamaiTachi";
-import * as divingFish from "./lib/divingFish";
-
-class HalfFullWidthConvert {
-    private static readonly charsets = {
-        latin: { halfRE: /[!-~]/g, fullRE: /[！-～]/g, delta: 0xfee0 },
-        hangul1: { halfRE: /[ﾡ-ﾾ]/g, fullRE: /[ᆨ-ᇂ]/g, delta: -0xedf9 },
-        hangul2: { halfRE: /[ￂ-ￜ]/g, fullRE: /[ᅡ-ᅵ]/g, delta: -0xee61 },
-        kana: {
-            delta: 0,
-            half: "｡｢｣､･ｦｧｨｩｪｫｬｭｮｯｰｱｲｳｴｵｶｷｸｹｺｻｼｽｾｿﾀﾁﾂﾃﾄﾅﾆﾇﾈﾉﾊﾋﾌﾍﾎﾏﾐﾑﾒﾓﾔﾕﾖﾗﾘﾙﾚﾛﾜﾝﾞﾟ",
-            full:
-                "。「」、・ヲァィゥェォャュョッーアイウエオカキクケコサシ" +
-                "スセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワン゛゜",
-        },
-        extras: {
-            delta: 0,
-            half: "¢£¬¯¦¥₩\u0020|←↑→↓■°",
-            full: "￠￡￢￣￤￥￦\u3000￨￩￪￫￬￭￮",
-        },
-    };
-    // @ts-ignore
-    private static readonly toFull = (set) => (c) =>
-        set.delta
-            ? String.fromCharCode(c.charCodeAt(0) + set.delta)
-            : [...set.full][[...set.half].indexOf(c)];
-    // @ts-ignore
-    private static readonly toHalf = (set) => (c) =>
-        set.delta
-            ? String.fromCharCode(c.charCodeAt(0) - set.delta)
-            : [...set.half][[...set.full].indexOf(c)];
-    // @ts-ignore
-    private static readonly re = (set, way) =>
-        set[way + "RE"] || new RegExp("[" + set[way] + "]", "g");
-    private static readonly sets = Object.values(this.charsets);
-    // @ts-ignore
-    static toFullWidth = (str0) =>
-        this.sets.reduce(
-            (str, set) => str.replace(this.re(set, "half"), this.toFull(set)),
-            str0
-        );
-    // @ts-ignore
-    static toHalfWidth = (str0) =>
-        this.sets.reduce(
-            (str, set) => str.replace(this.re(set, "full"), this.toHalf(set)),
-            str0
-        );
-}
+import * as lxns from "../lib/lxns";
+import * as kamaiTachi from "../lib/kamaiTachi";
+import * as divingFish from "../lib/divingFish";
+import { Util } from "@maidraw/lib/util";
+import { EDifficulty } from "@maidraw/mai/type";
 
 interface ITheme {
-    manifest: IThemeManifest;
+    manifest: Best50.IThemeManifest;
     path: string;
 }
 
 export class Best50 {
-    static readonly RATING_CONSTANTS = {
-        [EAchievementTypes.D]: {
-            [0.4]: 6.4,
-            [0.3]: 4.8,
-            [0.2]: 3.2,
-            [0.1]: 1.6,
-            [0]: 0,
-        },
-        [EAchievementTypes.C]: 13.6,
-        [EAchievementTypes.B]: 13.6,
-        [EAchievementTypes.BB]: 13.6,
-        [EAchievementTypes.BBB]: 13.6,
-        [EAchievementTypes.A]: 13.6,
-        [EAchievementTypes.AA]: 15.2,
-        [EAchievementTypes.AAA]: 16.8,
-        [EAchievementTypes.S]: 20.0,
-        [EAchievementTypes.SP]: 20.3,
-        [EAchievementTypes.SS]: 20.8,
-        [EAchievementTypes.SSP]: 21.1,
-        [EAchievementTypes.SSS]: 21.6,
-        [EAchievementTypes.SSSP]: 22.4,
-    };
-    static readonly RANK_BORDERS = {
-        [EAchievementTypes.D]: [0.0, 0.1, 0.2, 0.3, 0.4],
-        [EAchievementTypes.C]: 0.5,
-        [EAchievementTypes.B]: 0.6,
-        [EAchievementTypes.BB]: 0.7,
-        [EAchievementTypes.BBB]: 0.75,
-        [EAchievementTypes.A]: 0.8,
-        [EAchievementTypes.AA]: 0.9,
-        [EAchievementTypes.AAA]: 0.94,
-        [EAchievementTypes.S]: 0.97,
-        [EAchievementTypes.SP]: 0.98,
-        [EAchievementTypes.SS]: 0.99,
-        [EAchievementTypes.SSP]: 0.995,
-        [EAchievementTypes.SSS]: 1.0,
-        [EAchievementTypes.SSSP]: 1.005,
-    };
-
     private static readonly DEFAULT_THEME = "jp-prism-landscape";
 
     private static get assetsPath() {
@@ -193,7 +89,7 @@ export class Best50 {
     private static validateManifest(
         payload: any,
         path: string
-    ): payload is IThemeManifest {
+    ): payload is Best50.IThemeManifest {
         function isFileExist(p: any): boolean {
             if (isString(p)) return fs.existsSync(upath.join(path, p));
             else return false;
@@ -363,7 +259,7 @@ export class Best50 {
         } else return false;
     }
     private static getTheme(path: string): {
-        manifest: IThemeManifest;
+        manifest: Best50.IThemeManifest;
         path: string;
     } | null {
         if (!fs.existsSync(upath.join(path, "manifest.json"))) {
@@ -392,73 +288,10 @@ export class Best50 {
         else return Buffer.from([]);
     }
     /* Begin Draw Tools*/
-    private static findMaxFitString(
-        ctx: CanvasRenderingContext2D,
-        original: string,
-        maxWidth: number,
-        lineBreakSuffix = "..."
-    ): string {
-        const metrics = ctx.measureText(original);
-        if (metrics.width <= maxWidth) return original;
-        for (let i = 1; i < original.length; ++i) {
-            let cur = original.slice(0, original.length - i);
-            if (ctx.measureText(cur + lineBreakSuffix).width <= maxWidth) {
-                while (cur[cur.length - 1] == "　") {
-                    cur = cur.substring(0, cur.length - 1);
-                }
-                return cur.trim() + lineBreakSuffix;
-            }
-        }
-        return original;
-    }
-    private static drawText(
-        ctx: CanvasRenderingContext2D,
-        str: string,
-        x: number,
-        y: number,
-        fontSize: number,
-        /**
-         * Line width of the text stroke.
-         */
-        linewidth: number,
-        /**
-         * Max width of the text block.
-         */
-        maxWidth: number,
-        textAlign: "left" | "center" | "right" = "left",
-        mainColor: string | CanvasGradient | CanvasPattern = "white",
-        borderColor: string | CanvasGradient | CanvasPattern = "black",
-        font: string = `"standard-font-title-latin", "standard-font-title-jp"`,
-        lineBreakSuffix = "..."
-    ) {
-        ctx.font = `${fontSize}px ${font}`;
-        str = this.findMaxFitString(ctx, str, maxWidth, lineBreakSuffix);
-        if (linewidth > 0) {
-            ctx.strokeStyle = borderColor;
-            ctx.lineWidth = linewidth;
-            ctx.lineCap = "round";
-            ctx.lineJoin = "round";
-            ctx.textAlign = textAlign;
-            ctx.strokeText(str, x, y);
-        }
-        ctx.fillStyle = mainColor;
-        ctx.font = `${fontSize}px ${font}`;
-        ctx.textAlign = textAlign;
-        ctx.fillText(str, x, y);
-        if (linewidth > 0) {
-            ctx.strokeStyle = mainColor;
-            ctx.lineWidth = linewidth / 8;
-            ctx.lineCap = "round";
-            ctx.lineJoin = "round";
-            ctx.font = `${fontSize}px ${font}`;
-            ctx.textAlign = textAlign;
-            ctx.strokeText(str, x, y);
-        }
-    }
     private static async drawImageModule(
         ctx: CanvasRenderingContext2D,
         theme: ITheme,
-        element: IThemeImageElement
+        element: Best50.IThemeImageElement
     ) {
         const img = new Image();
         img.src = this.getThemeFile(element.path, theme.path);
@@ -467,8 +300,8 @@ export class Best50 {
     private static async drawScoreGridModule(
         ctx: CanvasRenderingContext2D,
         theme: ITheme,
-        element: IThemeScoreElement,
-        score: IScore,
+        element: Best50.IThemeScoreElement,
+        score: Best50.IScore,
         index: number,
         x: number,
         y: number
@@ -607,7 +440,7 @@ export class Best50 {
             );
 
             /** Begin Title Draw */ {
-                this.drawText(
+                Util.drawText(
                     ctx,
                     score.chart.name,
                     x + (jacketSize * 7) / 8,
@@ -643,7 +476,7 @@ export class Best50 {
             } /** End Separation Line Draw */
 
             /** Begin Achievement Rate Draw */
-            this.drawText(
+            Util.drawText(
                 ctx,
                 `${score.achievement.toFixed(4)}%`,
                 x -
@@ -668,79 +501,79 @@ export class Best50 {
             {
                 let rankImg: Buffer;
                 switch (score.achievementRank) {
-                    case EAchievementTypes.D:
+                    case Best50.EAchievementTypes.D:
                         rankImg = this.getThemeFile(
                             theme.manifest.sprites.achievement.d,
                             theme.path
                         );
                         break;
-                    case EAchievementTypes.C:
+                    case Best50.EAchievementTypes.C:
                         rankImg = this.getThemeFile(
                             theme.manifest.sprites.achievement.c,
                             theme.path
                         );
                         break;
-                    case EAchievementTypes.B:
+                    case Best50.EAchievementTypes.B:
                         rankImg = this.getThemeFile(
                             theme.manifest.sprites.achievement.b,
                             theme.path
                         );
                         break;
-                    case EAchievementTypes.BB:
+                    case Best50.EAchievementTypes.BB:
                         rankImg = this.getThemeFile(
                             theme.manifest.sprites.achievement.bb,
                             theme.path
                         );
                         break;
-                    case EAchievementTypes.BBB:
+                    case Best50.EAchievementTypes.BBB:
                         rankImg = this.getThemeFile(
                             theme.manifest.sprites.achievement.bbb,
                             theme.path
                         );
                         break;
-                    case EAchievementTypes.A:
+                    case Best50.EAchievementTypes.A:
                         rankImg = this.getThemeFile(
                             theme.manifest.sprites.achievement.a,
                             theme.path
                         );
                         break;
-                    case EAchievementTypes.AA:
+                    case Best50.EAchievementTypes.AA:
                         rankImg = this.getThemeFile(
                             theme.manifest.sprites.achievement.aa,
                             theme.path
                         );
                         break;
-                    case EAchievementTypes.AAA:
+                    case Best50.EAchievementTypes.AAA:
                         rankImg = this.getThemeFile(
                             theme.manifest.sprites.achievement.aaa,
                             theme.path
                         );
                         break;
-                    case EAchievementTypes.S:
+                    case Best50.EAchievementTypes.S:
                         rankImg = this.getThemeFile(
                             theme.manifest.sprites.achievement.s,
                             theme.path
                         );
                         break;
-                    case EAchievementTypes.SP:
+                    case Best50.EAchievementTypes.SP:
                         rankImg = this.getThemeFile(
                             theme.manifest.sprites.achievement.sp,
                             theme.path
                         );
                         break;
-                    case EAchievementTypes.SS:
+                    case Best50.EAchievementTypes.SS:
                         rankImg = this.getThemeFile(
                             theme.manifest.sprites.achievement.ss,
                             theme.path
                         );
                         break;
-                    case EAchievementTypes.SSP:
+                    case Best50.EAchievementTypes.SSP:
                         rankImg = this.getThemeFile(
                             theme.manifest.sprites.achievement.ssp,
                             theme.path
                         );
                         break;
-                    case EAchievementTypes.SSS:
+                    case Best50.EAchievementTypes.SSS:
                         rankImg = this.getThemeFile(
                             theme.manifest.sprites.achievement.sss,
                             theme.path
@@ -772,31 +605,31 @@ export class Best50 {
             {
                 let comboImg: Buffer, syncImg: Buffer;
                 switch (score.combo) {
-                    case EComboTypes.NONE:
+                    case Best50.EComboTypes.NONE:
                         comboImg = this.getThemeFile(
                             theme.manifest.sprites.milestone.none,
                             theme.path
                         );
                         break;
-                    case EComboTypes.FULL_COMBO:
+                    case Best50.EComboTypes.FULL_COMBO:
                         comboImg = this.getThemeFile(
                             theme.manifest.sprites.milestone.fc,
                             theme.path
                         );
                         break;
-                    case EComboTypes.FULL_COMBO_PLUS:
+                    case Best50.EComboTypes.FULL_COMBO_PLUS:
                         comboImg = this.getThemeFile(
                             theme.manifest.sprites.milestone.fcp,
                             theme.path
                         );
                         break;
-                    case EComboTypes.ALL_PERFECT:
+                    case Best50.EComboTypes.ALL_PERFECT:
                         comboImg = this.getThemeFile(
                             theme.manifest.sprites.milestone.ap,
                             theme.path
                         );
                         break;
-                    case EComboTypes.ALL_PERFECT_PLUS:
+                    case Best50.EComboTypes.ALL_PERFECT_PLUS:
                         comboImg = this.getThemeFile(
                             theme.manifest.sprites.milestone.app,
                             theme.path
@@ -804,37 +637,37 @@ export class Best50 {
                         break;
                 }
                 switch (score.sync) {
-                    case ESyncTypes.NONE:
+                    case Best50.ESyncTypes.NONE:
                         syncImg = this.getThemeFile(
                             theme.manifest.sprites.milestone.none,
                             theme.path
                         );
                         break;
-                    case ESyncTypes.SYNC_PLAY:
+                    case Best50.ESyncTypes.SYNC_PLAY:
                         syncImg = this.getThemeFile(
                             theme.manifest.sprites.milestone.sync,
                             theme.path
                         );
                         break;
-                    case ESyncTypes.FULL_SYNC:
+                    case Best50.ESyncTypes.FULL_SYNC:
                         syncImg = this.getThemeFile(
                             theme.manifest.sprites.milestone.fs,
                             theme.path
                         );
                         break;
-                    case ESyncTypes.FULL_SYNC_PLUS:
+                    case Best50.ESyncTypes.FULL_SYNC_PLUS:
                         syncImg = this.getThemeFile(
                             theme.manifest.sprites.milestone.fsp,
                             theme.path
                         );
                         break;
-                    case ESyncTypes.FULL_SYNC_DX:
+                    case Best50.ESyncTypes.FULL_SYNC_DX:
                         syncImg = this.getThemeFile(
                             theme.manifest.sprites.milestone.fdx,
                             theme.path
                         );
                         break;
-                    case ESyncTypes.FULL_SYNC_DX_PLUS:
+                    case Best50.ESyncTypes.FULL_SYNC_DX_PLUS:
                         syncImg = this.getThemeFile(
                             theme.manifest.sprites.milestone.fdxp,
                             theme.path
@@ -906,7 +739,7 @@ export class Best50 {
 
             /** Begin Bests Index Draw */
             {
-                this.drawText(
+                Util.drawText(
                     ctx,
                     `#${index + 1}`,
                     x + element.scoreBubble.margin * 2,
@@ -927,7 +760,7 @@ export class Best50 {
 
         /** Begin Difficulty & DX Rating Draw */
         {
-            this.drawText(
+            Util.drawText(
                 ctx,
                 `${score.chart.level.toFixed(1)}  ↑${score.dxRating.toFixed(
                     0
@@ -943,7 +776,7 @@ export class Best50 {
             );
 
             if (score.chart.maxDxScore) {
-                this.drawText(
+                Util.drawText(
                     ctx,
                     `${score.dxScore}/${score.chart.maxDxScore}`,
                     x +
@@ -967,7 +800,7 @@ export class Best50 {
     private static async drawProfileModule(
         ctx: CanvasRenderingContext2D,
         theme: ITheme,
-        element: IThemeProfileElement,
+        element: Best50.IThemeProfileElement,
         username: string,
         rating: number,
         profilePicture?: Buffer
@@ -1174,9 +1007,9 @@ export class Best50 {
                 }
             }
 
-            this.drawText(
+            Util.drawText(
                 ctx,
-                HalfFullWidthConvert.toFullWidth(username),
+                Util.HalfFullWidthConvert.toFullWidth(username),
                 element.x + element.height * (1 + 1 / 16),
                 element.y + element.height * (0.064 + 0.333 + 1 / 4),
                 (element.height * 1) / 6,
@@ -1193,7 +1026,7 @@ export class Best50 {
     private static async drawTextModule(
         ctx: CanvasRenderingContext2D,
         theme: ITheme,
-        element: IThemeTextElement,
+        element: Best50.IThemeTextElement,
         variables: Record<string, string> = {}
     ) {
         let naiveLines = stringFormat(element.content, variables).split("\n");
@@ -1201,7 +1034,7 @@ export class Best50 {
         if (element.linebreak) {
             for (let originalContent of naiveLines) {
                 while (originalContent.length) {
-                    const line = this.findMaxFitString(
+                    const line = Util.findMaxFitString(
                         ctx,
                         originalContent,
                         element.width || Infinity,
@@ -1214,7 +1047,7 @@ export class Best50 {
         } else {
             for (const originalContent of naiveLines) {
                 lines.push(
-                    this.findMaxFitString(
+                    Util.findMaxFitString(
                         ctx,
                         originalContent,
                         element.width || Infinity
@@ -1224,7 +1057,7 @@ export class Best50 {
         }
         for (let i = 0; i < lines.length; ++i) {
             const line = lines[i];
-            this.drawText(
+            Util.drawText(
                 ctx,
                 line,
                 element.x,
@@ -1248,8 +1081,8 @@ export class Best50 {
     static async draw(
         name: string,
         rating: number,
-        newScores: IScore[],
-        oldScores: IScore[],
+        newScores: Best50.IScore[],
+        oldScores: Best50.IScore[],
         options?: { scale?: number; theme?: string; profilePicture?: Buffer }
     ): Promise<Buffer | null> {
         let currentTheme = this.primaryTheme;
@@ -1327,7 +1160,7 @@ export class Best50 {
                     }
                     case "text": {
                         const getRatingBase = (
-                            scores: IScore[],
+                            scores: Best50.IScore[],
                             length: number
                         ) => {
                             if (scores.length < length) return 0;
@@ -1338,7 +1171,7 @@ export class Best50 {
                                         let ratingConstant = 0;
                                         if (
                                             v.achievementRank ==
-                                            EAchievementTypes.D
+                                            Best50.EAchievementTypes.D
                                         ) {
                                             if (v.achievement > 40)
                                                 ratingConstant =
@@ -1376,7 +1209,7 @@ export class Best50 {
                             );
                         };
                         function getRatingAvg(
-                            scores: IScore[],
+                            scores: Best50.IScore[],
                             length: number
                         ) {
                             if (scores.length <= 0) return 0;
@@ -1388,9 +1221,9 @@ export class Best50 {
                         }
                         const getRatingTargetLevel = (
                             rating: number,
-                            target: EAchievementTypes
+                            target: Best50.EAchievementTypes
                         ) => {
-                            if (target == EAchievementTypes.D) {
+                            if (target == Best50.EAchievementTypes.D) {
                                 return 0;
                             }
                             const naiveNevel =
@@ -1400,18 +1233,18 @@ export class Best50 {
                             return Math.ceil(naiveNevel * 10) / 10;
                         };
                         function getMilestone(
-                            scores: IScore[],
+                            scores: Best50.IScore[],
                             length: number
                         ) {
                             const base = getRatingBase(scores, length);
                             let sssTarget, ssspTarget;
                             const sssLevel = getRatingTargetLevel(
                                 base,
-                                EAchievementTypes.SSS
+                                Best50.EAchievementTypes.SSS
                             );
                             const ssspLevel = getRatingTargetLevel(
                                 base,
-                                EAchievementTypes.SSSP
+                                Best50.EAchievementTypes.SSSP
                             );
                             if (sssLevel > 0 && sssLevel < 15) {
                                 sssTarget = sssLevel;
@@ -1434,7 +1267,8 @@ export class Best50 {
                             else return "Good job!";
                         }
                         await this.drawTextModule(ctx, currentTheme, element, {
-                            username: HalfFullWidthConvert.toFullWidth(name),
+                            username:
+                                Util.HalfFullWidthConvert.toFullWidth(name),
                             rating: rating.toFixed(0),
                             newScoreRatingAvg: getRatingAvg(
                                 newScores,
@@ -1537,4 +1371,256 @@ export namespace Best50 {
     export import LXNS = lxns.LXNS;
     export import KamaiTachi = kamaiTachi.KamaiTachi;
     export import DivingFish = divingFish.DivingFish;
+
+    export interface IThemeManifest {
+        displayName: string;
+        name: string;
+        width: number;
+        height: number;
+        sprites: IThemeSprites;
+        elements: IThemeElements[];
+    }
+
+    export interface IThemeSprites {
+        achievement: {
+            d: string;
+            c: string;
+            b: string;
+            bb: string;
+            bbb: string;
+            a: string;
+            aa: string;
+            aaa: string;
+            s: string;
+            sp: string;
+            ss: string;
+            ssp: string;
+            sss: string;
+            sssp: string;
+        };
+        mode: {
+            standard: string;
+            dx: string;
+        };
+        milestone: {
+            ap: string;
+            app: string;
+            fc: string;
+            fcp: string;
+            fdx: string;
+            fdxp: string;
+            fs: string;
+            fsp: string;
+            sync: string;
+            none: string;
+        };
+        dxRating: {
+            white: string;
+            blue: string;
+            green: string;
+            yellow: string;
+            red: string;
+            purple: string;
+            bronze: string;
+            silver: string;
+            gold: string;
+            platinum: string;
+            rainbow: string;
+        };
+        dxRatingNumberMap: string;
+        profile: {
+            icon: string;
+            nameplate: string;
+        };
+    }
+
+    export type IThemeElements =
+        | IThemeProfileElement
+        | IThemeScoreElement
+        | IThemeImageElement
+        | IThemeTextElement;
+
+    export interface IThemeElement {
+        type: string;
+        x: number;
+        y: number;
+    }
+
+    export interface IThemeProfileElement extends IThemeElement {
+        type: "profile";
+        height: number;
+    }
+
+    export interface IThemeScoreElement extends IThemeElement {
+        type: "score-grid";
+        horizontalSize: number;
+        verticalSize: number;
+        region: "new" | "old";
+        index: number;
+        scoreBubble: {
+            width: number;
+            height: number;
+            margin: number;
+            gap: number;
+            color: {
+                basic: string;
+                advanced: string;
+                expert: string;
+                master: string;
+                remaster: string;
+                utage: string;
+            };
+        };
+    }
+
+    export interface IThemeImageElement extends IThemeElement {
+        type: "image";
+        width: number;
+        height: number;
+        /**
+         * Relative path from the manifest file to the element file.
+         */
+        path: string;
+    }
+
+    export interface IThemeTextElement extends IThemeElement {
+        type: "text";
+        size: number;
+        content: string;
+        /**
+         * If width is provied and the text is too long, it will be cut off.
+         */
+        width?: number;
+        /**
+         * If height is provied and the text is too big, it will be cut off.
+         */
+        height?: number;
+        /**
+         * If true, instead of cutting off the text, it will change to a new line.
+         * Height restrictions will still apply.
+         */
+        linebreak?: boolean;
+        /**
+         * Text alignment.
+         * Defaults to left.
+         */
+        align?: "left" | "center" | "right";
+        /**
+         * Text color.
+         * Defaults to white (#FFFFFF).
+         */
+        color?: string;
+        /**
+         * Text border color.
+         * Defaults a darker variant of `color`.
+         */
+        borderColor?: string;
+        /**
+         * Text font. Please make sure the font is available in the environment.
+         * Defaults to a preconfigured font macro. Check source code for more info.
+         */
+        font?: string;
+    }
+
+    export interface IBest50 {
+        new: IScore[];
+        old: IScore[];
+        username: string;
+        rating: number;
+    }
+
+    export enum EComboTypes {
+        NONE,
+        FULL_COMBO,
+        FULL_COMBO_PLUS,
+        ALL_PERFECT,
+        ALL_PERFECT_PLUS,
+    }
+
+    export enum ESyncTypes {
+        NONE,
+        SYNC_PLAY,
+        FULL_SYNC,
+        FULL_SYNC_PLUS,
+        FULL_SYNC_DX,
+        FULL_SYNC_DX_PLUS,
+    }
+
+    export enum EAchievementTypes {
+        D,
+        C,
+        B,
+        BB,
+        BBB,
+        A,
+        AA,
+        AAA,
+        S,
+        SP,
+        SS,
+        SSP,
+        SSS,
+        SSSP,
+    }
+
+    export interface IScore {
+        chart: IChart;
+        combo: EComboTypes;
+        sync: ESyncTypes;
+        achievement: number;
+        achievementRank: EAchievementTypes;
+        dxRating: number;
+        dxScore: number;
+    }
+
+    export interface IChart {
+        id: number;
+        name: string;
+        difficulty: EDifficulty;
+        /**
+         * Chart internal level.
+         * `7.0, 11.2, 11.7, 13.2, 14.8, 15.0`
+         */
+        level: number;
+        maxDxScore: number;
+    }
+
+    export const RATING_CONSTANTS = {
+        [Best50.EAchievementTypes.D]: {
+            [0.4]: 6.4,
+            [0.3]: 4.8,
+            [0.2]: 3.2,
+            [0.1]: 1.6,
+            [0]: 0,
+        },
+        [EAchievementTypes.C]: 13.6,
+        [EAchievementTypes.B]: 13.6,
+        [EAchievementTypes.BB]: 13.6,
+        [EAchievementTypes.BBB]: 13.6,
+        [EAchievementTypes.A]: 13.6,
+        [EAchievementTypes.AA]: 15.2,
+        [EAchievementTypes.AAA]: 16.8,
+        [EAchievementTypes.S]: 20.0,
+        [EAchievementTypes.SP]: 20.3,
+        [EAchievementTypes.SS]: 20.8,
+        [EAchievementTypes.SSP]: 21.1,
+        [EAchievementTypes.SSS]: 21.6,
+        [EAchievementTypes.SSSP]: 22.4,
+    };
+    export const RANK_BORDERS = {
+        [EAchievementTypes.D]: [0.0, 0.1, 0.2, 0.3, 0.4],
+        [EAchievementTypes.C]: 0.5,
+        [EAchievementTypes.B]: 0.6,
+        [EAchievementTypes.BB]: 0.7,
+        [EAchievementTypes.BBB]: 0.75,
+        [EAchievementTypes.A]: 0.8,
+        [EAchievementTypes.AA]: 0.9,
+        [EAchievementTypes.AAA]: 0.94,
+        [EAchievementTypes.S]: 0.97,
+        [EAchievementTypes.SP]: 0.98,
+        [EAchievementTypes.SS]: 0.99,
+        [EAchievementTypes.SSP]: 0.995,
+        [EAchievementTypes.SSS]: 1.0,
+        [EAchievementTypes.SSSP]: 1.005,
+    };
 }

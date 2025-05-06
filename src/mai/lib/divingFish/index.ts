@@ -1,14 +1,7 @@
-import axios, { AxiosInstance } from "axios";
-import {
-    EAchievementTypes,
-    EComboTypes,
-    EDifficulty,
-    ESyncTypes,
-    IChart,
-    IScore,
-} from "@maidraw/mai/type";
+import { EDifficulty } from "@maidraw/mai/type";
 import ScoreTrackerAdapter from "..";
 import { Chart } from "@maidraw/mai/chart";
+import { Best50 } from "../../best50";
 
 export namespace DivingFish {
     export interface IPlayResult {
@@ -99,7 +92,7 @@ export class DivingFish extends ScoreTrackerAdapter {
         if (!pbs?.records) {
             return null;
         }
-        let chartList: IChart[] = [];
+        let chartList: Best50.IChart[] = [];
         if (Chart.Database.hasLocalDatabase()) {
             chartList = pbs.records
                 .map((chart) => {
@@ -135,7 +128,7 @@ export class DivingFish extends ScoreTrackerAdapter {
         };
     }
 
-    async getMaiDrawChartList(): Promise<IChart[]> {
+    async getMaiDrawChartList(): Promise<Best50.IChart[]> {
         const songList = await this.getSongList();
         return songList.flatMap((song) => {
             return song.charts.map((chart, index) => {
@@ -185,8 +178,8 @@ export class DivingFish extends ScoreTrackerAdapter {
     }
     private toMaiDrawScore(
         scores: DivingFish.IPlayResult[],
-        charts: IChart[]
-    ): IScore[] {
+        charts: Best50.IChart[]
+    ): Best50.IScore[] {
         return scores.map((score) => {
             return {
                 chart: (() => {
@@ -219,64 +212,64 @@ export class DivingFish extends ScoreTrackerAdapter {
                 combo: (() => {
                     switch (score.fc) {
                         case "fc":
-                            return EComboTypes.FULL_COMBO;
+                            return Best50.EComboTypes.FULL_COMBO;
                         case "fcp":
-                            return EComboTypes.FULL_COMBO_PLUS;
+                            return Best50.EComboTypes.FULL_COMBO_PLUS;
                         case "ap":
-                            return EComboTypes.ALL_PERFECT;
+                            return Best50.EComboTypes.ALL_PERFECT;
                         case "app":
-                            return EComboTypes.ALL_PERFECT_PLUS;
+                            return Best50.EComboTypes.ALL_PERFECT_PLUS;
                         default:
-                            return EComboTypes.NONE;
+                            return Best50.EComboTypes.NONE;
                     }
                 })(),
                 sync: (() => {
                     switch (score.fs) {
                         case "sync":
-                            return ESyncTypes.SYNC_PLAY;
+                            return Best50.ESyncTypes.SYNC_PLAY;
                         case "fs":
-                            return ESyncTypes.FULL_SYNC;
+                            return Best50.ESyncTypes.FULL_SYNC;
                         case "fsp":
-                            return ESyncTypes.FULL_SYNC_PLUS;
+                            return Best50.ESyncTypes.FULL_SYNC_PLUS;
                         case "fsd":
-                            return ESyncTypes.FULL_SYNC_DX;
+                            return Best50.ESyncTypes.FULL_SYNC_DX;
                         case "fsdp":
-                            return ESyncTypes.FULL_SYNC_DX_PLUS;
+                            return Best50.ESyncTypes.FULL_SYNC_DX_PLUS;
                         default:
-                            return ESyncTypes.NONE;
+                            return Best50.ESyncTypes.NONE;
                     }
                 })(),
                 achievement: score.achievements,
                 achievementRank: (() => {
                     switch (score.rate) {
                         case "c":
-                            return EAchievementTypes.C;
+                            return Best50.EAchievementTypes.C;
                         case "b":
-                            return EAchievementTypes.B;
+                            return Best50.EAchievementTypes.B;
                         case "bb":
-                            return EAchievementTypes.BB;
+                            return Best50.EAchievementTypes.BB;
                         case "bbb":
-                            return EAchievementTypes.BBB;
+                            return Best50.EAchievementTypes.BBB;
                         case "a":
-                            return EAchievementTypes.A;
+                            return Best50.EAchievementTypes.A;
                         case "aa":
-                            return EAchievementTypes.AA;
+                            return Best50.EAchievementTypes.AA;
                         case "aaa":
-                            return EAchievementTypes.AAA;
+                            return Best50.EAchievementTypes.AAA;
                         case "s":
-                            return EAchievementTypes.S;
+                            return Best50.EAchievementTypes.S;
                         case "sp":
-                            return EAchievementTypes.SP;
+                            return Best50.EAchievementTypes.SP;
                         case "ss":
-                            return EAchievementTypes.SS;
+                            return Best50.EAchievementTypes.SS;
                         case "ssp":
-                            return EAchievementTypes.SSP;
+                            return Best50.EAchievementTypes.SSP;
                         case "sss":
-                            return EAchievementTypes.SSS;
+                            return Best50.EAchievementTypes.SSS;
                         case "sssp":
-                            return EAchievementTypes.SSSP;
+                            return Best50.EAchievementTypes.SSSP;
                         default:
-                            return EAchievementTypes.D;
+                            return Best50.EAchievementTypes.D;
                     }
                 })(),
                 dxRating: score.ra,
@@ -286,5 +279,15 @@ export class DivingFish extends ScoreTrackerAdapter {
     }
     async getPlayerProfilePicture(username: string): Promise<Buffer | null> {
         return null;
+    }
+    async getPlayerScore(username: string, chartId: number) {
+        return {
+            basic: null,
+            advanced: null,
+            expert: null,
+            master: null,
+            remaster: null,
+            utage: null,
+        };
     }
 }

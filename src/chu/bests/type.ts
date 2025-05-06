@@ -1,4 +1,4 @@
-import { IScore } from "@maidraw/mai/type";
+import { IScore } from "@maidraw/chu/type";
 
 export interface IThemeManifest {
     displayName: string;

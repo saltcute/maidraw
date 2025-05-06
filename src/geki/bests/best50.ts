@@ -30,6 +30,7 @@ import stringFormat from "string-template";
 import { Chart } from "@maidraw/geki/chart";
 
 import * as kamaiTachi from "./lib/kamaiTachi";
+import { Util } from "@maidraw/lib/util";
 
 class HalfFullWidthConvert {
     private static readonly charsets = {
@@ -334,69 +335,6 @@ export class Best50 {
         else return Buffer.from([]);
     }
     /* Begin Draw Tools*/
-    private static findMaxFitString(
-        ctx: CanvasRenderingContext2D,
-        original: string,
-        maxWidth: number,
-        lineBreakSuffix = "..."
-    ): string {
-        const metrics = ctx.measureText(original);
-        if (metrics.width <= maxWidth) return original;
-        for (let i = 1; i < original.length; ++i) {
-            let cur = original.slice(0, original.length - i);
-            if (ctx.measureText(cur + lineBreakSuffix).width <= maxWidth) {
-                while (cur[cur.length - 1] == "　") {
-                    cur = cur.substring(0, cur.length - 1);
-                }
-                return cur.trim() + lineBreakSuffix;
-            }
-        }
-        return original;
-    }
-    private static drawText(
-        ctx: CanvasRenderingContext2D,
-        str: string,
-        x: number,
-        y: number,
-        fontSize: number,
-        /**
-         * Line width of the text stroke.
-         */
-        linewidth: number,
-        /**
-         * Max width of the text block.
-         */
-        maxWidth: number,
-        textAlign: "left" | "center" | "right" = "left",
-        mainColor: string | CanvasGradient | CanvasPattern = "white",
-        borderColor: string | CanvasGradient | CanvasPattern = "black",
-        font: string = `"standard-font-title-latin", "standard-font-title-jp"`,
-        lineBreakSuffix = "..."
-    ) {
-        ctx.font = `${fontSize}px ${font}`;
-        str = this.findMaxFitString(ctx, str, maxWidth, lineBreakSuffix);
-        if (linewidth > 0) {
-            ctx.strokeStyle = borderColor;
-            ctx.lineWidth = linewidth;
-            ctx.lineCap = "round";
-            ctx.lineJoin = "round";
-            ctx.textAlign = textAlign;
-            ctx.strokeText(str, x, y);
-        }
-        ctx.fillStyle = mainColor;
-        ctx.font = `${fontSize}px ${font}`;
-        ctx.textAlign = textAlign;
-        ctx.fillText(str, x, y);
-        if (linewidth > 0) {
-            ctx.strokeStyle = mainColor;
-            ctx.lineWidth = linewidth / 8;
-            ctx.lineCap = "round";
-            ctx.lineJoin = "round";
-            ctx.font = `${fontSize}px ${font}`;
-            ctx.textAlign = textAlign;
-            ctx.strokeText(str, x, y);
-        }
-    }
     private static async drawImageModule(
         ctx: CanvasRenderingContext2D,
         theme: ITheme,
@@ -546,7 +484,7 @@ export class Best50 {
             );
 
             /** Begin Title Draw */ {
-                this.drawText(
+                Util.drawText(
                     ctx,
                     score.chart.name,
                     x + (jacketSize * 7) / 8,
@@ -582,7 +520,7 @@ export class Best50 {
             } /** End Separation Line Draw */
 
             /** Begin Achievement Rate Draw */
-            this.drawText(
+            Util.drawText(
                 ctx,
                 score.score.toFixed(0),
                 x -
@@ -812,7 +750,7 @@ export class Best50 {
 
             /** Begin Bests Index Draw */
             {
-                this.drawText(
+                Util.drawText(
                     ctx,
                     `#${index + 1}`,
                     x + element.scoreBubble.margin * 2,
@@ -833,7 +771,7 @@ export class Best50 {
 
         /** Begin Difficulty & Rating Draw */
         {
-            this.drawText(
+            Util.drawText(
                 ctx,
                 `${score.chart.level.toFixed(1)}  ↑${score.rating.toFixed(2)}`,
                 x + element.scoreBubble.margin * 2,
@@ -847,7 +785,7 @@ export class Best50 {
             );
 
             if (score.platinumScore && score.chart.maxPlatinumScore)
-                this.drawText(
+                Util.drawText(
                     ctx,
                     `${score.platinumScore}/${score.chart.maxPlatinumScore}`,
                     x +
@@ -1039,7 +977,7 @@ export class Best50 {
             //         );
             //     }
             // }
-            this.drawText(
+            Util.drawText(
                 ctx,
                 "Lv.",
                 element.x + theme.manifest.width * (7 / 32) * (62 / 128),
@@ -1052,7 +990,7 @@ export class Best50 {
                 "black",
                 "standard-font-username"
             );
-            this.drawText(
+            Util.drawText(
                 ctx,
                 "99",
                 element.x + theme.manifest.width * (7 / 32) * (74 / 128),
@@ -1066,7 +1004,7 @@ export class Best50 {
                 "standard-font-username"
             );
 
-            this.drawText(
+            Util.drawText(
                 ctx,
                 HalfFullWidthConvert.toFullWidth(username),
                 element.x + theme.manifest.width * (7 / 32) * (89 / 128),
@@ -1080,7 +1018,7 @@ export class Best50 {
                 "standard-font-username"
             );
 
-            this.drawText(
+            Util.drawText(
                 ctx,
                 "RATING",
                 element.x + theme.manifest.width * (7 / 32) * (62 / 128),
@@ -1093,7 +1031,7 @@ export class Best50 {
                 "black",
                 "standard-font-username"
             );
-            this.drawText(
+            Util.drawText(
                 ctx,
                 rating.toFixed(2),
                 element.x + theme.manifest.width * (7 / 32) * (109 / 128),
@@ -1120,7 +1058,7 @@ export class Best50 {
         if (element.linebreak) {
             for (let originalContent of naiveLines) {
                 while (originalContent.length) {
-                    const line = this.findMaxFitString(
+                    const line = Util.findMaxFitString(
                         ctx,
                         originalContent,
                         element.width || Infinity,
@@ -1133,7 +1071,7 @@ export class Best50 {
         } else {
             for (const originalContent of naiveLines) {
                 lines.push(
-                    this.findMaxFitString(
+                    Util.findMaxFitString(
                         ctx,
                         originalContent,
                         element.width || Infinity
@@ -1143,7 +1081,7 @@ export class Best50 {
         }
         for (let i = 0; i < lines.length; ++i) {
             const line = lines[i];
-            this.drawText(
+            Util.drawText(
                 ctx,
                 line,
                 element.x,

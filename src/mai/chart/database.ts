@@ -2,7 +2,7 @@ import fs from "fs";
 import upath from "upath";
 import axios from "axios";
 import { Cache } from "@maidraw/lib/cache";
-import { EDifficulty, IChart } from "@maidraw/mai/type";
+import { EDifficulty } from "@maidraw/mai/type";
 import { Maimai } from "..";
 
 export class Database {

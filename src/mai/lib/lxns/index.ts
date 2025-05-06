@@ -1,13 +1,7 @@
-import {
-    EAchievementTypes,
-    EComboTypes,
-    EDifficulty,
-    ESyncTypes,
-    IChart,
-    IScore,
-} from "@maidraw/mai/type";
+import { EDifficulty } from "@maidraw/mai/type";
 import ScoreTrackerAdapter from "..";
 import { Chart } from "@maidraw/mai/chart";
+import { Best50 } from "../../best50";
 
 export class LXNS extends ScoreTrackerAdapter {
     constructor({
@@ -23,7 +17,7 @@ export class LXNS extends ScoreTrackerAdapter {
     async getPlayerBest50(username: string) {
         const b50 = await this.getPlayerRawBest50(username);
         if (!b50?.data) return null;
-        let chartList: IChart[];
+        let chartList: Best50.IChart[];
         if (Chart.Database.hasLocalDatabase()) {
             chartList = [...b50.data.dx, ...b50.data.standard]
                 .map((chart) => {
@@ -90,9 +84,9 @@ export class LXNS extends ScoreTrackerAdapter {
         this.cache.put("lxns-songList", res, 24 * 60 * 60 * 1000);
         return res;
     }
-    async getMaiDrawChartList(): Promise<IChart[]> {
+    async getMaiDrawChartList(): Promise<Best50.IChart[]> {
         const songList = await this.getSongList();
-        const std: IChart[] = songList.songs.flatMap((song) => {
+        const std: Best50.IChart[] = songList.songs.flatMap((song) => {
             return song.difficulties.standard.map((chart) => {
                 return {
                     id: song.id,
@@ -103,7 +97,7 @@ export class LXNS extends ScoreTrackerAdapter {
                 };
             });
         });
-        const dx: IChart[] = songList.songs.flatMap((song) => {
+        const dx: Best50.IChart[] = songList.songs.flatMap((song) => {
             return song.difficulties.dx.map((chart) => {
                 return {
                     id: song.id + 100000,
@@ -114,7 +108,7 @@ export class LXNS extends ScoreTrackerAdapter {
                 };
             });
         });
-        const utage: IChart[] = songList.songs
+        const utage: Best50.IChart[] = songList.songs
             .flatMap((song) => {
                 return song.difficulties.utage?.map((chart) => {
                     if (chart.is_buddy) {
@@ -145,8 +139,8 @@ export class LXNS extends ScoreTrackerAdapter {
     }
     private toMaiDrawScore(
         scores: LXNS.IScore[],
-        chartList: IChart[]
-    ): IScore[] {
+        chartList: Best50.IChart[]
+    ): Best50.IScore[] {
         return scores
             .map((chart) => {
                 const chartDetail = chartList.find(
@@ -162,63 +156,63 @@ export class LXNS extends ScoreTrackerAdapter {
                     achievementRank: (() => {
                         switch (chart.rate) {
                             case LXNS.ERateTypes.C:
-                                return EAchievementTypes.C;
+                                return Best50.EAchievementTypes.C;
                             case LXNS.ERateTypes.B:
-                                return EAchievementTypes.B;
+                                return Best50.EAchievementTypes.B;
                             case LXNS.ERateTypes.BB:
-                                return EAchievementTypes.BB;
+                                return Best50.EAchievementTypes.BB;
                             case LXNS.ERateTypes.BBB:
-                                return EAchievementTypes.BBB;
+                                return Best50.EAchievementTypes.BBB;
                             case LXNS.ERateTypes.A:
-                                return EAchievementTypes.A;
+                                return Best50.EAchievementTypes.A;
                             case LXNS.ERateTypes.AA:
-                                return EAchievementTypes.AA;
+                                return Best50.EAchievementTypes.AA;
                             case LXNS.ERateTypes.AAA:
-                                return EAchievementTypes.AAA;
+                                return Best50.EAchievementTypes.AAA;
                             case LXNS.ERateTypes.S:
-                                return EAchievementTypes.S;
+                                return Best50.EAchievementTypes.S;
                             case LXNS.ERateTypes.SP:
-                                return EAchievementTypes.SP;
+                                return Best50.EAchievementTypes.SP;
                             case LXNS.ERateTypes.SS:
-                                return EAchievementTypes.SS;
+                                return Best50.EAchievementTypes.SS;
                             case LXNS.ERateTypes.SSP:
-                                return EAchievementTypes.SSP;
+                                return Best50.EAchievementTypes.SSP;
                             case LXNS.ERateTypes.SSS:
-                                return EAchievementTypes.SSS;
+                                return Best50.EAchievementTypes.SSS;
                             case LXNS.ERateTypes.SSSP:
-                                return EAchievementTypes.SSSP;
+                                return Best50.EAchievementTypes.SSSP;
                             default:
-                                return EAchievementTypes.D;
+                                return Best50.EAchievementTypes.D;
                         }
                     })(),
                     combo: (() => {
                         switch (chart.fc) {
                             case LXNS.EFCTypes.FULL_COMBO:
-                                return EComboTypes.FULL_COMBO;
+                                return Best50.EComboTypes.FULL_COMBO;
                             case LXNS.EFCTypes.FULL_COMBO_PLUS:
-                                return EComboTypes.FULL_COMBO_PLUS;
+                                return Best50.EComboTypes.FULL_COMBO_PLUS;
                             case LXNS.EFCTypes.ALL_PERFECT:
-                                return EComboTypes.ALL_PERFECT;
+                                return Best50.EComboTypes.ALL_PERFECT;
                             case LXNS.EFCTypes.ALL_PERFECT_PLUS:
-                                return EComboTypes.ALL_PERFECT_PLUS;
+                                return Best50.EComboTypes.ALL_PERFECT_PLUS;
                             default:
-                                return EComboTypes.NONE;
+                                return Best50.EComboTypes.NONE;
                         }
                     })(),
                     sync: (() => {
                         switch (chart.fs) {
                             case LXNS.EFSTypes.SYNC:
-                                return ESyncTypes.SYNC_PLAY;
+                                return Best50.ESyncTypes.SYNC_PLAY;
                             case LXNS.EFSTypes.FULL_SYNC:
-                                return ESyncTypes.FULL_SYNC;
+                                return Best50.ESyncTypes.FULL_SYNC;
                             case LXNS.EFSTypes.FULL_SYNC_PLUS:
-                                return ESyncTypes.FULL_SYNC_PLUS;
+                                return Best50.ESyncTypes.FULL_SYNC_PLUS;
                             case LXNS.EFSTypes.FULL_SYNC_DX:
-                                return ESyncTypes.FULL_SYNC_DX;
+                                return Best50.ESyncTypes.FULL_SYNC_DX;
                             case LXNS.EFSTypes.FULL_SYNC_DX_PLUS:
-                                return ESyncTypes.FULL_SYNC_DX_PLUS;
+                                return Best50.ESyncTypes.FULL_SYNC_DX_PLUS;
                             default:
-                                return ESyncTypes.NONE;
+                                return Best50.ESyncTypes.NONE;
                         }
                     })(),
                     dxRating: chart.dx_rating,
@@ -242,6 +236,16 @@ export class LXNS extends ScoreTrackerAdapter {
         );
         if (!iconImage) return null;
         return iconImage;
+    }
+    async getPlayerScore(username: string, chartId: number) {
+        return {
+            basic: null,
+            advanced: null,
+            expert: null,
+            master: null,
+            remaster: null,
+            utage: null,
+        };
     }
 }
 

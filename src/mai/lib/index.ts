@@ -1,7 +1,7 @@
 import { Cache } from "@maidraw/lib/cache";
 import { Maimai } from "@maidraw/mai";
-import { IScore } from "@maidraw/mai/type";
 import axios, { AxiosInstance } from "axios";
+import { Best50 } from "../best50";
 
 export default abstract class ScoreTrackerAdapter {
     private static _cache = new Cache();
@@ -91,12 +91,23 @@ export default abstract class ScoreTrackerAdapter {
         return res;
     }
     abstract getPlayerBest50(username: string): Promise<{
-        new: IScore[];
-        old: IScore[];
+        new: Best50.IScore[];
+        old: Best50.IScore[];
     } | null>;
     abstract getPlayerInfo(username: string): Promise<{
         name: string;
         rating: number;
     } | null>;
     abstract getPlayerProfilePicture(username: string): Promise<Buffer | null>;
+    abstract getPlayerScore(
+        username: string,
+        chartId: number
+    ): Promise<{
+        basic: Best50.IScore | null;
+        advanced: Best50.IScore | null;
+        expert: Best50.IScore | null;
+        master: Best50.IScore | null;
+        remaster: Best50.IScore | null;
+        utage: Best50.IScore | null;
+    }>;
 }

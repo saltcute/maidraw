@@ -1,9 +1,7 @@
 import fs from "fs";
 import upath from "upath";
-import axios from "axios";
 import { Cache } from "@maidraw/lib/cache";
 import { Geki } from "..";
-// import { EDifficulty, IChart } from "@maidraw/type";
 
 export class Database {
     private static localDatabasePath: string = "";

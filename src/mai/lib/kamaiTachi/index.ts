@@ -1,11 +1,6 @@
-import {
-    EAchievementTypes,
-    EComboTypes,
-    EDifficulty,
-    ESyncTypes,
-    IScore,
-} from "@maidraw/mai/type";
+import { EDifficulty } from "@maidraw/mai/type";
 import ScoreTrackerAdapter from "..";
+import { Best50 } from "../../best50";
 
 export class KamaiTachi extends ScoreTrackerAdapter {
     private readonly CURRENT_VERSION: KamaiTachi.EGameVersions;
@@ -37,7 +32,7 @@ export class KamaiTachi extends ScoreTrackerAdapter {
         score: KamaiTachi.IPb,
         chart: KamaiTachi.IChart,
         song: KamaiTachi.ISong
-    ): IScore {
+    ): Best50.IScore {
         return {
             chart: (() => {
                 return {
@@ -79,50 +74,50 @@ export class KamaiTachi extends ScoreTrackerAdapter {
             combo: (() => {
                 switch (score.scoreData.lamp) {
                     case "FULL COMBO":
-                        return EComboTypes.FULL_COMBO;
+                        return Best50.EComboTypes.FULL_COMBO;
                     case "FULL COMBO+":
-                        return EComboTypes.FULL_COMBO_PLUS;
+                        return Best50.EComboTypes.FULL_COMBO_PLUS;
                     case "ALL PERFECT":
-                        return EComboTypes.ALL_PERFECT;
+                        return Best50.EComboTypes.ALL_PERFECT;
                     case "ALL PERFECT+":
-                        return EComboTypes.ALL_PERFECT_PLUS;
+                        return Best50.EComboTypes.ALL_PERFECT_PLUS;
                     default:
-                        return EComboTypes.NONE;
+                        return Best50.EComboTypes.NONE;
                 }
             })(),
-            sync: ESyncTypes.NONE,
+            sync: Best50.ESyncTypes.NONE,
             achievement: score.scoreData.percent,
             achievementRank: (() => {
                 switch (score.scoreData.grade) {
                     case "C":
-                        return EAchievementTypes.C;
+                        return Best50.EAchievementTypes.C;
                     case "B":
-                        return EAchievementTypes.B;
+                        return Best50.EAchievementTypes.B;
                     case "BB":
-                        return EAchievementTypes.BB;
+                        return Best50.EAchievementTypes.BB;
                     case "BBB":
-                        return EAchievementTypes.BBB;
+                        return Best50.EAchievementTypes.BBB;
                     case "A":
-                        return EAchievementTypes.A;
+                        return Best50.EAchievementTypes.A;
                     case "AA":
-                        return EAchievementTypes.AA;
+                        return Best50.EAchievementTypes.AA;
                     case "AAA":
-                        return EAchievementTypes.AAA;
+                        return Best50.EAchievementTypes.AAA;
                     case "S":
-                        return EAchievementTypes.S;
+                        return Best50.EAchievementTypes.S;
                     case "S+":
-                        return EAchievementTypes.SP;
+                        return Best50.EAchievementTypes.SP;
                     case "SS":
-                        return EAchievementTypes.SS;
+                        return Best50.EAchievementTypes.SS;
                     case "SS+":
-                        return EAchievementTypes.SSP;
+                        return Best50.EAchievementTypes.SSP;
                     case "SSS":
-                        return EAchievementTypes.SSS;
+                        return Best50.EAchievementTypes.SSS;
                     case "SSS+":
-                        return EAchievementTypes.SSSP;
+                        return Best50.EAchievementTypes.SSSP;
                     case "D":
                     default:
-                        return EAchievementTypes.D;
+                        return Best50.EAchievementTypes.D;
                 }
             })(),
             dxRating: score.calculatedData.rate,
@@ -279,6 +274,16 @@ export class KamaiTachi extends ScoreTrackerAdapter {
                 { responseType: "arraybuffer" }
             )) || null
         );
+    }
+    async getPlayerScore(username: string, chartId: number) {
+        return {
+            basic: null,
+            advanced: null,
+            expert: null,
+            master: null,
+            remaster: null,
+            utage: null,
+        };
     }
     public maimai() {
         return new KamaiTachi({
