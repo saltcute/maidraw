@@ -1104,7 +1104,7 @@ export class Chart {
 
             Util.drawText(
                 ctx,
-                `${score ? `${score.dxRating}/` : "MAX DX SCR: "}${chart.meta.maxDXScore}`,
+                `${score ? `${score.dxScore}/` : "MAX DX SCR: "}${chart.meta.maxDXScore}`,
                 x + height * 2 - element.bubble.margin,
                 y + height - element.bubble.margin * 3.1,
                 height * 0.806 * 0.128,
