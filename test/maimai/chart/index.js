@@ -15,9 +15,10 @@ const upath = require("upath");
         let result = await MaiDraw.Maimai.Chart.drawWithScoreSource(
             kamai,
             "salt",
+            1,
             // 114,
             // 753,
-            11343,
+            // 11343,
             // 11746,
             {
                 scale: 2,
