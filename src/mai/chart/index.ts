@@ -938,7 +938,6 @@ export class Chart {
                     let actualEvents = _.uniqWith(trendEvents, (a, b) => {
                         return _.isEqual(a.data.level, b.data.level);
                     });
-                    console.log(actualEvents.length);
                     if (actualEvents.length == maxFitTrendCount) {
                     } else if (actualEvents.length > maxFitTrendCount) {
                         while (actualEvents.length > maxFitTrendCount)
@@ -1002,15 +1001,6 @@ export class Chart {
                     const addGap =
                         (maxWidth - actualEvents.length * versionImageWidth) /
                         (actualEvents.length - 1);
-                    console.log(
-                        chart.difficulty,
-                        maxFitTrendCount,
-                        trendEvents.length,
-                        actualEvents.length,
-                        versionImageWidth,
-                        maxWidth,
-                        addGap
-                    );
                     for (
                         let i = 0,
                             curx =

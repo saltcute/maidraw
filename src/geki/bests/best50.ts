@@ -799,16 +799,6 @@ export class Best50 {
                     "white",
                     new Color(curColor).darken(0.3).hexa()
                 );
-            else {
-                if (!score.platinumScore)
-                    console.log(
-                        `${score.chart.name} plat, ${score.platinumScore}`
-                    );
-                if (!score.chart.maxPlatinumScore)
-                    console.log(
-                        `${score.chart.name} max, ${score.platinumScore}`
-                    );
-            }
         }
         /** End Difficulty & Rating Draw */
 
