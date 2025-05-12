@@ -1086,6 +1086,8 @@ export class Chart {
         ctx.fill();
         /** Begin Difficulty & DX Rating Draw */
         {
+            ctx.save();
+            ctx.clip();
             Util.drawText(
                 ctx,
                 chart.designer.name || "-",
@@ -1098,12 +1100,13 @@ export class Chart {
                 "white",
                 new Color(curColor).darken(0.3).hexa()
             );
+            ctx.restore();
 
             Util.drawText(
                 ctx,
-                `${score?.dxScore || "MAX DX SCR"}/${chart.meta.maxDXScore}`,
+                `${score ? `${score.dxRating}/` : "MAX DX SCR: "}${chart.meta.maxDXScore}`,
                 x + height * 2 - element.bubble.margin,
-                y + height * (0.806 + (1 - 0.806) / 2),
+                y + height - element.bubble.margin * 3.1,
                 height * 0.806 * 0.128,
                 height * 0.806 * 0.04,
                 Infinity,
