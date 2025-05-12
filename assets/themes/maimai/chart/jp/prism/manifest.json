@@ -53,6 +53,48 @@
         "profile": {
             "nameplate": "../../../best50/common/versionless/nameplate.png",
             "icon": "../../../best50/common/versionless/icon.png"
+        },
+        "versions": {
+            "OLD": {
+                "0": "../../common/versionless/logo/jp/100.png",
+                "10": "../../common/versionless/logo/jp/110.png",
+                "20": "../../common/versionless/logo/jp/120.png",
+                "30": "../../common/versionless/logo/jp/130.png",
+                "40": "../../common/versionless/logo/jp/140.png",
+                "50": "../../common/versionless/logo/jp/150.png",
+                "60": "../../common/versionless/logo/jp/160.png",
+                "70": "../../common/versionless/logo/jp/170.png",
+                "80": "../../common/versionless/logo/jp/180.png",
+                "85": "../../common/versionless/logo/jp/185.png",
+                "90": "../../common/versionless/logo/jp/190.png",
+                "95": "../../common/versionless/logo/jp/195.png",
+                "99": "../../common/versionless/logo/jp/199.png"
+            },
+            "DX": {
+                "0": "../../common/versionless/logo/jp/200.png",
+                "5": "../../common/versionless/logo/jp/205.png",
+                "10": "../../common/versionless/logo/jp/210.png",
+                "15": "../../common/versionless/logo/jp/215.png",
+                "20": "../../common/versionless/logo/jp/220.png",
+                "25": "../../common/versionless/logo/jp/225.png",
+                "30": "../../common/versionless/logo/jp/230.png",
+                "35": "../../common/versionless/logo/jp/235.png",
+                "40": "../../common/versionless/logo/jp/240.png",
+                "45": "../../common/versionless/logo/jp/245.png",
+                "50": "../../common/versionless/logo/jp/250.png",
+                "55": "../../common/versionless/logo/jp/255.png"
+            },
+            "EX": {
+                "10": "../../common/versionless/logo/intl/210.png",
+                "15": "../../common/versionless/logo/intl/215.png"
+            },
+            "CN": {
+                "0": "../../common/versionless/logo/cn/200.png",
+                "10": "../../common/versionless/logo/cn/210.png",
+                "20": "../../common/versionless/logo/cn/220.png",
+                "30": "../../common/versionless/logo/cn/230.png",
+                "40": "../../common/versionless/logo/cn/240.png"
+            }
         }
     },
     "elements": [
@@ -66,21 +108,22 @@
         },
         {
             "type": "image",
-            "x": 285,
-            "y": 116,
-            "width": 450,
-            "height": 231,
+            "x": 1845,
+            "y": 262,
+            "width": 615,
+            "height": 310,
             "path": "../../../best50/common/prism/jp/logo.png"
         },
         {
             "type": "chart-grid",
-            "x": 140,
-            "y": 500,
-            "scoreBubble": {
-                "width": 280,
-                "height": 155,
-                "margin": 25,
-                "gap": 70,
+            "x": 100,
+            "y": 262,
+            "width": 1645,
+            "height": 1045,
+            "margin": 70,
+            "gap": 40,
+            "bubble": {
+                "margin": 20,
                 "color": {
                     "basic": "#70E262",
                     "advanced": "#FFBB00",
@@ -89,13 +132,27 @@
                     "remaster": "#DDBDF5",
                     "utage": "#70E262"
                 }
+            },
+            "color": {
+                "card": "#b9eae5"
+            }
+        },
+        {
+            "type": "detail-info",
+            "x": 1845,
+            "y": 562,
+            "width": 615,
+            "height": 745,
+            "margin": 40,
+            "color": {
+                "card": "#b9eae5"
             }
         },
         {
             "type": "profile",
-            "x": 110,
-            "y": 345,
-            "height": 129
+            "x": 150,
+            "y": 40,
+            "height": 182
         },
         {
             "type": "text",

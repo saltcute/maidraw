@@ -2,7 +2,9 @@ import {
     CanvasGradient,
     CanvasPattern,
     CanvasRenderingContext2D,
+    TextMetrics,
 } from "canvas";
+import { fillTextWithTwemoji } from "node-canvas-with-twemoji-and-discord-emoji";
 
 export class Util {
     static findMaxFitString(
@@ -67,6 +69,52 @@ export class Util {
             ctx.textAlign = textAlign;
             ctx.strokeText(str, x, y);
         }
+    }
+    static async drawEmojiOrGlyph(
+        ctx: CanvasRenderingContext2D,
+        str: string,
+        x: number,
+        y: number,
+        fontSize: number,
+        /**
+         * Line width of the text stroke.
+         */
+        maxWidth: number,
+        textAlign: "left" | "center" | "right" = "left",
+        mainColor: string | CanvasGradient | CanvasPattern = "white",
+        font: string = `"standard-font-title-latin", "standard-font-title-jp"`,
+        lineBreakSuffix = "..."
+    ) {
+        ctx.font = `${fontSize}px ${font}`;
+        str = this.findMaxFitString(ctx, str, maxWidth, lineBreakSuffix);
+
+        ctx.textDrawingMode = "glyph";
+        ctx.fillStyle = mainColor;
+        ctx.font = `${fontSize}px ${font}`;
+        ctx.textAlign = textAlign;
+        await fillTextWithTwemoji(ctx, str, x, y);
+        ctx.textDrawingMode = "path";
+    }
+    static measureText(
+        ctx: CanvasRenderingContext2D,
+        original: string,
+        fontSize: number,
+        maxWidth: number,
+        font: string = `"standard-font-title-latin", "standard-font-title-jp"`
+    ): TextMetrics {
+        ctx.font = `${fontSize}px ${font}`;
+        const metrics = ctx.measureText(
+            Util.findMaxFitString(ctx, original, maxWidth, "...")
+        );
+        return metrics;
+    }
+    static visibleLength(str: string) {
+        return [...new Intl.Segmenter().segment(str)].length;
+    }
+    static capitalize(str: string) {
+        const strarr = [...str];
+        strarr[0] = strarr[0].toUpperCase();
+        return strarr.join("");
     }
 }
 export namespace Util {

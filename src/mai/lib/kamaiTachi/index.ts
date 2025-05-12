@@ -276,13 +276,85 @@ export class KamaiTachi extends ScoreTrackerAdapter {
         );
     }
     async getPlayerScore(username: string, chartId: number) {
+        const rawPBs = await this.getPlayerPB(username);
+        if (!rawPBs?.body)
+            return {
+                basic: null,
+                advanced: null,
+                expert: null,
+                master: null,
+                remaster: null,
+                utage: null,
+            };
+        const pbs: {
+            chart: KamaiTachi.IChart;
+            song: KamaiTachi.ISong;
+            pb: KamaiTachi.IPb;
+        }[] = [];
+        for (const pb of rawPBs.body.pbs) {
+            let chart = rawPBs.body.charts.find((v) => v.chartID == pb.chartID);
+            let song = rawPBs.body.songs.find((v) => v.id == pb.songID);
+            if (chart && song) {
+                pbs.push({ pb, chart, song });
+            }
+        }
+        const basic = pbs.find(
+            (v) =>
+                v.chart.difficulty.includes("Basic") &&
+                v.chart.data.inGameID == chartId
+        );
+        const advanced = pbs.find(
+            (v) =>
+                v.chart.difficulty.includes("Advanced") &&
+                v.chart.data.inGameID == chartId
+        );
+        const expert = pbs.find(
+            (v) =>
+                v.chart.difficulty.includes("Expert") &&
+                v.chart.data.inGameID == chartId
+        );
+        const master = pbs.find(
+            (v) =>
+                v.chart.difficulty.includes("Master") &&
+                v.chart.data.inGameID == chartId
+        );
+        const remaster = pbs.find(
+            (v) =>
+                v.chart.difficulty.includes("Re:Master") &&
+                v.chart.data.inGameID == chartId
+        );
+        const utage = pbs.find(
+            (v) =>
+                v.chart.difficulty.includes("Utage") &&
+                v.chart.data.inGameID == chartId
+        );
         return {
-            basic: null,
-            advanced: null,
-            expert: null,
-            master: null,
-            remaster: null,
-            utage: null,
+            basic: basic
+                ? this.toMaiDrawScore(basic.pb, basic.chart, basic.song)
+                : null,
+            advanced: advanced
+                ? this.toMaiDrawScore(
+                      advanced.pb,
+                      advanced.chart,
+                      advanced.song
+                  )
+                : null,
+            expert: expert
+                ? this.toMaiDrawScore(expert.pb, expert.chart, expert.song)
+                : null,
+            master: master
+                ? this.toMaiDrawScore(master.pb, master.chart, master.song)
+                : null,
+            remaster: remaster
+                ? this.toMaiDrawScore(
+                      remaster.pb,
+                      remaster.chart,
+                      remaster.song
+                  )
+                : null,
+            utage: utage
+                ? this.toMaiDrawScore(utage.pb, utage.chart, utage.song)
+                : null,
         };
     }
     public maimai() {
