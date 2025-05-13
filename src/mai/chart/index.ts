@@ -1767,6 +1767,8 @@ export class Chart {
                 currentTheme = theme;
             }
         }
+        const chart = Chart.Database.getLocalChart(chartId, EDifficulty.BASIC);
+        if (!chart) return null;
         if (currentTheme) {
             await Chart.Database.cacheJackets([chartId]);
             const canvas = new Canvas(
