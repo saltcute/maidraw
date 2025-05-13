@@ -830,55 +830,63 @@ export class Chart {
                         ) {
                             region = "DX";
                         }
+                        const rawVersion =
+                            Math.floor(version.version.gameVersion.minor / 5) *
+                            5;
+
                         const versionImage = this.getThemeFile(
                             theme.manifest.sprites.versions[region][
-                                version.version.gameVersion
-                                    .minor as keyof Chart.IThemeManifest["sprites"]["versions"][typeof version.region]
+                                rawVersion as keyof Chart.IThemeManifest["sprites"]["versions"][typeof version.region]
                             ]
                         );
-                        if (versionImage) {
-                            const versionImg = new Image();
-                            versionImg.src = versionImage;
-                            let text;
-                            switch (version.region) {
-                                case "DX":
-                                    if (version.EXAppend) text = "🇯🇵🌏";
-                                    else text = "🇯🇵";
-                                    break;
-                                case "EX":
-                                    text = "🌏";
-                                    break;
-                                case "CN":
-                                    text = "🇨🇳";
-                                    break;
-                                default:
-                                    text = "";
-                            }
-                            ctx.drawImage(
-                                versionImg,
-                                (curx -= versionImageWidth),
-                                cury,
-                                versionImageWidth,
-                                versionImageHeight
-                            );
-                            if (version.region != "OLD") {
-                                await Util.drawEmojiOrGlyph(
-                                    ctx,
-                                    text,
-                                    curx,
-                                    cury +
-                                        regionTextSize +
-                                        (versionImageHeight - regionTextSize) /
-                                            2,
-                                    regionTextSize,
-                                    Infinity,
-                                    "right"
+                        try {
+                            sharp(versionImage);
+                            if (versionImage) {
+                                const versionImg = new Image();
+                                versionImg.src = versionImage;
+                                let text;
+                                switch (version.region) {
+                                    case "DX":
+                                        if (version.EXAppend) text = "🇯🇵🌏";
+                                        else text = "🇯🇵";
+                                        break;
+                                    case "EX":
+                                        text = "🌏";
+                                        break;
+                                    case "CN":
+                                        text = "🇨🇳";
+                                        break;
+                                    default:
+                                        text = "";
+                                }
+                                ctx.drawImage(
+                                    versionImg,
+                                    (curx -= versionImageWidth),
+                                    cury,
+                                    versionImageWidth,
+                                    versionImageHeight
                                 );
-                                curx -=
-                                    Util.visibleLength(text) * regionTextSize +
-                                    element.bubble.margin;
+                                if (version.region != "OLD") {
+                                    await Util.drawEmojiOrGlyph(
+                                        ctx,
+                                        text,
+                                        curx,
+                                        cury +
+                                            regionTextSize +
+                                            (versionImageHeight -
+                                                regionTextSize) /
+                                                2,
+                                        regionTextSize,
+                                        Infinity,
+                                        "right"
+                                    );
+                                    curx -=
+                                        Util.visibleLength(text) *
+                                            regionTextSize +
+                                        element.bubble.margin;
+                                }
                             }
-                        }
+                        } catch {}
                     }
                 }
                 /** End Version Draw */
