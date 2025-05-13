@@ -298,34 +298,40 @@ export class KamaiTachi extends ScoreTrackerAdapter {
                 pbs.push({ pb, chart, song });
             }
         }
+        function difficultyCompare(payload: KamaiTachi.IChart, target: string) {
+            return (
+                payload.difficulty ==
+                `${payload.data.inGameID >= 10000 && payload.data.inGameID < 100000 ? "DX " : ""}${target}`
+            );
+        }
         const basic = pbs.find(
             (v) =>
-                v.chart.difficulty.includes("Basic") &&
+                difficultyCompare(v.chart, "Basic") &&
                 v.chart.data.inGameID == chartId
         );
         const advanced = pbs.find(
             (v) =>
-                v.chart.difficulty.includes("Advanced") &&
+                difficultyCompare(v.chart, "Advanced") &&
                 v.chart.data.inGameID == chartId
         );
         const expert = pbs.find(
             (v) =>
-                v.chart.difficulty.includes("Expert") &&
+                difficultyCompare(v.chart, "Expert") &&
                 v.chart.data.inGameID == chartId
         );
         const master = pbs.find(
             (v) =>
-                v.chart.difficulty.includes("Master") &&
+                difficultyCompare(v.chart, "Master") &&
                 v.chart.data.inGameID == chartId
         );
         const remaster = pbs.find(
             (v) =>
-                v.chart.difficulty.includes("Re:Master") &&
+                difficultyCompare(v.chart, "Re:Master") &&
                 v.chart.data.inGameID == chartId
         );
         const utage = pbs.find(
             (v) =>
-                v.chart.difficulty.includes("Utage") &&
+                difficultyCompare(v.chart, "UTAGE") &&
                 v.chart.data.inGameID == chartId
         );
         return {
