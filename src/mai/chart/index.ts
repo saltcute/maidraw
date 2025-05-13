@@ -935,9 +935,12 @@ export class Chart {
                     const trendEvents = chart.events.filter(
                         (v) => v.type == "existence" && v.version.region == "DX"
                     ) as database.Database.Events.Existence[];
-                    let actualEvents = _.uniqWith(trendEvents, (a, b) => {
-                        return _.isEqual(a.data.level, b.data.level);
-                    });
+                    let actualEvents: database.Database.Events[] = _.uniqWith(
+                        trendEvents,
+                        (a, b) => {
+                            return _.isEqual(a.data.level, b.data.level);
+                        }
+                    );
                     if (actualEvents.length == maxFitTrendCount) {
                     } else if (actualEvents.length > maxFitTrendCount) {
                         while (actualEvents.length > maxFitTrendCount)
@@ -995,8 +998,31 @@ export class Chart {
                                 trendEvents[trendEvents.length - 1]
                             );
                         }
+                        const removalEvent = chart.events.find(
+                            (v) =>
+                                v.type == "removal" && v.version.region == "DX"
+                        ) as database.Database.Events.Removal | undefined;
+                        if (removalEvent) {
+                            actualEvents.pop();
+                            actualEvents.push(removalEvent);
+                        }
                     } else {
                         actualEvents = [...trendEvents];
+                    }
+                    if (
+                        actualEvents[actualEvents.length - 1].version
+                            .gameVersion.minor < CURRENT_DX_MINOR
+                    ) {
+                        while (actualEvents.length >= maxFitTrendCount)
+                            actualEvents.pop();
+                        actualEvents.push({
+                            type: "removal",
+                            version: Util.Maimai.Version.toEventVersion(
+                                Util.Maimai.Version.getNextVersion(
+                                    trendEvents[trendEvents.length - 1].version
+                                )
+                            ),
+                        });
                     }
                     const addGap =
                         (maxWidth - actualEvents.length * versionImageWidth) /
@@ -1036,34 +1062,58 @@ export class Chart {
                                 versionImageWidth,
                                 versionImageHeight
                             );
-                            let symbol = "";
-                            if (i != 0) {
-                                const lastEvent = actualEvents[i - 1];
-                                if (lastEvent) {
-                                    if (lastEvent.data.level < event.data.level)
-                                        symbol = "↑";
-                                    else if (
-                                        lastEvent.data.level > event.data.level
-                                    )
-                                        symbol = "↓";
-                                    else if (
-                                        lastEvent.data.level == event.data.level
-                                    )
-                                        symbol = "→";
+                            if (event.type == "existence") {
+                                let symbol = "";
+                                if (i != 0) {
+                                    const lastEvent = actualEvents[i - 1];
+                                    if (lastEvent.type == "existence") {
+                                        if (
+                                            lastEvent.data.level <
+                                            event.data.level
+                                        )
+                                            symbol = "↑";
+                                        else if (
+                                            lastEvent.data.level >
+                                            event.data.level
+                                        )
+                                            symbol = "↓";
+                                        else if (
+                                            lastEvent.data.level ==
+                                            event.data.level
+                                        )
+                                            symbol = "→";
+                                    }
                                 }
+                                Util.drawText(
+                                    ctx,
+                                    `${symbol}${event.data.level.toFixed(1)}`,
+                                    curx + versionImageWidth / 2,
+                                    cury +
+                                        versionImageHeight +
+                                        noteCountTextSize,
+                                    noteCountTextSize,
+                                    height * 0.806 * 0.04,
+                                    Infinity,
+                                    "center",
+                                    "white",
+                                    new Color(curColor).darken(0.3).hexa()
+                                );
+                            } else if (event.type == "removal") {
+                                Util.drawText(
+                                    ctx,
+                                    `❌`,
+                                    curx + versionImageWidth / 2,
+                                    cury +
+                                        versionImageHeight +
+                                        noteCountTextSize,
+                                    noteCountTextSize,
+                                    height * 0.806 * 0.04,
+                                    Infinity,
+                                    "center",
+                                    "white",
+                                    new Color(curColor).darken(0.3).hexa()
+                                );
                             }
-                            Util.drawText(
-                                ctx,
-                                `${symbol}${event.data.level.toFixed(1)}`,
-                                curx + versionImageWidth / 2,
-                                cury + versionImageHeight + noteCountTextSize,
-                                noteCountTextSize,
-                                height * 0.806 * 0.04,
-                                Infinity,
-                                "center",
-                                "white",
-                                new Color(curColor).darken(0.3).hexa()
-                            );
                             curx += versionImageWidth + addGap;
                         }
                     }

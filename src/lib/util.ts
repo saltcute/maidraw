@@ -1,9 +1,11 @@
+import { Database } from "@maidraw/mai/chart/database";
 import {
     CanvasGradient,
     CanvasPattern,
     CanvasRenderingContext2D,
     TextMetrics,
 } from "canvas";
+import _ from "lodash";
 import { fillTextWithTwemoji } from "node-canvas-with-twemoji-and-discord-emoji";
 
 export class Util {
@@ -164,5 +166,162 @@ export namespace Util {
                     str.replace(this.re(set, "full"), this.toHalf(set)),
                 str0
             );
+    }
+    export namespace Maimai {
+        export class Version {
+            static readonly DX = {
+                name: "maimai でらっくす",
+                gameVersion: {
+                    isDX: true,
+                    major: 1,
+                    minor: 0,
+                },
+            };
+            static readonly DX_PLUS = {
+                name: "maimai でらっくす PLUS",
+                gameVersion: {
+                    isDX: true,
+                    major: 1,
+                    minor: 5,
+                },
+            };
+            static readonly SPLASH = {
+                name: "maimai でらっくす Splash",
+                gameVersion: {
+                    isDX: true,
+                    major: 1,
+                    minor: 10,
+                },
+            };
+            static readonly SPLASH_PLUS = {
+                name: "maimai でらっくす Splash PLUS",
+                gameVersion: {
+                    isDX: true,
+                    major: 1,
+                    minor: 15,
+                },
+            };
+            static readonly UNIVERSE = {
+                name: "maimai でらっくす UNiVERSE",
+                gameVersion: {
+                    isDX: true,
+                    major: 1,
+                    minor: 20,
+                },
+            };
+            static readonly UNIVERSE_PLUS = {
+                name: "maimai でらっくす UNiVERSE PLUS",
+                gameVersion: {
+                    isDX: true,
+                    major: 1,
+                    minor: 25,
+                },
+            };
+            static readonly FESTIVAL = {
+                name: "maimai でらっくす FESTiVAL",
+                gameVersion: {
+                    isDX: true,
+                    major: 1,
+                    minor: 30,
+                },
+            };
+            static readonly FESTIVAL_PLUS = {
+                name: "maimai でらっくす FESTiVAL PLUS",
+                gameVersion: {
+                    isDX: true,
+                    major: 1,
+                    minor: 35,
+                },
+            };
+            static readonly BUDDIES = {
+                name: "maimai でらっくす BUDDiES",
+                gameVersion: {
+                    isDX: true,
+                    major: 1,
+                    minor: 40,
+                },
+            };
+            static readonly BUDDIES_PLUS = {
+                name: "maimai でらっくす BUDDiES PLUS",
+                gameVersion: {
+                    isDX: true,
+                    major: 1,
+                    minor: 45,
+                },
+            };
+            static readonly PRISM = {
+                name: "maimai でらっくす PRiSM",
+                gameVersion: {
+                    isDX: true,
+                    major: 1,
+                    minor: 50,
+                },
+            };
+            static readonly PRISM_PLUS = {
+                name: "maimai でらっくす PRiSM PLUS",
+                gameVersion: {
+                    isDX: true,
+                    major: 1,
+                    minor: 55,
+                },
+            };
+            private static versions: Database.IVersion[] = [
+                Version.DX,
+                Version.DX_PLUS,
+                Version.SPLASH,
+                Version.SPLASH_PLUS,
+                Version.UNIVERSE,
+                Version.UNIVERSE_PLUS,
+                Version.FESTIVAL,
+                Version.FESTIVAL_PLUS,
+                Version.BUDDIES,
+                Version.BUDDIES_PLUS,
+                Version.PRISM,
+                Version.PRISM_PLUS,
+            ];
+            static getNextVersion(version: Database.IVersion) {
+                const index = _.findIndex(Version.versions, (v) => {
+                    return (
+                        _.isEqual(
+                            v.gameVersion.isDX,
+                            version.gameVersion.isDX
+                        ) &&
+                        _.isEqual(
+                            v.gameVersion.major,
+                            version.gameVersion.major
+                        ) &&
+                        _.isEqual(
+                            v.gameVersion.minor,
+                            version.gameVersion.minor
+                        )
+                    );
+                });
+                if (index == -1) {
+                    return version;
+                } else if (index == this.versions.length - 1) {
+                    return this.versions[index];
+                }
+                return this.versions[index + 1];
+            }
+            static getPreviousVersion(version: Database.IVersion) {
+                const index = _.findIndex(Version.versions, (v) => {
+                    return _.isEqual(v.gameVersion, version.gameVersion);
+                });
+                if (index == -1) {
+                    return version;
+                } else if (index == 0) {
+                    return this.versions[index];
+                }
+                return this.versions[index - 1];
+            }
+            static toEventVersion(version: Database.IVersion) {
+                const event = {
+                    ...version,
+                    region: "DX",
+                };
+                event.gameVersion.release = 0;
+                return event as Database.IEventVersion;
+            }
+        }
     }
 }
