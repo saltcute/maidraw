@@ -1178,17 +1178,17 @@ export class Best50 {
                                                     this.RATING_CONSTANTS[
                                                         v.achievementRank
                                                     ]["0.4"];
-                                            if (v.achievement > 30)
+                                            else if (v.achievement > 30)
                                                 ratingConstant =
                                                     this.RATING_CONSTANTS[
                                                         v.achievementRank
                                                     ]["0.3"];
-                                            if (v.achievement > 20)
+                                            else if (v.achievement > 20)
                                                 ratingConstant =
                                                     this.RATING_CONSTANTS[
                                                         v.achievementRank
                                                     ]["0.2"];
-                                            if (v.achievement > 10)
+                                            else if (v.achievement > 10)
                                                 ratingConstant =
                                                     this.RATING_CONSTANTS[
                                                         v.achievementRank
@@ -1226,11 +1226,11 @@ export class Best50 {
                             if (target == Best50.EAchievementTypes.D) {
                                 return 0;
                             }
-                            const naiveNevel =
+                            const naiveLevel =
                                 rating /
                                 (this.RATING_CONSTANTS[target] *
                                     this.RANK_BORDERS[target]);
-                            return Math.ceil(naiveNevel * 10) / 10;
+                            return Math.ceil(naiveLevel * 10) / 10;
                         };
                         function getMilestone(
                             scores: Best50.IScore[],
@@ -1284,10 +1284,10 @@ export class Best50 {
                             ).toFixed(0),
                             oldScoreRatingBase: getRatingBase(
                                 oldScores,
-                                30
+                                35
                             ).toFixed(0),
                             newScoreMilestone: getMilestone(newScores, 15),
-                            oldScoreMilestone: getMilestone(oldScores, 30),
+                            oldScoreMilestone: getMilestone(oldScores, 35),
                         });
                         break;
                     }
