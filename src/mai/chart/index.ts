@@ -10,7 +10,7 @@ import upath from "upath";
 import fs from "fs";
 import { Best50 } from "../best50";
 import stringFormat from "string-template";
-import _, { last } from "lodash";
+import _ from "lodash";
 
 export class Chart {
     private static readonly DEFAULT_THEME = "jp-prism";
@@ -819,6 +819,21 @@ export class Chart {
                                 : curx
                 ) {
                     const version = versions[i];
+                    const MAIMAI_VERSIONS = [
+                        99, 95, 90, 85, 80, 70, 60, 50, 40, 30, 20, 10, 0,
+                    ];
+                    const MAIMAIDX_VERSIONS = [
+                        55, 50, 45, 40, 35, 30, 25, 20, 15, 10, 5, 0,
+                    ];
+                    const findVersion = (v: number, isDX: boolean) => {
+                        const target = isDX
+                            ? MAIMAIDX_VERSIONS
+                            : MAIMAI_VERSIONS;
+                        for (const version of target) {
+                            if (v <= version) return version;
+                        }
+                        return 0;
+                    };
                     if (version.version) {
                         let region = version.region;
                         if (
@@ -830,9 +845,10 @@ export class Chart {
                         ) {
                             region = "DX";
                         }
-                        const rawVersion =
-                            Math.floor(version.version.gameVersion.minor / 5) *
-                            5;
+                        const rawVersion = findVersion(
+                            version.version.gameVersion.minor,
+                            version.version.gameVersion.isDX
+                        );
 
                         const versionImage = this.getThemeFile(
                             theme.manifest.sprites.versions[region][
@@ -1301,7 +1317,7 @@ export class Chart {
             );
             Util.drawText(
                 ctx,
-                `BPM: ${chart.bpm}`,
+                `#${chart.id} BPM: ${chart.bpm}`,
                 element.x + textMargin,
                 element.y +
                     jacketMargin +
