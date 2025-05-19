@@ -1,8 +1,8 @@
 const fs = require("fs");
 const upath = require("upath");
 
-if (fs.existsSync(upath.join(__dirname, ...process.argv.slice(2)))) {
+try {
     require(upath.join(__dirname, ...process.argv.slice(2)));
-} else {
+} catch {
     console.log("No test found.");
 }
