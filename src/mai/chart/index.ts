@@ -825,14 +825,21 @@ export class Chart {
                     const MAIMAIDX_VERSIONS = [
                         55, 50, 45, 40, 35, 30, 25, 20, 15, 10, 5, 0,
                     ];
-                    const findVersion = (v: number, isDX: boolean) => {
+                    const WUMENGDX_VERSIONS = [40, 30, 20, 10, 0];
+                    const findVersion = (
+                        v: number,
+                        isDX: boolean,
+                        isCN: boolean
+                    ) => {
                         const target = isDX
-                            ? MAIMAIDX_VERSIONS
+                            ? isCN
+                                ? WUMENGDX_VERSIONS
+                                : MAIMAIDX_VERSIONS
                             : MAIMAI_VERSIONS;
                         for (const version of target) {
-                            if (v <= version) return version;
+                            if (v >= version) return version;
                         }
-                        return 0;
+                        return -1;
                     };
                     if (version.version) {
                         let region = version.region;
@@ -847,9 +854,9 @@ export class Chart {
                         }
                         const rawVersion = findVersion(
                             version.version.gameVersion.minor,
-                            version.version.gameVersion.isDX
+                            version.version.gameVersion.isDX,
+                            region == "CN"
                         );
-
                         const versionImage = this.getThemeFile(
                             theme.manifest.sprites.versions[region][
                                 rawVersion as keyof Chart.IThemeManifest["sprites"]["versions"][typeof version.region]
