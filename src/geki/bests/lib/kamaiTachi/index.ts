@@ -432,6 +432,7 @@ export class KamaiTachi extends ScoreTrackerAdapter {
                             "classic"
                         )
                     )
+                    .filter((v) => v.chart.difficulty != EDifficulty.LUNATIC)
             ),
             new: newScores
                 .sort((a, b) =>
