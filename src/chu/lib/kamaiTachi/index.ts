@@ -2,7 +2,6 @@ import {
     EAchievementTypes,
     EComboTypes,
     EDifficulty,
-    ESyncTypes,
     IScore,
 } from "@maidraw/chu/type";
 import ScoreTrackerAdapter from "..";

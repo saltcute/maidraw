@@ -13,22 +13,16 @@ import {
     IThemeScoreElement,
     IThemeTextElement,
 } from "./type";
-import {
-    Canvas,
-    Image,
-    registerFont,
-    CanvasRenderingContext2D,
-    CanvasGradient,
-    CanvasPattern,
-} from "canvas";
+import { Canvas, Image, registerFont, CanvasRenderingContext2D } from "canvas";
 import Color from "color";
 import sharp from "sharp";
 import { globSync } from "glob";
-import ScoreTrackerAdapter from "./lib";
+import ScoreTrackerAdapter from "../lib";
 import stringFormat from "string-template";
 import { Chart } from "@maidraw/chu/chart";
 
-import * as kamaiTachi from "./lib/kamaiTachi";
+import * as kamaiTachi from "../lib/kamaiTachi";
+import * as lxns from "../lib/lxns";
 import { Util } from "@maidraw/lib/util";
 
 class HalfFullWidthConvert {
@@ -1224,4 +1218,5 @@ export class Best50 {
 }
 export namespace Best50 {
     export import KamaiTachi = kamaiTachi.KamaiTachi;
+    export import LXNS = lxns.LXNS;
 }

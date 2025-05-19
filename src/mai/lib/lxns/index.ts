@@ -71,7 +71,7 @@ export class LXNS extends ScoreTrackerAdapter {
     }
     async getSongList(): Promise<LXNS.ISongListResponse> {
         const cached = (await this.cache.get(
-            "lxns-songList"
+            "lxns-songList-maimai"
         )) as LXNS.ISongListResponse | null;
         if (cached) return cached;
         const res = (await this.get<LXNS.ISongListResponse>(`/song/list`, {
@@ -81,7 +81,7 @@ export class LXNS extends ScoreTrackerAdapter {
             genres: [],
             versions: [],
         };
-        this.cache.put("lxns-songList", res, 24 * 60 * 60 * 1000);
+        this.cache.put("lxns-songList-maimai", res, 24 * 60 * 60 * 1000);
         return res;
     }
     async getMaiDrawChartList(): Promise<Best50.IChart[]> {
@@ -146,8 +146,12 @@ export class LXNS extends ScoreTrackerAdapter {
                 const chartDetail = chartList.find(
                     (v) =>
                         v.id ===
-                        chart.id +
-                            (chart.type == LXNS.ESongTypes.DX ? 10000 : 0)
+                            chart.id +
+                                (chart.type == LXNS.ESongTypes.DX
+                                    ? 10000
+                                    : 0) &&
+                        v.difficulty ==
+                            (chart.level_index as unknown as EDifficulty)
                 );
                 if (!chartDetail) return null;
                 return {
