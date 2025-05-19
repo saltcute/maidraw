@@ -2,8 +2,10 @@ const sharp = require("sharp");
 const upath = require("upath");
 
 (async () => {
-    const { MaiDraw } = require("../../../dist");
-    const kamai = new MaiDraw.Maimai.Best50.KamaiTachi();
+    const { MaiDraw } = require("../../../../dist");
+    const lxns = new MaiDraw.Maimai.Best50.LXNS({
+        auth: ""
+    });
     MaiDraw.Maimai.Chart.Database.setLocalDatabasePath(
         "../maimai-songs-database"
     );
@@ -11,27 +13,15 @@ const upath = require("upath");
     const fs = require("fs");
 
     const themes = [
-        "salt-2026-landscape",
-        "jp-finale-landscape",
-        "jp-finale-portrait",
-        "jp-prismplus-landscape",
-        "jp-prismplus-portrait",
         "jp-prism-landscape",
-        "jp-prism-portrait",
-        "jp-buddiesplus-landscape",
-        "jp-buddiesplus-portrait",
-        "cn-2024-portrait",
-        "cn-2024-landscape",
-        "jp-buddies-landscape",
-        "jp-buddies-portrait",
     ];
     const type = "full";
     for (let theme of themes) {
         let result = null;
         if (type === "full") {
             result = await MaiDraw.Maimai.Best50.drawWithScoreSource(
-                kamai,
-                "salt",
+                lxns,
+                "763358336746095",
                 {
                     scale: 2,
                     theme,
