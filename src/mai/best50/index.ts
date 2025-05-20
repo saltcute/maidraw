@@ -11,6 +11,7 @@ import stringFormat from "string-template";
 import * as lxns from "../lib/lxns";
 import * as kamaiTachi from "../lib/kamaiTachi";
 import * as divingFish from "../lib/divingFish";
+import * as maishift from "../lib/maishift";
 import { Util } from "@maidraw/lib/util";
 import { EDifficulty } from "@maidraw/mai/type";
 
@@ -1371,6 +1372,7 @@ export namespace Best50 {
     export import LXNS = lxns.LXNS;
     export import KamaiTachi = kamaiTachi.KamaiTachi;
     export import DivingFish = divingFish.DivingFish;
+    export import Maishift = maishift.Maishift;
 
     export interface IThemeManifest {
         displayName: string;

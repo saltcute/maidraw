@@ -80,6 +80,43 @@ export class Database {
         }
         return null;
     }
+    public static async getAllSongs() {
+        const cached = await this.cache.get("all-maimai-songs");
+        if (cached) return cached as Database.IChart[];
+        const localFolderPath = upath.join(
+            this.localDatabasePath,
+            "assets",
+            "maimai",
+            "charts"
+        );
+        const chartFolders = fs.readdirSync(localFolderPath);
+        const songs: Database.IChart[] = [];
+        for (const folder of chartFolders) {
+            const charts = fs.readdirSync(upath.join(localFolderPath, folder));
+            for (const chart of charts) {
+                const path = upath.join(localFolderPath, folder, chart);
+                try {
+                    songs.push(require(path));
+                } catch {}
+            }
+        }
+        await this.cache.put("all-maimai-songs", songs, 1000 * 60 * 60 * 2);
+        return songs;
+    }
+    public static async findLocalChartWithNameAndLevel(
+        name: string,
+        level: number,
+        isDX: boolean
+    ) {
+        const allSongs = await this.getAllSongs();
+        const found = allSongs.find(
+            (song) =>
+                song.name == name &&
+                song.level.toFixed(1) == level.toFixed(1) &&
+                (isDX ? 10000 < song.id && song.id < 100000 : song.id < 10000)
+        );
+        return found || null;
+    }
 }
 export namespace Database {
     export interface IChart {
