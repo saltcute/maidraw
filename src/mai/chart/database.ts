@@ -109,13 +109,16 @@ export class Database {
         isDX: boolean
     ) {
         const allSongs = await this.getAllSongs();
-        const found = allSongs.find(
-            (song) =>
-                song.name == name &&
-                song.level.toFixed(1) == level.toFixed(1) &&
-                (isDX ? 10000 < song.id && song.id < 100000 : song.id < 10000)
-        );
-        return found || null;
+        const found = allSongs
+            .filter(
+                (v) =>
+                    v.name == name &&
+                    (isDX ? 10000 < v.id && v.id < 100000 : v.id < 10000)
+            )
+            .sort(
+                (a, b) => Math.abs(a.level - level) - Math.abs(b.level - level)
+            );
+        return found.shift() || null;
     }
 }
 export namespace Database {
