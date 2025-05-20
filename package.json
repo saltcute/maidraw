@@ -1,6 +1,6 @@
 {
   "name": "maidraw",
-  "version": "0.7.11",
+  "version": "0.7.12",
   "description": "Kasumi module for maimai bot",
   "main": "dist/index.js",
   "scripts": {
