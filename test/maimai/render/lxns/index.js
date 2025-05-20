@@ -4,7 +4,7 @@ const upath = require("upath");
 (async () => {
     const { MaiDraw } = require("../../../../dist");
     const lxns = new MaiDraw.Maimai.Best50.LXNS({
-        auth: ""
+        auth: "",
     });
     MaiDraw.Maimai.Chart.Database.setLocalDatabasePath(
         "../maimai-songs-database"
@@ -12,18 +12,16 @@ const upath = require("upath");
 
     const fs = require("fs");
 
-    const themes = [
-        "jp-prism-landscape",
-    ];
+    const themes = ["jp-prism-landscape"];
     const type = "full";
     for (let theme of themes) {
         let result = null;
         if (type === "full") {
             result = await MaiDraw.Maimai.Best50.drawWithScoreSource(
                 lxns,
-                "763358336746095",
+                // "763358336746095",
+                "211532943892789",
                 {
-                    scale: 2,
                     theme,
                 }
             );

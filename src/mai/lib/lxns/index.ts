@@ -32,7 +32,18 @@ export class LXNS extends ScoreTrackerAdapter {
                     return {
                         id: v.id,
                         name: v.name,
-                        level: v.level,
+                        level:
+                            (() => {
+                                return v.events
+                                    .filter((v) => v.version.region == "CN")
+                                    .filter((v) => v.type == "existence")
+                                    .sort(
+                                        (a, b) =>
+                                            a.version.gameVersion.release -
+                                            b.version.gameVersion.release
+                                    )
+                                    .pop()?.data.level;
+                            })() || v.level,
                         difficulty: v.difficulty,
                         maxDxScore: v.meta.maxDXScore,
                     };
