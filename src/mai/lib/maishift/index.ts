@@ -168,7 +168,7 @@ export class Maishift extends ScoreTrackerAdapter {
                 }
             })(),
             dxRating: score.rating,
-            dxScore: 0,
+            dxScore: -1,
         };
     }
 }

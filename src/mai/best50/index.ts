@@ -776,7 +776,7 @@ export class Best50 {
                 new Color(curColor).darken(0.3).hexa()
             );
 
-            if (score.chart.maxDxScore) {
+            if (score.dxScore >= 0 && score.chart.maxDxScore > 0) {
                 Util.drawText(
                     ctx,
                     `${score.dxScore}/${score.chart.maxDxScore}`,

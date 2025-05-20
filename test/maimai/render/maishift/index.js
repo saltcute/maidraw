@@ -5,14 +5,20 @@ const upath = require("upath");
     const { MaiDraw } = require("../../../../dist");
     const maishift = new MaiDraw.Maimai.Best50.Maishift();
     MaiDraw.Maimai.Chart.Database.setLocalDatabasePath(
-        upath.join(__dirname, "..", "..", "..", "..", "..", "maimai-songs-database")
+        upath.join(
+            __dirname,
+            "..",
+            "..",
+            "..",
+            "..",
+            "..",
+            "maimai-songs-database"
+        )
     );
 
     const fs = require("fs");
 
-    const themes = [
-        "jp-prism-landscape",
-    ];
+    const themes = ["jp-prism-landscape"];
     const type = "full";
     for (let theme of themes) {
         let result = null;
@@ -21,7 +27,6 @@ const upath = require("upath");
                 maishift,
                 "saltcute",
                 {
-                    scale: 2,
                     theme,
                 }
             );
