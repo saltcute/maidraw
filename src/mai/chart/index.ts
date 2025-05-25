@@ -798,7 +798,7 @@ export class Chart {
                 }
                 const versionImageHeight =
                     (height - element.bubble.margin * 2) *
-                    (isShort ? 1 / 4 : 3 / 8);
+                    (isShort ? 1 / 3 : 3 / 8);
                 const versionImageWidth = (versionImageHeight / 160) * 332;
                 const regionTextSize = versionImageHeight * (5 / 8);
                 for (
@@ -808,13 +808,15 @@ export class Chart {
                     i < versions.length;
                     ++i,
                         cury =
+                            isShort ||
                             curx - versionImageWidth - regionTextSize <
-                            x + height * 2
+                                x + height * 2
                                 ? cury + versionImageHeight
                                 : cury,
                         curx =
+                            isShort ||
                             curx - versionImageWidth - regionTextSize <
-                            x + height * 2
+                                x + height * 2
                                 ? x + width - element.bubble.margin
                                 : curx
                 ) {
@@ -918,11 +920,8 @@ export class Chart {
                 const noteCountTexts = Object.entries(chart.meta.notes).map(
                     ([k, v]) => `${Util.capitalize(k)}: ${v}`
                 );
-                const shortCompensation = isShort
-                    ? versionImageHeight + element.bubble.margin / 2
-                    : 0;
                 const noteCountTextSize =
-                    (height - shortCompensation - element.bubble.margin * 4) /
+                    (height - element.bubble.margin * 4) /
                     noteCountTexts.length;
                 let noteCountLength = 0;
                 noteCountTexts.forEach((v, i) => {
@@ -931,7 +930,6 @@ export class Chart {
                         v,
                         x + element.bubble.margin * (3 / 2) + height * 2,
                         y +
-                            shortCompensation +
                             element.bubble.margin +
                             noteCountTextSize +
                             (noteCountTextSize + element.bubble.margin / 2) * i,
