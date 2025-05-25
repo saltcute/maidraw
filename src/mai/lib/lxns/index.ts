@@ -262,6 +262,14 @@ export class LXNS extends ScoreTrackerAdapter {
             utage: null,
         };
     }
+    async getPlayerLevel50(
+        username: string,
+        level: number,
+        page: number,
+        options: { percise: boolean }
+    ) {
+        return null;
+    }
 }
 
 export namespace LXNS {

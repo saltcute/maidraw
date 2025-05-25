@@ -149,16 +149,7 @@
             "y": 390,
             "borderColor": "#242B4A",
             "align": "left",
-            "content": "NEW\nOLD"
-        },
-        {
-            "type": "text",
-            "size": 24,
-            "x": 115,
-            "y": 390,
-            "borderColor": "#242B4A",
-            "align": "left",
-            "content": "scores average: {newScoreRatingAvg}.\nscores average: {oldScoreRatingAvg}."
+            "content": "{newScoreRatingAvgString}\n{oldScoreRatingAvgString}"
         },
         {
             "type": "text",
@@ -168,6 +159,24 @@
             "borderColor": "#242B4A",
             "align": "left",
             "content": "{newScoreMilestone}\n{oldScoreMilestone}"
+        },
+        {
+            "type": "text",
+            "size": 30,
+            "x": 780,
+            "y": 370,
+            "borderColor": "#242B4A",
+            "align": "center",
+            "content": "{level50Title}"
+        },
+        {
+            "type": "text",
+            "size": 18,
+            "x": 780,
+            "y": 400,
+            "borderColor": "#242B4A",
+            "align": "center",
+            "content": "{level50Subtitle}"
         }
     ]
 }

@@ -1,5 +1,6 @@
 import * as bests from "./best50";
 import * as chart from "./chart";
+import * as level50 from "./level50";
 import Bunyan from "bunyan";
 
 export class Maimai {
@@ -37,4 +38,5 @@ export class Maimai {
 export namespace Maimai {
     export import Best50 = bests.Best50;
     export import Chart = chart.Chart;
+    export import Level50 = level50.Level50;
 }

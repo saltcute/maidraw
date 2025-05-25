@@ -488,6 +488,53 @@ export class KamaiTachi extends ScoreTrackerAdapter {
             currentVersion: KamaiTachi.EGameVersions.PRISM_PLUS,
         });
     }
+    public async getPlayerLevel50(
+        username: string,
+        level: number,
+        page: number,
+        options: { percise: boolean } = { percise: false }
+    ) {
+        if (page < 1) page = 1;
+        const rawPBs = await this.getPlayerPB(username);
+        if (!rawPBs?.body) return null;
+        const pbs: {
+            chart: KamaiTachi.IChart;
+            song: KamaiTachi.ISong;
+            pb: KamaiTachi.IPb;
+        }[] = [];
+        for (const pb of rawPBs.body.pbs) {
+            let chart = rawPBs.body.charts.find((v) => v.chartID == pb.chartID);
+            let song = rawPBs.body.songs.find((v) => v.id == pb.songID);
+            if (chart && song) {
+                pbs.push({ pb, chart, song });
+            }
+        }
+        return pbs
+            .map((v) => this.toMaiDrawScore(v.pb, v.chart, v.song))
+            .sort(
+                (a, b) =>
+                    b.achievement - a.achievement ||
+                    b.chart.level - a.chart.level
+            )
+            .filter((v) =>
+                options.percise
+                    ? v.chart.level == level
+                    : this.levelBoundChecker(v.chart.level, level, 6)
+            )
+            .slice((page - 1) * 50, (page - 1) * 50 + 50);
+    }
+    private levelBoundChecker(payload: number, target: number, border: number) {
+        let lb = 0,
+            hb = 0;
+        if ((target * 10) % 10 < border) {
+            lb = Math.floor(target);
+            hb = Math.floor(target) + (border - 1) * 0.1;
+        } else {
+            lb = Math.floor(target) + border * 0.1;
+            hb = Math.ceil(target) - 0.1;
+        }
+        return lb <= payload && payload <= hb;
+    }
 }
 
 export namespace KamaiTachi {

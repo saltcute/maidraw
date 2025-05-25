@@ -33,7 +33,7 @@ const upath = require("upath");
                 kamai,
                 "salt",
                 {
-                    scale: 2,
+                    scale: 0.5,
                     theme,
                 }
             );

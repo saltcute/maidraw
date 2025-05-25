@@ -156,16 +156,7 @@
             "y": 100,
             "borderColor": "#226180",
             "align": "left",
-            "content": "NEW\nOLD"
-        },
-        {
-            "type": "text",
-            "size": 24,
-            "x": 1095,
-            "y": 100,
-            "borderColor": "#226180",
-            "align": "left",
-            "content": "scores average: {newScoreRatingAvg}.\nscores average: {oldScoreRatingAvg}."
+            "content": "{newScoreRatingAvgString}\n{oldScoreRatingAvgString}"
         },
         {
             "type": "text",

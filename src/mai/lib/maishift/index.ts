@@ -171,4 +171,12 @@ export class Maishift extends ScoreTrackerAdapter {
             dxScore: -1,
         };
     }
+    async getPlayerLevel50(
+        username: string,
+        level: number,
+        page: number,
+        options: { percise: boolean }
+    ) {
+        return null;
+    }
 }

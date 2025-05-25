@@ -8,19 +8,16 @@ import ScoreTrackerAdapter from "../lib";
 import { Chart } from "../chart";
 import stringFormat from "string-template";
 
-import * as lxns from "../lib/lxns";
-import * as kamaiTachi from "../lib/kamaiTachi";
-import * as divingFish from "../lib/divingFish";
-import * as maishift from "../lib/maishift";
 import { Util } from "@maidraw/lib/util";
 import { EDifficulty } from "@maidraw/mai/type";
+import { Best50 } from "../best50";
 
 interface ITheme {
     manifest: Best50.IThemeManifest;
     path: string;
 }
 
-export class Best50 {
+export class Level50 {
     private static readonly DEFAULT_THEME = "jp-prism-landscape";
 
     private static get assetsPath() {
@@ -1082,10 +1079,13 @@ export class Best50 {
     static async draw(
         name: string,
         rating: number,
-        newScores: Best50.IScore[],
-        oldScores: Best50.IScore[],
+        scores: Best50.IScore[],
+        level: number,
+        page: number,
         options?: { scale?: number; theme?: string; profilePicture?: Buffer }
     ): Promise<Buffer | null> {
+        const newScores = scores.slice(0, 15);
+        const oldScores = scores.slice(15, 50);
         let currentTheme = this.primaryTheme;
         if (options?.theme) {
             const theme = this.getTheme(options.theme);
@@ -1094,10 +1094,7 @@ export class Best50 {
             }
         }
         if (currentTheme) {
-            await Chart.Database.cacheJackets([
-                ...newScores.map((v) => v.chart.id),
-                ...oldScores.map((v) => v.chart.id),
-            ]);
+            await Chart.Database.cacheJackets(scores.map((v) => v.chart.id));
             const canvas = new Canvas(
                 currentTheme.manifest.width * (options?.scale ?? 1),
                 currentTheme.manifest.height * (options?.scale ?? 1)
@@ -1139,7 +1136,10 @@ export class Best50 {
                                         currentTheme,
                                         element,
                                         curScore,
-                                        index,
+                                        (page - 1) * 50 +
+                                            (element.region == "old"
+                                                ? index + 15
+                                                : index),
                                         x,
                                         y
                                     );
@@ -1160,143 +1160,18 @@ export class Best50 {
                         break;
                     }
                     case "text": {
-                        const getRatingBase = (
-                            scores: Best50.IScore[],
-                            length: number
-                        ) => {
-                            if (scores.length < length) return 0;
-                            return (
-                                scores
-                                    .slice(0, length)
-                                    .map((v) => {
-                                        let ratingConstant = 0;
-                                        if (
-                                            v.achievementRank ==
-                                            Best50.EAchievementTypes.D
-                                        ) {
-                                            if (v.achievement > 40)
-                                                ratingConstant =
-                                                    this.RATING_CONSTANTS[
-                                                        v.achievementRank
-                                                    ]["0.4"];
-                                            else if (v.achievement > 30)
-                                                ratingConstant =
-                                                    this.RATING_CONSTANTS[
-                                                        v.achievementRank
-                                                    ]["0.3"];
-                                            else if (v.achievement > 20)
-                                                ratingConstant =
-                                                    this.RATING_CONSTANTS[
-                                                        v.achievementRank
-                                                    ]["0.2"];
-                                            else if (v.achievement > 10)
-                                                ratingConstant =
-                                                    this.RATING_CONSTANTS[
-                                                        v.achievementRank
-                                                    ]["0.1"];
-                                        } else {
-                                            ratingConstant =
-                                                this.RATING_CONSTANTS[
-                                                    v.achievementRank
-                                                ];
-                                        }
-                                        return (
-                                            (v.achievement / 100) *
-                                            ratingConstant *
-                                            v.chart.level
-                                        );
-                                    })
-                                    .sort((a, b) => a - b)[0] || 0
-                            );
-                        };
-                        function getRatingAvg(
-                            scores: Best50.IScore[],
-                            length: number
-                        ) {
-                            if (scores.length <= 0) return 0;
-                            return (
-                                scores
-                                    .map((v) => v.dxRating)
-                                    .reduce((sum, v) => (sum += v)) / length
-                            );
-                        }
-                        const getRatingTargetLevel = (
-                            rating: number,
-                            target: Best50.EAchievementTypes
-                        ) => {
-                            if (target == Best50.EAchievementTypes.D) {
-                                return 0;
-                            }
-                            const naiveLevel =
-                                rating /
-                                (this.RATING_CONSTANTS[target] *
-                                    this.RANK_BORDERS[target]);
-                            return Math.ceil(naiveLevel * 10) / 10;
-                        };
-                        function getMilestone(
-                            scores: Best50.IScore[],
-                            length: number
-                        ) {
-                            const base = getRatingBase(scores, length);
-                            let sssTarget, ssspTarget;
-                            const sssLevel = getRatingTargetLevel(
-                                base,
-                                Best50.EAchievementTypes.SSS
-                            );
-                            const ssspLevel = getRatingTargetLevel(
-                                base,
-                                Best50.EAchievementTypes.SSSP
-                            );
-                            if (sssLevel > 0 && sssLevel < 15) {
-                                sssTarget = sssLevel;
-                            }
-                            if (ssspLevel > 0 && ssspLevel < 15) {
-                                ssspTarget = ssspLevel;
-                            }
-                            if (sssTarget && ssspTarget)
-                                return `Next rating boost: lv. ${ssspTarget.toFixed(
-                                    1
-                                )} SSS+/${sssTarget.toFixed(1)} SSS`;
-                            else if (sssTarget)
-                                return `Next rating boost: lv. ${sssTarget.toFixed(
-                                    1
-                                )} SSS`;
-                            else if (ssspTarget)
-                                return `Next rating boost: lv. ${ssspTarget.toFixed(
-                                    1
-                                )} SSS+`;
-                            else return "Good job!";
+                        function getTextLevel(level: number, border: number) {
+                            const realBorder = Math.floor(level) + border * 0.1;
+                            if (level < realBorder)
+                                return Math.floor(level).toFixed(0);
+                            else return Math.floor(level).toFixed(0) + "+";
                         }
                         await this.drawTextModule(ctx, currentTheme, element, {
                             username:
                                 Util.HalfFullWidthConvert.toFullWidth(name),
                             rating: rating.toFixed(0),
-                            newScoreRatingAvg: getRatingAvg(
-                                newScores,
-                                15
-                            ).toFixed(0),
-                            newScoreRatingAvgString: `NEW scores average: ${getRatingAvg(
-                                newScores,
-                                15
-                            ).toFixed(0)}.`,
-                            oldScoreRatingAvg: getRatingAvg(
-                                oldScores,
-                                35
-                            ).toFixed(0),
-                            oldScoreRatingAvgString: `OLD scores average: ${getRatingAvg(
-                                oldScores,
-                                35
-                            ).toFixed(0)}.`,
-                            newScoreRatingBase: getRatingBase(
-                                newScores,
-                                15
-                            ).toFixed(0),
-                            oldScoreRatingBase: getRatingBase(
-                                oldScores,
-                                35
-                            ).toFixed(0),
-                            newScoreMilestone: getMilestone(newScores, 15),
-                            oldScoreMilestone: getMilestone(oldScores, 35),
+                            level50Title: `Top Scores From Lv. ${getTextLevel(level, 6)}`,
+                            level50Subtitle: `(Showing scores from ${(page - 1) * 50 + 1} to ${page * 50})`,
                         });
                         break;
                     }
@@ -1308,6 +1183,8 @@ export class Best50 {
     static async drawWithScoreSource(
         source: ScoreTrackerAdapter,
         username: string,
+        level: number,
+        page: number,
         options?: {
             scale?: number;
             theme?: string;
@@ -1315,9 +1192,9 @@ export class Best50 {
         }
     ) {
         const profile = await source.getPlayerInfo(username);
-        const score = await source.getPlayerBest50(username);
+        const score = await source.getPlayerLevel50(username, level, page);
         if (!profile || !score) return null;
-        return this.draw(profile.name, profile.rating, score.new, score.old, {
+        return this.draw(profile.name, profile.rating, score, level, page, {
             ...options,
             profilePicture:
                 options?.profilePicture === null
@@ -1375,262 +1252,4 @@ export class Best50 {
         }
         return null;
     }
-}
-export namespace Best50 {
-    export import LXNS = lxns.LXNS;
-    export import KamaiTachi = kamaiTachi.KamaiTachi;
-    export import DivingFish = divingFish.DivingFish;
-    export import Maishift = maishift.Maishift;
-
-    export interface IThemeManifest {
-        displayName: string;
-        name: string;
-        width: number;
-        height: number;
-        sprites: IThemeSprites;
-        elements: IThemeElements[];
-    }
-
-    export interface IThemeSprites {
-        achievement: {
-            d: string;
-            c: string;
-            b: string;
-            bb: string;
-            bbb: string;
-            a: string;
-            aa: string;
-            aaa: string;
-            s: string;
-            sp: string;
-            ss: string;
-            ssp: string;
-            sss: string;
-            sssp: string;
-        };
-        mode: {
-            standard: string;
-            dx: string;
-        };
-        milestone: {
-            ap: string;
-            app: string;
-            fc: string;
-            fcp: string;
-            fdx: string;
-            fdxp: string;
-            fs: string;
-            fsp: string;
-            sync: string;
-            none: string;
-        };
-        dxRating: {
-            white: string;
-            blue: string;
-            green: string;
-            yellow: string;
-            red: string;
-            purple: string;
-            bronze: string;
-            silver: string;
-            gold: string;
-            platinum: string;
-            rainbow: string;
-        };
-        dxRatingNumberMap: string;
-        profile: {
-            icon: string;
-            nameplate: string;
-        };
-    }
-
-    export type IThemeElements =
-        | IThemeProfileElement
-        | IThemeScoreElement
-        | IThemeImageElement
-        | IThemeTextElement;
-
-    export interface IThemeElement {
-        type: string;
-        x: number;
-        y: number;
-    }
-
-    export interface IThemeProfileElement extends IThemeElement {
-        type: "profile";
-        height: number;
-    }
-
-    export interface IThemeScoreElement extends IThemeElement {
-        type: "score-grid";
-        horizontalSize: number;
-        verticalSize: number;
-        region: "new" | "old";
-        index: number;
-        scoreBubble: {
-            width: number;
-            height: number;
-            margin: number;
-            gap: number;
-            color: {
-                basic: string;
-                advanced: string;
-                expert: string;
-                master: string;
-                remaster: string;
-                utage: string;
-            };
-        };
-    }
-
-    export interface IThemeImageElement extends IThemeElement {
-        type: "image";
-        width: number;
-        height: number;
-        /**
-         * Relative path from the manifest file to the element file.
-         */
-        path: string;
-    }
-
-    export interface IThemeTextElement extends IThemeElement {
-        type: "text";
-        size: number;
-        content: string;
-        /**
-         * If width is provied and the text is too long, it will be cut off.
-         */
-        width?: number;
-        /**
-         * If height is provied and the text is too big, it will be cut off.
-         */
-        height?: number;
-        /**
-         * If true, instead of cutting off the text, it will change to a new line.
-         * Height restrictions will still apply.
-         */
-        linebreak?: boolean;
-        /**
-         * Text alignment.
-         * Defaults to left.
-         */
-        align?: "left" | "center" | "right";
-        /**
-         * Text color.
-         * Defaults to white (#FFFFFF).
-         */
-        color?: string;
-        /**
-         * Text border color.
-         * Defaults a darker variant of `color`.
-         */
-        borderColor?: string;
-        /**
-         * Text font. Please make sure the font is available in the environment.
-         * Defaults to a preconfigured font macro. Check source code for more info.
-         */
-        font?: string;
-    }
-
-    export interface IBest50 {
-        new: IScore[];
-        old: IScore[];
-        username: string;
-        rating: number;
-    }
-
-    export enum EComboTypes {
-        NONE,
-        FULL_COMBO,
-        FULL_COMBO_PLUS,
-        ALL_PERFECT,
-        ALL_PERFECT_PLUS,
-    }
-
-    export enum ESyncTypes {
-        NONE,
-        SYNC_PLAY,
-        FULL_SYNC,
-        FULL_SYNC_PLUS,
-        FULL_SYNC_DX,
-        FULL_SYNC_DX_PLUS,
-    }
-
-    export enum EAchievementTypes {
-        D,
-        C,
-        B,
-        BB,
-        BBB,
-        A,
-        AA,
-        AAA,
-        S,
-        SP,
-        SS,
-        SSP,
-        SSS,
-        SSSP,
-    }
-
-    export interface IScore {
-        chart: IChart;
-        combo: EComboTypes;
-        sync: ESyncTypes;
-        achievement: number;
-        achievementRank: EAchievementTypes;
-        dxRating: number;
-        dxScore: number;
-    }
-
-    export interface IChart {
-        id: number;
-        name: string;
-        difficulty: EDifficulty;
-        /**
-         * Chart internal level.
-         * `7.0, 11.2, 11.7, 13.2, 14.8, 15.0`
-         */
-        level: number;
-        maxDxScore: number;
-    }
-
-    export const RATING_CONSTANTS = {
-        [Best50.EAchievementTypes.D]: {
-            [0.4]: 6.4,
-            [0.3]: 4.8,
-            [0.2]: 3.2,
-            [0.1]: 1.6,
-            [0]: 0,
-        },
-        [EAchievementTypes.C]: 13.6,
-        [EAchievementTypes.B]: 13.6,
-        [EAchievementTypes.BB]: 13.6,
-        [EAchievementTypes.BBB]: 13.6,
-        [EAchievementTypes.A]: 13.6,
-        [EAchievementTypes.AA]: 15.2,
-        [EAchievementTypes.AAA]: 16.8,
-        [EAchievementTypes.S]: 20.0,
-        [EAchievementTypes.SP]: 20.3,
-        [EAchievementTypes.SS]: 20.8,
-        [EAchievementTypes.SSP]: 21.1,
-        [EAchievementTypes.SSS]: 21.6,
-        [EAchievementTypes.SSSP]: 22.4,
-    };
-    export const RANK_BORDERS = {
-        [EAchievementTypes.D]: [0.0, 0.1, 0.2, 0.3, 0.4],
-        [EAchievementTypes.C]: 0.5,
-        [EAchievementTypes.B]: 0.6,
-        [EAchievementTypes.BB]: 0.7,
-        [EAchievementTypes.BBB]: 0.75,
-        [EAchievementTypes.A]: 0.8,
-        [EAchievementTypes.AA]: 0.9,
-        [EAchievementTypes.AAA]: 0.94,
-        [EAchievementTypes.S]: 0.97,
-        [EAchievementTypes.SP]: 0.98,
-        [EAchievementTypes.SS]: 0.99,
-        [EAchievementTypes.SSP]: 0.995,
-        [EAchievementTypes.SSS]: 1.0,
-        [EAchievementTypes.SSSP]: 1.005,
-    };
 }

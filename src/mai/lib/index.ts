@@ -110,4 +110,12 @@ export default abstract class ScoreTrackerAdapter {
         remaster: Best50.IScore | null;
         utage: Best50.IScore | null;
     }>;
+    abstract getPlayerLevel50(
+        username: string,
+        level: number,
+        page: number,
+        options?: {
+            percise: boolean;
+        }
+    ): Promise<Best50.IScore[] | null>;
 }

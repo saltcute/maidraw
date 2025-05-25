@@ -140,16 +140,7 @@
             "y": 100,
             "borderColor": "#242B4A",
             "align": "left",
-            "content": "NEW\nOLD"
-        },
-        {
-            "type": "text",
-            "size": 24,
-            "x": 1095,
-            "y": 100,
-            "borderColor": "#242B4A",
-            "align": "left",
-            "content": "scores average: {newScoreRatingAvg}.\nscores average: {oldScoreRatingAvg}."
+            "content": "{newScoreRatingAvgString}\n{oldScoreRatingAvgString}"
         },
         {
             "type": "text",
