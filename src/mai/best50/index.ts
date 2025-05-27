@@ -1271,30 +1271,12 @@ export class Best50 {
                             username:
                                 Util.HalfFullWidthConvert.toFullWidth(name),
                             rating: rating.toFixed(0),
-                            newScoreRatingAvg: getRatingAvg(
-                                newScores,
-                                15
-                            ).toFixed(0),
-                            newScoreRatingAvgString: `NEW scores average: ${getRatingAvg(
-                                newScores,
-                                15
+                            newScoreRatingAvgString: `NEW scores average: ${Math.ceil(
+                                getRatingAvg(newScores, 15)
                             ).toFixed(0)}.`,
-                            oldScoreRatingAvg: getRatingAvg(
-                                oldScores,
-                                35
-                            ).toFixed(0),
-                            oldScoreRatingAvgString: `OLD scores average: ${getRatingAvg(
-                                oldScores,
-                                35
+                            oldScoreRatingAvgString: `OLD scores average: ${Math.ceil(
+                                getRatingAvg(oldScores, 35)
                             ).toFixed(0)}.`,
-                            newScoreRatingBase: getRatingBase(
-                                newScores,
-                                15
-                            ).toFixed(0),
-                            oldScoreRatingBase: getRatingBase(
-                                oldScores,
-                                35
-                            ).toFixed(0),
                             newScoreMilestone: getMilestone(newScores, 15),
                             oldScoreMilestone: getMilestone(oldScores, 35),
                         });
