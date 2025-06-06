@@ -175,15 +175,21 @@ export class KamaiTachi extends ScoreTrackerAdapter {
                     if (scoreNum > 1007500) {
                         rating +=
                             ((scoreNum - 1007500) / 2500) *
-                            RANK_RATING_ADJUSTMENT["1010000"];
+                                (RANK_RATING_ADJUSTMENT["1010000"] -
+                                    RANK_RATING_ADJUSTMENT["1007500"]) +
+                            RANK_RATING_ADJUSTMENT["1007500"];
                     } else if (scoreNum > 1000000) {
                         rating +=
                             ((scoreNum - 1000000) / 7500) *
-                            RANK_RATING_ADJUSTMENT["1007500"];
+                                (RANK_RATING_ADJUSTMENT["1007500"] -
+                                    RANK_RATING_ADJUSTMENT["1000000"]) +
+                            RANK_RATING_ADJUSTMENT["1000000"];
                     } else if (scoreNum > 990000) {
                         rating +=
                             ((scoreNum - 990000) / 10000) *
-                            RANK_RATING_ADJUSTMENT["1000000"];
+                                (RANK_RATING_ADJUSTMENT["1000000"] -
+                                    RANK_RATING_ADJUSTMENT["990000"]) +
+                            RANK_RATING_ADJUSTMENT["990000"];
                     } else if (scoreNum > 970000) {
                         rating +=
                             ((scoreNum - 970000) / 20000) *
@@ -195,10 +201,15 @@ export class KamaiTachi extends ScoreTrackerAdapter {
                     } else if (scoreNum > 800000) {
                         rating +=
                             (1 - (scoreNum - 800000) / 100000) *
-                            RANK_RATING_ADJUSTMENT["800000"];
+                                (RANK_RATING_ADJUSTMENT["800000"] -
+                                    RANK_RATING_ADJUSTMENT["900000"]) +
+                            RANK_RATING_ADJUSTMENT["900000"];
                     } else if (scoreNum > 500000) {
-                        rating *= 1 - (500000 - scoreNum) / 300000;
+                        rating *=
+                            ((scoreNum - 500000) / 300000) *
+                            (chart.levelNum + RANK_RATING_ADJUSTMENT["800000"]);
                     } else rating = 0;
+
                     switch (score.scoreData.noteLamp) {
                         case "FULL COMBO":
                             rating += 0.1;
@@ -223,6 +234,7 @@ export class KamaiTachi extends ScoreTrackerAdapter {
                         case "SSS+":
                             rating += 0.3;
                     }
+
                     rating += chart.levelNum;
                     return rating;
                 }
