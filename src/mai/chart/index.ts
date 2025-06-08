@@ -13,6 +13,29 @@ import stringFormat from "string-template";
 import _ from "lodash";
 
 export class Chart {
+    static readonly DX_LATEST = 55;
+    static readonly EX_LATEST = 50;
+    static readonly CN_LATEST = 50;
+
+    static readonly MAIMAI_VERSIONS = [
+        99, 95, 90, 85, 80, 70, 60, 50, 40, 30, 20, 10, 0,
+    ];
+    static readonly MAIMAIDX_VERSIONS = [
+        55, 50, 45, 40, 35, 30, 25, 20, 15, 10, 5, 0,
+    ];
+    static readonly WUMENGDX_VERSIONS = [50, 40, 30, 20, 10, 0];
+    static findVersion(v: number, isDX: boolean, isCN: boolean) {
+        const target = isDX
+            ? isCN
+                ? this.WUMENGDX_VERSIONS
+                : this.MAIMAIDX_VERSIONS
+            : this.MAIMAI_VERSIONS;
+        for (const version of target) {
+            if (v >= version) return version;
+        }
+        return -1;
+    }
+
     private static readonly DEFAULT_THEME = "jp-prism";
     private static primaryTheme: Chart.ITheme | null = null;
 
@@ -345,6 +368,7 @@ export class Chart {
         width: number,
         height: number,
         isShort: boolean,
+        targetRegion: "DX" | "EX" | "CN" = "DX",
         score?: Best50.IScore | null
     ) {
         let curColor = "#FFFFFF";
@@ -822,28 +846,6 @@ export class Chart {
                                 : curx
                 ) {
                     const version = versions[i];
-                    const MAIMAI_VERSIONS = [
-                        99, 95, 90, 85, 80, 70, 60, 50, 40, 30, 20, 10, 0,
-                    ];
-                    const MAIMAIDX_VERSIONS = [
-                        55, 50, 45, 40, 35, 30, 25, 20, 15, 10, 5, 0,
-                    ];
-                    const WUMENGDX_VERSIONS = [50, 40, 30, 20, 10, 0];
-                    const findVersion = (
-                        v: number,
-                        isDX: boolean,
-                        isCN: boolean
-                    ) => {
-                        const target = isDX
-                            ? isCN
-                                ? WUMENGDX_VERSIONS
-                                : MAIMAIDX_VERSIONS
-                            : MAIMAI_VERSIONS;
-                        for (const version of target) {
-                            if (v >= version) return version;
-                        }
-                        return -1;
-                    };
                     if (version.version) {
                         let region = version.region;
                         if (
@@ -855,7 +857,7 @@ export class Chart {
                         ) {
                             region = "DX";
                         }
-                        const rawVersion = findVersion(
+                        const rawVersion = this.findVersion(
                             version.version.gameVersion.minor,
                             version.version.gameVersion.isDX,
                             region == "CN"
@@ -953,7 +955,17 @@ export class Chart {
 
                 /** Begin Internal Level Trend Draw */
                 if (!isShort) {
-                    const CURRENT_DX_MINOR = 55;
+                    const CURRENT_MINOR = (() => {
+                        switch (targetRegion) {
+                            case "EX":
+                                return this.EX_LATEST;
+                            case "CN":
+                                return this.CN_LATEST;
+                            case "DX":
+                            default:
+                                return this.DX_LATEST;
+                        }
+                    })();
                     const maxWidth =
                         width -
                         height * 2 -
@@ -963,7 +975,9 @@ export class Chart {
                         maxWidth / versionImageWidth
                     );
                     const trendEvents = chart.events.filter(
-                        (v) => v.type == "existence" && v.version.region == "DX"
+                        (v) =>
+                            v.type == "existence" &&
+                            v.version.region == targetRegion
                     ) as database.Database.Events.Existence[];
                     let actualEvents: database.Database.Events[] = _.uniqWith(
                         trendEvents,
@@ -1030,7 +1044,8 @@ export class Chart {
                         }
                         const removalEvent = chart.events.find(
                             (v) =>
-                                v.type == "removal" && v.version.region == "DX"
+                                v.type == "removal" &&
+                                v.version.region == targetRegion
                         ) as database.Database.Events.Removal | undefined;
                         if (removalEvent) {
                             actualEvents.pop();
@@ -1041,7 +1056,7 @@ export class Chart {
                     }
                     if (
                         actualEvents[actualEvents.length - 1].version
-                            .gameVersion.minor < CURRENT_DX_MINOR
+                            .gameVersion.minor < CURRENT_MINOR
                     ) {
                         while (actualEvents.length >= maxFitTrendCount)
                             actualEvents.pop();
@@ -1073,79 +1088,97 @@ export class Chart {
                     ) {
                         const event = actualEvents[i];
                         if (!event) continue;
-                        const region = event.version.gameVersion.isDX
-                            ? "DX"
+                        let logoRegion: "OLD" | "DX" | "EX" | "CN" = event
+                            .version.gameVersion.isDX
+                            ? targetRegion
                             : "OLD";
+                        if (logoRegion == "EX") {
+                            if (
+                                !(
+                                    10 <= event.version.gameVersion.minor &&
+                                    event.version.gameVersion.minor < 20
+                                )
+                            ) {
+                                logoRegion = "DX";
+                            }
+                        }
+                        const rawVersion = this.findVersion(
+                            event.version.gameVersion.minor,
+                            event.version.gameVersion.isDX,
+                            logoRegion == "CN"
+                        );
                         const versionImage = this.getThemeFile(
-                            theme.manifest.sprites.versions[region][
-                                event.version.gameVersion
-                                    .minor as keyof Chart.IThemeManifest["sprites"]["versions"][typeof region]
+                            theme.manifest.sprites.versions[logoRegion][
+                                rawVersion as keyof Chart.IThemeManifest["sprites"]["versions"][typeof logoRegion]
                             ]
                         );
-                        if (versionImage) {
-                            const versionImg = new Image();
-                            versionImg.src = versionImage;
-                            ctx.drawImage(
-                                versionImg,
-                                curx,
-                                cury,
-                                versionImageWidth,
-                                versionImageHeight
-                            );
-                            if (event.type == "existence") {
-                                let symbol = "";
-                                if (i != 0) {
-                                    const lastEvent = actualEvents[i - 1];
-                                    if (lastEvent.type == "existence") {
-                                        if (
-                                            lastEvent.data.level <
-                                            event.data.level
-                                        )
-                                            symbol = "↑";
-                                        else if (
-                                            lastEvent.data.level >
-                                            event.data.level
-                                        )
-                                            symbol = "↓";
-                                        else if (
-                                            lastEvent.data.level ==
-                                            event.data.level
-                                        )
-                                            symbol = "→";
+                        try {
+                            sharp(versionImage);
+                            if (versionImage) {
+                                const versionImg = new Image();
+                                versionImg.src = versionImage;
+                                ctx.drawImage(
+                                    versionImg,
+                                    curx,
+                                    cury,
+                                    versionImageWidth,
+                                    versionImageHeight
+                                );
+                                if (event.type == "existence") {
+                                    let symbol = "";
+                                    if (i != 0) {
+                                        const lastEvent = actualEvents[i - 1];
+                                        if (lastEvent.type == "existence") {
+                                            if (
+                                                lastEvent.data.level <
+                                                event.data.level
+                                            )
+                                                symbol = "↑";
+                                            else if (
+                                                lastEvent.data.level >
+                                                event.data.level
+                                            )
+                                                symbol = "↓";
+                                            else if (
+                                                lastEvent.data.level ==
+                                                event.data.level
+                                            )
+                                                symbol = "→";
+                                        }
                                     }
+                                    Util.drawText(
+                                        ctx,
+                                        `${symbol}${event.data.level.toFixed(1)}`,
+                                        curx + versionImageWidth / 2,
+                                        cury +
+                                            versionImageHeight +
+                                            noteCountTextSize,
+                                        noteCountTextSize,
+                                        height * 0.806 * 0.04,
+                                        Infinity,
+                                        "center",
+                                        "white",
+                                        new Color(curColor).darken(0.3).hexa()
+                                    );
+                                } else if (event.type == "removal") {
+                                    Util.drawText(
+                                        ctx,
+                                        `❌`,
+                                        curx + versionImageWidth / 2,
+                                        cury +
+                                            versionImageHeight +
+                                            noteCountTextSize,
+                                        noteCountTextSize,
+                                        height * 0.806 * 0.04,
+                                        Infinity,
+                                        "center",
+                                        "white",
+                                        new Color(curColor).darken(0.3).hexa()
+                                    );
                                 }
-                                Util.drawText(
-                                    ctx,
-                                    `${symbol}${event.data.level.toFixed(1)}`,
-                                    curx + versionImageWidth / 2,
-                                    cury +
-                                        versionImageHeight +
-                                        noteCountTextSize,
-                                    noteCountTextSize,
-                                    height * 0.806 * 0.04,
-                                    Infinity,
-                                    "center",
-                                    "white",
-                                    new Color(curColor).darken(0.3).hexa()
-                                );
-                            } else if (event.type == "removal") {
-                                Util.drawText(
-                                    ctx,
-                                    `❌`,
-                                    curx + versionImageWidth / 2,
-                                    cury +
-                                        versionImageHeight +
-                                        noteCountTextSize,
-                                    noteCountTextSize,
-                                    height * 0.806 * 0.04,
-                                    Infinity,
-                                    "center",
-                                    "white",
-                                    new Color(curColor).darken(0.3).hexa()
-                                );
+                                curx += versionImageWidth + addGap;
                             }
-                            curx += versionImageWidth + addGap;
-                        }
+                        } catch {}
                     }
                 }
             }
@@ -1337,29 +1370,26 @@ export class Chart {
                 "white",
                 textColor
             );
-            const DX_LATEST = 55,
-                EX_LATEST = 50,
-                CN_LATEST = 50;
 
             const EVENT_DX = chart.events
                 .filter(
                     (v) =>
                         v.version.region == "DX" &&
-                        v.version.gameVersion.minor >= DX_LATEST
+                        v.version.gameVersion.minor >= Chart.DX_LATEST
                 )
                 .map((v) => v.type);
             const EVENT_EX = chart.events
                 .filter(
                     (v) =>
                         v.version.region == "EX" &&
-                        v.version.gameVersion.minor >= EX_LATEST
+                        v.version.gameVersion.minor >= Chart.EX_LATEST
                 )
                 .map((v) => v.type);
             const EVENT_CN = chart.events
                 .filter(
                     (v) =>
                         v.version.region == "CN" &&
-                        v.version.gameVersion.minor >= CN_LATEST
+                        v.version.gameVersion.minor >= Chart.CN_LATEST
                 )
                 .map((v) => v.type);
             const EXIST_DX =
@@ -1419,7 +1449,8 @@ export class Chart {
         theme: Chart.ITheme,
         element: Chart.IThemeChartGridElement,
         chartId: number,
-        scores: (Best50.IScore | null)[]
+        scores: (Best50.IScore | null)[],
+        region: "DX" | "EX" | "CN" = "DX"
     ) {
         /* Begin Background Draw */
         ctx.roundRect(
@@ -1465,6 +1496,7 @@ export class Chart {
                         (cardWidth - element.margin) / 2,
                         cardHeight,
                         true,
+                        region,
                         scores[i]
                     );
                     i++;
@@ -1483,6 +1515,7 @@ export class Chart {
                             (cardWidth - element.margin) / 2,
                             cardHeight,
                             true,
+                            region,
                             scores[i]
                         );
                 } else {
@@ -1497,6 +1530,7 @@ export class Chart {
                         cardWidth,
                         cardHeight,
                         false,
+                        region,
                         scores[i]
                     );
                 }
@@ -1788,7 +1822,12 @@ export class Chart {
         rating: number,
         chartId: number,
         scores: (Best50.IScore | null)[],
-        options?: { scale?: number; theme?: string; profilePicture?: Buffer }
+        options?: {
+            scale?: number;
+            theme?: string;
+            profilePicture?: Buffer;
+            region?: "DX" | "EX" | "CN";
+        }
     ): Promise<Buffer | null> {
         let currentTheme = this.primaryTheme;
         if (options?.theme) {
@@ -1820,7 +1859,8 @@ export class Chart {
                             currentTheme,
                             element,
                             chartId,
-                            scores
+                            scores,
+                            options?.region
                         );
                         break;
                     }
@@ -1865,6 +1905,7 @@ export class Chart {
             scale?: number;
             theme?: string;
             profilePicture?: Buffer | null;
+            region: "DX" | "EX" | "CN";
         }
     ) {
         const profile = await source.getPlayerInfo(username);
