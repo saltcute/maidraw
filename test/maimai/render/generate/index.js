@@ -11,6 +11,8 @@ const upath = require("upath");
     const fs = require("fs");
 
     const themes = [
+        "cn-2025-landscape",
+        "cn-2025-portrait",
         "salt-2026-landscape",
         "jp-finale-landscape",
         "jp-finale-portrait",
@@ -20,8 +22,8 @@ const upath = require("upath");
         "jp-prism-portrait",
         "jp-buddiesplus-landscape",
         "jp-buddiesplus-portrait",
-        "cn-2024-portrait",
         "cn-2024-landscape",
+        "cn-2024-portrait",
         "jp-buddies-landscape",
         "jp-buddies-portrait",
     ];

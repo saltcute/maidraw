@@ -201,6 +201,7 @@ export class Chart {
             isFileExist(payload.sprites.versions.DX[20]) &&
             isFileExist(payload.sprites.versions.DX[30]) &&
             isFileExist(payload.sprites.versions.DX[40]) &&
+            isFileExist(payload.sprites.versions.DX[50]) &&
             isArray(payload.elements)
         ) {
             for (const element of payload.elements) {
@@ -827,7 +828,7 @@ export class Chart {
                     const MAIMAIDX_VERSIONS = [
                         55, 50, 45, 40, 35, 30, 25, 20, 15, 10, 5, 0,
                     ];
-                    const WUMENGDX_VERSIONS = [40, 30, 20, 10, 0];
+                    const WUMENGDX_VERSIONS = [50, 40, 30, 20, 10, 0];
                     const findVersion = (
                         v: number,
                         isDX: boolean,
@@ -1338,7 +1339,7 @@ export class Chart {
             );
             const DX_LATEST = 55,
                 EX_LATEST = 50,
-                CN_LATEST = 40;
+                CN_LATEST = 50;
 
             const EVENT_DX = chart.events
                 .filter(
@@ -2049,6 +2050,7 @@ export namespace Chart {
                 20: string;
                 30: string;
                 40: string;
+                50: string;
             };
         };
     }
