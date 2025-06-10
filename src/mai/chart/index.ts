@@ -1055,7 +1055,7 @@ export class Chart {
                         actualEvents = [...trendEvents];
                     }
                     if (
-                        actualEvents[actualEvents.length - 1].version
+                        actualEvents[actualEvents.length - 1]?.version
                             .gameVersion.minor < CURRENT_MINOR
                     ) {
                         while (actualEvents.length >= maxFitTrendCount)
@@ -1069,13 +1069,23 @@ export class Chart {
                             ),
                         });
                     }
-                    const addGap =
+                    let positionAdjustment = 0;
+                    let addGap =
                         (maxWidth - actualEvents.length * versionImageWidth) /
                         (actualEvents.length - 1);
+                    if (addGap > maxWidth / 5) {
+                        addGap = maxWidth / 5;
+                        positionAdjustment =
+                            (maxWidth -
+                                (addGap * (actualEvents.length - 1) +
+                                    versionImageWidth * actualEvents.length)) /
+                            2;
+                    }
                     for (
                         let i = 0,
                             curx =
                                 x +
+                                positionAdjustment +
                                 height * 2 +
                                 element.bubble.margin * (5 / 2) +
                                 noteCountLength,
@@ -1083,7 +1093,7 @@ export class Chart {
                                 y +
                                 element.bubble.margin * (3 / 2) +
                                 versionImageHeight;
-                        i < maxFitTrendCount;
+                        i < actualEvents.length;
                         ++i
                     ) {
                         const event = actualEvents[i];
