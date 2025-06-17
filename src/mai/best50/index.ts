@@ -763,9 +763,9 @@ export class Best50 {
         {
             Util.drawText(
                 ctx,
-                `${score.chart.level.toFixed(1)}  ↑${score.dxRating.toFixed(
-                    0
-                )}`,
+                `${score.chart.level.toFixed(1)}  ↑${Math.floor(
+                    score.dxRating
+                ).toFixed(0)}`,
                 x + element.scoreBubble.margin * 2,
                 y + element.scoreBubble.height * (0.806 + (1 - 0.806) / 2),
                 element.scoreBubble.height * 0.806 * 0.128,
