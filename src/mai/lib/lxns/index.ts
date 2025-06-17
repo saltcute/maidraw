@@ -39,8 +39,8 @@ export class LXNS extends ScoreTrackerAdapter {
                                     .filter((v) => v.type == "existence")
                                     .sort(
                                         (a, b) =>
-                                            a.version.gameVersion.release -
-                                            b.version.gameVersion.release
+                                            b.version.gameVersion.release -
+                                            a.version.gameVersion.release
                                     )
                                     .pop()?.data.level;
                             })() || v.level,
