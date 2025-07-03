@@ -82,10 +82,10 @@
         },
         {
             "type": "image",
-            "x": -10,
-            "y": 10,
-            "width": 735,
-            "height": 377,
+            "x": 3,
+            "y": 29,
+            "width": 662,
+            "height": 339,
             "path": "../../common/prism/cn/logo.png"
         },
         {
