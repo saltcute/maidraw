@@ -14,12 +14,10 @@ export class LXNS extends ScoreTrackerAdapter {
         super({ baseURL });
         this.axios.defaults.headers.common["Authorization"] = auth;
     }
-    async getPlayerBest50(username: string) {
-        const b50 = await this.getPlayerRawBest50(username);
-        if (!b50?.data) return null;
+    private async getChartList(targets: LXNS.IScore[]) {
         let chartList: Best50.IChart[];
         if (Chart.Database.hasLocalDatabase()) {
-            chartList = [...b50.data.dx, ...b50.data.standard]
+            chartList = targets
                 .map((chart) => {
                     return Chart.Database.getLocalChart(
                         chart.id +
@@ -51,6 +49,15 @@ export class LXNS extends ScoreTrackerAdapter {
         } else {
             chartList = await this.getMaiDrawChartList();
         }
+        return chartList;
+    }
+    async getPlayerBest50(username: string) {
+        const b50 = await this.getPlayerRawBest50(username);
+        if (!b50?.data) return null;
+        const chartList = await this.getChartList([
+            ...b50.data.dx,
+            ...b50.data.standard,
+        ]);
         return {
             new: this.toMaiDrawScore(b50.data.dx, chartList),
             old: this.toMaiDrawScore(b50.data.standard, chartList),
@@ -253,7 +260,7 @@ export class LXNS extends ScoreTrackerAdapter {
         return iconImage;
     }
     async getPlayerScore(username: string, chartId: number) {
-        return {
+        const NUL = {
             basic: null,
             advanced: null,
             expert: null,
@@ -261,6 +268,57 @@ export class LXNS extends ScoreTrackerAdapter {
             remaster: null,
             utage: null,
         };
+        const SONG_TYPE = (() => {
+            if (chartId >= 100000) return LXNS.ESongTypes.UTAGE;
+            if (chartId >= 10000) return LXNS.ESongTypes.DX;
+            return LXNS.ESongTypes.STANDARD;
+        })();
+        const res = await this.get<LXNS.IAPIResponse<LXNS.IScore[]>>(
+            `/player/${username}/bests`,
+            {
+                song_id: chartId % 10000,
+                song_type: SONG_TYPE,
+            }
+        );
+        if (!res?.data) return NUL;
+        const chartList = await this.getChartList(res.data);
+        const scores = this.toMaiDrawScore(res?.data, chartList);
+        switch (SONG_TYPE) {
+            case LXNS.ESongTypes.STANDARD:
+            case LXNS.ESongTypes.DX: {
+                return {
+                    ...NUL,
+                    basic:
+                        scores.find(
+                            (v) => v.chart.difficulty == EDifficulty.BASIC
+                        ) || null,
+                    advanced:
+                        scores.find(
+                            (v) => v.chart.difficulty == EDifficulty.ADVANCED
+                        ) || null,
+                    expert:
+                        scores.find(
+                            (v) => v.chart.difficulty == EDifficulty.EXPERT
+                        ) || null,
+                    master:
+                        scores.find(
+                            (v) => v.chart.difficulty == EDifficulty.MASTER
+                        ) || null,
+                    remaster:
+                        scores.find(
+                            (v) => v.chart.difficulty == EDifficulty.REMASTER
+                        ) || null,
+                };
+            }
+            case LXNS.ESongTypes.UTAGE: {
+                return {
+                    ...NUL,
+                    utage: scores.shift() || null,
+                };
+            }
+            default:
+                return NUL;
+        }
     }
     async getPlayerLevel50(
         username: string,
