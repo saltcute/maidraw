@@ -463,7 +463,7 @@ export class Chart {
                 ).width;
                 Util.drawText(
                     ctx,
-                    `Lv. ${chart.level.toFixed(1)}${score ? `　↑${score.dxRating}` : ""}`,
+                    `Lv. ${chart.level.toFixed(1)}${score ? `　↑${Math.floor(score.dxRating).toFixed(0)}` : ""}`,
                     x + element.bubble.margin * 2 + difficultyTextWidth,
                     y +
                         element.bubble.margin +
