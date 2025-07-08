@@ -22,11 +22,11 @@ export class KamaiTachi extends ScoreTrackerAdapter {
 
     getPlatinumScore(score: KamaiTachi.IScore | KamaiTachi.IPb) {
         const ASSUMED_PLAT_SCORE_RATE = 0;
-        let platScore = 0;
-        if (score.scoreData.optional.platScore)
-            platScore = score.scoreData.optional.platScore;
+        if (score.scoreData.platinumScore) return score.scoreData.platinumScore;
+        else if (score.scoreData.optional.platScore)
+            return score.scoreData.optional.platScore;
         else {
-            platScore =
+            let platScore =
                 (1 + ASSUMED_PLAT_SCORE_RATE) *
                 score.scoreData.judgements.cbreak;
             if (score.scoreData.optional.damage)
@@ -39,8 +39,8 @@ export class KamaiTachi extends ScoreTrackerAdapter {
                     2 *
                     (score.scoreData.optional.totalBellCount -
                         score.scoreData.optional.bellCount);
+            return platScore;
         }
-        return platScore;
     }
 
     getPlatinumScoreRatio(
@@ -640,6 +640,8 @@ export namespace KamaiTachi {
             score: number;
             noteLamp: string;
             bellLamp: string;
+            platinumScore: number;
+            platinumStars: number;
             judgements: {
                 cbreak: number;
                 break: number;
@@ -694,6 +696,8 @@ export namespace KamaiTachi {
             score: number;
             noteLamp: string;
             bellLamp: string;
+            platinumScore: number;
+            platinumStars: number;
             judgements: {
                 cbreak: number;
                 break: number;
