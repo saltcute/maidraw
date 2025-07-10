@@ -158,8 +158,8 @@
         {
             "type": "text",
             "size": 24,
-            "x": 610,
-            "y": 277,
+            "x": 250,
+            "y": 330,
             "color": "black",
             "lineWidth": 0,
             "borderColor": "rgba(255, 255, 255, 0)",

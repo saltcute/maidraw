@@ -351,7 +351,8 @@ export class Best50 {
         score: IScore,
         index: number,
         x: number,
-        y: number
+        y: number,
+        type: "refresh" | "classic" = "refresh"
     ) {
         let curColor = "#FFFFFF";
         switch (score.chart.difficulty) {
@@ -773,7 +774,7 @@ export class Best50 {
         {
             Util.drawText(
                 ctx,
-                `${score.chart.level.toFixed(1)}  ↑${score.rating.toFixed(2)}`,
+                `${score.chart.level.toFixed(1)}  ↑${score.rating.toFixed(type === "refresh" ? 3 : 2)}`,
                 x + element.scoreBubble.margin * 2,
                 y + element.scoreBubble.height * (0.806 + (1 - 0.806) / 2),
                 element.scoreBubble.height * 0.806 * 0.128,
@@ -811,7 +812,8 @@ export class Best50 {
         element: IThemeProfileElement,
         username: string,
         rating: number,
-        profilePicture?: Buffer
+        profilePicture?: Buffer,
+        type: "refresh" | "classic" = "refresh"
     ) {
         try {
             const userplate = sharp(
@@ -1023,7 +1025,7 @@ export class Best50 {
             );
             Util.drawText(
                 ctx,
-                rating.toFixed(2),
+                rating.toFixed(type === "refresh" ? 3 : 2),
                 element.x + theme.manifest.width * (7 / 32) * (109 / 128),
                 element.y + theme.manifest.width * (7 / 32) * (70 / 128),
                 (theme.manifest.width * (7 / 32) * 5) / 44,
@@ -1170,7 +1172,8 @@ export class Best50 {
                                         curScore,
                                         index,
                                         x,
-                                        y
+                                        y,
+                                        options.type
                                     );
                                 }
                             }
@@ -1184,7 +1187,8 @@ export class Best50 {
                             element,
                             name,
                             rating,
-                            options?.profilePicture
+                            options?.profilePicture,
+                            options?.type
                         );
                         break;
                     }
@@ -1211,20 +1215,24 @@ export class Best50 {
                         }
                         await this.drawTextModule(ctx, currentTheme, element, {
                             username: HalfFullWidthConvert.toFullWidth(name),
-                            rating: rating.toFixed(2),
-                            naiveBest45: getNaiveRating(45).toFixed(2),
+                            rating: rating.toFixed(
+                                options.type == "refresh" ? 3 : 2
+                            ),
+                            naiveBest45: getNaiveRating(45).toFixed(
+                                options.type == "refresh" ? 3 : 2
+                            ),
                             newScoreRatingAvg: getRatingAvg(
                                 newScores,
                                 options.type == "refresh" ? 10 : 15
-                            ).toFixed(2),
+                            ).toFixed(options.type == "refresh" ? 3 : 2),
                             oldScoreRatingAvg: getRatingAvg(
                                 oldScores,
                                 options.type == "refresh" ? 50 : 30
-                            ).toFixed(2),
+                            ).toFixed(options.type == "refresh" ? 3 : 2),
                             recentOrPlatinumScoreAvg: getRatingAvg(
                                 recentOrPlatinumScores,
                                 options.type == "refresh" ? 50 : 10
-                            ).toFixed(2),
+                            ).toFixed(options.type == "refresh" ? 3 : 2),
                         });
                         break;
                     }
