@@ -168,76 +168,77 @@ export class KamaiTachi extends ScoreTrackerAdapter {
                     "800000": -6,
                 };
                 if (type == "classic") return score.calculatedData.rating;
-                else {
-                    let rating = 0,
-                        scoreNum = score.scoreData.score;
+                else return score.calculatedData.scoreRating;
+                // else {
+                //     let rating = 0,
+                //         scoreNum = score.scoreData.score;
 
-                    if (scoreNum > 1007500) {
-                        rating +=
-                            ((scoreNum - 1007500) / 2500) *
-                                (RANK_RATING_ADJUSTMENT["1010000"] -
-                                    RANK_RATING_ADJUSTMENT["1007500"]) +
-                            RANK_RATING_ADJUSTMENT["1007500"];
-                    } else if (scoreNum > 1000000) {
-                        rating +=
-                            ((scoreNum - 1000000) / 7500) *
-                                (RANK_RATING_ADJUSTMENT["1007500"] -
-                                    RANK_RATING_ADJUSTMENT["1000000"]) +
-                            RANK_RATING_ADJUSTMENT["1000000"];
-                    } else if (scoreNum > 990000) {
-                        rating +=
-                            ((scoreNum - 990000) / 10000) *
-                                (RANK_RATING_ADJUSTMENT["1000000"] -
-                                    RANK_RATING_ADJUSTMENT["990000"]) +
-                            RANK_RATING_ADJUSTMENT["990000"];
-                    } else if (scoreNum > 970000) {
-                        rating +=
-                            ((scoreNum - 970000) / 20000) *
-                            RANK_RATING_ADJUSTMENT["990000"];
-                    } else if (scoreNum > 900000) {
-                        rating +=
-                            (1 - (scoreNum - 900000) / 70000) *
-                            RANK_RATING_ADJUSTMENT["900000"];
-                    } else if (scoreNum > 800000) {
-                        rating +=
-                            (1 - (scoreNum - 800000) / 100000) *
-                                (RANK_RATING_ADJUSTMENT["800000"] -
-                                    RANK_RATING_ADJUSTMENT["900000"]) +
-                            RANK_RATING_ADJUSTMENT["900000"];
-                    } else if (scoreNum > 500000) {
-                        rating *=
-                            ((scoreNum - 500000) / 300000) *
-                            (chart.levelNum + RANK_RATING_ADJUSTMENT["800000"]);
-                    } else rating = 0;
+                //     if (scoreNum > 1007500) {
+                //         rating +=
+                //             ((scoreNum - 1007500) / 2500) *
+                //                 (RANK_RATING_ADJUSTMENT["1010000"] -
+                //                     RANK_RATING_ADJUSTMENT["1007500"]) +
+                //             RANK_RATING_ADJUSTMENT["1007500"];
+                //     } else if (scoreNum > 1000000) {
+                //         rating +=
+                //             ((scoreNum - 1000000) / 7500) *
+                //                 (RANK_RATING_ADJUSTMENT["1007500"] -
+                //                     RANK_RATING_ADJUSTMENT["1000000"]) +
+                //             RANK_RATING_ADJUSTMENT["1000000"];
+                //     } else if (scoreNum > 990000) {
+                //         rating +=
+                //             ((scoreNum - 990000) / 10000) *
+                //                 (RANK_RATING_ADJUSTMENT["1000000"] -
+                //                     RANK_RATING_ADJUSTMENT["990000"]) +
+                //             RANK_RATING_ADJUSTMENT["990000"];
+                //     } else if (scoreNum > 970000) {
+                //         rating +=
+                //             ((scoreNum - 970000) / 20000) *
+                //             RANK_RATING_ADJUSTMENT["990000"];
+                //     } else if (scoreNum > 900000) {
+                //         rating +=
+                //             (1 - (scoreNum - 900000) / 70000) *
+                //             RANK_RATING_ADJUSTMENT["900000"];
+                //     } else if (scoreNum > 800000) {
+                //         rating +=
+                //             (1 - (scoreNum - 800000) / 100000) *
+                //                 (RANK_RATING_ADJUSTMENT["800000"] -
+                //                     RANK_RATING_ADJUSTMENT["900000"]) +
+                //             RANK_RATING_ADJUSTMENT["900000"];
+                //     } else if (scoreNum > 500000) {
+                //         rating *=
+                //             ((scoreNum - 500000) / 300000) *
+                //             (chart.levelNum + RANK_RATING_ADJUSTMENT["800000"]);
+                //     } else rating = 0;
 
-                    switch (score.scoreData.noteLamp) {
-                        case "FULL COMBO":
-                            rating += 0.1;
-                            break;
-                        case "ALL BREAK":
-                            rating += 0.3;
-                            break;
-                        case "ALL BREAK+":
-                            rating += 0.35;
-                            break;
-                    }
-                    switch (score.scoreData.bellLamp) {
-                        case "FULL BELL":
-                            rating += 0.05;
-                            break;
-                    }
-                    switch (score.scoreData.grade) {
-                        case "SS":
-                            rating += 0.1;
-                        case "SSS":
-                            rating += 0.2;
-                        case "SSS+":
-                            rating += 0.3;
-                    }
+                //     switch (score.scoreData.noteLamp) {
+                //         case "FULL COMBO":
+                //             rating += 0.1;
+                //             break;
+                //         case "ALL BREAK":
+                //             rating += 0.3;
+                //             break;
+                //         case "ALL BREAK+":
+                //             rating += 0.35;
+                //             break;
+                //     }
+                //     switch (score.scoreData.bellLamp) {
+                //         case "FULL BELL":
+                //             rating += 0.05;
+                //             break;
+                //     }
+                //     switch (score.scoreData.grade) {
+                //         case "SS":
+                //             rating += 0.1;
+                //         case "SSS":
+                //             rating += 0.2;
+                //         case "SSS+":
+                //             rating += 0.3;
+                //     }
 
-                    rating += chart.levelNum;
-                    return rating;
-                }
+                //     rating += chart.levelNum;
+                //     return rating;
+                // }
             })(),
         };
     }
@@ -298,10 +299,14 @@ export class KamaiTachi extends ScoreTrackerAdapter {
             plat: bestScores
                 .sort((a, b) => {
                     return (
-                        this.getPlatinumScoreRatio(b.chart, b.pb) -
-                            this.getPlatinumScoreRatio(a.chart, a.pb) ||
-                        b.pb.calculatedData.rating -
-                            a.pb.calculatedData.rating ||
+                        // this.getPlatinumScoreRatio(b.chart, b.pb) -
+                        //     this.getPlatinumScoreRatio(a.chart, a.pb) ||
+                        b.pb.calculatedData.starRating -
+                            a.pb.calculatedData.starRating ||
+                        b.pb.calculatedData.scoreRating -
+                            a.pb.calculatedData.scoreRating ||
+                        // b.pb.calculatedData.rating -
+                        //     a.pb.calculatedData.rating ||
                         b.pb.scoreData.score - a.pb.scoreData.score
                     );
                 })
@@ -631,6 +636,8 @@ export namespace KamaiTachi {
         importType: string;
         calculatedData: {
             rating: number;
+            scoreRating: number;
+            starRating: number;
         };
         game: string;
         highlight: boolean;
@@ -682,6 +689,8 @@ export namespace KamaiTachi {
         userID: number;
         calculatedData: {
             rating: number;
+            scoreRating: number;
+            starRating: number;
         };
         game: string;
         highlight: boolean;
