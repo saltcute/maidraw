@@ -19,7 +19,7 @@ const upath = require("upath");
     const username = "Cuvetan";
     for (let theme of themes) {
         const options = {
-            scale: 2,
+            scale: 0.5,
             type: theme.endsWith("-refresh") ? "refresh" : "classic",
             theme,
         };

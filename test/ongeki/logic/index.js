@@ -10,7 +10,7 @@ const upath = require("upath");
 
     const fs = require("fs");
     const themes = [
-        // "jp-brightmemory-landscape-classic",
+        "jp-brightmemory-landscape-classic",
         "jp-brightmemory-landscape-refresh",
         // "jp-refresh-landscape-classic",
         // "jp-refresh-landscape-refresh",
@@ -18,7 +18,7 @@ const upath = require("upath");
     // const source = kamai.brightMemoryAct3();
     const source = kamai.refresh();
     // const username = "Cuvetan";
-    const username = "Hodor1355";
+    const username = "Zenahv";
     for (let theme of themes) {
         const options = {
             scale: 0.5,
