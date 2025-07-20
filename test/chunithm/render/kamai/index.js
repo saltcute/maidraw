@@ -1,10 +1,9 @@
 const sharp = require("sharp");
 const upath = require("upath");
-const { KamaiTachi } = require("../../../../dist/chu/bests/lib/kamaiTachi");
 
 (async () => {
-    const kamai = new KamaiTachi();
     const { MaiDraw } = require("../../../../dist");
+    const kamai = new MaiDraw.Chuni.Best50.KamaiTachi();
     MaiDraw.Chuni.Chart.Database.setLocalDatabasePath(
         "../maimai-songs-database"
     );
@@ -12,10 +11,10 @@ const { KamaiTachi } = require("../../../../dist/chu/bests/lib/kamaiTachi");
     const fs = require("fs");
     const themes = ["jp-verse-landscape-recents", "jp-verse-landscape-new"];
     const source = kamai.verse();
-    const username = "salt";
+    const username = "tluo5458";
     for (let theme of themes) {
         const options = {
-            scale: 2,
+            scale: 0.5,
             type: theme.endsWith("-new") ? "new" : "recents",
             theme,
         };
