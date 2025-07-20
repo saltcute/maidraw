@@ -74,7 +74,7 @@ export class KamaiTachi extends ScoreTrackerAdapter {
                 };
             })(),
             combo: (() => {
-                switch (score.scoreData.lamp) {
+                switch (score.scoreData.noteLamp) {
                     case "FULL COMBO":
                         return EComboTypes.FULL_COMBO;
                     case "ALL JUSTICE":
@@ -519,7 +519,8 @@ export namespace KamaiTachi {
         playtype: string;
         scoreData: {
             score: number;
-            lamp: string;
+            noteLamp: string;
+            clearLamp: string;
             judgements: {
                 jcrit: number;
                 justice: number;
@@ -537,7 +538,8 @@ export namespace KamaiTachi {
             };
             grade: string;
             enumIndexes: {
-                lamp: number;
+                noteLamp: number;
+                clearLamp: number;
                 grade: number;
             };
         };
@@ -565,7 +567,8 @@ export namespace KamaiTachi {
         };
         scoreData: {
             score: number;
-            lamp: string;
+            noteLamp: string;
+            clearLamp: string;
             judgements: {
                 jcrit: number;
                 justice: number;
@@ -583,7 +586,8 @@ export namespace KamaiTachi {
             };
             grade: string;
             enumIndexes: {
-                lamp: number;
+                noteLamp: number;
+                clearLamp: number;
                 grade: number;
             };
         };
