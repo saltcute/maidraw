@@ -212,6 +212,37 @@ export class KamaiTachi extends ScoreTrackerAdapter {
                 this.currentVersion[this.currentRegion]
             );
         };
+        const filterIsLocalChartOldVersion = (score: {
+            chart: KamaiTachi.IChart;
+            song: KamaiTachi.ISong;
+            pb: KamaiTachi.IPb;
+        }) => {
+            const addVersion = Chart.Database.getLocalChart(
+                score.chart.data.inGameID,
+                (() => {
+                    switch (true) {
+                        case score.chart.difficulty.includes("RE:MASTER"):
+                            return EDifficulty.REMASTER;
+                        case score.chart.difficulty.includes("MASTER"):
+                            return EDifficulty.MASTER;
+                        case score.chart.difficulty.includes("EXPERT"):
+                            return EDifficulty.EXPERT;
+                        case score.chart.difficulty.includes("ADVANCED"):
+                            return EDifficulty.ADVANCED;
+                        case score.chart.difficulty.includes("BASIC"):
+                        default:
+                            return EDifficulty.BASIC;
+                    }
+                })()
+            )?.addVersion[this.currentRegion]?.name;
+            if (!addVersion) return false;
+            return (
+                KamaiTachi.compareGameVersions(
+                    this.currentVersion,
+                    KamaiTachi.getGameVersion(addVersion)
+                ) > 0
+            );
+        };
         const rawPBs = await this.getPlayerPB(userId);
         if (!rawPBs?.body) return null;
         const pbs: {
@@ -238,7 +269,7 @@ export class KamaiTachi extends ScoreTrackerAdapter {
             }[] = [];
         if (Chart.Database.hasLocalDatabase()) {
             newScores = pbs.filter(filterIsLocalChartNewVersion);
-            oldScores = pbs.filter((v) => !filterIsLocalChartNewVersion(v));
+            oldScores = pbs.filter(filterIsLocalChartOldVersion);
         } else {
             newScores = pbs.filter(
                 (v) => v.chart.data.displayVersion == this.currentVersion.kamai // Assume new scores does not have omnimix charts.
@@ -740,7 +771,7 @@ export namespace KamaiTachi {
             kamai: "maimaiでらっくす PRiSM PLUS",
             DX: "maimai でらっくす PRiSM PLUS",
             EX: "maimai DX PRiSM PLUS",
-            CN: "舞萌DX 2025",
+            CN: "",
         },
         PRISM: {
             kamai: "maimaiでらっくす PRiSM",
@@ -752,7 +783,7 @@ export namespace KamaiTachi {
             kamai: "maimaiでらっくす BUDDiES PLUS",
             DX: "maimai でらっくす BUDDiES PLUS",
             EX: "maimai DX BUDDiES PLUS",
-            CN: "舞萌DX 2024",
+            CN: "",
         },
         BUDDIES: {
             kamai: "maimaiでらっくす BUDDiES",
@@ -764,7 +795,7 @@ export namespace KamaiTachi {
             kamai: "maimaiでらっくす FESTiVAL PLUS",
             DX: "maimai でらっくす FESTiVAL PLUS",
             EX: "maimai DX FESTiVAL PLUS",
-            CN: "舞萌DX 2023",
+            CN: "",
         },
         FESTIVAL: {
             kamai: "maimaiでらっくす FESTiVAL",
@@ -776,7 +807,7 @@ export namespace KamaiTachi {
             kamai: "maimaiでらっくす UNiVERSE PLUS",
             DX: "maimai でらっくす UNiVERSE PLUS",
             EX: "maimai DX UNiVERSE PLUS",
-            CN: "舞萌DX 2022",
+            CN: "",
         },
         UNIVERSE: {
             kamai: "maimaiでらっくす UNiVERSE",
@@ -788,7 +819,7 @@ export namespace KamaiTachi {
             kamai: "maimaiでらっくす Splash PLUS",
             DX: "maimai でらっくす Splash PLUS",
             EX: "maimai DX Splash PLUS",
-            CN: "舞萌DX 2021",
+            CN: "",
         },
         SPLASH: {
             kamai: "maimaiでらっくす Splash",
@@ -800,7 +831,7 @@ export namespace KamaiTachi {
             kamai: "maimaiでらっくす PLUS",
             DX: "maimai でらっくす PLUS",
             EX: "maimai DX PLUS",
-            CN: "舞萌DX",
+            CN: "",
         },
         DX: {
             kamai: "maimaiでらっくす",
@@ -925,7 +956,8 @@ export namespace KamaiTachi {
             if (
                 version.kamai.toLowerCase() === payload.toLowerCase() ||
                 version.DX.toLowerCase() === payload.toLowerCase() ||
-                version.EX.toLowerCase() === payload.toLowerCase()
+                version.EX.toLowerCase() === payload.toLowerCase() ||
+                version.CN.toLowerCase() === payload.toLowerCase()
             ) {
                 return version;
             }
