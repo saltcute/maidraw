@@ -15,10 +15,10 @@ const upath = require("upath");
         // "jp-refresh-landscape-classic",
         // "jp-refresh-landscape-refresh",
     ];
-    // const source = kamai.brightMemoryAct3();
-    const source = kamai.refresh();
+    const source = kamai.brightMemoryAct3();
+    // const source = kamai.refresh();
     // const username = "Cuvetan";
-    const username = "Zenahv";
+    const username = "Hodor1355";
     for (let theme of themes) {
         const options = {
             scale: 0.5,
