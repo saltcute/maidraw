@@ -137,7 +137,7 @@ export class DivingFish extends ScoreTrackerAdapter {
                     name: song.title,
                     level: song.ds[index],
                     difficulty: index,
-                    maxDxScore: chart.notes.reduce((p, v) => p + v) * 3,
+                    maxDxScore: chart.notes.reduce((p, v) => p + v, 0) * 3,
                 };
             });
         });

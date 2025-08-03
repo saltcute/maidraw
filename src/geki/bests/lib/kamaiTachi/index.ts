@@ -494,10 +494,10 @@ export class KamaiTachi extends ScoreTrackerAdapter {
             if (!profile?.body || !scores) return null;
             const newRating = scores.new
                 .map((v) => Util.truncateNumber(v.rating / 5, 3))
-                .reduce((sum, v) => (sum += v));
+                .reduce((sum, v) => sum + v, 0);
             const oldRating = scores.old
                 .map((v) => v.rating)
-                .reduce((sum, v) => (sum += v));
+                .reduce((sum, v) => sum + v, 0);
             const platRating = scores.plat
                 .map((v) => {
                     const platinumScoreRatio =
@@ -514,7 +514,7 @@ export class KamaiTachi extends ScoreTrackerAdapter {
                         ) / 1000
                     );
                 })
-                .reduce((sum, v) => (sum += v));
+                .reduce((sum, v) => sum + v, 0);
             return {
                 name: profile?.body.username,
                 rating:

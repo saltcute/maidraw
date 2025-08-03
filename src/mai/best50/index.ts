@@ -1215,7 +1215,7 @@ export class Best50 {
                             return (
                                 scores
                                     .map((v) => v.dxRating)
-                                    .reduce((sum, v) => (sum += v)) / length
+                                    .reduce((sum, v) => sum + v, 0) / length
                             );
                         }
                         const getRatingTargetLevel = (
