@@ -197,7 +197,7 @@
             "lineWidth": 0,
             "borderColor": "rgba(255, 255, 255, 0)",
             "align": "left",
-            "content": "NAIVE 45 average: {naiveBest45}"
+            "content": "{naiveRatingAverage}"
         }
     ]
 }
