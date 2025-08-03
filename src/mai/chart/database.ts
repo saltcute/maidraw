@@ -24,44 +24,67 @@ export class Database {
         }
         await Promise.all(promises);
     }
-    public static async fecthJacket(id: number): Promise<Buffer | null> {
-        const cacheKey = `maimai-jacket-${id}`;
+    public static async fecthJacket(
+        id: number,
+        /**
+         * Explicit variant will NOT fallback to generic jacket.
+         * In practice `DX` variant will almost never return a jacket.
+         */
+        variant?: "DX" | "EX" | "CN"
+    ): Promise<Buffer | null> {
+        const cacheKey = `maimai-jacket-${id}${variant ? `-${variant}` : ""}`;
         const cached = await this.cache.get(cacheKey);
         if (cached instanceof Buffer) {
-            Maimai.logger.trace(`GET Jacket-${id}, cache HIT`);
+            Maimai.logger.trace(
+                `GET Jacket-${id}${variant ? `-${variant}` : ""}, cache HIT`
+            );
             return cached;
         } else {
-            Maimai.logger.trace(`GET Jacket-${id}, cache MISS`);
-            const jacket = await this.downloadJacket(id);
+            Maimai.logger.trace(
+                `GET Jacket-${id}${variant ? `-${variant}` : ""}, cache MISS`
+            );
+            const jacket = await this.downloadJacket(id, variant);
             if (jacket) this.cache.put(cacheKey, jacket, 1000 * 60 * 60);
             return jacket;
         }
     }
-    public static async downloadJacket(id: number): Promise<Buffer | null> {
+    public static async downloadJacket(
+        id: number,
+        /**
+         * Explicit variant will NOT fallback to generic jacket.
+         * In practice `DX` variant will almost never return a jacket.
+         */
+        variant?: "DX" | "EX" | "CN"
+    ): Promise<Buffer | null> {
         id = id % 10000;
         const localFilePath = upath.join(
             this.localDatabasePath,
             "assets",
             "maimai",
             "jackets",
-            `${id.toString().padStart(6, "0")}.png`
+            `${id.toString().padStart(6, "0")}${variant ? `-${variant}` : ""}.png`
         );
         if (fs.existsSync(localFilePath)) {
-            Maimai.logger.trace(`GET Jacket-${id}, database HIT`);
+            Maimai.logger.trace(
+                `GET Jacket-${id}${variant ? `-${variant}` : ""}, database HIT`
+            );
             return fs.readFileSync(localFilePath);
         }
-        const beginTimestamp = Date.now();
-        const res = await axios
-            .get(`https://assets2.lxns.net/maimai/jacket/${id}.png`, {
-                responseType: "arraybuffer",
-            })
-            .then((res) => res.data)
-            .catch((e) => null);
-        const timeDifference = Date.now() - beginTimestamp;
-        Maimai.logger.trace(
-            `GET Jacket-${id}, database MISS, took ${timeDifference}ms`
-        );
-        return res;
+        if (!variant) {
+            const beginTimestamp = Date.now();
+            const res = await axios
+                .get(`https://assets2.lxns.net/maimai/jacket/${id}.png`, {
+                    responseType: "arraybuffer",
+                })
+                .then((res) => res.data)
+                .catch((e) => null);
+            const timeDifference = Date.now() - beginTimestamp;
+            Maimai.logger.trace(
+                `GET Jacket-${id}, database MISS, took ${timeDifference}ms`
+            );
+            return res;
+        }
+        return null;
     }
     public static getLocalChart(
         id: number,
