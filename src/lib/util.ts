@@ -7,8 +7,52 @@ import {
 } from "canvas";
 import _ from "lodash";
 import { fillTextWithTwemoji } from "node-canvas-with-twemoji-and-discord-emoji";
+import { parse } from "upath";
 
 export class Util {
+    /**
+     * Pretty much ignores percision loss.
+     */
+    static truncate(payload: number, percision: number): string {
+        const str = payload.toString();
+        let [int, dec] = str.split(".");
+        if (!int) int = "";
+        if (!dec) dec = "";
+        if (percision <= 0) return int;
+        return `${int}.${dec.substring(0, percision).padEnd(percision, "0")}`;
+    }
+    static truncateNumber(payload: number, percision: number): number {
+        return parseFloat(this.truncate(payload, percision));
+    }
+    /**
+     * Dirty implementation, pretty much ignores percision loss.
+     */
+    static ceilWithPercision(payload: number, percision: number): string {
+        const str = payload.toString();
+        let [int, dec] = str.split(".");
+        if (!int) int = "";
+        if (!dec) {
+            if (percision <= 0) return int + "";
+            else return `${int}.${"0".repeat(percision)}`;
+        } else {
+            if (percision <= 0) return parseInt(int) + 1 + "";
+            else {
+                if (dec.length < percision)
+                    return `${int}.${dec.padEnd(percision, "0")}`;
+                const result = Math.ceil(
+                    parseFloat(
+                        `${int}${dec.substring(0, percision)}.${dec.substring(percision)}`
+                    )
+                ).toString();
+                if (result.length < percision) return result;
+                return `${result.substring(
+                    0,
+                    result.length - percision
+                )}.${result.substring(result.length - percision)}`;
+            }
+        }
+    }
+
     static findMaxFitString(
         ctx: CanvasRenderingContext2D,
         original: string,

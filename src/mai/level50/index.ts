@@ -476,7 +476,7 @@ export class Level50 {
             /** Begin Achievement Rate Draw */
             Util.drawText(
                 ctx,
-                `${score.achievement.toFixed(4)}%`,
+                `${Util.truncate(score.achievement, 4)}%`,
                 x -
                     element.scoreBubble.margin -
                     element.scoreBubble.height * 0.806 * 0.02 +
@@ -760,7 +760,7 @@ export class Level50 {
         {
             Util.drawText(
                 ctx,
-                `${score.chart.level.toFixed(1)}  ↑${Math.floor(score.dxRating).toFixed(0)}`,
+                `${Util.truncate(score.chart.level, 1)}  ↑${Util.truncate(score.dxRating, 0)}`,
                 x + element.scoreBubble.margin * 2,
                 y + element.scoreBubble.height * (0.806 + (1 - 0.806) / 2),
                 element.scoreBubble.height * 0.806 * 0.128,
@@ -1159,15 +1159,15 @@ export class Level50 {
                     }
                     case "text": {
                         function getTextLevel(level: number, border: number) {
-                            const realBorder = Math.floor(level) + border * 0.1;
+                            const realBorder = Math.trunc(level) + border * 0.1;
                             if (level < realBorder)
-                                return Math.floor(level).toFixed(0);
-                            else return Math.floor(level).toFixed(0) + "+";
+                                return Util.truncate(level, 0);
+                            else return Util.truncate(level, 0) + "+";
                         }
                         await this.drawTextModule(ctx, currentTheme, element, {
                             username:
                                 Util.HalfFullWidthConvert.toFullWidth(name),
-                            rating: rating.toFixed(0),
+                            rating: Util.truncate(rating, 0),
                             level50Title: `Top Scores From Lv. ${getTextLevel(level, 6)}`,
                             level50Subtitle: `(Showing scores from ${(page - 1) * 50 + 1} to ${page * 50})`,
                         });
@@ -1209,11 +1209,11 @@ export class Level50 {
             unitWidth: number,
             unitHeight: number
         ) {
-            digit = Math.floor(digit % 10);
+            digit = Math.trunc(digit % 10);
             return await sharp(map)
                 .extract({
                     left: (digit % 4) * unitWidth,
-                    top: Math.floor(digit / 4) * unitHeight,
+                    top: Math.trunc(digit / 4) * unitHeight,
                     width: unitWidth,
                     height: unitHeight,
                 })
@@ -1233,7 +1233,7 @@ export class Level50 {
                 digits.push(
                     await getRaingDigit(map, num % 10, unitWidth, unitHeight)
                 );
-                num = Math.floor(num / 10);
+                num = Math.trunc(num / 10);
             }
             while (digits.length < 5) digits.push(null);
             digits = digits.reverse();

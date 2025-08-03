@@ -523,7 +523,7 @@ export class Best50 {
             /** Begin Achievement Rate Draw */
             Util.drawText(
                 ctx,
-                score.score.toFixed(0),
+                Util.truncate(score.score, 0),
                 x -
                     element.scoreBubble.margin -
                     element.scoreBubble.height * 0.806 * 0.02 +
@@ -774,7 +774,7 @@ export class Best50 {
         {
             Util.drawText(
                 ctx,
-                `${score.chart.level.toFixed(1)}  ↑${score.rating.toFixed(type === "refresh" ? 3 : 2)}`,
+                `${Util.truncate(score.chart.level, 1)}  ↑${Util.truncate(score.rating, type === "refresh" ? 3 : 2)}`,
                 x + element.scoreBubble.margin * 2,
                 y + element.scoreBubble.height * (0.806 + (1 - 0.806) / 2),
                 element.scoreBubble.height * 0.806 * 0.128,
@@ -1025,7 +1025,7 @@ export class Best50 {
             );
             Util.drawText(
                 ctx,
-                rating.toFixed(type === "refresh" ? 3 : 2),
+                Util.truncate(rating, type === "refresh" ? 3 : 2),
                 element.x + theme.manifest.width * (7 / 32) * (109 / 128),
                 element.y + theme.manifest.width * (7 / 32) * (70 / 128),
                 (theme.manifest.width * (7 / 32) * 5) / 44,
@@ -1193,13 +1193,48 @@ export class Best50 {
                         break;
                     }
                     case "text": {
-                        function getNaiveRating(length: number) {
+                        function getNaiveRating(type: "refresh" | "classic") {
                             const bestScores = options?.bestScores;
                             if (!bestScores) return 0;
-                            return getRatingAvg(
-                                bestScores.slice(0, length),
-                                length
-                            );
+                            if (type == "refresh") {
+                                const scoreRating = bestScores
+                                    .slice(0, 60)
+                                    .map((v) => v.rating)
+                                    .reduce((sum, v) => (sum += v));
+                                const starRating = recentOrPlatinumScores
+                                    .slice(0, 50)
+                                    .map((v) => {
+                                        const platinumScoreRatio =
+                                            v.platinumScore /
+                                            v.chart.maxPlatinumScore;
+                                        let coefficient = 0;
+                                        if (platinumScoreRatio >= 0.98)
+                                            coefficient = 5;
+                                        else if (platinumScoreRatio >= 0.97)
+                                            coefficient = 4;
+                                        else if (platinumScoreRatio >= 0.96)
+                                            coefficient = 3;
+                                        else if (platinumScoreRatio >= 0.95)
+                                            coefficient = 2;
+                                        else if (platinumScoreRatio >= 0.94)
+                                            coefficient = 1;
+                                        return (
+                                            Util.truncateNumber(
+                                                coefficient *
+                                                    v.chart.level *
+                                                    v.chart.level,
+                                                2
+                                            ) / 1000
+                                        );
+                                    })
+                                    .reduce((sum, v) => (sum += v));
+                                return (
+                                    Util.truncateNumber(scoreRating / 50, 3) +
+                                    Util.truncateNumber(starRating / 50, 3)
+                                );
+                            } else {
+                                return getRatingAvg(bestScores, 45);
+                            }
                         }
                         function getRatingAvg(
                             scores: IScore[],
@@ -1215,24 +1250,35 @@ export class Best50 {
                         }
                         await this.drawTextModule(ctx, currentTheme, element, {
                             username: HalfFullWidthConvert.toFullWidth(name),
-                            rating: rating.toFixed(
+                            rating: Util.truncate(
+                                rating,
                                 options.type == "refresh" ? 3 : 2
                             ),
-                            naiveBest45: getNaiveRating(45).toFixed(
+                            naiveRatingAverage: `NAIVE ${options.type == "refresh" ? 60 : 45} average: ${Util.truncate(
+                                getNaiveRating(options.type),
+                                options.type == "refresh" ? 3 : 2
+                            )}`,
+                            newScoreRatingAvg: Util.truncate(
+                                getRatingAvg(
+                                    newScores,
+                                    options.type == "refresh" ? 10 : 15
+                                ),
                                 options.type == "refresh" ? 3 : 2
                             ),
-                            newScoreRatingAvg: getRatingAvg(
-                                newScores,
-                                options.type == "refresh" ? 10 : 15
-                            ).toFixed(options.type == "refresh" ? 3 : 2),
-                            oldScoreRatingAvg: getRatingAvg(
-                                oldScores,
-                                options.type == "refresh" ? 50 : 30
-                            ).toFixed(options.type == "refresh" ? 3 : 2),
-                            recentOrPlatinumScoreAvg: getRatingAvg(
-                                recentOrPlatinumScores,
-                                options.type == "refresh" ? 50 : 10
-                            ).toFixed(options.type == "refresh" ? 3 : 2),
+                            oldScoreRatingAvg: Util.truncate(
+                                getRatingAvg(
+                                    oldScores,
+                                    options.type == "refresh" ? 50 : 30
+                                ),
+                                options.type == "refresh" ? 3 : 2
+                            ),
+                            recentOrPlatinumScoreAvg: Util.truncate(
+                                getRatingAvg(
+                                    recentOrPlatinumScores,
+                                    options.type == "refresh" ? 50 : 10
+                                ),
+                                options.type == "refresh" ? 3 : 2
+                            ),
                         });
                         break;
                     }
@@ -1297,11 +1343,11 @@ export class Best50 {
             unitWidth: number,
             unitHeight: number
         ) {
-            digit = Math.floor(digit % 10);
+            digit = Math.trunc(digit % 10);
             return await sharp(map)
                 .extract({
                     left: (digit % 4) * unitWidth,
-                    top: Math.floor(digit / 4) * unitHeight,
+                    top: Math.trunc(digit / 4) * unitHeight,
                     width: unitWidth,
                     height: unitHeight,
                 })
@@ -1317,14 +1363,14 @@ export class Best50 {
             const unitWidth = width / 4,
                 unitHeight = height / 4;
             let digits: (Buffer | null)[] = [];
-            while (num != Math.floor(num)) {
+            while (num != Math.trunc(num)) {
                 num *= 10;
             }
             while (num > 0) {
                 digits.push(
                     await getRaingDigit(map, num % 10, unitWidth, unitHeight)
                 );
-                num = Math.floor(num / 10);
+                num = Math.trunc(num / 10);
             }
             while (digits.length < 5) digits.push(null);
             digits = digits.reverse();

@@ -31,11 +31,11 @@ export class Cache {
         if (this.isRedisAvailable) {
             if (Buffer.isBuffer(value)) {
                 await this.redisClient.set(key, value.toString("base64"), {
-                    EX: Math.floor(ttl / 1000),
+                    EX: Math.trunc(ttl / 1000),
                 });
             } else {
                 await this.redisClient.set(key, JSON.stringify(value), {
-                    EX: Math.floor(ttl / 1000),
+                    EX: Math.trunc(ttl / 1000),
                 });
             }
         } else this.memCache.put(key, value, ttl);

@@ -463,7 +463,7 @@ export class Chart {
                 ).width;
                 Util.drawText(
                     ctx,
-                    `Lv. ${chart.level.toFixed(1)}${score ? `　↑${Math.floor(score.dxRating).toFixed(0)}` : ""}`,
+                    `Lv. ${Util.truncate(chart.level, 1)}${score ? `　↑${Util.truncate(score.dxRating, 0)}` : ""}`,
                     x + element.bubble.margin * 2 + difficultyTextWidth,
                     y +
                         element.bubble.margin +
@@ -498,7 +498,9 @@ export class Chart {
                 const scoreSize = height * 0.806 * 0.208;
                 Util.drawText(
                     ctx,
-                    score ? `${score.achievement.toFixed(4)}%` : "NO RECORD",
+                    score
+                        ? `${Util.truncate(score.achievement, 4)}%`
+                        : "NO RECORD",
                     x +
                         height * 2 -
                         element.bubble.margin -
@@ -971,7 +973,7 @@ export class Chart {
                         height * 2 -
                         element.bubble.margin * 4 -
                         noteCountLength;
-                    const maxFitTrendCount = Math.floor(
+                    const maxFitTrendCount = Math.trunc(
                         maxWidth / versionImageWidth
                     );
                     const trendEvents = chart.events.filter(
@@ -1158,7 +1160,7 @@ export class Chart {
                                     }
                                     Util.drawText(
                                         ctx,
-                                        `${symbol}${event.data.level.toFixed(1)}`,
+                                        `${symbol}${Util.truncate(event.data.level, 1)}`,
                                         curx + versionImageWidth / 2,
                                         cury +
                                             versionImageHeight +
@@ -1898,7 +1900,7 @@ export class Chart {
                         await this.drawTextModule(ctx, currentTheme, element, {
                             username:
                                 Util.HalfFullWidthConvert.toFullWidth(name),
-                            rating: rating.toFixed(0),
+                            rating: Util.truncate(rating, 0),
                         });
                         break;
                     }
@@ -1951,11 +1953,11 @@ export class Chart {
             unitWidth: number,
             unitHeight: number
         ) {
-            digit = Math.floor(digit % 10);
+            digit = Math.trunc(digit % 10);
             return await sharp(map)
                 .extract({
                     left: (digit % 4) * unitWidth,
-                    top: Math.floor(digit / 4) * unitHeight,
+                    top: Math.trunc(digit / 4) * unitHeight,
                     width: unitWidth,
                     height: unitHeight,
                 })
@@ -1975,7 +1977,7 @@ export class Chart {
                 digits.push(
                     await getRaingDigit(map, num % 10, unitWidth, unitHeight)
                 );
-                num = Math.floor(num / 10);
+                num = Math.trunc(num / 10);
             }
             while (digits.length < 5) digits.push(null);
             digits = digits.reverse();

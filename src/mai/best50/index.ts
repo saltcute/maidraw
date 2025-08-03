@@ -479,7 +479,7 @@ export class Best50 {
             /** Begin Achievement Rate Draw */
             Util.drawText(
                 ctx,
-                `${score.achievement.toFixed(4)}%`,
+                `${Util.truncate(score.achievement, 4)}%`,
                 x -
                     element.scoreBubble.margin -
                     element.scoreBubble.height * 0.806 * 0.02 +
@@ -763,9 +763,7 @@ export class Best50 {
         {
             Util.drawText(
                 ctx,
-                `${score.chart.level.toFixed(1)}  ↑${Math.floor(
-                    score.dxRating
-                ).toFixed(0)}`,
+                `${Util.truncate(score.chart.level, 1)}  ↑${Util.truncate(score.dxRating, 0)}`,
                 x + element.scoreBubble.margin * 2,
                 y + element.scoreBubble.height * (0.806 + (1 - 0.806) / 2),
                 element.scoreBubble.height * 0.806 * 0.128,
@@ -1254,15 +1252,18 @@ export class Best50 {
                                 ssspTarget = ssspLevel;
                             }
                             if (sssTarget && ssspTarget)
-                                return `Next rating boost: lv. ${ssspTarget.toFixed(
+                                return `Next rating boost: lv. ${Util.ceilWithPercision(
+                                    ssspTarget,
                                     1
-                                )} SSS+/${sssTarget.toFixed(1)} SSS`;
+                                )} SSS+/${Util.ceilWithPercision(sssTarget, 1)} SSS`;
                             else if (sssTarget)
-                                return `Next rating boost: lv. ${sssTarget.toFixed(
+                                return `Next rating boost: lv. ${Util.ceilWithPercision(
+                                    sssTarget,
                                     1
                                 )} SSS`;
                             else if (ssspTarget)
-                                return `Next rating boost: lv. ${ssspTarget.toFixed(
+                                return `Next rating boost: lv. ${Util.ceilWithPercision(
+                                    ssspTarget,
                                     1
                                 )} SSS+`;
                             else return "Good job!";
@@ -1270,13 +1271,15 @@ export class Best50 {
                         await this.drawTextModule(ctx, currentTheme, element, {
                             username:
                                 Util.HalfFullWidthConvert.toFullWidth(name),
-                            rating: rating.toFixed(0),
-                            newScoreRatingAvgString: `NEW scores average: ${Math.ceil(
-                                getRatingAvg(newScores, 15)
-                            ).toFixed(0)}.`,
-                            oldScoreRatingAvgString: `OLD scores average: ${Math.ceil(
-                                getRatingAvg(oldScores, 35)
-                            ).toFixed(0)}.`,
+                            rating: Util.truncate(rating, 0),
+                            newScoreRatingAvgString: `NEW scores average: ${Util.ceilWithPercision(
+                                getRatingAvg(newScores, 15),
+                                0
+                            )}`,
+                            oldScoreRatingAvgString: `OLD scores average: ${Util.ceilWithPercision(
+                                getRatingAvg(oldScores, 35),
+                                0
+                            )}`,
                             newScoreMilestone: getMilestone(newScores, 15),
                             oldScoreMilestone: getMilestone(oldScores, 35),
                         });
@@ -1316,11 +1319,11 @@ export class Best50 {
             unitWidth: number,
             unitHeight: number
         ) {
-            digit = Math.floor(digit % 10);
+            digit = Math.trunc(digit % 10);
             return await sharp(map)
                 .extract({
                     left: (digit % 4) * unitWidth,
-                    top: Math.floor(digit / 4) * unitHeight,
+                    top: Math.trunc(digit / 4) * unitHeight,
                     width: unitWidth,
                     height: unitHeight,
                 })
@@ -1340,7 +1343,7 @@ export class Best50 {
                 digits.push(
                     await getRaingDigit(map, num % 10, unitWidth, unitHeight)
                 );
-                num = Math.floor(num / 10);
+                num = Math.trunc(num / 10);
             }
             while (digits.length < 5) digits.push(null);
             digits = digits.reverse();

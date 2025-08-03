@@ -514,7 +514,7 @@ export class Best50 {
             /** Begin Achievement Rate Draw */
             Util.drawText(
                 ctx,
-                score.score.toFixed(0),
+                Util.truncate(score.score, 0),
                 x -
                     element.scoreBubble.margin -
                     element.scoreBubble.height * 0.806 * 0.02 +
@@ -728,7 +728,7 @@ export class Best50 {
         {
             Util.drawText(
                 ctx,
-                `lv. ${score.chart.level.toFixed(1)}`,
+                `lv. ${Util.truncate(score.chart.level, 1)}`,
                 x + element.scoreBubble.margin * 2,
                 y + element.scoreBubble.height * (0.806 + (1 - 0.806) / 2),
                 element.scoreBubble.height * 0.806 * 0.128,
@@ -741,7 +741,7 @@ export class Best50 {
 
             Util.drawText(
                 ctx,
-                `+${score.rating.toFixed(2)}`,
+                `+${Util.truncate(score.rating, 2)}`,
                 x + element.scoreBubble.width - element.scoreBubble.margin * 2,
                 y + element.scoreBubble.height * (0.806 + (1 - 0.806) / 2),
                 element.scoreBubble.height * 0.806 * 0.128,
@@ -925,7 +925,7 @@ export class Best50 {
             );
             Util.drawText(
                 ctx,
-                rating.toFixed(2),
+                Util.truncate(rating, 2),
                 element.x + element.height * (67 / 64),
                 element.y + element.height * (47 / 64),
                 (element.height * 5) / 44,
@@ -1106,17 +1106,20 @@ export class Best50 {
                         }
                         await this.drawTextModule(ctx, currentTheme, element, {
                             username: HalfFullWidthConvert.toFullWidth(name),
-                            rating: rating.toFixed(2),
-                            naiveBest30: getNaiveRating(30).toFixed(2),
-                            naiveBest50: getNaiveRating(50).toFixed(2),
-                            newScoreRatingAvg: getRatingAvg(
-                                newScores,
-                                options.type == "recents" ? 10 : 20
-                            ).toFixed(2),
-                            oldScoreRatingAvg: getRatingAvg(
-                                oldScores.slice(0, 30),
-                                30
-                            ).toFixed(2),
+                            rating: Util.truncate(rating, 2),
+                            naiveBest30: Util.truncate(getNaiveRating(30), 2),
+                            naiveBest50: Util.truncate(getNaiveRating(50), 2),
+                            newScoreRatingAvg: Util.truncate(
+                                getRatingAvg(
+                                    newScores,
+                                    options.type == "recents" ? 10 : 20
+                                ),
+                                2
+                            ),
+                            oldScoreRatingAvg: Util.truncate(
+                                getRatingAvg(oldScores.slice(0, 30), 30),
+                                2
+                            ),
                         });
                         break;
                     }
@@ -1171,11 +1174,11 @@ export class Best50 {
             unitWidth: number,
             unitHeight: number
         ) {
-            digit = Math.floor(digit % 10);
+            digit = Math.trunc(digit % 10);
             return await sharp(map)
                 .extract({
                     left: (digit % 4) * unitWidth,
-                    top: Math.floor(digit / 4) * unitHeight,
+                    top: Math.trunc(digit / 4) * unitHeight,
                     width: unitWidth,
                     height: unitHeight,
                 })
@@ -1191,14 +1194,14 @@ export class Best50 {
             const unitWidth = width / 4,
                 unitHeight = height / 4;
             let digits: (Buffer | null)[] = [];
-            while (num != Math.floor(num)) {
+            while (num != Math.trunc(num)) {
                 num *= 10;
             }
             while (num > 0) {
                 digits.push(
                     await getRaingDigit(map, num % 10, unitWidth, unitHeight)
                 );
-                num = Math.floor(num / 10);
+                num = Math.trunc(num / 10);
             }
             while (digits.length < 5) digits.push(null);
             digits = digits.reverse();

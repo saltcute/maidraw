@@ -6,6 +6,7 @@ import {
     IScore,
 } from "@maidraw/geki/type";
 import ScoreTrackerAdapter from "..";
+import { Util } from "@maidraw/lib/util";
 
 export class KamaiTachi extends ScoreTrackerAdapter {
     private readonly CURRENT_VERSION: KamaiTachi.EGameVersions;
@@ -319,7 +320,7 @@ export class KamaiTachi extends ScoreTrackerAdapter {
                         ? b.rating - a.rating
                         : b.score - a.score
                 )
-                .slice(0, 45),
+                .slice(0, 60),
         };
     }
     async getPlayerBest55(
@@ -491,22 +492,35 @@ export class KamaiTachi extends ScoreTrackerAdapter {
         if (type == "refresh") {
             const scores = await this.getPlayerBest60(userId);
             if (!profile?.body || !scores) return null;
-            let rating = 0;
-            [...scores.new, ...scores.old].forEach((v) => (rating += v.rating));
-            scores.plat.forEach((v) => {
-                const platinumScoreRatio =
-                    v.platinumScore / v.chart.maxPlatinumScore;
-                let coefficient = 0;
-                if (platinumScoreRatio >= 0.98) coefficient = 5;
-                else if (platinumScoreRatio >= 0.97) coefficient = 4;
-                else if (platinumScoreRatio >= 0.96) coefficient = 3;
-                else if (platinumScoreRatio >= 0.95) coefficient = 2;
-                else if (platinumScoreRatio >= 0.94) coefficient = 1;
-                rating += (coefficient * v.chart.level * v.chart.level) / 1000;
-            });
+            const newRating = scores.new
+                .map((v) => Util.truncateNumber(v.rating / 5, 3))
+                .reduce((sum, v) => (sum += v));
+            const oldRating = scores.old
+                .map((v) => v.rating)
+                .reduce((sum, v) => (sum += v));
+            const platRating = scores.plat
+                .map((v) => {
+                    const platinumScoreRatio =
+                        v.platinumScore / v.chart.maxPlatinumScore;
+                    let coefficient = 0;
+                    if (platinumScoreRatio >= 0.98) coefficient = 5;
+                    else if (platinumScoreRatio >= 0.97) coefficient = 4;
+                    else if (platinumScoreRatio >= 0.96) coefficient = 3;
+                    else if (platinumScoreRatio >= 0.95) coefficient = 2;
+                    else if (platinumScoreRatio >= 0.94) coefficient = 1;
+                    return (
+                        Math.floor(
+                            coefficient * v.chart.level * v.chart.level
+                        ) / 1000
+                    );
+                })
+                .reduce((sum, v) => (sum += v));
             return {
                 name: profile?.body.username,
-                rating: rating / 50,
+                rating:
+                    Util.truncateNumber(newRating / 10, 3) +
+                    Util.truncateNumber(oldRating / 50, 3) +
+                    Util.truncateNumber(platRating / 50, 3),
             };
         } else if (type == "classic") {
             const scores = await this.getPlayerBest55(userId);

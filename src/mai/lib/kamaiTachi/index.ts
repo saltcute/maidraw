@@ -450,10 +450,10 @@ export class KamaiTachi extends ScoreTrackerAdapter {
         let lb = 0,
             hb = 0;
         if ((target * 10) % 10 < border) {
-            lb = Math.floor(target);
-            hb = Math.floor(target) + (border - 1) * 0.1;
+            lb = Math.trunc(target);
+            hb = Math.trunc(target) + (border - 1) * 0.1;
         } else {
-            lb = Math.floor(target) + border * 0.1;
+            lb = Math.trunc(target) + border * 0.1;
             hb = Math.ceil(target) - 0.1;
         }
         return lb <= payload && payload <= hb;
