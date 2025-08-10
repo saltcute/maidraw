@@ -71,12 +71,11 @@ export class KamaiTachi extends ScoreTrackerAdapter {
                     level: chart.levelNum,
                     maxDxScore: (() => {
                         return (
-                            (score.scoreData.judgements.pcrit +
-                                score.scoreData.judgements.perfect +
-                                score.scoreData.judgements.great +
-                                score.scoreData.judgements.good +
-                                score.scoreData.judgements.miss) *
-                            3
+                            (score.scoreData.judgements.pcrit || 0) +
+                            (score.scoreData.judgements.perfect || 0) +
+                            (score.scoreData.judgements.great || 0) +
+                            (score.scoreData.judgements.good || 0) +
+                            (score.scoreData.judgements.miss || 0) * 3
                         );
                     })(),
                 };
@@ -133,9 +132,9 @@ export class KamaiTachi extends ScoreTrackerAdapter {
             dxRating: score.calculatedData.rate,
             dxScore: (() => {
                 return (
-                    score.scoreData.judgements.pcrit * 3 +
-                    score.scoreData.judgements.perfect * 2 +
-                    score.scoreData.judgements.great
+                    (score.scoreData.judgements.pcrit || 0) * 3 +
+                    (score.scoreData.judgements.perfect || 0) * 2 +
+                    (score.scoreData.judgements.great || 0)
                 );
             })(),
         };
@@ -744,11 +743,11 @@ export namespace KamaiTachi {
             percent: number;
             lamp: string;
             judgements: {
-                pcrit: number;
-                perfect: number;
-                great: number;
-                good: number;
-                miss: number;
+                pcrit?: number;
+                perfect?: number;
+                great?: number;
+                good?: number;
+                miss?: number;
             };
             optional: {
                 fast: number;
