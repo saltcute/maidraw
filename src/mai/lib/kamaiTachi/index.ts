@@ -3,6 +3,7 @@ import ScoreTrackerAdapter from "..";
 import { Best50 } from "../../best50";
 import { Chart } from "@maidraw/mai/chart";
 import _ from "lodash";
+import { Util } from "@maidraw/lib/util";
 
 export class KamaiTachi extends ScoreTrackerAdapter {
     private currentVersion: KamaiTachi.GameVersions;
@@ -43,6 +44,19 @@ export class KamaiTachi extends ScoreTrackerAdapter {
         chart: KamaiTachi.IChart,
         song: KamaiTachi.ISong
     ): Best50.IScore {
+        const localChart = Chart.Database.getLocalChart(
+            chart.data.inGameID,
+            this.getDatabaseDifficulty(chart)
+        );
+        const internalLevel = localChart
+            ? localChart.events
+                  .filter((v) => v.type === "existence")
+                  .find(
+                      (v) =>
+                          v.version.name ==
+                          this.currentVersion[this.currentRegion]
+                  )?.data.level
+            : undefined;
         return {
             chart: (() => {
                 return {
@@ -68,7 +82,7 @@ export class KamaiTachi extends ScoreTrackerAdapter {
                                 return EDifficulty.BASIC;
                         }
                     })(),
-                    level: chart.levelNum,
+                    level: internalLevel || chart.levelNum,
                     maxDxScore: (() => {
                         return (
                             (score.scoreData.judgements.pcrit || 0) +
@@ -129,7 +143,12 @@ export class KamaiTachi extends ScoreTrackerAdapter {
                         return Best50.EAchievementTypes.D;
                 }
             })(),
-            dxRating: score.calculatedData.rate,
+            dxRating: internalLevel
+                ? Util.Maimai.calculateRating(
+                      internalLevel,
+                      score.scoreData.percent
+                  )
+                : score.calculatedData.rate,
             dxScore: (() => {
                 return (
                     (score.scoreData.judgements.pcrit || 0) * 3 +
@@ -138,6 +157,21 @@ export class KamaiTachi extends ScoreTrackerAdapter {
                 );
             })(),
         };
+    }
+    private getDatabaseDifficulty(chart: KamaiTachi.IChart) {
+        switch (true) {
+            case chart.difficulty.includes("RE:MASTER"):
+                return EDifficulty.REMASTER;
+            case chart.difficulty.includes("MASTER"):
+                return EDifficulty.MASTER;
+            case chart.difficulty.includes("EXPERT"):
+                return EDifficulty.EXPERT;
+            case chart.difficulty.includes("ADVANCED"):
+                return EDifficulty.ADVANCED;
+            case chart.difficulty.includes("BASIC"):
+            default:
+                return EDifficulty.BASIC;
+        }
     }
     async getPlayerBest50(
         userId: string,
@@ -192,21 +226,7 @@ export class KamaiTachi extends ScoreTrackerAdapter {
             return (
                 Chart.Database.getLocalChart(
                     score.chart.data.inGameID,
-                    (() => {
-                        switch (true) {
-                            case score.chart.difficulty.includes("RE:MASTER"):
-                                return EDifficulty.REMASTER;
-                            case score.chart.difficulty.includes("MASTER"):
-                                return EDifficulty.MASTER;
-                            case score.chart.difficulty.includes("EXPERT"):
-                                return EDifficulty.EXPERT;
-                            case score.chart.difficulty.includes("ADVANCED"):
-                                return EDifficulty.ADVANCED;
-                            case score.chart.difficulty.includes("BASIC"):
-                            default:
-                                return EDifficulty.BASIC;
-                        }
-                    })()
+                    this.getDatabaseDifficulty(score.chart)
                 )?.addVersion[this.currentRegion]?.name ==
                 this.currentVersion[this.currentRegion]
             );
@@ -218,21 +238,7 @@ export class KamaiTachi extends ScoreTrackerAdapter {
         }) => {
             const addVersion = Chart.Database.getLocalChart(
                 score.chart.data.inGameID,
-                (() => {
-                    switch (true) {
-                        case score.chart.difficulty.includes("RE:MASTER"):
-                            return EDifficulty.REMASTER;
-                        case score.chart.difficulty.includes("MASTER"):
-                            return EDifficulty.MASTER;
-                        case score.chart.difficulty.includes("EXPERT"):
-                            return EDifficulty.EXPERT;
-                        case score.chart.difficulty.includes("ADVANCED"):
-                            return EDifficulty.ADVANCED;
-                        case score.chart.difficulty.includes("BASIC"):
-                        default:
-                            return EDifficulty.BASIC;
-                    }
-                })()
+                this.getDatabaseDifficulty(score.chart)
             )?.addVersion[this.currentRegion]?.name;
             if (!addVersion) return false;
             return (

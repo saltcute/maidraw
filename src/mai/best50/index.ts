@@ -1166,44 +1166,12 @@ export class Best50 {
                             return (
                                 scores
                                     .slice(0, length)
-                                    .map((v) => {
-                                        let ratingConstant = 0;
-                                        if (
-                                            v.achievementRank ==
-                                            Best50.EAchievementTypes.D
-                                        ) {
-                                            if (v.achievement > 40)
-                                                ratingConstant =
-                                                    this.RATING_CONSTANTS[
-                                                        v.achievementRank
-                                                    ]["0.4"];
-                                            else if (v.achievement > 30)
-                                                ratingConstant =
-                                                    this.RATING_CONSTANTS[
-                                                        v.achievementRank
-                                                    ]["0.3"];
-                                            else if (v.achievement > 20)
-                                                ratingConstant =
-                                                    this.RATING_CONSTANTS[
-                                                        v.achievementRank
-                                                    ]["0.2"];
-                                            else if (v.achievement > 10)
-                                                ratingConstant =
-                                                    this.RATING_CONSTANTS[
-                                                        v.achievementRank
-                                                    ]["0.1"];
-                                        } else {
-                                            ratingConstant =
-                                                this.RATING_CONSTANTS[
-                                                    v.achievementRank
-                                                ];
-                                        }
-                                        return (
-                                            (v.achievement / 100) *
-                                            ratingConstant *
-                                            v.chart.level
-                                        );
-                                    })
+                                    .map((v) =>
+                                        Util.Maimai.calculateRating(
+                                            v.chart.level,
+                                            v.achievement
+                                        )
+                                    )
                                     .sort((a, b) => a - b)[0] || 0
                             );
                         };

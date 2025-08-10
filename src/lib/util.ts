@@ -1,3 +1,4 @@
+import { Best50 } from "@maidraw/mai/best50";
 import { Database } from "@maidraw/mai/chart/database";
 import {
     CanvasGradient,
@@ -7,7 +8,6 @@ import {
 } from "canvas";
 import _ from "lodash";
 import { fillTextWithTwemoji } from "node-canvas-with-twemoji-and-discord-emoji";
-import { parse } from "upath";
 
 export class Util {
     /**
@@ -366,6 +366,132 @@ export namespace Util {
                 event.gameVersion.release = 0;
                 return event as Database.IEventVersion;
             }
+        }
+        export const RATING_CONSTANTS = {
+            [Best50.EAchievementTypes.D]: {
+                [0.4]: 6.4,
+                [0.3]: 4.8,
+                [0.2]: 3.2,
+                [0.1]: 1.6,
+                [0]: 0,
+            },
+            [Best50.EAchievementTypes.C]: 13.6,
+            [Best50.EAchievementTypes.B]: 13.6,
+            [Best50.EAchievementTypes.BB]: 13.6,
+            [Best50.EAchievementTypes.BBB]: 13.6,
+            [Best50.EAchievementTypes.A]: 13.6,
+            [Best50.EAchievementTypes.AA]: 15.2,
+            [Best50.EAchievementTypes.AAA]: 16.8,
+            [Best50.EAchievementTypes.S]: 20.0,
+            [Best50.EAchievementTypes.SP]: 20.3,
+            [Best50.EAchievementTypes.SS]: 20.8,
+            [Best50.EAchievementTypes.SSP]: 21.1,
+            [Best50.EAchievementTypes.SSS]: 21.6,
+            [Best50.EAchievementTypes.SSSP]: 22.4,
+        };
+        /**
+         * Calculate the rating of a score.
+         * @param internalLevel Internal level of the chart.
+         * @param achievement Achivement in percentage, range between 0 to 101.0000.
+         * @returns Raw decimal rating value.
+         */
+        export function calculateRating(
+            internalLevel: number,
+            achievement: number
+        ): number {
+            let ratingConstant = 0;
+            switch (true) {
+                case achievement >= 100.5: {
+                    ratingConstant =
+                        RATING_CONSTANTS[Best50.EAchievementTypes.SSSP];
+                    break;
+                }
+                case achievement >= 100: {
+                    ratingConstant =
+                        RATING_CONSTANTS[Best50.EAchievementTypes.SSS];
+                    break;
+                }
+                case achievement >= 99.5: {
+                    ratingConstant =
+                        RATING_CONSTANTS[Best50.EAchievementTypes.SSP];
+                    break;
+                }
+                case achievement >= 99: {
+                    ratingConstant =
+                        RATING_CONSTANTS[Best50.EAchievementTypes.SS];
+                    break;
+                }
+                case achievement >= 98: {
+                    ratingConstant =
+                        RATING_CONSTANTS[Best50.EAchievementTypes.SP];
+                    break;
+                }
+                case achievement >= 97: {
+                    ratingConstant =
+                        RATING_CONSTANTS[Best50.EAchievementTypes.S];
+                    break;
+                }
+                case achievement >= 94: {
+                    ratingConstant =
+                        RATING_CONSTANTS[Best50.EAchievementTypes.AAA];
+                    break;
+                }
+                case achievement >= 90: {
+                    ratingConstant =
+                        RATING_CONSTANTS[Best50.EAchievementTypes.AA];
+                    break;
+                }
+                case achievement >= 80: {
+                    ratingConstant =
+                        RATING_CONSTANTS[Best50.EAchievementTypes.A];
+                    break;
+                }
+                case achievement >= 75: {
+                    ratingConstant =
+                        RATING_CONSTANTS[Best50.EAchievementTypes.BBB];
+                    break;
+                }
+                case achievement >= 70: {
+                    ratingConstant =
+                        RATING_CONSTANTS[Best50.EAchievementTypes.BB];
+                    break;
+                }
+                case achievement >= 60: {
+                    ratingConstant =
+                        RATING_CONSTANTS[Best50.EAchievementTypes.B];
+                    break;
+                }
+                case achievement >= 50: {
+                    ratingConstant =
+                        RATING_CONSTANTS[Best50.EAchievementTypes.C];
+                    break;
+                }
+                case achievement >= 40: {
+                    ratingConstant =
+                        RATING_CONSTANTS[Best50.EAchievementTypes.D]["0.4"];
+                    break;
+                }
+                case achievement >= 30: {
+                    ratingConstant =
+                        RATING_CONSTANTS[Best50.EAchievementTypes.D]["0.3"];
+                    break;
+                }
+                case achievement >= 20: {
+                    ratingConstant =
+                        RATING_CONSTANTS[Best50.EAchievementTypes.D]["0.2"];
+                    break;
+                }
+                case achievement >= 10: {
+                    ratingConstant =
+                        RATING_CONSTANTS[Best50.EAchievementTypes.D]["0.1"];
+                    break;
+                }
+            }
+            return (
+                (Math.min(achievement, 100.5) / 100) *
+                ratingConstant *
+                internalLevel
+            );
         }
     }
 }
