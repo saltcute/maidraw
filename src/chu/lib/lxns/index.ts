@@ -6,6 +6,7 @@ import {
     IScore,
 } from "@maidraw/chu/type";
 import ScoreTrackerAdapter from "..";
+import { Chart } from "@maidraw/chu/chart";
 
 export class LXNS extends ScoreTrackerAdapter {
     constructor({
@@ -130,28 +131,10 @@ export class LXNS extends ScoreTrackerAdapter {
     async getPlayerRecent40(friendCode: string) {
         const b50 = await this.getPlayerRawBest40(friendCode);
         if (!b50?.data) return null;
-        let chartList: IChart[];
-        // if (Chart.Database.hasLocalDatabase()) {
-        //     chartList = [...b50.data.bests, ...b50.data.recents]
-        //         .map((chart) => {
-        //             return null;
-        //             return Chart.Database.getLocalChart(
-        //                 chart.id,
-        //                 chart.level_index as unknown as EDifficulty
-        //             );
-        //         })
-        //         .filter((v) => v !== null)
-        //         .map((v) => {
-        //             return {
-        //                 id: v.id,
-        //                 name: v.name,
-        //                 level: v.level,
-        //                 difficulty: v.difficulty,
-        //             };
-        //         });
-        // } else {
-        chartList = await this.getMaiDrawChartList();
-        // }
+        const chartList = await this.getChartList([
+            ...b50.data.recents,
+            ...b50.data.bests,
+        ]);
         return {
             recent: this.toMaiDrawScore(b50.data.recents, chartList),
             best: this.toMaiDrawScore(b50.data.bests, chartList),
@@ -177,14 +160,88 @@ export class LXNS extends ScoreTrackerAdapter {
     async getPlayerProfilePicture(friendCode: string) {
         return null;
     }
+    private async getChartList(targets: LXNS.IScore[]) {
+        let chartList: IChart[];
+        if (Chart.Database.hasLocalDatabase()) {
+            chartList = targets
+                .map((chart) => {
+                    return Chart.Database.getLocalChart(
+                        chart.id,
+                        chart.level_index as unknown as EDifficulty
+                    );
+                })
+                .filter((v) => v !== null)
+                .map((v) => {
+                    return {
+                        id: v.id,
+                        name: v.name,
+                        level:
+                            (() => {
+                                return v.events
+                                    .filter((v) => v.type == "existence")
+                                    .sort(
+                                        (a, b) =>
+                                            b.version.gameVersion.release -
+                                            a.version.gameVersion.release
+                                    )
+                                    .sort((a, b) => {
+                                        switch (a.version.region) {
+                                            case "CHN":
+                                                return -1;
+                                            case "INT":
+                                                return 1;
+                                            case "JPN":
+                                                if (b.version.region == "CHN")
+                                                    return 1;
+                                                else return -1;
+                                        }
+                                    })
+                                    .pop()?.data.level;
+                            })() || 0,
+                        difficulty: v.difficulty,
+                    };
+                });
+        } else {
+            chartList = await this.getMaiDrawChartList();
+        }
+        return chartList;
+    }
     async getPlayerScore(username: string, chartId: number) {
-        return {
+        const NUL = {
             basic: null,
             advanced: null,
             expert: null,
             master: null,
             ultima: null,
             worldsEnd: null,
+        };
+        const res = await this.get<LXNS.IAPIResponse<LXNS.IScore[]>>(
+            `/player/${username}/bests`,
+            {
+                song_id: chartId,
+            }
+        );
+        if (!res?.data) return NUL;
+        const chartList = await this.getChartList(res.data);
+        const scores = this.toMaiDrawScore(res?.data, chartList);
+        return {
+            ...NUL,
+            basic:
+                scores.find((v) => v.chart.difficulty == EDifficulty.BASIC) ||
+                null,
+            advanced:
+                scores.find(
+                    (v) => v.chart.difficulty == EDifficulty.ADVANCED
+                ) || null,
+            expert:
+                scores.find((v) => v.chart.difficulty == EDifficulty.EXPERT) ||
+                null,
+            master:
+                scores.find((v) => v.chart.difficulty == EDifficulty.MASTER) ||
+                null,
+            ultima:
+                scores.find((v) => v.chart.difficulty == EDifficulty.ULTIMA) ||
+                null,
         };
     }
 }
