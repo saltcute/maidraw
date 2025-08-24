@@ -5,6 +5,8 @@ import {
     IScore,
 } from "@maidraw/chu/type";
 import ScoreTrackerAdapter from "..";
+import { Chart } from "@maidraw/chu/chart";
+import { Util } from "@maidraw/lib/util";
 
 export class KamaiTachi extends ScoreTrackerAdapter {
     private readonly CURRENT_VERSION: KamaiTachi.EGameVersions;
@@ -130,11 +132,36 @@ export class KamaiTachi extends ScoreTrackerAdapter {
             60 * 1000
         );
     }
+    private getDatabaseDifficulty(chart: KamaiTachi.IChart) {
+        switch (true) {
+            case chart.difficulty.includes("ULTIMA"):
+                return EDifficulty.ULTIMA;
+            case chart.difficulty.includes("MASTER"):
+                return EDifficulty.MASTER;
+            case chart.difficulty.includes("EXPERT"):
+                return EDifficulty.EXPERT;
+            case chart.difficulty.includes("ADVANCED"):
+                return EDifficulty.ADVANCED;
+            case chart.difficulty.includes("BASIC"):
+            default:
+                return EDifficulty.BASIC;
+        }
+    }
     private toMaiDrawScore(
         score: KamaiTachi.IPb | KamaiTachi.IScore,
         chart: KamaiTachi.IChart,
         song: KamaiTachi.ISong
     ): IScore {
+        const localChart = Chart.Database.getLocalChart(
+            chart.data.inGameID,
+            this.getDatabaseDifficulty(chart)
+        );
+        const internalLevel = localChart
+            ? localChart.events
+                  .filter((v) => v.type === "existence")
+                  .find((v) => v.version.name == this.CURRENT_VERSION)?.data
+                  .level
+            : undefined;
         return {
             chart: (() => {
                 return {
@@ -155,7 +182,7 @@ export class KamaiTachi extends ScoreTrackerAdapter {
                                 return EDifficulty.BASIC;
                         }
                     })(),
-                    level: chart.levelNum,
+                    level: internalLevel || chart.levelNum,
                 };
             })(),
             combo: (() => {
@@ -204,7 +231,12 @@ export class KamaiTachi extends ScoreTrackerAdapter {
                         return EAchievementTypes.D;
                 }
             })(),
-            rating: score.calculatedData.rating,
+            rating: internalLevel
+                ? Util.Chunithm.calculateRating(
+                      internalLevel,
+                      score.scoreData.score
+                  )
+                : score.calculatedData.rating,
         };
     }
     async getPlayerBest50(

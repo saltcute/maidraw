@@ -692,6 +692,54 @@ export namespace Util {
         }
         export function getNumberVersion(version: Chu.Chart.Database.IVersion) {
             return version.gameVersion.major * 100 + version.gameVersion.minor;
+        } /**
+         * Calculate the rating of a score.
+         * @param internalLevel Internal level of the chart.
+         * @param score Score, range between 0 to 1010000.
+         * @returns Raw decimal rating value.
+         */
+        export function calculateRating(
+            internalLevel: number,
+            score: number
+        ): number {
+            let bonus = 0;
+            switch (true) {
+                case score >= 1009000: {
+                    bonus = 2.15;
+                    break;
+                }
+                case score >= 1007500: {
+                    bonus =
+                        2 +
+                        Util.truncateNumber((score - 1007500) / 100, 0) * 0.01;
+                    break;
+                }
+                case score >= 1005000: {
+                    bonus =
+                        1.5 +
+                        Util.truncateNumber((score - 1005000) / 500, 0) * 0.01;
+                    break;
+                }
+                case score >= 1000000: {
+                    bonus =
+                        1 +
+                        Util.truncateNumber((score - 1000000) / 1000, 0) * 0.01;
+                    break;
+                }
+                case score >= 990000: {
+                    bonus =
+                        0.6 +
+                        Util.truncateNumber((score - 990000) / 2500, 0) * 0.01;
+                    break;
+                }
+                case score >= 975000: {
+                    bonus =
+                        0 +
+                        Util.truncateNumber((score - 975000) / 2500, 0) * 0.01;
+                    break;
+                }
+            }
+            return internalLevel + bonus;
         }
     }
 }
