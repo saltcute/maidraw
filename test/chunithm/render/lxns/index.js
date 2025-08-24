@@ -12,7 +12,7 @@ const upath = require("upath");
     const fs = require("fs");
     const themes = ["jp-verse-landscape-recents"];
     const source = lxns;
-    const username = "100732067870647";
+    const username = "";
     for (let theme of themes) {
         const options = {
             scale: 2,

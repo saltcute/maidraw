@@ -25,7 +25,7 @@ const upath = require("upath");
         if (type === "full") {
             result = await MaiDraw.Maimai.Best50.drawWithScoreSource(
                 maishift,
-                "saltcute",
+                "",
                 {
                     theme,
                 }

@@ -19,8 +19,7 @@ const upath = require("upath");
         if (type === "full") {
             result = await MaiDraw.Maimai.Best50.drawWithScoreSource(
                 lxns,
-                // "763358336746095",
-                "211532943892789",
+                "",
                 {
                     theme,
                 }

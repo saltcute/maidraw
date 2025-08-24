@@ -11,7 +11,7 @@ const upath = require("upath");
     const fs = require("fs");
     const themes = ["jp-verse-landscape-recents", "jp-verse-landscape-new"];
     const source = kamai.verse();
-    const username = "tluo5458";
+    const username = "";
     for (let theme of themes) {
         const options = {
             scale: 0.5,

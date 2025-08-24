@@ -17,8 +17,7 @@ const upath = require("upath");
     ];
     const source = kamai.brightMemoryAct3();
     // const source = kamai.refresh();
-    // const username = "Cuvetan";
-    const username = "Hodor1355";
+    const username = "";
     for (let theme of themes) {
         const options = {
             scale: 0.5,

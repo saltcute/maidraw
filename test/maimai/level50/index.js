@@ -31,7 +31,7 @@ const upath = require("upath");
             for (const page of [1, 2]) {
                 const result = await MaiDraw.Maimai.Level50.drawWithScoreSource(
                     kamai,
-                    "salt",
+                    "",
                     level,
                     page,
                     {

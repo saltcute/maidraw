@@ -16,9 +16,11 @@ const upath = require("upath");
     for (let theme of themes) {
         for (const region of ["JPN"]) {
             let result = await MaiDraw.Chuni.Chart.drawWithScoreSource(
-                kamai,
-                "tluo5458",
-                428,
+                // kamai,
+                lxns,
+                // "",
+                "",
+                2171,
                 "recents",
                 {
                     scale: 1,

@@ -17,7 +17,7 @@ const upath = require("upath");
         for (const region of ["DX", "EX", "CN"]) {
             let result = await MaiDraw.Maimai.Chart.drawWithScoreSource(
                 lxns,
-                "211532943892789",
+                "",
                 // 1,
                 // 114,
                 417,

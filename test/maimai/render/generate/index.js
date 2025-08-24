@@ -33,7 +33,7 @@ const upath = require("upath");
         if (type === "full") {
             result = await MaiDraw.Maimai.Best50.drawWithScoreSource(
                 kamai,
-                "salt",
+                "",
                 {
                     scale: 0.5,
                     theme,
