@@ -33,6 +33,7 @@ export class Level50 {
                 this.assetsPath,
                 "themes",
                 "maimai",
+                "best50",
                 "**",
                 "manifest.json"
             )

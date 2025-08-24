@@ -52,6 +52,7 @@ export class Chart {
                 this.assetsPath,
                 "themes",
                 "maimai",
+                "chart",
                 "**",
                 "manifest.json"
             )
@@ -1019,18 +1020,30 @@ export class Chart {
                             const event = trendEvents[i];
                             if (event) actualEvents.push(event);
                             actualEvents = _.uniqWith(actualEvents, (a, b) => {
-                                return _.isEqual(
-                                    a.version.gameVersion,
-                                    b.version.gameVersion
+                                return (
+                                    _.isEqual(
+                                        a.version.gameVersion.major,
+                                        b.version.gameVersion.major
+                                    ) &&
+                                    _.isEqual(
+                                        a.version.gameVersion.minor,
+                                        b.version.gameVersion.minor
+                                    )
                                 );
                             });
                         }
                         actualEvents.unshift(trendEvents[0]);
                         actualEvents.push(trendEvents[trendEvents.length - 1]);
                         actualEvents = _.uniqWith(actualEvents, (a, b) => {
-                            return _.isEqual(
-                                a.version.gameVersion,
-                                b.version.gameVersion
+                            return (
+                                _.isEqual(
+                                    a.version.gameVersion.major,
+                                    b.version.gameVersion.major
+                                ) &&
+                                _.isEqual(
+                                    a.version.gameVersion.minor,
+                                    b.version.gameVersion.minor
+                                )
                             );
                         });
                         actualEvents = _.sortBy(
