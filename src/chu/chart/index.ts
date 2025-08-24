@@ -512,7 +512,14 @@ export class Chart {
                 ).width;
                 Util.drawText(
                     ctx,
-                    `Lv. ${Util.truncate(chart.events.filter((v) => v.version.region == targetRegion).find((v) => v.type == "existence")?.data.level || 0, 1)}${score ? `　+${Util.truncate(score.rating, 1)}` : ""}`,
+                    `Lv. ${Util.truncate(
+                        chart.events
+                            .filter((v) => v.version.region == targetRegion)
+                            .reverse()
+                            .find((v) => v.type == "existence")?.data.level ||
+                            0,
+                        1
+                    )}${score ? `　+${Util.truncate(score.rating, 1)}` : ""}`,
                     x + element.bubble.margin * 2 + difficultyTextWidth,
                     y +
                         element.bubble.margin +
@@ -851,6 +858,7 @@ export class Chart {
                             return _.isEqual(a.data.level, b.data.level);
                         }
                     );
+
                     if (actualEvents.length == maxFitTrendCount) {
                     } else if (actualEvents.length > maxFitTrendCount) {
                         while (actualEvents.length > maxFitTrendCount)
@@ -909,7 +917,6 @@ export class Chart {
                                 )
                             );
                         });
-                        console.log(actualEvents);
                         actualEvents = _.sortBy(actualEvents, (v) =>
                             Util.Chunithm.getNumberVersion(v.version)
                         );
@@ -948,6 +955,19 @@ export class Chart {
                             ),
                         });
                     }
+                    actualEvents = _.uniqWith(actualEvents, (a, b) => {
+                        return (
+                            _.isEqual(
+                                a.version.gameVersion.major,
+                                b.version.gameVersion.major
+                            ) &&
+                            _.isEqual(
+                                a.version.gameVersion.minor,
+                                b.version.gameVersion.minor
+                            ) &&
+                            _.isEqual(a.type, b.type)
+                        );
+                    });
                     let positionAdjustment = 0;
                     let addGap =
                         (maxWidth - actualEvents.length * versionImageWidth) /

@@ -1084,6 +1084,19 @@ export class Chart {
                             ),
                         });
                     }
+                    actualEvents = _.uniqWith(actualEvents, (a, b) => {
+                        return (
+                            _.isEqual(
+                                a.version.gameVersion.major,
+                                b.version.gameVersion.major
+                            ) &&
+                            _.isEqual(
+                                a.version.gameVersion.minor,
+                                b.version.gameVersion.minor
+                            ) &&
+                            _.isEqual(a.type, b.type)
+                        );
+                    });
                     let positionAdjustment = 0;
                     let addGap =
                         (maxWidth - actualEvents.length * versionImageWidth) /
