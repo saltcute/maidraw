@@ -717,26 +717,50 @@ export namespace Util {
                 case score >= 1005000: {
                     bonus =
                         1.5 +
-                        Util.truncateNumber((score - 1005000) / 500, 0) * 0.01;
+                        Util.truncateNumber((score - 1005000) / 50, 0) * 0.01;
                     break;
                 }
                 case score >= 1000000: {
                     bonus =
                         1 +
-                        Util.truncateNumber((score - 1000000) / 1000, 0) * 0.01;
-                    break;
-                }
-                case score >= 990000: {
-                    bonus =
-                        0.6 +
-                        Util.truncateNumber((score - 990000) / 2500, 0) * 0.01;
+                        Util.truncateNumber((score - 1000000) / 100, 0) * 0.01;
                     break;
                 }
                 case score >= 975000: {
                     bonus =
                         0 +
-                        Util.truncateNumber((score - 975000) / 2500, 0) * 0.01;
+                        Util.truncateNumber((score - 975000) / 250, 0) * 0.01;
                     break;
+                }
+                // case score >= 925000: {
+                //     bonus = 0 - ((975000 - score) / 50000) * 3.0;
+                //     break;
+                // }
+                // case score >= 900000: {
+                //     bonus = -3.0 - ((925000 - score) / 50000) * 2.0;
+                //     break;
+                // }
+                case score >= 900000: {
+                    bonus = -0.0 - ((975000 - score) / 75000) * 5.0;
+                    break;
+                }
+                case score >= 800000: {
+                    bonus =
+                        -5.0 -
+                        ((900000 - score) / 100000) *
+                            ((internalLevel - 5.0) / 2);
+                    break;
+                }
+                case score >= 500000: {
+                    bonus =
+                        -5.0 -
+                        (internalLevel - 5.0) / 2 -
+                        ((800000 - score) / 300000) *
+                            ((internalLevel - 5.0) / 2);
+                    break;
+                }
+                default: {
+                    bonus = -internalLevel;
                 }
             }
             return internalLevel + bonus;

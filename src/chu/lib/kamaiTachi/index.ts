@@ -276,32 +276,29 @@ export class KamaiTachi extends ScoreTrackerAdapter {
         );
         return {
             new: newScores
+                .map((v) => this.toMaiDrawScore(v.pb, v.chart, v.song))
                 .sort((a, b) =>
-                    b.pb.calculatedData.rating - a.pb.calculatedData.rating
-                        ? b.pb.calculatedData.rating -
-                          a.pb.calculatedData.rating
-                        : b.pb.scoreData.score - a.pb.scoreData.score
+                    b.rating - a.rating
+                        ? b.rating - a.rating
+                        : b.score - a.score
                 )
-                .slice(0, 20)
-                .map((v) => this.toMaiDrawScore(v.pb, v.chart, v.song)),
+                .slice(0, 20),
             old: oldScores
+                .map((v) => this.toMaiDrawScore(v.pb, v.chart, v.song))
                 .sort((a, b) =>
-                    b.pb.calculatedData.rating - a.pb.calculatedData.rating
-                        ? b.pb.calculatedData.rating -
-                          a.pb.calculatedData.rating
-                        : b.pb.scoreData.score - a.pb.scoreData.score
+                    b.rating - a.rating
+                        ? b.rating - a.rating
+                        : b.score - a.score
                 )
-                .slice(0, 30)
-                .map((v) => this.toMaiDrawScore(v.pb, v.chart, v.song)),
+                .slice(0, 30),
             best: pbs
+                .map((v) => this.toMaiDrawScore(v.pb, v.chart, v.song))
                 .sort((a, b) =>
-                    b.pb.calculatedData.rating - a.pb.calculatedData.rating
-                        ? b.pb.calculatedData.rating -
-                          a.pb.calculatedData.rating
-                        : b.pb.scoreData.score - a.pb.scoreData.score
+                    b.rating - a.rating
+                        ? b.rating - a.rating
+                        : b.score - a.score
                 )
-                .slice(0, 50)
-                .map((v) => this.toMaiDrawScore(v.pb, v.chart, v.song)),
+                .slice(0, 50),
         };
     }
     async getPlayerRecent40(
@@ -434,14 +431,13 @@ export class KamaiTachi extends ScoreTrackerAdapter {
                     .map((v) => this.toMaiDrawScore(v.scores, v.chart, v.song))
             ),
             best: bestScores
+                .map((v) => this.toMaiDrawScore(v.pb, v.chart, v.song))
                 .sort((a, b) =>
-                    b.pb.calculatedData.rating - a.pb.calculatedData.rating
-                        ? b.pb.calculatedData.rating -
-                          a.pb.calculatedData.rating
-                        : b.pb.scoreData.score - a.pb.scoreData.score
+                    b.rating - a.rating
+                        ? b.rating - a.rating
+                        : b.score - a.score
                 )
-                .slice(0, 50)
-                .map((v) => this.toMaiDrawScore(v.pb, v.chart, v.song)),
+                .slice(0, 50),
         };
     }
     async getPlayerInfo(userId: string, type: "new" | "recents") {
@@ -450,7 +446,9 @@ export class KamaiTachi extends ScoreTrackerAdapter {
             const scores = await this.getPlayerBest50(userId);
             if (!profile?.body || !scores) return null;
             let rating = 0;
-            [...scores.new, ...scores.old].forEach((v) => (rating += v.rating));
+            [...scores.new.slice(0, 20), ...scores.old.slice(0, 30)].forEach(
+                (v) => (rating += v.rating)
+            );
             return {
                 name: profile?.body.username,
                 rating: rating / 50,
@@ -459,9 +457,10 @@ export class KamaiTachi extends ScoreTrackerAdapter {
             const scores = await this.getPlayerRecent40(userId);
             if (!profile?.body || !scores) return null;
             let rating = 0;
-            [...scores.recent, ...scores.best.slice(0, 30)].forEach(
-                (v) => (rating += v.rating)
-            );
+            [
+                ...scores.recent.slice(0, 10),
+                ...scores.best.slice(0, 30),
+            ].forEach((v) => (rating += v.rating));
             return {
                 name: profile?.body.username,
                 rating: rating / 40,
