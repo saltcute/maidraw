@@ -108,4 +108,15 @@ export default abstract class ScoreTrackerAdapter {
         rating: number;
     } | null>;
     abstract getPlayerProfilePicture(username: string): Promise<Buffer | null>;
+    abstract getPlayerScore(
+        username: string,
+        chartId: number
+    ): Promise<{
+        basic: IScore | null;
+        advanced: IScore | null;
+        expert: IScore | null;
+        master: IScore | null;
+        ultima: IScore | null;
+        worldsEnd: IScore | null;
+    }>;
 }

@@ -177,6 +177,16 @@ export class LXNS extends ScoreTrackerAdapter {
     async getPlayerProfilePicture(friendCode: string) {
         return null;
     }
+    async getPlayerScore(username: string, chartId: number) {
+        return {
+            basic: null,
+            advanced: null,
+            expert: null,
+            master: null,
+            ultima: null,
+            worldsEnd: null,
+        };
+    }
 }
 
 export namespace LXNS {

@@ -54,6 +54,7 @@ export class Best50 {
                 this.assetsPath,
                 "themes",
                 "chunithm",
+                "best",
                 "**",
                 "manifest.json"
             )
@@ -109,137 +110,220 @@ export class Best50 {
         payload: any,
         path: string
     ): payload is IThemeManifest {
-        function isFileExist(p: any): boolean {
-            if (isString(p)) return fs.existsSync(upath.join(path, p));
-            else return false;
+        function assert(
+            obj: any,
+            path: string,
+            condition: (payload: any) => boolean | string
+        ) {
+            const deepValue = (o: any, p: string) =>
+                p.split(".").reduce((a, v) => a[v], o);
+            const payload = deepValue(obj, path);
+            const result = condition(payload);
+            if (result === true) return true;
+            throw `Manifest validation failed at ${path}.${result == false ? "" : ` ${result}`}`;
         }
-        function isOneOf(p: any, ...args: any[]): boolean {
-            return args.includes(p);
+        function isFileExist(object: any, objectPath: string): boolean {
+            return assert(object, objectPath, (p) => {
+                const filePath = upath.join(path, p);
+                if (typeof p == "string") {
+                    if (fs.existsSync(filePath)) {
+                        return true;
+                    } else {
+                        return `${filePath} does not exist.`;
+                    }
+                } else return false;
+            });
         }
-        function isString(p: any): p is string {
-            return typeof p == "string";
+        function isOneOf(
+            object: any,
+            path: string,
+            optional = false,
+            args: any[]
+        ): boolean {
+            return assert(
+                object,
+                path,
+                (p) => args.includes(p) || (optional && p === undefined)
+            );
         }
-        function isNumber(p: any): p is number {
-            return typeof p == "number";
+        function isString(
+            object: any,
+            path: string,
+            optional = false
+        ): boolean {
+            return assert(
+                object,
+                path,
+                (p) => typeof p == "string" || (optional && p === undefined)
+            );
         }
-        function isArray(p: any): p is any[] {
-            return Array.isArray(p);
+        function isNumber(
+            object: any,
+            path: string,
+            optional = false
+        ): boolean {
+            return assert(
+                object,
+                path,
+                (p) => typeof p == "number" || (optional && p === undefined)
+            );
         }
-        function isObject(p: any): p is object {
-            return typeof p == "object";
+        function isArray(object: any, path: string, optional = false): boolean {
+            return assert(
+                object,
+                path,
+                (p) => Array.isArray(p) || (optional && p === undefined)
+            );
         }
-        function isHexColor(p: any): p is string {
-            if (isString(p)) return /^(?:#[0-9A-F]{6}|#[0-9A-F]{8})$/i.test(p);
-            else return false;
+        function isObject(
+            object: any,
+            path: string,
+            optional = false
+        ): boolean {
+            return assert(
+                object,
+                path,
+                (p) => typeof p == "object" || (optional && p === undefined)
+            );
         }
-        function isUndefined(p: any): p is undefined {
-            return typeof p == "undefined";
+        function isHexColor(
+            object: any,
+            path: string,
+            optional = false
+        ): boolean {
+            return assert(object, path, (p) => {
+                if (typeof p == "string")
+                    return (
+                        /^(?:#[0-9A-F]{6}|#[0-9A-F]{8})$/i.test(p) ||
+                        (optional && p === undefined)
+                    );
+                else return optional && p === undefined;
+            });
         }
-        function isBoolean(p: any): p is boolean {
-            return typeof p == "boolean";
+        function isBoolean(
+            object: any,
+            path: string,
+            optional = false
+        ): boolean {
+            return assert(
+                object,
+                path,
+                (p) => typeof p == "boolean" || (optional && p === undefined)
+            );
         }
         if (
-            isString(payload.displayName) &&
-            isString(payload.name) &&
-            isNumber(payload.width) &&
-            isNumber(payload.height) &&
-            isObject(payload.sprites) &&
-            isObject(payload.sprites.achievement) &&
-            isFileExist(payload.sprites.achievement.d) &&
-            isFileExist(payload.sprites.achievement.c) &&
-            isFileExist(payload.sprites.achievement.b) &&
-            isFileExist(payload.sprites.achievement.bb) &&
-            isFileExist(payload.sprites.achievement.bbb) &&
-            isFileExist(payload.sprites.achievement.a) &&
-            isFileExist(payload.sprites.achievement.aa) &&
-            isFileExist(payload.sprites.achievement.aaa) &&
-            isFileExist(payload.sprites.achievement.s) &&
-            isFileExist(payload.sprites.achievement.sp) &&
-            isFileExist(payload.sprites.achievement.ss) &&
-            isFileExist(payload.sprites.achievement.ssp) &&
-            isFileExist(payload.sprites.achievement.sss) &&
-            isFileExist(payload.sprites.achievement.sssp) &&
-            isObject(payload.sprites.milestone) &&
-            isFileExist(payload.sprites.milestone.aj) &&
-            isFileExist(payload.sprites.milestone.ajc) &&
-            isFileExist(payload.sprites.milestone.fc) &&
-            isFileExist(payload.sprites.milestone.none) &&
-            isObject(payload.sprites.profile) &&
-            isFileExist(payload.sprites.profile.icon) &&
-            isFileExist(payload.sprites.profile.nameplate) &&
-            isFileExist(payload.sprites.ratingNumberMap) &&
-            isArray(payload.elements)
+            isString(payload, "displayName") &&
+            isString(payload, "name") &&
+            isNumber(payload, "width") &&
+            isNumber(payload, "height") &&
+            isObject(payload, "sprites") &&
+            isObject(payload, "sprites.achievement") &&
+            isFileExist(payload, "sprites.achievement.d") &&
+            isFileExist(payload, "sprites.achievement.c") &&
+            isFileExist(payload, "sprites.achievement.b") &&
+            isFileExist(payload, "sprites.achievement.bb") &&
+            isFileExist(payload, "sprites.achievement.bbb") &&
+            isFileExist(payload, "sprites.achievement.a") &&
+            isFileExist(payload, "sprites.achievement.aa") &&
+            isFileExist(payload, "sprites.achievement.aaa") &&
+            isFileExist(payload, "sprites.achievement.s") &&
+            isFileExist(payload, "sprites.achievement.sp") &&
+            isFileExist(payload, "sprites.achievement.ss") &&
+            isFileExist(payload, "sprites.achievement.ssp") &&
+            isFileExist(payload, "sprites.achievement.sss") &&
+            isFileExist(payload, "sprites.achievement.sssp") &&
+            isObject(payload, "sprites.milestone") &&
+            isFileExist(payload, "sprites.milestone.aj") &&
+            isFileExist(payload, "sprites.milestone.ajc") &&
+            isFileExist(payload, "sprites.milestone.fc") &&
+            isFileExist(payload, "sprites.milestone.none") &&
+            isObject(payload, "sprites.profile") &&
+            isFileExist(payload, "sprites.profile.icon") &&
+            isFileExist(payload, "sprites.profile.nameplate") &&
+            isFileExist(payload, "sprites.ratingNumberMap") &&
+            isArray(payload, "elements")
         ) {
             for (const element of payload.elements) {
-                if (isNumber(element.x) && isNumber(element.y)) {
+                if (isNumber(element, "x") && isNumber(element, "y")) {
                     switch (element.type) {
                         case "image": {
                             if (
-                                isNumber(element.width) &&
-                                isNumber(element.height) &&
-                                isFileExist(element.path)
+                                isNumber(element, "width") &&
+                                isNumber(element, "height") &&
+                                isFileExist(element, "path")
                             ) {
                                 continue;
                             } else return false;
                         }
                         case "score-grid": {
                             if (
-                                isOneOf(element.region, "old", "new") &&
-                                isNumber(element.horizontalSize) &&
-                                isNumber(element.verticalSize) &&
-                                isNumber(element.index) &&
-                                isObject(element.scoreBubble) &&
-                                isNumber(element.scoreBubble.width) &&
-                                isNumber(element.scoreBubble.height) &&
-                                isNumber(element.scoreBubble.margin) &&
-                                isNumber(element.scoreBubble.gap) &&
-                                isObject(element.scoreBubble.color) &&
-                                isHexColor(element.scoreBubble.color.basic) &&
+                                isOneOf(element, "region", false, [
+                                    "old",
+                                    "new",
+                                ]) &&
+                                isNumber(element, "horizontalSize") &&
+                                isNumber(element, "verticalSize") &&
+                                isNumber(element, "index") &&
+                                isObject(element, "scoreBubble") &&
+                                isNumber(element, "scoreBubble.width") &&
+                                isNumber(element, "scoreBubble.height") &&
+                                isNumber(element, "scoreBubble.margin") &&
+                                isNumber(element, "scoreBubble.gap") &&
+                                isObject(element, "scoreBubble.color") &&
                                 isHexColor(
-                                    element.scoreBubble.color.advanced
+                                    element,
+                                    "scoreBubble.color.basic"
                                 ) &&
-                                isHexColor(element.scoreBubble.color.expert) &&
-                                isHexColor(element.scoreBubble.color.master) &&
-                                isHexColor(element.scoreBubble.color.ultima) &&
-                                isHexColor(element.scoreBubble.color.worldsEnd)
+                                isHexColor(
+                                    element,
+                                    "scoreBubble.color.advanced"
+                                ) &&
+                                isHexColor(
+                                    element,
+                                    "scoreBubble.color.expert"
+                                ) &&
+                                isHexColor(
+                                    element,
+                                    "scoreBubble.color.master"
+                                ) &&
+                                isHexColor(
+                                    element,
+                                    "scoreBubble.color.ultima"
+                                ) &&
+                                isHexColor(
+                                    element,
+                                    "scoreBubble.color.worldsEnd"
+                                )
                             ) {
                                 continue;
                             } else return false;
                         }
                         case "profile": {
-                            if (isNumber(element.height)) {
+                            if (isNumber(element, "height")) {
                                 continue;
                             } else return false;
                         }
                         case "text": {
                             if (
-                                isNumber(element.size) &&
-                                isString(element.content) &&
-                                (isUndefined(element.width) ||
-                                    isNumber(element.width)) &&
-                                (isUndefined(element.height) ||
-                                    isNumber(element.height)) &&
-                                (isUndefined(element.linebreak) ||
-                                    isBoolean(element.linebreak)) &&
-                                (isUndefined(element.align) ||
-                                    isOneOf(
-                                        element.align,
-                                        "left",
-                                        "center",
-                                        "right"
-                                    )) &&
-                                (isUndefined(element.color) ||
-                                    isString(element.color)) &&
-                                (isUndefined(element.borderColor) ||
-                                    isString(element.borderColor)) &&
-                                (isUndefined(element.font) ||
-                                    isString(element.font))
+                                isNumber(element, "size") &&
+                                isString(element, "content") &&
+                                isNumber(element, "width", true) &&
+                                isNumber(element, "height", true) &&
+                                isBoolean(element, "linebreak", true) &&
+                                isOneOf(element, "align", true, [
+                                    "left",
+                                    "center",
+                                    "right",
+                                ]) &&
+                                isString(element, "color", true) &&
+                                isString(element, "borderColor", true) &&
+                                isString(element, "font", true)
                             ) {
                                 continue;
                             } else return false;
                         }
                         default:
-                            return false;
+                            throw `Manifest validation failed at elements.type. Unsupported element type ${element.type}.`;
                     }
                 }
             }

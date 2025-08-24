@@ -1,5 +1,5 @@
-import { Best50 } from "@maidraw/mai/best50";
-import { Database } from "@maidraw/mai/chart/database";
+import { Maimai as Mai } from "@maidraw/mai";
+import { Chuni as Chu } from "@maidraw/chu";
 import {
     CanvasGradient,
     CanvasPattern,
@@ -309,7 +309,7 @@ export namespace Util {
                     minor: 55,
                 },
             };
-            private static versions: Database.IVersion[] = [
+            private static versions: Mai.Chart.Database.IVersion[] = [
                 Version.DX,
                 Version.DX_PLUS,
                 Version.SPLASH,
@@ -323,7 +323,7 @@ export namespace Util {
                 Version.PRISM,
                 Version.PRISM_PLUS,
             ];
-            static getNextVersion(version: Database.IVersion) {
+            static getNextVersion(version: Mai.Chart.Database.IVersion) {
                 const index = _.findIndex(Version.versions, (v) => {
                     return (
                         _.isEqual(
@@ -347,7 +347,7 @@ export namespace Util {
                 }
                 return this.versions[index + 1];
             }
-            static getPreviousVersion(version: Database.IVersion) {
+            static getPreviousVersion(version: Mai.Chart.Database.IVersion) {
                 const index = _.findIndex(Version.versions, (v) => {
                     return _.isEqual(v.gameVersion, version.gameVersion);
                 });
@@ -358,36 +358,36 @@ export namespace Util {
                 }
                 return this.versions[index - 1];
             }
-            static toEventVersion(version: Database.IVersion) {
+            static toEventVersion(version: Mai.Chart.Database.IVersion) {
                 const event = {
                     ...version,
                     region: "DX",
                 };
                 event.gameVersion.release = 0;
-                return event as Database.IEventVersion;
+                return event as Mai.Chart.Database.IEventVersion;
             }
         }
         export const RATING_CONSTANTS = {
-            [Best50.EAchievementTypes.D]: {
+            [Mai.Best50.EAchievementTypes.D]: {
                 [0.4]: 6.4,
                 [0.3]: 4.8,
                 [0.2]: 3.2,
                 [0.1]: 1.6,
                 [0]: 0,
             },
-            [Best50.EAchievementTypes.C]: 13.6,
-            [Best50.EAchievementTypes.B]: 13.6,
-            [Best50.EAchievementTypes.BB]: 13.6,
-            [Best50.EAchievementTypes.BBB]: 13.6,
-            [Best50.EAchievementTypes.A]: 13.6,
-            [Best50.EAchievementTypes.AA]: 15.2,
-            [Best50.EAchievementTypes.AAA]: 16.8,
-            [Best50.EAchievementTypes.S]: 20.0,
-            [Best50.EAchievementTypes.SP]: 20.3,
-            [Best50.EAchievementTypes.SS]: 20.8,
-            [Best50.EAchievementTypes.SSP]: 21.1,
-            [Best50.EAchievementTypes.SSS]: 21.6,
-            [Best50.EAchievementTypes.SSSP]: 22.4,
+            [Mai.Best50.EAchievementTypes.C]: 13.6,
+            [Mai.Best50.EAchievementTypes.B]: 13.6,
+            [Mai.Best50.EAchievementTypes.BB]: 13.6,
+            [Mai.Best50.EAchievementTypes.BBB]: 13.6,
+            [Mai.Best50.EAchievementTypes.A]: 13.6,
+            [Mai.Best50.EAchievementTypes.AA]: 15.2,
+            [Mai.Best50.EAchievementTypes.AAA]: 16.8,
+            [Mai.Best50.EAchievementTypes.S]: 20.0,
+            [Mai.Best50.EAchievementTypes.SP]: 20.3,
+            [Mai.Best50.EAchievementTypes.SS]: 20.8,
+            [Mai.Best50.EAchievementTypes.SSP]: 21.1,
+            [Mai.Best50.EAchievementTypes.SSS]: 21.6,
+            [Mai.Best50.EAchievementTypes.SSSP]: 22.4,
         };
         /**
          * Calculate the rating of a score.
@@ -403,87 +403,87 @@ export namespace Util {
             switch (true) {
                 case achievement >= 100.5: {
                     ratingConstant =
-                        RATING_CONSTANTS[Best50.EAchievementTypes.SSSP];
+                        RATING_CONSTANTS[Mai.Best50.EAchievementTypes.SSSP];
                     break;
                 }
                 case achievement >= 100: {
                     ratingConstant =
-                        RATING_CONSTANTS[Best50.EAchievementTypes.SSS];
+                        RATING_CONSTANTS[Mai.Best50.EAchievementTypes.SSS];
                     break;
                 }
                 case achievement >= 99.5: {
                     ratingConstant =
-                        RATING_CONSTANTS[Best50.EAchievementTypes.SSP];
+                        RATING_CONSTANTS[Mai.Best50.EAchievementTypes.SSP];
                     break;
                 }
                 case achievement >= 99: {
                     ratingConstant =
-                        RATING_CONSTANTS[Best50.EAchievementTypes.SS];
+                        RATING_CONSTANTS[Mai.Best50.EAchievementTypes.SS];
                     break;
                 }
                 case achievement >= 98: {
                     ratingConstant =
-                        RATING_CONSTANTS[Best50.EAchievementTypes.SP];
+                        RATING_CONSTANTS[Mai.Best50.EAchievementTypes.SP];
                     break;
                 }
                 case achievement >= 97: {
                     ratingConstant =
-                        RATING_CONSTANTS[Best50.EAchievementTypes.S];
+                        RATING_CONSTANTS[Mai.Best50.EAchievementTypes.S];
                     break;
                 }
                 case achievement >= 94: {
                     ratingConstant =
-                        RATING_CONSTANTS[Best50.EAchievementTypes.AAA];
+                        RATING_CONSTANTS[Mai.Best50.EAchievementTypes.AAA];
                     break;
                 }
                 case achievement >= 90: {
                     ratingConstant =
-                        RATING_CONSTANTS[Best50.EAchievementTypes.AA];
+                        RATING_CONSTANTS[Mai.Best50.EAchievementTypes.AA];
                     break;
                 }
                 case achievement >= 80: {
                     ratingConstant =
-                        RATING_CONSTANTS[Best50.EAchievementTypes.A];
+                        RATING_CONSTANTS[Mai.Best50.EAchievementTypes.A];
                     break;
                 }
                 case achievement >= 75: {
                     ratingConstant =
-                        RATING_CONSTANTS[Best50.EAchievementTypes.BBB];
+                        RATING_CONSTANTS[Mai.Best50.EAchievementTypes.BBB];
                     break;
                 }
                 case achievement >= 70: {
                     ratingConstant =
-                        RATING_CONSTANTS[Best50.EAchievementTypes.BB];
+                        RATING_CONSTANTS[Mai.Best50.EAchievementTypes.BB];
                     break;
                 }
                 case achievement >= 60: {
                     ratingConstant =
-                        RATING_CONSTANTS[Best50.EAchievementTypes.B];
+                        RATING_CONSTANTS[Mai.Best50.EAchievementTypes.B];
                     break;
                 }
                 case achievement >= 50: {
                     ratingConstant =
-                        RATING_CONSTANTS[Best50.EAchievementTypes.C];
+                        RATING_CONSTANTS[Mai.Best50.EAchievementTypes.C];
                     break;
                 }
                 case achievement >= 40: {
                     ratingConstant =
-                        RATING_CONSTANTS[Best50.EAchievementTypes.D]["0.4"];
+                        RATING_CONSTANTS[Mai.Best50.EAchievementTypes.D]["0.4"];
                     break;
                 }
                 case achievement >= 30: {
                     ratingConstant =
-                        RATING_CONSTANTS[Best50.EAchievementTypes.D]["0.3"];
+                        RATING_CONSTANTS[Mai.Best50.EAchievementTypes.D]["0.3"];
                     break;
                 }
                 case achievement >= 20: {
                     ratingConstant =
-                        RATING_CONSTANTS[Best50.EAchievementTypes.D]["0.2"];
+                        RATING_CONSTANTS[Mai.Best50.EAchievementTypes.D]["0.2"];
                     break;
                 }
                 case achievement >= 10: {
                     ratingConstant =
-                        RATING_CONSTANTS[Best50.EAchievementTypes.D]["0.1"];
+                        RATING_CONSTANTS[Mai.Best50.EAchievementTypes.D]["0.1"];
                     break;
                 }
             }
@@ -492,6 +492,206 @@ export namespace Util {
                 ratingConstant *
                 internalLevel
             );
+        }
+    }
+    export namespace Chunithm {
+        export class Version {
+            static readonly CHUNITHM = {
+                name: "CHUNITHM",
+                gameVersion: {
+                    major: 1,
+                    minor: 0,
+                },
+            };
+            static readonly CHUNITHM_PLUS = {
+                name: "CHUNITHM PLUS",
+                gameVersion: {
+                    major: 1,
+                    minor: 5,
+                },
+            };
+            static readonly AIR = {
+                name: "CHUNITHM AIR",
+                gameVersion: {
+                    major: 1,
+                    minor: 10,
+                },
+            };
+            static readonly AIR_PLUS = {
+                name: "CHUNITHM AIR PLUS",
+                gameVersion: {
+                    major: 1,
+                    minor: 15,
+                },
+            };
+            static readonly STAR = {
+                name: "CHUNITHM STAR",
+                gameVersion: {
+                    major: 1,
+                    minor: 20,
+                },
+            };
+            static readonly STAR_PLUS = {
+                name: "CHUNITHM STAR PLUS",
+                gameVersion: {
+                    major: 1,
+                    minor: 25,
+                },
+            };
+            static readonly AMAZON = {
+                name: "CHUNITHM AMAZON",
+                gameVersion: {
+                    major: 1,
+                    minor: 30,
+                },
+            };
+            static readonly AMAZON_PLUS = {
+                name: "CHUNITHM AMAZON PLUS",
+                gameVersion: {
+                    major: 1,
+                    minor: 35,
+                },
+            };
+            static readonly CRYSTAL = {
+                name: "CHUNITHM CRYSTAL",
+                gameVersion: {
+                    major: 1,
+                    minor: 40,
+                },
+            };
+            static readonly CRYSTAL_PLUS = {
+                name: "CHUNITHM CRYSTAL PLUS",
+                gameVersion: {
+                    major: 1,
+                    minor: 45,
+                },
+            };
+            static readonly PARADISE = {
+                name: "CHUNITHM PARADISE",
+                gameVersion: {
+                    major: 1,
+                    minor: 50,
+                },
+            };
+            static readonly NEW = {
+                name: "CHUNITHM NEW!!",
+                gameVersion: {
+                    major: 2,
+                    minor: 0,
+                },
+            };
+            static readonly NEW_PLUS = {
+                name: "CHUNITHM NEW PLUS!!",
+                gameVersion: {
+                    major: 2,
+                    minor: 5,
+                },
+            };
+            static readonly SUN = {
+                name: "CHUNITHM SUN",
+                gameVersion: {
+                    major: 2,
+                    minor: 10,
+                },
+            };
+            static readonly SUN_PLUS = {
+                name: "CHUNITHM SUN PLUS",
+                gameVersion: {
+                    major: 2,
+                    minor: 15,
+                },
+            };
+            static readonly LUMINOUS = {
+                name: "CHUNITHM LUMINOUS",
+                gameVersion: {
+                    major: 2,
+                    minor: 20,
+                },
+            };
+            static readonly LUMINOUS_PLUS = {
+                name: "CHUNITHM LUMINOUS PLUS",
+                gameVersion: {
+                    major: 2,
+                    minor: 25,
+                },
+            };
+            static readonly VERSE = {
+                name: "CHUNITHM VERSE",
+                gameVersion: {
+                    major: 2,
+                    minor: 30,
+                },
+            };
+            static readonly X_VERSE = {
+                name: "CHUNITHM X-VERSE",
+                gameVersion: {
+                    major: 2,
+                    minor: 40,
+                },
+            };
+            private static versions: Chu.Chart.Database.IVersion[] = [
+                Version.CHUNITHM,
+                Version.CHUNITHM_PLUS,
+                Version.AIR,
+                Version.AIR_PLUS,
+                Version.STAR,
+                Version.STAR_PLUS,
+                Version.AMAZON,
+                Version.AMAZON_PLUS,
+                Version.CRYSTAL,
+                Version.CRYSTAL_PLUS,
+                Version.PARADISE,
+                Version.NEW,
+                Version.NEW_PLUS,
+                Version.SUN,
+                Version.SUN_PLUS,
+                Version.LUMINOUS,
+                Version.LUMINOUS_PLUS,
+                Version.VERSE,
+                Version.X_VERSE,
+            ];
+            static getNextVersion(version: Chu.Chart.Database.IVersion) {
+                const index = _.findIndex(Version.versions, (v) => {
+                    return (
+                        _.isEqual(
+                            v.gameVersion.major,
+                            version.gameVersion.major
+                        ) &&
+                        _.isEqual(
+                            v.gameVersion.minor,
+                            version.gameVersion.minor
+                        )
+                    );
+                });
+                if (index == -1) {
+                    return version;
+                } else if (index == this.versions.length - 1) {
+                    return this.versions[index];
+                }
+                return this.versions[index + 1];
+            }
+            static getPreviousVersion(version: Chu.Chart.Database.IVersion) {
+                const index = _.findIndex(Version.versions, (v) => {
+                    return _.isEqual(v.gameVersion, version.gameVersion);
+                });
+                if (index == -1) {
+                    return version;
+                } else if (index == 0) {
+                    return this.versions[index];
+                }
+                return this.versions[index - 1];
+            }
+            static toEventVersion(version: Chu.Chart.Database.IVersion) {
+                const event = {
+                    ...version,
+                    region: "JPN",
+                };
+                event.gameVersion.release = 0;
+                return event as Chu.Chart.Database.IEventVersion;
+            }
+        }
+        export function getNumberVersion(version: Chu.Chart.Database.IVersion) {
+            return version.gameVersion.major * 100 + version.gameVersion.minor;
         }
     }
 }
