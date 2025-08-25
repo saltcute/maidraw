@@ -9,12 +9,19 @@ const upath = require("upath");
     );
 
     const fs = require("fs");
-    const themes = ["jp-verse-landscape-recents", "jp-verse-landscape-new"];
-    const source = kamai.verse();
+    const themes = [
+        "jp-luminous-landscape-recents",
+        "jp-luminous-landscape-new",
+        "jp-luminousplus-landscape-recents",
+        "jp-luminousplus-landscape-new",
+        "jp-verse-landscape-recents",
+        "jp-verse-landscape-new",
+    ];
+    const source = kamai.luminous();
     const username = "";
     for (let theme of themes) {
         const options = {
-            scale: 0.5,
+            scale: 1,
             type: theme.endsWith("-new") ? "new" : "recents",
             theme,
         };
