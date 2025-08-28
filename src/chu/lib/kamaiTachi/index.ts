@@ -134,15 +134,15 @@ export class KamaiTachi extends ScoreTrackerAdapter {
     }
     private getDatabaseDifficulty(chart: KamaiTachi.IChart) {
         switch (true) {
-            case chart.difficulty.includes("ULTIMA"):
+            case chart.difficulty.toUpperCase().includes("ULTIMA"):
                 return EDifficulty.ULTIMA;
-            case chart.difficulty.includes("MASTER"):
+            case chart.difficulty.toUpperCase().includes("MASTER"):
                 return EDifficulty.MASTER;
-            case chart.difficulty.includes("EXPERT"):
+            case chart.difficulty.toUpperCase().includes("EXPERT"):
                 return EDifficulty.EXPERT;
-            case chart.difficulty.includes("ADVANCED"):
+            case chart.difficulty.toUpperCase().includes("ADVANCED"):
                 return EDifficulty.ADVANCED;
-            case chart.difficulty.includes("BASIC"):
+            case chart.difficulty.toUpperCase().includes("BASIC"):
             default:
                 return EDifficulty.BASIC;
         }

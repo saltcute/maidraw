@@ -63,35 +63,37 @@ export class KamaiTachi extends ScoreTrackerAdapter {
                     id: chart.data.inGameID,
                     name: song.title,
                     difficulty: (() => {
-                        switch (chart.difficulty) {
-                            case "Re:Master":
-                            case "DX Re:Master":
+                        switch (chart.difficulty.toUpperCase()) {
+                            case "RE:MASTER":
+                            case "DX RE:MASTER":
                                 return EDifficulty.REMASTER;
-                            case "Master":
-                            case "DX Master":
+                            case "MASTER":
+                            case "DX MASTER":
                                 return EDifficulty.MASTER;
-                            case "Expert":
-                            case "DX Expert":
+                            case "EXPERT":
+                            case "DX EXPERT":
                                 return EDifficulty.EXPERT;
-                            case "Advanced":
-                            case "DX Advanced":
+                            case "ADVANCED":
+                            case "DX ADVANCED":
                                 return EDifficulty.ADVANCED;
-                            case "Basic":
-                            case "DX Basic":
+                            case "BASIC":
+                            case "DX BASIC":
                             default:
                                 return EDifficulty.BASIC;
                         }
                     })(),
                     level: internalLevel || chart.levelNum,
-                    maxDxScore: (() => {
-                        return (
-                            (score.scoreData.judgements.pcrit || 0) +
-                            (score.scoreData.judgements.perfect || 0) +
-                            (score.scoreData.judgements.great || 0) +
-                            (score.scoreData.judgements.good || 0) +
-                            (score.scoreData.judgements.miss || 0) * 3
-                        );
-                    })(),
+                    maxDxScore:
+                        localChart?.meta.maxDXScore ||
+                        (() => {
+                            return (
+                                (score.scoreData.judgements.pcrit || 0) +
+                                (score.scoreData.judgements.perfect || 0) +
+                                (score.scoreData.judgements.great || 0) +
+                                (score.scoreData.judgements.good || 0) +
+                                (score.scoreData.judgements.miss || 0) * 3
+                            );
+                        })(),
                 };
             })(),
             combo: (() => {
@@ -160,15 +162,15 @@ export class KamaiTachi extends ScoreTrackerAdapter {
     }
     private getDatabaseDifficulty(chart: KamaiTachi.IChart) {
         switch (true) {
-            case chart.difficulty.includes("RE:MASTER"):
+            case chart.difficulty.toUpperCase().includes("RE:MASTER"):
                 return EDifficulty.REMASTER;
-            case chart.difficulty.includes("MASTER"):
+            case chart.difficulty.toUpperCase().includes("MASTER"):
                 return EDifficulty.MASTER;
-            case chart.difficulty.includes("EXPERT"):
+            case chart.difficulty.toUpperCase().includes("EXPERT"):
                 return EDifficulty.EXPERT;
-            case chart.difficulty.includes("ADVANCED"):
+            case chart.difficulty.toUpperCase().includes("ADVANCED"):
                 return EDifficulty.ADVANCED;
-            case chart.difficulty.includes("BASIC"):
+            case chart.difficulty.toUpperCase().includes("BASIC"):
             default:
                 return EDifficulty.BASIC;
         }
@@ -303,21 +305,21 @@ export class KamaiTachi extends ScoreTrackerAdapter {
 
         return {
             new: newScores
+                .map((v) => this.toMaiDrawScore(v.pb, v.chart, v.song))
                 .sort((a, b) =>
-                    b.pb.calculatedData.rate - a.pb.calculatedData.rate
-                        ? b.pb.calculatedData.rate - a.pb.calculatedData.rate
-                        : b.pb.scoreData.percent - a.pb.scoreData.percent
+                    b.dxRating - a.dxRating
+                        ? b.dxRating - a.dxRating
+                        : b.achievement - a.achievement
                 )
-                .slice(0, 15)
-                .map((v) => this.toMaiDrawScore(v.pb, v.chart, v.song)),
+                .slice(0, 15),
             old: oldScores
+                .map((v) => this.toMaiDrawScore(v.pb, v.chart, v.song))
                 .sort((a, b) =>
-                    b.pb.calculatedData.rate - a.pb.calculatedData.rate
-                        ? b.pb.calculatedData.rate - a.pb.calculatedData.rate
-                        : b.pb.scoreData.percent - a.pb.scoreData.percent
+                    b.dxRating - a.dxRating
+                        ? b.dxRating - a.dxRating
+                        : b.achievement - a.achievement
                 )
-                .slice(0, 35)
-                .map((v) => this.toMaiDrawScore(v.pb, v.chart, v.song)),
+                .slice(0, 35),
         };
     }
     async getPlayerInfo(
