@@ -1,58 +1,58 @@
 {
-  "name": "maidraw",
-  "version": "0.9.5",
-  "description": "Kasumi module for maimai bot",
-  "main": "dist/index.js",
-  "scripts": {
-    "build": "tsc && tsconfig-replace-paths -p tsconfig.json -s ./src -o ./dist",
-    "clean": "rimraf dist/*",
-    "make": "npm run clean && npm run lint && npm run build",
-    "lint": "prettier './src/**/*.ts' --write",
-    "test": "export LOG_LEVEL=debug && npm run make && node ./test/test.js"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/HexaNona/kasumi-module-template.git"
-  },
-  "keywords": [
-    "Kasumi",
-    "kook",
-    "bot"
-  ],
-  "author": "saltcute",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/HexaNona/kasumi-module-template/issues"
-  },
-  "homepage": "https://github.com/HexaNona/kasumi-module-template#readme",
-  "dependencies": {
-    "axios": "^1.7.2",
-    "bunyan": "^1.8.15",
-    "canvas": "^3.1.0",
-    "cheerio": "^1.0.0",
-    "color": "^4.2.3",
-    "glob": "^11.0.0",
-    "kasumi.js": "^0.6.8",
-    "lodash": "^4.17.21",
-    "memory-cache": "^0.2.0",
-    "node-canvas-with-twemoji-and-discord-emoji": "^1.2.2",
-    "prettier": "^3.3.2",
-    "redis": "^4.7.0",
-    "rimraf": "^5.0.8",
-    "sharp": "^0.33.5",
-    "string-template": "^1.0.0",
-    "ts-node": "^10.9.1",
-    "tsconfig-paths": "^4.1.2",
-    "tsconfig-replace-paths": "^0.0.14",
-    "typescript": "^5.5.3",
-    "upath": "^2.0.1",
-    "zod": "^4.1.5"
-  },
-  "devDependencies": {
-    "@types/bunyan": "^1.8.11",
-    "@types/color": "^3.0.6",
-    "@types/lodash": "^4.17.16",
-    "@types/memory-cache": "^0.2.6",
-    "@types/string-template": "^1.0.6"
-  }
+    "name": "maidraw",
+    "version": "0.10.0",
+    "description": "Kasumi module for maimai bot",
+    "main": "dist/index.js",
+    "scripts": {
+        "build": "tsc && tsconfig-replace-paths -p tsconfig.json -s ./src -o ./dist",
+        "clean": "rimraf dist/*",
+        "make": "npm run clean && npm run lint && npm run build",
+        "lint": "prettier './src/**/*.ts' --write",
+        "test": "export LOG_LEVEL=debug && npm run make && node ./test/test.js"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/HexaNona/kasumi-module-template.git"
+    },
+    "keywords": [
+        "Kasumi",
+        "kook",
+        "bot"
+    ],
+    "author": "saltcute",
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/HexaNona/kasumi-module-template/issues"
+    },
+    "homepage": "https://github.com/HexaNona/kasumi-module-template#readme",
+    "dependencies": {
+        "axios": "^1.7.2",
+        "bunyan": "^1.8.15",
+        "canvas": "^3.1.0",
+        "cheerio": "^1.0.0",
+        "color": "^4.2.3",
+        "glob": "^11.0.0",
+        "kasumi.js": "^0.6.8",
+        "lodash": "^4.17.21",
+        "memory-cache": "^0.2.0",
+        "node-canvas-with-twemoji-and-discord-emoji": "^1.2.2",
+        "prettier": "^3.3.2",
+        "redis": "^4.7.0",
+        "rimraf": "^5.0.8",
+        "sharp": "^0.33.5",
+        "string-template": "^1.0.0",
+        "ts-node": "^10.9.1",
+        "tsconfig-paths": "^4.1.2",
+        "tsconfig-replace-paths": "^0.0.14",
+        "typescript": "^5.5.3",
+        "upath": "^2.0.1",
+        "zod": "^4.1.5"
+    },
+    "devDependencies": {
+        "@types/bunyan": "^1.8.11",
+        "@types/color": "^3.0.6",
+        "@types/lodash": "^4.17.16",
+        "@types/memory-cache": "^0.2.6",
+        "@types/string-template": "^1.0.6"
+    }
 }
