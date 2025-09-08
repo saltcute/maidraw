@@ -1,6 +1,9 @@
 import { Cache as MemCache } from "memory-cache";
 import { createClient } from "redis";
+import Util from "./util";
 export class Cache {
+    private logger = Util.buildLogger(["maidraw", "cache"]);
+
     private memCache;
     private redisClient;
 
@@ -9,7 +12,7 @@ export class Cache {
         this.memCache = new MemCache<string, any>();
         this.redisClient = createClient();
         this.redisClient.on("error", async (e) => {
-            console.error("Redis connection error, using memory-cache");
+            this.logger.error("Redis connection error, using memory-cache");
             this.isRedisAvailable = false;
             await this.redisClient.disconnect();
         });

@@ -1,6 +1,10 @@
-import * as bests from "./bests";
-import * as chart from "./chart";
 import Bunyan from "bunyan";
+
+import * as bests from "./painter/best50";
+
+import * as database from "./lib/database";
+
+import * as kamaiTachi from "./lib/adapter/kamaiTachi";
 
 export class Geki {
     public static logger = new Bunyan({
@@ -34,7 +38,14 @@ export class Geki {
         ],
     });
 }
+
 export namespace Geki {
-    export import Best50 = bests.Best50;
-    export import Chart = chart.Chart;
+    export import Database = database.Database;
+
+    export namespace Painters {
+        export import Best50 = bests.Best50Painter;
+    }
+    export namespace Adapters {
+        export import KamaiTachi = kamaiTachi.KamaiTachi;
+    }
 }

@@ -3,76 +3,6 @@
     "name": "jp-verse",
     "width": 2560,
     "height": 1440,
-    "sprites": {
-        "achievement": {
-            "d": "../../../best/common/verse/achievement/D.png",
-            "c": "../../../best/common/verse/achievement/C.png",
-            "b": "../../../best/common/verse/achievement/B.png",
-            "bb": "../../../best/common/verse/achievement/BB.png",
-            "bbb": "../../../best/common/verse/achievement/BBB.png",
-            "a": "../../../best/common/verse/achievement/A.png",
-            "aa": "../../../best/common/verse/achievement/AA.png",
-            "aaa": "../../../best/common/verse/achievement/AAA.png",
-            "s": "../../../best/common/verse/achievement/S.png",
-            "sp": "../../../best/common/verse/achievement/SP.png",
-            "ss": "../../../best/common/verse/achievement/SS.png",
-            "ssp": "../../../best/common/verse/achievement/SSP.png",
-            "sss": "../../../best/common/verse/achievement/SS.png",
-            "sssp": "../../../best/common/verse/achievement/SSSP.png"
-        },
-        "milestone": {
-            "aj": "../../../best/common/versionless/milestone/aj.png",
-            "ajc": "../../../best/common/versionless/milestone/ajc.png",
-            "fc": "../../../best/common/versionless/milestone/fc.png",
-            "none": "../../../best/common/versionless/void.png"
-        },
-        "ratingNumberMap": "../../../best/common/versionless/numberMap.png",
-        "profile": {
-            "nameplate": "../../../best/common/versionless/nameplate.png",
-            "icon": "../../../best/common/versionless/icon.png"
-        },
-        "versions": {
-            "JPN": {
-                "100": "../../common/versionless/logo/jpn/100.png",
-                "105": "../../common/versionless/logo/jpn/105.png",
-                "110": "../../common/versionless/logo/jpn/110.png",
-                "115": "../../common/versionless/logo/jpn/115.png",
-                "120": "../../common/versionless/logo/jpn/120.png",
-                "125": "../../common/versionless/logo/jpn/125.png",
-                "130": "../../common/versionless/logo/jpn/130.png",
-                "135": "../../common/versionless/logo/jpn/135.png",
-                "140": "../../common/versionless/logo/jpn/140.png",
-                "145": "../../common/versionless/logo/jpn/145.png",
-                "150": "../../common/versionless/logo/jpn/150.png",
-                "155": "../../common/versionless/logo/jpn/155.png",
-                "200": "../../common/versionless/logo/jpn/200.png",
-                "205": "../../common/versionless/logo/jpn/205.png",
-                "210": "../../common/versionless/logo/jpn/210.png",
-                "215": "../../common/versionless/logo/jpn/215.png",
-                "220": "../../common/versionless/logo/jpn/220.png",
-                "225": "../../common/versionless/logo/jpn/225.png",
-                "230": "../../common/versionless/logo/jpn/230.png",
-                "240": "../../../best/common/versionless/void.png"
-            },
-            "INT": {
-                "100": "../../../best/common/versionless/void.png",
-                "105": "../../../best/common/versionless/void.png",
-                "110": "../../common/versionless/logo/jpn/200.png",
-                "115": "../../common/versionless/logo/jpn/205.png",
-                "120": "../../common/versionless/logo/jpn/210.png",
-                "125": "../../common/versionless/logo/jpn/215.png",
-                "130": "../../common/versionless/logo/jpn/220.png",
-                "135": "../../common/versionless/logo/jpn/225.png",
-                "140": "../../common/versionless/logo/jpn/230.png"
-            },
-            "CHN": {
-                "100": "../../../best/common/versionless/void.png",
-                "110": "../../../best/common/versionless/void.png",
-                "120": "../../../best/common/versionless/void.png",
-                "130": "../../../best/common/versionless/void.png"
-            }
-        }
-    },
     "elements": [
         {
             "type": "image",
@@ -111,6 +41,71 @@
             },
             "color": {
                 "card": "#b9eae5"
+            },
+            "sprites": {
+                "achievement": {
+                    "d": "../../../best/common/verse/achievement/D.png",
+                    "c": "../../../best/common/verse/achievement/C.png",
+                    "b": "../../../best/common/verse/achievement/B.png",
+                    "bb": "../../../best/common/verse/achievement/BB.png",
+                    "bbb": "../../../best/common/verse/achievement/BBB.png",
+                    "a": "../../../best/common/verse/achievement/A.png",
+                    "aa": "../../../best/common/verse/achievement/AA.png",
+                    "aaa": "../../../best/common/verse/achievement/AAA.png",
+                    "s": "../../../best/common/verse/achievement/S.png",
+                    "sp": "../../../best/common/verse/achievement/SP.png",
+                    "ss": "../../../best/common/verse/achievement/SS.png",
+                    "ssp": "../../../best/common/verse/achievement/SSP.png",
+                    "sss": "../../../best/common/verse/achievement/SS.png",
+                    "sssp": "../../../best/common/verse/achievement/SSSP.png"
+                },
+                "milestone": {
+                    "aj": "../../../best/common/versionless/milestone/aj.png",
+                    "ajc": "../../../best/common/versionless/milestone/ajc.png",
+                    "fc": "../../../best/common/versionless/milestone/fc.png",
+                    "none": "../../../best/common/versionless/void.png"
+                },
+                "versions": {
+                    "JPN": {
+                        "100": "../../common/versionless/logo/jpn/100.png",
+                        "105": "../../common/versionless/logo/jpn/105.png",
+                        "110": "../../common/versionless/logo/jpn/110.png",
+                        "115": "../../common/versionless/logo/jpn/115.png",
+                        "120": "../../common/versionless/logo/jpn/120.png",
+                        "125": "../../common/versionless/logo/jpn/125.png",
+                        "130": "../../common/versionless/logo/jpn/130.png",
+                        "135": "../../common/versionless/logo/jpn/135.png",
+                        "140": "../../common/versionless/logo/jpn/140.png",
+                        "145": "../../common/versionless/logo/jpn/145.png",
+                        "150": "../../common/versionless/logo/jpn/150.png",
+                        "155": "../../common/versionless/logo/jpn/155.png",
+                        "200": "../../common/versionless/logo/jpn/200.png",
+                        "205": "../../common/versionless/logo/jpn/205.png",
+                        "210": "../../common/versionless/logo/jpn/210.png",
+                        "215": "../../common/versionless/logo/jpn/215.png",
+                        "220": "../../common/versionless/logo/jpn/220.png",
+                        "225": "../../common/versionless/logo/jpn/225.png",
+                        "230": "../../common/versionless/logo/jpn/230.png",
+                        "240": "../../../best/common/versionless/void.png"
+                    },
+                    "INT": {
+                        "100": "../../../best/common/versionless/void.png",
+                        "105": "../../../best/common/versionless/void.png",
+                        "110": "../../common/versionless/logo/jpn/200.png",
+                        "115": "../../common/versionless/logo/jpn/205.png",
+                        "120": "../../common/versionless/logo/jpn/210.png",
+                        "125": "../../common/versionless/logo/jpn/215.png",
+                        "130": "../../common/versionless/logo/jpn/220.png",
+                        "135": "../../common/versionless/logo/jpn/225.png",
+                        "140": "../../common/versionless/logo/jpn/230.png"
+                    },
+                    "CHN": {
+                        "100": "../../../best/common/versionless/void.png",
+                        "110": "../../../best/common/versionless/void.png",
+                        "120": "../../../best/common/versionless/void.png",
+                        "130": "../../../best/common/versionless/void.png"
+                    }
+                }
             }
         },
         {
@@ -128,7 +123,14 @@
             "type": "profile",
             "x": 150,
             "y": 10,
-            "height": 293
+            "height": 293,
+            "sprites": {
+                "ratingNumberMap": "../../../best/common/versionless/numberMap.png",
+                "profile": {
+                    "nameplate": "../../../best/common/versionless/nameplate.png",
+                    "icon": "../../../best/common/versionless/icon.png"
+                }
+            }
         },
         {
             "type": "text",

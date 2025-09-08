@@ -3,34 +3,6 @@
     "name": "jp-refresh-landscape-refresh",
     "width": 2350,
     "height": 2515,
-    "sprites": {
-        "achievement": {
-            "d": "../../../common/versionless/achievement/d.png",
-            "c": "../../../common/versionless/achievement/c.png",
-            "b": "../../../common/versionless/achievement/b.png",
-            "bb": "../../../common/versionless/achievement/bb.png",
-            "bbb": "../../../common/versionless/achievement/bbb.png",
-            "a": "../../../common/versionless/achievement/a.png",
-            "aa": "../../../common/versionless/achievement/aa.png",
-            "aaa": "../../../common/versionless/achievement/aaa.png",
-            "s": "../../../common/versionless/achievement/s.png",
-            "ss": "../../../common/versionless/achievement/ss.png",
-            "sss": "../../../common/versionless/achievement/sss.png",
-            "sssp": "../../../common/versionless/achievement/sssp.png"
-        },
-        "milestone": {
-            "ab": "../../../common/versionless/milestone/ab.png",
-            "abp": "../../../common/versionless/milestone/abp.png",
-            "fc": "../../../common/versionless/milestone/fc.png",
-            "fb": "../../../common/versionless/milestone/fb.png",
-            "none": "../../../common/versionless/void.png"
-        },
-        "ratingNumberMap": "../../../common/versionless/numberMap.png",
-        "profile": {
-            "userplate": "../../../common/versionless/userplateIchigeki.png",
-            "icon": "../../../common/versionless/icon.png"
-        }
-    },
     "elements": [
         {
             "type": "image",
@@ -60,6 +32,29 @@
                     "master": "#A04FDA",
                     "lunatic": "#591C28"
                 }
+            },
+            "sprites": {
+                "achievement": {
+                    "d": "../../../common/versionless/achievement/d.png",
+                    "c": "../../../common/versionless/achievement/c.png",
+                    "b": "../../../common/versionless/achievement/b.png",
+                    "bb": "../../../common/versionless/achievement/bb.png",
+                    "bbb": "../../../common/versionless/achievement/bbb.png",
+                    "a": "../../../common/versionless/achievement/a.png",
+                    "aa": "../../../common/versionless/achievement/aa.png",
+                    "aaa": "../../../common/versionless/achievement/aaa.png",
+                    "s": "../../../common/versionless/achievement/s.png",
+                    "ss": "../../../common/versionless/achievement/ss.png",
+                    "sss": "../../../common/versionless/achievement/sss.png",
+                    "sssp": "../../../common/versionless/achievement/sssp.png"
+                },
+                "milestone": {
+                    "ab": "../../../common/versionless/milestone/ab.png",
+                    "abp": "../../../common/versionless/milestone/abp.png",
+                    "fc": "../../../common/versionless/milestone/fc.png",
+                    "fb": "../../../common/versionless/milestone/fb.png",
+                    "none": "../../../common/versionless/void.png"
+                }
             }
         },
         {
@@ -81,6 +76,29 @@
                     "expert": "#FF4A5A",
                     "master": "#A04FDA",
                     "lunatic": "#591C28"
+                }
+            },
+            "sprites": {
+                "achievement": {
+                    "d": "../../../common/versionless/achievement/d.png",
+                    "c": "../../../common/versionless/achievement/c.png",
+                    "b": "../../../common/versionless/achievement/b.png",
+                    "bb": "../../../common/versionless/achievement/bb.png",
+                    "bbb": "../../../common/versionless/achievement/bbb.png",
+                    "a": "../../../common/versionless/achievement/a.png",
+                    "aa": "../../../common/versionless/achievement/aa.png",
+                    "aaa": "../../../common/versionless/achievement/aaa.png",
+                    "s": "../../../common/versionless/achievement/s.png",
+                    "ss": "../../../common/versionless/achievement/ss.png",
+                    "sss": "../../../common/versionless/achievement/sss.png",
+                    "sssp": "../../../common/versionless/achievement/sssp.png"
+                },
+                "milestone": {
+                    "ab": "../../../common/versionless/milestone/ab.png",
+                    "abp": "../../../common/versionless/milestone/abp.png",
+                    "fc": "../../../common/versionless/milestone/fc.png",
+                    "fb": "../../../common/versionless/milestone/fb.png",
+                    "none": "../../../common/versionless/void.png"
                 }
             }
         },
@@ -104,12 +122,42 @@
                     "master": "#A04FDA",
                     "lunatic": "#591C28"
                 }
+            },
+            "sprites": {
+                "achievement": {
+                    "d": "../../../common/versionless/achievement/d.png",
+                    "c": "../../../common/versionless/achievement/c.png",
+                    "b": "../../../common/versionless/achievement/b.png",
+                    "bb": "../../../common/versionless/achievement/bb.png",
+                    "bbb": "../../../common/versionless/achievement/bbb.png",
+                    "a": "../../../common/versionless/achievement/a.png",
+                    "aa": "../../../common/versionless/achievement/aa.png",
+                    "aaa": "../../../common/versionless/achievement/aaa.png",
+                    "s": "../../../common/versionless/achievement/s.png",
+                    "ss": "../../../common/versionless/achievement/ss.png",
+                    "sss": "../../../common/versionless/achievement/sss.png",
+                    "sssp": "../../../common/versionless/achievement/sssp.png"
+                },
+                "milestone": {
+                    "ab": "../../../common/versionless/milestone/ab.png",
+                    "abp": "../../../common/versionless/milestone/abp.png",
+                    "fc": "../../../common/versionless/milestone/fc.png",
+                    "fb": "../../../common/versionless/milestone/fb.png",
+                    "none": "../../../common/versionless/void.png"
+                }
             }
         },
         {
             "type": "profile",
             "x": 0,
-            "y": 0
+            "y": 0,
+            "sprites": {
+                "ratingNumberMap": "../../../common/versionless/numberMap.png",
+                "profile": {
+                    "userplate": "../../../common/versionless/userplateIchigeki.png",
+                    "icon": "../../../common/versionless/icon.png"
+                }
+            }
         },
         {
             "type": "image",

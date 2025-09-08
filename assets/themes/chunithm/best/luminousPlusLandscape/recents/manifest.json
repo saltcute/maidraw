@@ -3,35 +3,6 @@
     "name": "jp-luminousplus-landscape-recents",
     "width": 2320,
     "height": 1440,
-    "sprites": {
-        "achievement": {
-            "d": "../../common/luminous/achievement/D.png",
-            "c": "../../common/luminous/achievement/C.png",
-            "b": "../../common/luminous/achievement/B.png",
-            "bb": "../../common/luminous/achievement/BB.png",
-            "bbb": "../../common/luminous/achievement/BBB.png",
-            "a": "../../common/luminous/achievement/A.png",
-            "aa": "../../common/luminous/achievement/AA.png",
-            "aaa": "../../common/luminous/achievement/AAA.png",
-            "s": "../../common/luminous/achievement/S.png",
-            "sp": "../../common/luminous/achievement/SP.png",
-            "ss": "../../common/luminous/achievement/SS.png",
-            "ssp": "../../common/luminous/achievement/SSP.png",
-            "sss": "../../common/luminous/achievement/SSS.png",
-            "sssp": "../../common/luminous/achievement/SSSP.png"
-        },
-        "milestone": {
-            "aj": "../../common/versionless/milestone/aj.png",
-            "ajc": "../../common/versionless/milestone/ajc.png",
-            "fc": "../../common/versionless/milestone/fc.png",
-            "none": "../../common/versionless/void.png"
-        },
-        "ratingNumberMap": "../../common/versionless/numberMap.png",
-        "profile": {
-            "nameplate": "../../common/versionless/nameplate.png",
-            "icon": "../../common/versionless/icon.png"
-        }
-    },
     "elements": [
         {
             "type": "image",
@@ -70,6 +41,30 @@
                     "ultima": "#591C28",
                     "worldsEnd": "#70E262"
                 }
+            },
+            "sprites": {
+                "achievement": {
+                    "d": "../../common/luminous/achievement/D.png",
+                    "c": "../../common/luminous/achievement/C.png",
+                    "b": "../../common/luminous/achievement/B.png",
+                    "bb": "../../common/luminous/achievement/BB.png",
+                    "bbb": "../../common/luminous/achievement/BBB.png",
+                    "a": "../../common/luminous/achievement/A.png",
+                    "aa": "../../common/luminous/achievement/AA.png",
+                    "aaa": "../../common/luminous/achievement/AAA.png",
+                    "s": "../../common/luminous/achievement/S.png",
+                    "sp": "../../common/luminous/achievement/SP.png",
+                    "ss": "../../common/luminous/achievement/SS.png",
+                    "ssp": "../../common/luminous/achievement/SSP.png",
+                    "sss": "../../common/luminous/achievement/SSS.png",
+                    "sssp": "../../common/luminous/achievement/SSSP.png"
+                },
+                "milestone": {
+                    "aj": "../../common/versionless/milestone/aj.png",
+                    "ajc": "../../common/versionless/milestone/ajc.png",
+                    "fc": "../../common/versionless/milestone/fc.png",
+                    "none": "../../common/versionless/void.png"
+                }
             }
         },
         {
@@ -93,13 +88,44 @@
                     "ultima": "#591C28",
                     "worldsEnd": "#70E262"
                 }
+            },
+            "sprites": {
+                "achievement": {
+                    "d": "../../common/luminous/achievement/D.png",
+                    "c": "../../common/luminous/achievement/C.png",
+                    "b": "../../common/luminous/achievement/B.png",
+                    "bb": "../../common/luminous/achievement/BB.png",
+                    "bbb": "../../common/luminous/achievement/BBB.png",
+                    "a": "../../common/luminous/achievement/A.png",
+                    "aa": "../../common/luminous/achievement/AA.png",
+                    "aaa": "../../common/luminous/achievement/AAA.png",
+                    "s": "../../common/luminous/achievement/S.png",
+                    "sp": "../../common/luminous/achievement/SP.png",
+                    "ss": "../../common/luminous/achievement/SS.png",
+                    "ssp": "../../common/luminous/achievement/SSP.png",
+                    "sss": "../../common/luminous/achievement/SSS.png",
+                    "sssp": "../../common/luminous/achievement/SSSP.png"
+                },
+                "milestone": {
+                    "aj": "../../common/versionless/milestone/aj.png",
+                    "ajc": "../../common/versionless/milestone/ajc.png",
+                    "fc": "../../common/versionless/milestone/fc.png",
+                    "none": "../../common/versionless/void.png"
+                }
             }
         },
         {
             "type": "profile",
             "x": 50,
             "y": 50,
-            "height": 300
+            "height": 300,
+            "sprites": {
+                "ratingNumberMap": "../../common/versionless/numberMap.png",
+                "profile": {
+                    "nameplate": "../../common/versionless/nameplate.png",
+                    "icon": "../../common/versionless/icon.png"
+                }
+            }
         },
         {
             "type": "text",

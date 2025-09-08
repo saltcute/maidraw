@@ -3,58 +3,6 @@
     "name": "jp-finale-landscape",
     "width": 2560,
     "height": 1440,
-    "sprites": {
-        "achievement": {
-            "d": "../../common/finale/achievement/f.png",
-            "c": "../../common/finale/achievement/e.png",
-            "b": "../../common/finale/achievement/d.png",
-            "bb": "../../common/finale/achievement/c.png",
-            "bbb": "../../common/finale/achievement/b.png",
-            "a": "../../common/finale/achievement/a.png",
-            "aa": "../../common/finale/achievement/aa.png",
-            "aaa": "../../common/finale/achievement/aaa.png",
-            "s": "../../common/finale/achievement/s.png",
-            "sp": "../../common/finale/achievement/sp.png",
-            "ss": "../../common/finale/achievement/ss.png",
-            "ssp": "../../common/finale/achievement/ssp.png",
-            "sss": "../../common/finale/achievement/sss.png",
-            "sssp": "../../common/finale/achievement/sssp.png"
-        },
-        "mode": {
-            "standard": "../../common/versionless/mode/jp/standard.png",
-            "dx": "../../common/versionless/mode/jp/dx.png"
-        },
-        "milestone": {
-            "ap": "../../common/finale/milestone/ap.png",
-            "app": "../../common/finale/milestone/app.png",
-            "fc": "../../common/finale/milestone/fc.png",
-            "fcp": "../../common/finale/milestone/fcp.png",
-            "fdx": "../../common/finale/milestone/fdx.png",
-            "fdxp": "../../common/finale/milestone/fdxp.png",
-            "fs": "../../common/versionless/milestone/fs.png",
-            "fsp": "../../common/finale/milestone/fsp.png",
-            "sync": "../../common/finale/milestone/sync.png",
-            "none": "../../common/versionless/milestone/none.png"
-        },
-        "dxRating": {
-            "white": "../../common/versionless/dxRating/jp/white.png",
-            "blue": "../../common/versionless/dxRating/jp/blue.png",
-            "green": "../../common/versionless/dxRating/jp/green.png",
-            "yellow": "../../common/versionless/dxRating/jp/yellow.png",
-            "red": "../../common/versionless/dxRating/jp/red.png",
-            "purple": "../../common/versionless/dxRating/jp/purple.png",
-            "bronze": "../../common/versionless/dxRating/jp/bronze.png",
-            "silver": "../../common/versionless/dxRating/jp/silver.png",
-            "gold": "../../common/versionless/dxRating/jp/gold.png",
-            "platinum": "../../common/versionless/dxRating/jp/platinum.png",
-            "rainbow": "../../common/versionless/dxRating/jp/rainbow.png"
-        },
-        "dxRatingNumberMap": "../../common/versionless/dxRating/numberMap.png",
-        "profile": {
-            "nameplate": "../../common/versionless/nameplate.png",
-            "icon": "../../common/versionless/icon.png"
-        }
-    },
     "elements": [
         {
             "type": "image",
@@ -93,6 +41,40 @@
                     "remaster": "#DDBDF5",
                     "utage": "#70E262"
                 }
+            },
+            "sprites": {
+                "achievement": {
+                    "d": "../../common/finale/achievement/d.png",
+                    "c": "../../common/finale/achievement/c.png",
+                    "b": "../../common/finale/achievement/b.png",
+                    "bb": "../../common/finale/achievement/bb.png",
+                    "bbb": "../../common/finale/achievement/bbb.png",
+                    "a": "../../common/finale/achievement/a.png",
+                    "aa": "../../common/finale/achievement/aa.png",
+                    "aaa": "../../common/finale/achievement/aaa.png",
+                    "s": "../../common/finale/achievement/s.png",
+                    "sp": "../../common/finale/achievement/sp.png",
+                    "ss": "../../common/finale/achievement/ss.png",
+                    "ssp": "../../common/finale/achievement/ssp.png",
+                    "sss": "../../common/finale/achievement/sss.png",
+                    "sssp": "../../common/finale/achievement/sssp.png"
+                },
+                "mode": {
+                    "standard": "../../common/versionless/mode/jp/standard.png",
+                    "dx": "../../common/versionless/mode/jp/dx.png"
+                },
+                "milestone": {
+                    "ap": "../../common/versionless/milestone/ap.png",
+                    "app": "../../common/versionless/milestone/app.png",
+                    "fc": "../../common/versionless/milestone/fc.png",
+                    "fcp": "../../common/versionless/milestone/fcp.png",
+                    "fdx": "../../common/versionless/milestone/fdx.png",
+                    "fdxp": "../../common/versionless/milestone/fdxp.png",
+                    "fs": "../../common/versionless/milestone/fs.png",
+                    "fsp": "../../common/versionless/milestone/fsp.png",
+                    "sync": "../../common/versionless/milestone/sync.png",
+                    "none": "../../common/versionless/milestone/none.png"
+                }
             }
         },
         {
@@ -116,13 +98,67 @@
                     "remaster": "#DDBDF5",
                     "utage": "#70E262"
                 }
+            },
+            "sprites": {
+                "achievement": {
+                    "d": "../../common/finale/achievement/d.png",
+                    "c": "../../common/finale/achievement/c.png",
+                    "b": "../../common/finale/achievement/b.png",
+                    "bb": "../../common/finale/achievement/bb.png",
+                    "bbb": "../../common/finale/achievement/bbb.png",
+                    "a": "../../common/finale/achievement/a.png",
+                    "aa": "../../common/finale/achievement/aa.png",
+                    "aaa": "../../common/finale/achievement/aaa.png",
+                    "s": "../../common/finale/achievement/s.png",
+                    "sp": "../../common/finale/achievement/sp.png",
+                    "ss": "../../common/finale/achievement/ss.png",
+                    "ssp": "../../common/finale/achievement/ssp.png",
+                    "sss": "../../common/finale/achievement/sss.png",
+                    "sssp": "../../common/finale/achievement/sssp.png"
+                },
+                "mode": {
+                    "standard": "../../common/versionless/mode/jp/standard.png",
+                    "dx": "../../common/versionless/mode/jp/dx.png"
+                },
+                "milestone": {
+                    "ap": "../../common/versionless/milestone/ap.png",
+                    "app": "../../common/versionless/milestone/app.png",
+                    "fc": "../../common/versionless/milestone/fc.png",
+                    "fcp": "../../common/versionless/milestone/fcp.png",
+                    "fdx": "../../common/versionless/milestone/fdx.png",
+                    "fdxp": "../../common/versionless/milestone/fdxp.png",
+                    "fs": "../../common/versionless/milestone/fs.png",
+                    "fsp": "../../common/versionless/milestone/fsp.png",
+                    "sync": "../../common/versionless/milestone/sync.png",
+                    "none": "../../common/versionless/milestone/none.png"
+                }
             }
         },
         {
             "type": "profile",
             "x": 110,
             "y": 345,
-            "height": 129
+            "height": 129,
+            "sprites": {
+                "dxRating": {
+                    "white": "../../common/versionless/dxRating/jp/white.png",
+                    "blue": "../../common/versionless/dxRating/jp/blue.png",
+                    "green": "../../common/versionless/dxRating/jp/green.png",
+                    "yellow": "../../common/versionless/dxRating/jp/yellow.png",
+                    "red": "../../common/versionless/dxRating/jp/red.png",
+                    "purple": "../../common/versionless/dxRating/jp/purple.png",
+                    "bronze": "../../common/versionless/dxRating/jp/bronze.png",
+                    "silver": "../../common/versionless/dxRating/jp/silver.png",
+                    "gold": "../../common/versionless/dxRating/jp/gold.png",
+                    "platinum": "../../common/versionless/dxRating/jp/platinum.png",
+                    "rainbow": "../../common/versionless/dxRating/jp/rainbow.png"
+                },
+                "dxRatingNumberMap": "../../common/versionless/dxRating/numberMap.png",
+                "profile": {
+                    "nameplate": "../../common/versionless/nameplate.png",
+                    "icon": "../../common/versionless/icon.png"
+                }
+            }
         },
         {
             "type": "text",
