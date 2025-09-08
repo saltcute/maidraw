@@ -3,10 +3,9 @@ const upath = require("upath");
 
 (async () => {
     const { MaiDraw } = require("../../../dist");
-    const kamai = new MaiDraw.Geki.Best50.KamaiTachi();
-    MaiDraw.Geki.Chart.Database.setLocalDatabasePath(
-        "../maimai-songs-database"
-    );
+    const kamai = new MaiDraw.Geki.Adapters.KamaiTachi();
+    const painter = new MaiDraw.Geki.Painters.Best50();
+    MaiDraw.Geki.Database.setLocalDatabasePath("../maimai-songs-database");
 
     const fs = require("fs");
     const themes = [
@@ -23,9 +22,9 @@ const upath = require("upath");
             type: theme.endsWith("-refresh") ? "refresh" : "classic",
             theme,
         };
-        const result = await MaiDraw.Geki.Best50.drawWithScoreSource(
+        const result = await painter.drawWithScoreSource(
             source,
-            username,
+            { username },
             options
         );
         if (result instanceof Buffer) {

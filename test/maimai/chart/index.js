@@ -3,36 +3,23 @@ const upath = require("upath");
 
 (async () => {
     const { MaiDraw } = require("../../../dist");
-    const kamai = new MaiDraw.Maimai.Best50.KamaiTachi();
-    const lxns = new MaiDraw.Maimai.Best50.LXNS({
-        auth: ""
+    const kamai = new MaiDraw.Maimai.Adapters.KamaiTachi();
+    const lxns = new MaiDraw.Maimai.Adapters.LXNS({
+        auth: "",
     });
-    MaiDraw.Maimai.Chart.Database.setLocalDatabasePath(
-        "../maimai-songs-database"
-    );
+    const painter = new MaiDraw.Maimai.Painters.Chart();
+    MaiDraw.Maimai.Database.setLocalDatabasePath("../maimai-songs-database");
 
     const fs = require("fs");
     const themes = ["jp-prism"];
     for (let theme of themes) {
         for (const region of ["DX", "EX", "CN"]) {
-            let result = await MaiDraw.Maimai.Chart.drawWithScoreSource(
-                lxns,
-                "",
-                // 1,
-                // 114,
-                417,
-                // 753,
-                // 834,
-                // 835,
-                // 11069,
-                // 11177,
-                // 11343,
-                // 11529,
-                // 11549,
-                // 11635,
-                // 11702,
-                // 11746,
-                // 100018,
+            let result = await painter.drawWithScoreSource(
+                kamai,
+                {
+                    username: "",
+                    chartId: 11451,
+                },
                 {
                     scale: 0.5,
                     theme,

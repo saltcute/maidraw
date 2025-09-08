@@ -3,10 +3,9 @@ const upath = require("upath");
 
 (async () => {
     const { MaiDraw } = require("../../../../dist");
-    const kamai = new MaiDraw.Chuni.Best50.KamaiTachi();
-    MaiDraw.Chuni.Chart.Database.setLocalDatabasePath(
-        "../maimai-songs-database"
-    );
+    const kamai = new MaiDraw.Chuni.Adapters.KamaiTachi();
+    MaiDraw.Chuni.Database.setLocalDatabasePath("../maimai-songs-database");
+    const painter = new MaiDraw.Chuni.Painters.Best50();
 
     const fs = require("fs");
     const themes = [
@@ -25,9 +24,9 @@ const upath = require("upath");
             type: theme.endsWith("-new") ? "new" : "recents",
             theme,
         };
-        const result = await MaiDraw.Chuni.Best50.drawWithScoreSource(
+        const result = await painter.drawWithScoreSource(
             source,
-            username,
+            { username },
             options
         );
         if (result instanceof Buffer) {

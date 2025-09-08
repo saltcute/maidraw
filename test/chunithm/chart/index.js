@@ -3,25 +3,26 @@ const upath = require("upath");
 
 (async () => {
     const { MaiDraw } = require("../../../dist");
-    const kamai = new MaiDraw.Chuni.Best50.KamaiTachi();
-    const lxns = new MaiDraw.Chuni.Best50.LXNS({
+    const kamai = new MaiDraw.Chuni.Adapters.KamaiTachi();
+    const lxns = new MaiDraw.Chuni.Adapters.LXNS({
         auth: "",
     });
-    MaiDraw.Chuni.Chart.Database.setLocalDatabasePath(
-        "../maimai-songs-database"
-    );
+    const painter = new MaiDraw.Chuni.Painters.Chart();
+    MaiDraw.Chuni.Database.setLocalDatabasePath("../maimai-songs-database");
 
     const fs = require("fs");
     const themes = ["jp-verse"];
     for (let theme of themes) {
         for (const region of ["JPN"]) {
-            let result = await MaiDraw.Chuni.Chart.drawWithScoreSource(
-                // kamai,
-                lxns,
+            let result = await painter.drawWithScoreSource(
+                kamai,
+                // lxns,
                 // "",
-                "",
-                2171,
-                "recents",
+                {
+                    username: "",
+                    chartId: 18,
+                    type: "recents",
+                },
                 {
                     scale: 1,
                     theme,

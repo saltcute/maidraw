@@ -3,10 +3,9 @@ const upath = require("upath");
 
 (async () => {
     const { MaiDraw } = require("../../../../dist");
-    const kamai = new MaiDraw.Maimai.Best50.KamaiTachi();
-    MaiDraw.Maimai.Chart.Database.setLocalDatabasePath(
-        "../maimai-songs-database"
-    );
+    const kamai = new MaiDraw.Maimai.Adapters.KamaiTachi();
+    MaiDraw.Maimai.Database.setLocalDatabasePath("../maimai-songs-database");
+    const painter = new MaiDraw.Maimai.Painters.Best50();
 
     const fs = require("fs");
 
@@ -31,11 +30,11 @@ const upath = require("upath");
     for (let theme of themes) {
         let result = null;
         if (type === "full") {
-            result = await MaiDraw.Maimai.Best50.drawWithScoreSource(
+            result = await painter.drawWithScoreSource(
                 kamai,
-                "",
+                { username: "" },
                 {
-                    scale: 0.5,
+                    scale: 1,
                     theme,
                 }
             );
@@ -758,7 +757,7 @@ const upath = require("upath");
                 upath.join(__dirname, `${theme}.webp`),
                 await sharp(result)
                     .webp({
-                        quality: 60,
+                        quality: 100,
                     })
                     .toBuffer()
             );
