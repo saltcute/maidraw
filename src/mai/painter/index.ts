@@ -462,7 +462,7 @@ export namespace MaimaiPainterModule {
                     ctx.fill();
 
                     /** Begin score "Freshness" draw */
-                    if (scale) {
+                    if (scale !== undefined) {
                         ctx.save();
                         ctx.beginPath();
 
