@@ -46,6 +46,13 @@ export class KamaiTachi extends ScoreTrackerAdapter {
             60 * 1000
         );
     }
+    public async getScoreHistory(userId: string, chartId: string) {
+        return this.get<KamaiTachi.IResponse<KamaiTachi.IScore[]>>(
+            `/api/v1/users/${userId}/games/maimaidx/Single/scores/${chartId}`,
+            undefined,
+            60 * 1000
+        );
+    }
     private toMaiDrawScore(
         score: KamaiTachi.IPb,
         chart: KamaiTachi.IChart,
@@ -165,6 +172,12 @@ export class KamaiTachi extends ScoreTrackerAdapter {
                     (score.scoreData.judgements.great || 0)
                 );
             })(),
+
+            optionalData: {
+                kt: {
+                    chartId: chart.chartID,
+                },
+            },
         };
     }
     private getDatabaseDifficulty(chart: KamaiTachi.IChart) {
@@ -728,6 +741,47 @@ export namespace KamaiTachi {
         id: number;
         searchTerms: string[];
         title: string;
+    }
+    export interface IScore {
+        calculatedData: {
+            rate: number;
+        };
+        chartID: string;
+        comment: string | null;
+        game: string;
+        highlight: boolean;
+        importType: string;
+        isPrimary: boolean;
+        playtype: string;
+        scoreData: {
+            percent: number;
+            lamp: string;
+            judgements: {
+                pcrit?: number;
+                perfect?: number;
+                great?: number;
+                good?: number;
+                miss?: number;
+            };
+            optional: {
+                fast: number;
+                slow: number;
+                maxCombo: number;
+                enumIndexes: any;
+            };
+            grade: string;
+            enumIndexes: {
+                lamp: number;
+                grade: number;
+            };
+        };
+        scoreID: string;
+        scoreMeta: any;
+        service: string;
+        songID: number;
+        timeAchieved: number;
+        timeAdded: number;
+        userID: number;
     }
     export interface IPb {
         chartID: string;

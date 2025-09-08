@@ -57,6 +57,18 @@ export interface IScore {
     dxScore: number;
 
     optionalData?: {
+        /**
+         * Kamaitachi specific data.
+         */
+        kt?: {
+            /**
+             * Kamaitachi Chart ID.
+             */
+            chartId: string;
+        };
+        /**
+         *
+         */
         scale?: number;
     };
 }
