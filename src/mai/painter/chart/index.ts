@@ -102,7 +102,8 @@ export class ChartPainter extends MaimaiPainter<typeof ChartPainter.Theme> {
                             ctx,
                             currentTheme,
                             element,
-                            variables.chartId
+                            variables.chartId,
+                            options?.region
                         );
                         break;
                     }

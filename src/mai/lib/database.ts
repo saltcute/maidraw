@@ -51,23 +51,35 @@ export class Database {
     public static async downloadJacket(
         id: number,
         /**
-         * Explicit variant will NOT fallback to generic jacket.
-         * In practice `DX` variant will almost never return a jacket.
+         * Explicit variants will fallback to generic jacket.
          */
         variant?: "DX" | "EX" | "CN"
     ): Promise<Buffer | null> {
         id = id % 10000;
+        if (variant) {
+            const localFilePath = upath.join(
+                this.localDatabasePath,
+                "assets",
+                "maimai",
+                "jackets",
+                `${id.toString().padStart(6, "0")}-${variant}.png`
+            );
+            if (fs.existsSync(localFilePath)) {
+                Maimai.logger.trace(
+                    `GET Jacket-${id}-${variant}, database HIT`
+                );
+                return fs.readFileSync(localFilePath);
+            }
+        }
         const localFilePath = upath.join(
             this.localDatabasePath,
             "assets",
             "maimai",
             "jackets",
-            `${id.toString().padStart(6, "0")}${variant ? `-${variant}` : ""}.png`
+            `${id.toString().padStart(6, "0")}.png`
         );
         if (fs.existsSync(localFilePath)) {
-            Maimai.logger.trace(
-                `GET Jacket-${id}${variant ? `-${variant}` : ""}, database HIT`
-            );
+            Maimai.logger.trace(`GET Jacket-${id}, database HIT`);
             return fs.readFileSync(localFilePath);
         }
         if (!variant) {

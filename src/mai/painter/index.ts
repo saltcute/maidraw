@@ -1634,7 +1634,7 @@ export namespace MaimaiPainterModule {
                                     version.version.gameVersion.isDX,
                                     region == "CN"
                                 );
-                                if (rawVersion) {
+                                if (rawVersion != null) {
                                     const versionImage = theme.getFile(
                                         element.sprites.versions[region][
                                             rawVersion as unknown as keyof z.infer<
@@ -1642,6 +1642,7 @@ export namespace MaimaiPainterModule {
                                             >["sprites"]["versions"][typeof version.region]
                                         ]
                                     );
+
                                     try {
                                         sharp(versionImage);
                                         if (versionImage) {
@@ -1945,7 +1946,7 @@ export namespace MaimaiPainterModule {
                                     event.version.gameVersion.isDX,
                                     logoRegion == "CN"
                                 );
-                                if (rawVersion) {
+                                if (rawVersion != null) {
                                     const versionImage = theme.getFile(
                                         element.sprites.versions[logoRegion][
                                             rawVersion as unknown as keyof z.infer<
@@ -2114,7 +2115,8 @@ export namespace MaimaiPainterModule {
                 ctx: CanvasRenderingContext2D,
                 theme: Theme<any>,
                 element: z.infer<typeof schema>,
-                chartId: number
+                chartId: number,
+                region: "DX" | "EX" | "CN" = "DX"
             ) {
                 const jacketMargin = element.margin;
                 const textMargin = element.margin;
@@ -2123,7 +2125,7 @@ export namespace MaimaiPainterModule {
                     chartId,
                     EDifficulty.BASIC
                 );
-                const jacket = await Database.fetchJacket(chartId);
+                const jacket = await Database.fetchJacket(chartId, region);
                 /* Begin Background Draw */
                 ctx.beginPath();
                 ctx.roundRect(
