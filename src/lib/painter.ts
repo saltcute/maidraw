@@ -52,7 +52,6 @@ export abstract class Painter<
             ),
             {
                 family: "standard-font-title-latin",
-                weight: "regular",
             }
         );
         registerFont(
@@ -64,7 +63,17 @@ export abstract class Painter<
             ),
             {
                 family: "standard-font-username",
-                weight: "regular",
+            }
+        );
+        registerFont(
+            upath.join(
+                Painter.assetsPath,
+                "fonts",
+                "noto-color-emoji",
+                "NotoColorEmoji-Regular.ttf"
+            ),
+            {
+                family: "standard-font-emoji",
             }
         );
     }
