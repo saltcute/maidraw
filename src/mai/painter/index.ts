@@ -1507,6 +1507,22 @@ export namespace MaimaiPainterModule {
                                 EXAppend: false,
                             };
                         }
+                        const isUSALocked = (() => {
+                            for (const event of chart.events) {
+                                if (
+                                    event.version.region == "EX" &&
+                                    event.type == "usa_lock" &&
+                                    findVersion(
+                                        event.version.gameVersion.minor,
+                                        event.version.gameVersion.isDX,
+                                        false
+                                    ) == EX_LATEST
+                                ) {
+                                    return true;
+                                }
+                            }
+                            return false;
+                        })();
                         const VER_DX =
                             chart.difficulty == EDifficulty.REMASTER
                                 ? chart.events.find(
@@ -1652,11 +1668,11 @@ export namespace MaimaiPainterModule {
                                             switch (version.region) {
                                                 case "DX":
                                                     if (version.EXAppend)
-                                                        text = "🇯🇵🌏";
+                                                        text = `🇯🇵🌏${isUSALocked ? "" : "🇺🇸"}`;
                                                     else text = "🇯🇵";
                                                     break;
                                                 case "EX":
-                                                    text = "🌏";
+                                                    text = `🌏${isUSALocked ? "" : "🇺🇸"}`;
                                                     break;
                                                 case "CN":
                                                     text = "🇨🇳";
@@ -2266,6 +2282,22 @@ export namespace MaimaiPainterModule {
                         textColor
                     );
 
+                    const isUSALocked = (() => {
+                        for (const event of chart.events) {
+                            if (
+                                event.version.region == "EX" &&
+                                event.type == "usa_lock" &&
+                                findVersion(
+                                    event.version.gameVersion.minor,
+                                    event.version.gameVersion.isDX,
+                                    false
+                                ) == EX_LATEST
+                            ) {
+                                return true;
+                            }
+                        }
+                        return false;
+                    })();
                     const EVENT_DX = chart.events
                         .filter(
                             (v) =>
@@ -2295,7 +2327,7 @@ export namespace MaimaiPainterModule {
                     const EXIST_EX =
                         EVENT_EX.includes("existence") &&
                         !EVENT_EX.includes("removal")
-                            ? "🌏"
+                            ? `🌏${isUSALocked ? "" : "🇺🇸"}`
                             : "";
                     const EXIST_CN =
                         EVENT_CN.includes("existence") &&

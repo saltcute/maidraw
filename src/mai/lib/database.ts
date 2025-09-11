@@ -233,8 +233,15 @@ export namespace Database {
         export interface Removal extends Base {
             type: "removal";
         }
+        export interface USALock extends Base {
+            type: "usa_lock";
+        }
     }
-    export type Events = Events.Existence | Events.Absence | Events.Removal;
+    export type Events =
+        | Events.Existence
+        | Events.Absence
+        | Events.Removal
+        | Events.USALock;
     export interface IVersion {
         /**
          * Full name of the version.
