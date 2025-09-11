@@ -59,19 +59,19 @@ export class Util {
         ctx: CanvasRenderingContext2D,
         original: string,
         maxWidth: number,
-        lineBreakSuffix = "...",
-        forceWholeWord = false
+        lineBreakSuffix = "..."
     ): string {
         const metrics = ctx.measureText(original);
         if (metrics.width <= maxWidth) return original;
-        for (let i = 1; i < original.length; ++i) {
-            let cur = original.slice(0, original.length - i);
-            if (forceWholeWord && original.charAt(cur.length) !== " ") {
-                continue;
-            }
+        for (let i = original.length; i >= 0; --i) {
+            let cur = original.slice(0, i);
             if (ctx.measureText(cur + lineBreakSuffix).width <= maxWidth) {
+                // Trim full-width spaces.
                 while (cur[cur.length - 1] == "　") {
                     cur = cur.substring(0, cur.length - 1);
+                }
+                while (cur[0] == "　") {
+                    cur = cur.substring(1, cur.length);
                 }
                 return cur.trim() + lineBreakSuffix;
             }

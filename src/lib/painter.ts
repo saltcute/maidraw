@@ -179,6 +179,8 @@ export class ThemeManager<Schema extends typeof ThemeManager.BaseObject> {
     }
 }
 
+import LineBreaker from "linebreak";
+
 export namespace PainterModule {
     export namespace Image {
         export const schema = ThemeManager.Element.extend({
@@ -224,34 +226,39 @@ export namespace PainterModule {
              */
             variables: Record<string, string> = {}
         ) {
-            let naiveLines = stringFormat(element.content, variables).split(
-                "\n"
-            );
-            let lines: string[] = [];
-            if (element.linebreak) {
-                for (let originalContent of naiveLines) {
-                    while (originalContent.length) {
-                        const line = Util.findMaxFitString(
-                            ctx,
-                            originalContent,
-                            element.width || Infinity,
-                            "",
-                            true
+            ctx.font = `${element.size}px ${element.font || `"standard-font-title-latin", "standard-font-title-jp"`}`;
+            const filledContent = stringFormat(element.content, variables);
+
+            const lines: string[] = [];
+            if (element.linebreak && element.width) {
+                const breaker = new LineBreaker(filledContent);
+                let lastPossibleBreak = 0,
+                    lastBreak = 0;
+                for (
+                    let bk = breaker.nextBreak();
+                    bk;
+                    lastPossibleBreak = bk.position, bk = breaker.nextBreak()
+                ) {
+                    const cur = filledContent.substring(lastBreak, bk.position);
+                    if (ctx.measureText(cur).width > element.width) {
+                        lines.push(
+                            filledContent
+                                .substring(lastBreak, lastPossibleBreak)
+                                .trim()
                         );
-                        originalContent = originalContent
-                            .replace(line, "")
-                            .trim();
-                        lines.push(line.trim());
+                        lastBreak = lastPossibleBreak;
                     }
                 }
+                lines.push(filledContent.substring(lastBreak).trim());
             } else {
+                const naiveLines = filledContent.split("\n");
                 for (const originalContent of naiveLines) {
                     lines.push(
                         Util.findMaxFitString(
                             ctx,
                             originalContent,
                             element.width || Infinity
-                        )
+                        ).trim()
                     );
                 }
             }
