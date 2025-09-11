@@ -1095,7 +1095,6 @@ export namespace MaimaiPainterModule {
                                 theme,
                                 element,
                                 chart,
-                                i,
                                 element.x + element.margin,
                                 y,
                                 (cardWidth - element.margin) / 2,
@@ -1112,7 +1111,6 @@ export namespace MaimaiPainterModule {
                                     theme,
                                     element,
                                     chartA,
-                                    i,
                                     element.x +
                                         element.margin +
                                         (cardWidth + element.margin) / 2,
@@ -1129,7 +1127,6 @@ export namespace MaimaiPainterModule {
                                 theme,
                                 element,
                                 chart,
-                                i,
                                 element.x + element.margin,
                                 y,
                                 cardWidth,
@@ -1147,7 +1144,6 @@ export namespace MaimaiPainterModule {
                 theme: Theme<any>,
                 element: z.infer<typeof schema>,
                 chart: Database.IChart,
-                difficulty: EDifficulty,
                 x: number,
                 y: number,
                 width: number,
@@ -1157,7 +1153,7 @@ export namespace MaimaiPainterModule {
                 score?: IScore | null
             ) {
                 let curColor = "#FFFFFF";
-                switch (difficulty) {
+                switch (chart.difficulty) {
                     case EDifficulty.BASIC:
                         curColor = element.bubble.color.basic;
                         break;

@@ -63,11 +63,11 @@ export class ChartPainter extends MaimaiPainter<typeof ChartPainter.Theme> {
                 currentTheme = theme;
             }
         }
-        const chart = Database.getLocalChart(
-            variables.chartId,
-            EDifficulty.BASIC
-        );
-        if (!chart) return null;
+        const charts = [];
+        for (let i = EDifficulty.BASIC; i <= EDifficulty.UTAGE; ++i) {
+            charts.push(Database.getLocalChart(variables.chartId, i));
+        }
+        if (!charts.length) return null;
         if (currentTheme) {
             await Database.cacheJackets([variables.chartId]);
             const canvas = new Canvas(
