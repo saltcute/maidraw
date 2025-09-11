@@ -924,7 +924,7 @@ export namespace MaimaiPainterModule {
 
     export namespace Chart {
         const DX_LATEST = 55;
-        const EX_LATEST = 50;
+        const EX_LATEST = 55;
         const CN_LATEST = 50;
         const MAIMAI_VERSIONS = [
             99, 95, 90, 85, 80, 70, 60, 50, 40, 30, 20, 10, 0,
