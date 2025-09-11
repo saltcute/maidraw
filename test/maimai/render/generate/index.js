@@ -32,7 +32,7 @@ const upath = require("upath");
         if (type === "full") {
             result = await painter.drawWithScoreSource(
                 kamai,
-                { username: "" },
+                { username: "salt" },
                 {
                     scale: 1,
                     theme,

@@ -202,6 +202,21 @@
             "borderColor": "#226180",
             "align": "left",
             "content": "{newScoreMilestone}\n{oldScoreMilestone}"
+        },
+        {
+            "type": "hitokoto",
+            "size": 24,
+            "x": 80,
+            "y": 1403,
+            "width": 1000,
+            "linebreak": true,
+            "borderColor": "#226180",
+            "align": "left",
+            "probability": 0.1,
+            "customLines": [
+                "../../../../../hitokoto/general.json",
+                "../../../../../hitokoto/support/maimaidx.json"
+            ]
         }
     ]
 }

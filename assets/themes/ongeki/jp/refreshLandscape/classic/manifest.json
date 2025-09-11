@@ -297,6 +297,21 @@
             "borderColor": "rgba(255, 255, 255, 0)",
             "align": "left",
             "content": "{naiveRatingAverage}"
+        },
+        {
+            "type": "hitokoto",
+            "size": 24,
+            "x": 80,
+            "y": 1928,
+            "width": 1000,
+            "linebreak": true,
+            "borderColor": "#547318",
+            "align": "left",
+            "probability": 0.1,
+            "customLines": [
+                "../../../../../hitokoto/general.json",
+                "../../../../../hitokoto/support/ongeki.json"
+            ]
         }
     ]
 }

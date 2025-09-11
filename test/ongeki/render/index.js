@@ -15,7 +15,7 @@ const upath = require("upath");
         "jp-refresh-landscape-refresh",
     ];
     const source = kamai.brightMemoryAct3();
-    const username = "";
+    const username = "salt";
     for (let theme of themes) {
         const options = {
             scale: 0.5,

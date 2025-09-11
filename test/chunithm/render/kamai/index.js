@@ -17,7 +17,7 @@ const upath = require("upath");
         "jp-verse-landscape-new",
     ];
     const source = kamai.luminous();
-    const username = "";
+    const username = "salt";
     for (let theme of themes) {
         const options = {
             scale: 1,

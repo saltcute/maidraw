@@ -162,6 +162,21 @@
             "borderColor": "#d96c64",
             "align": "left",
             "content": "scores average: {newScoreRatingAvg}\nscores average: {oldScoreRatingAvg}\nscores average: {naiveBest50}"
+        },
+        {
+            "type": "hitokoto",
+            "size": 24,
+            "x": 80,
+            "y": 1403,
+            "width": 1000,
+            "linebreak": true,
+            "borderColor": "#d96c64",
+            "align": "left",
+            "probability": 0.1,
+            "customLines": [
+                "../../../../../hitokoto/general.json",
+                "../../../../../hitokoto/support/chunithm.json"
+            ]
         }
     ]
 }

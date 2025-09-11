@@ -229,6 +229,21 @@
             "borderColor": "#754F05",
             "align": "center",
             "content": "{level50Subtitle}"
+        },
+        {
+            "type": "hitokoto",
+            "size": 24,
+            "x": 1500,
+            "y": 2260,
+            "borderColor": "#754F05",
+            "align": "right",
+            "width": 580,
+            "linebreak": true,
+            "probability": 0.1,
+            "customLines": [
+                "../../../../../hitokoto/general.json",
+                "../../../../../hitokoto/support/maimaidx.json"
+            ]
         }
     ]
 }

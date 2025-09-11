@@ -213,6 +213,21 @@
             "borderColor": "#242B4A",
             "align": "center",
             "content": "{level50Subtitle}"
+        },
+        {
+            "type": "hitokoto",
+            "size": 24,
+            "x": 1500,
+            "y": 2260,
+            "borderColor": "#242B4A",
+            "align": "right",
+            "width": 580,
+            "linebreak": true,
+            "probability": 0.1,
+            "customLines": [
+                "../../../../../hitokoto/general.json",
+                "../../../../../hitokoto/support/maimai.json"
+            ]
         }
     ]
 }

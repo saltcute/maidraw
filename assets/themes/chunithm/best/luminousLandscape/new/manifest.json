@@ -42,30 +42,30 @@
                     "worldsEnd": "#70E262"
                 }
             },
-    "sprites": {
-        "achievement": {
-            "d": "../../common/luminous/achievement/D.png",
-            "c": "../../common/luminous/achievement/C.png",
-            "b": "../../common/luminous/achievement/B.png",
-            "bb": "../../common/luminous/achievement/BB.png",
-            "bbb": "../../common/luminous/achievement/BBB.png",
-            "a": "../../common/luminous/achievement/A.png",
-            "aa": "../../common/luminous/achievement/AA.png",
-            "aaa": "../../common/luminous/achievement/AAA.png",
-            "s": "../../common/luminous/achievement/S.png",
-            "sp": "../../common/luminous/achievement/SP.png",
-            "ss": "../../common/luminous/achievement/SS.png",
-            "ssp": "../../common/luminous/achievement/SSP.png",
-            "sss": "../../common/luminous/achievement/SSS.png",
-            "sssp": "../../common/luminous/achievement/SSSP.png"
-        },
-        "milestone": {
-            "aj": "../../common/versionless/milestone/aj.png",
-            "ajc": "../../common/versionless/milestone/ajc.png",
-            "fc": "../../common/versionless/milestone/fc.png",
-            "none": "../../common/versionless/void.png"
-        }
-    }
+            "sprites": {
+                "achievement": {
+                    "d": "../../common/luminous/achievement/D.png",
+                    "c": "../../common/luminous/achievement/C.png",
+                    "b": "../../common/luminous/achievement/B.png",
+                    "bb": "../../common/luminous/achievement/BB.png",
+                    "bbb": "../../common/luminous/achievement/BBB.png",
+                    "a": "../../common/luminous/achievement/A.png",
+                    "aa": "../../common/luminous/achievement/AA.png",
+                    "aaa": "../../common/luminous/achievement/AAA.png",
+                    "s": "../../common/luminous/achievement/S.png",
+                    "sp": "../../common/luminous/achievement/SP.png",
+                    "ss": "../../common/luminous/achievement/SS.png",
+                    "ssp": "../../common/luminous/achievement/SSP.png",
+                    "sss": "../../common/luminous/achievement/SSS.png",
+                    "sssp": "../../common/luminous/achievement/SSSP.png"
+                },
+                "milestone": {
+                    "aj": "../../common/versionless/milestone/aj.png",
+                    "ajc": "../../common/versionless/milestone/ajc.png",
+                    "fc": "../../common/versionless/milestone/fc.png",
+                    "none": "../../common/versionless/void.png"
+                }
+            }
         },
         {
             "type": "score-grid",
@@ -89,30 +89,30 @@
                     "worldsEnd": "#70E262"
                 }
             },
-    "sprites": {
-        "achievement": {
-            "d": "../../common/luminous/achievement/D.png",
-            "c": "../../common/luminous/achievement/C.png",
-            "b": "../../common/luminous/achievement/B.png",
-            "bb": "../../common/luminous/achievement/BB.png",
-            "bbb": "../../common/luminous/achievement/BBB.png",
-            "a": "../../common/luminous/achievement/A.png",
-            "aa": "../../common/luminous/achievement/AA.png",
-            "aaa": "../../common/luminous/achievement/AAA.png",
-            "s": "../../common/luminous/achievement/S.png",
-            "sp": "../../common/luminous/achievement/SP.png",
-            "ss": "../../common/luminous/achievement/SS.png",
-            "ssp": "../../common/luminous/achievement/SSP.png",
-            "sss": "../../common/luminous/achievement/SSS.png",
-            "sssp": "../../common/luminous/achievement/SSSP.png"
-        },
-        "milestone": {
-            "aj": "../../common/versionless/milestone/aj.png",
-            "ajc": "../../common/versionless/milestone/ajc.png",
-            "fc": "../../common/versionless/milestone/fc.png",
-            "none": "../../common/versionless/void.png"
-        }
-    }
+            "sprites": {
+                "achievement": {
+                    "d": "../../common/luminous/achievement/D.png",
+                    "c": "../../common/luminous/achievement/C.png",
+                    "b": "../../common/luminous/achievement/B.png",
+                    "bb": "../../common/luminous/achievement/BB.png",
+                    "bbb": "../../common/luminous/achievement/BBB.png",
+                    "a": "../../common/luminous/achievement/A.png",
+                    "aa": "../../common/luminous/achievement/AA.png",
+                    "aaa": "../../common/luminous/achievement/AAA.png",
+                    "s": "../../common/luminous/achievement/S.png",
+                    "sp": "../../common/luminous/achievement/SP.png",
+                    "ss": "../../common/luminous/achievement/SS.png",
+                    "ssp": "../../common/luminous/achievement/SSP.png",
+                    "sss": "../../common/luminous/achievement/SSS.png",
+                    "sssp": "../../common/luminous/achievement/SSSP.png"
+                },
+                "milestone": {
+                    "aj": "../../common/versionless/milestone/aj.png",
+                    "ajc": "../../common/versionless/milestone/ajc.png",
+                    "fc": "../../common/versionless/milestone/fc.png",
+                    "none": "../../common/versionless/void.png"
+                }
+            }
         },
         {
             "type": "profile",
@@ -153,6 +153,21 @@
             "borderColor": "#d96c64",
             "align": "left",
             "content": "average: {newScoreRatingAvg}\naverage: {oldScoreRatingAvg}\naverage: {naiveBest30}/{naiveBest50}"
+        },
+        {
+            "type": "hitokoto",
+            "size": 24,
+            "x": 80,
+            "y": 1303,
+            "width": 1000,
+            "linebreak": true,
+            "borderColor": "#d96c64",
+            "align": "left",
+            "probability": 0.1,
+            "customLines": [
+                "../../../../../hitokoto/general.json",
+                "../../../../../hitokoto/support/chunithm.json"
+            ]
         }
     ]
 }
