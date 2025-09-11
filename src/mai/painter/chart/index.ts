@@ -20,6 +20,7 @@ export class ChartPainter extends MaimaiPainter<typeof ChartPainter.Theme> {
                 MaimaiPainterModule.Profile.schema,
                 PainterModule.Image.schema,
                 PainterModule.Text.schema,
+                PainterModule.Hitokoto.schema,
             ])
         ),
     });
@@ -80,6 +81,14 @@ export class ChartPainter extends MaimaiPainter<typeof ChartPainter.Theme> {
                 switch (element.type) {
                     case "image": {
                         await PainterModule.Image.draw(
+                            ctx,
+                            currentTheme,
+                            element
+                        );
+                        break;
+                    }
+                    case "hitokoto": {
+                        await PainterModule.Hitokoto.draw(
                             ctx,
                             currentTheme,
                             element

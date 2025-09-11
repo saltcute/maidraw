@@ -70,6 +70,14 @@ export class Level50Painter extends MaimaiPainter<typeof Best50Painter.Theme> {
                         );
                         break;
                     }
+                    case "hitokoto": {
+                        await PainterModule.Hitokoto.draw(
+                            ctx,
+                            currentTheme,
+                            element
+                        );
+                        break;
+                    }
                     case "score-grid": {
                         for (
                             let y = element.y, index = element.index, i = 0;

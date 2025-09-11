@@ -235,7 +235,8 @@ export namespace PainterModule {
                             ctx,
                             originalContent,
                             element.width || Infinity,
-                            ""
+                            "",
+                            true
                         );
                         originalContent = originalContent
                             .replace(line, "")
@@ -274,6 +275,67 @@ export namespace PainterModule {
                     element.font,
                     element.linebreak ? "" : "..."
                 );
+            }
+        }
+    }
+    export namespace Hitokoto {
+        export const schema = ThemeManager.Element.extend({
+            type: z.literal("hitokoto"),
+            size: z.number().min(1),
+            width: z.number().min(1).optional(),
+            height: z.number().min(1).optional(),
+            linebreak: z.boolean().optional(),
+            align: z.enum(["left", "center", "right"]).optional(),
+            color: Util.z.color().optional(),
+            borderColor: Util.z.color().optional(),
+            probability: z.number().min(0).max(1).optional(),
+            customLines: z.union([z.string(), z.array(z.string())]).optional(),
+        });
+        export async function draw(
+            ctx: CanvasRenderingContext2D,
+            theme: Theme<any>,
+            element: z.infer<typeof schema>,
+            probability?: number,
+            customLines?: Record<string, string>,
+            blocklist?: string[]
+        ) {
+            probability = probability ?? element.probability ?? 1.0;
+            function getRandomMemberFromArray(
+                array: any[],
+                probability: number
+            ) {
+                const r = Math.random();
+                if (probability <= 0 || r > probability) return;
+                return array[Math.floor((r / probability) * array.length)];
+            }
+            let localLines = {};
+            if (element.customLines != undefined) {
+                for (const path of Array.isArray(element.customLines)
+                    ? element.customLines
+                    : [element.customLines]) {
+                    try {
+                        localLines = {
+                            ...localLines,
+                            ...JSON.parse(theme.getFile(path).toString()),
+                        };
+                    } catch {}
+                }
+            }
+            const lines: Record<string, string> = {
+                ...localLines,
+                ...customLines,
+            };
+            const keyList = Object.keys(lines).filter(
+                (v) => !blocklist?.includes(v)
+            );
+            const content =
+                lines[getRandomMemberFromArray(keyList, probability)];
+            if (content) {
+                Text.draw(ctx, {
+                    ...element,
+                    type: "text",
+                    content,
+                });
             }
         }
     }
