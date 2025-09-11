@@ -2133,10 +2133,11 @@ export namespace MaimaiPainterModule {
                 const jacketMargin = element.margin;
                 const textMargin = element.margin;
 
-                const chart = Database.getLocalChart(
-                    chartId,
-                    EDifficulty.BASIC
-                );
+                let chart: Database.IChart | null = null;
+                for (let i = EDifficulty.BASIC; i <= EDifficulty.UTAGE; ++i) {
+                    chart = Database.getLocalChart(chartId, i);
+                    if (chart !== null) break;
+                }
                 const jacket = await Database.fetchJacket(chartId, region);
                 /* Begin Background Draw */
                 ctx.beginPath();
