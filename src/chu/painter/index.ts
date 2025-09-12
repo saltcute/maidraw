@@ -862,7 +862,6 @@ export namespace ChunithmPainterModule {
                                 theme,
                                 element,
                                 chart,
-                                i,
                                 element.x + element.margin,
                                 y,
                                 (cardWidth - element.margin) / 2,
@@ -879,7 +878,6 @@ export namespace ChunithmPainterModule {
                                     theme,
                                     element,
                                     chartA,
-                                    i,
                                     element.x +
                                         element.margin +
                                         (cardWidth + element.margin) / 2,
@@ -896,7 +894,6 @@ export namespace ChunithmPainterModule {
                                 theme,
                                 element,
                                 chart,
-                                i,
                                 element.x + element.margin,
                                 y,
                                 cardWidth,
@@ -914,7 +911,6 @@ export namespace ChunithmPainterModule {
                 theme: Theme<any>,
                 element: z.infer<typeof schema>,
                 chart: Database.IChart,
-                difficulty: EDifficulty,
                 x: number,
                 y: number,
                 width: number,
@@ -924,7 +920,7 @@ export namespace ChunithmPainterModule {
                 score?: IScore | null
             ) {
                 let curColor = "#FFFFFF";
-                switch (difficulty) {
+                switch (chart.difficulty) {
                     case EDifficulty.BASIC:
                         curColor = element.bubble.color.basic;
                         break;
@@ -1696,11 +1692,19 @@ export namespace ChunithmPainterModule {
             ) {
                 const jacketMargin = element.margin;
                 const textMargin = element.margin;
+                const backGroundBorderRadius =
+                    Math.min(theme.content.width, theme.content.height) *
+                    (3 / 128);
 
-                const chart = Database.getLocalChart(
-                    chartId,
-                    EDifficulty.BASIC
-                );
+                let chart: Database.IChart | null = null;
+                for (
+                    let i = EDifficulty.BASIC;
+                    i <= EDifficulty.WORLDS_END;
+                    ++i
+                ) {
+                    chart = Database.getLocalChart(chartId, i);
+                    if (chart !== null) break;
+                }
                 const jacket = await Database.fetchJacket(chartId);
                 /* Begin Background Draw */
                 ctx.beginPath();
@@ -1709,16 +1713,13 @@ export namespace ChunithmPainterModule {
                     element.y,
                     element.width,
                     element.height,
-                    Math.min(theme.content.width, theme.content.height) *
-                        (3 / 128)
+                    backGroundBorderRadius
                 );
                 ctx.fillStyle = element.color.card;
                 ctx.strokeStyle = new Color(element.color.card)
                     .darken(0.6)
                     .hex();
-                ctx.lineWidth =
-                    Math.min(theme.content.width, theme.content.height) *
-                    (3 / 512);
+                ctx.lineWidth = backGroundBorderRadius / 4;
                 ctx.stroke();
                 ctx.fill();
                 /* End Background Draw */
@@ -1726,9 +1727,7 @@ export namespace ChunithmPainterModule {
                 /* Begin jacket draw */
                 if (jacket) {
                     const jacketImage = new Image();
-                    const roundRadius =
-                        Math.min(theme.content.width, theme.content.height) *
-                        (3 / 128);
+                    const jacketBorderRadius = backGroundBorderRadius / 2;
                     jacketImage.src = jacket;
                     ctx.beginPath();
                     ctx.roundRect(
@@ -1736,7 +1735,7 @@ export namespace ChunithmPainterModule {
                         element.y + jacketMargin,
                         element.width - jacketMargin * 2,
                         element.width - jacketMargin * 2,
-                        [roundRadius, roundRadius, 0, 0]
+                        jacketBorderRadius
                     );
                     ctx.save();
                     ctx.clip();
