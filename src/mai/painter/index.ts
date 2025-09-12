@@ -2132,6 +2132,9 @@ export namespace MaimaiPainterModule {
             ) {
                 const jacketMargin = element.margin;
                 const textMargin = element.margin;
+                const backGroundBorderRadius =
+                    Math.min(theme.content.width, theme.content.height) *
+                    (3 / 128);
 
                 let chart: Database.IChart | null = null;
                 for (let i = EDifficulty.BASIC; i <= EDifficulty.UTAGE; ++i) {
@@ -2146,16 +2149,13 @@ export namespace MaimaiPainterModule {
                     element.y,
                     element.width,
                     element.height,
-                    Math.min(theme.content.width, theme.content.height) *
-                        (3 / 128)
+                    backGroundBorderRadius
                 );
                 ctx.fillStyle = element.color.card;
                 ctx.strokeStyle = new Color(element.color.card)
                     .darken(0.6)
                     .hex();
-                ctx.lineWidth =
-                    Math.min(theme.content.width, theme.content.height) *
-                    (3 / 512);
+                ctx.lineWidth = backGroundBorderRadius / 4;
                 ctx.stroke();
                 ctx.fill();
                 /* End Background Draw */
@@ -2163,9 +2163,7 @@ export namespace MaimaiPainterModule {
                 /* Begin jacket draw */
                 if (jacket) {
                     const jacketImage = new Image();
-                    const roundRadius =
-                        Math.min(theme.content.width, theme.content.height) *
-                        (3 / 128);
+                    const jacketBorderRadius = backGroundBorderRadius / 2;
                     jacketImage.src = jacket;
                     ctx.beginPath();
                     ctx.roundRect(
@@ -2173,7 +2171,7 @@ export namespace MaimaiPainterModule {
                         element.y + jacketMargin,
                         element.width - jacketMargin * 2,
                         element.width - jacketMargin * 2,
-                        [roundRadius, roundRadius, 0, 0]
+                        jacketBorderRadius
                     );
                     ctx.save();
                     ctx.clip();
