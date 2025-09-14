@@ -983,47 +983,10 @@ export namespace MaimaiPainterModule {
                         none: z.string(),
                     }),
                     versions: z.object({
-                        OLD: z.object({
-                            "0": z.string(),
-                            "10": z.string(),
-                            "20": z.string(),
-                            "30": z.string(),
-                            "40": z.string(),
-                            "50": z.string(),
-                            "60": z.string(),
-                            "70": z.string(),
-                            "80": z.string(),
-                            "85": z.string(),
-                            "90": z.string(),
-                            "95": z.string(),
-                            "99": z.string(),
-                        }),
-                        DX: z.object({
-                            "0": z.string(),
-                            "5": z.string(),
-                            "10": z.string(),
-                            "15": z.string(),
-                            "20": z.string(),
-                            "25": z.string(),
-                            "30": z.string(),
-                            "35": z.string(),
-                            "40": z.string(),
-                            "45": z.string(),
-                            "50": z.string(),
-                            "55": z.string(),
-                        }),
-                        EX: z.object({
-                            "10": z.string(),
-                            "15": z.string(),
-                        }),
-                        CN: z.object({
-                            "0": z.string(),
-                            "10": z.string(),
-                            "20": z.string(),
-                            "30": z.string(),
-                            "40": z.string(),
-                            "50": z.string(),
-                        }),
+                        OLD: z.record(z.string(), z.string()),
+                        DX: z.record(z.string(), z.string()),
+                        EX: z.record(z.string(), z.string()),
+                        CN: z.record(z.string(), z.string()),
                     }),
                 }),
             });
@@ -1636,9 +1599,7 @@ export namespace MaimaiPainterModule {
                                 if (rawVersion != null) {
                                     const versionImage = theme.getFile(
                                         element.sprites.versions[region][
-                                            rawVersion as unknown as keyof z.infer<
-                                                typeof schema
-                                            >["sprites"]["versions"][typeof version.region]
+                                            rawVersion
                                         ]
                                     );
 
@@ -1948,93 +1909,108 @@ export namespace MaimaiPainterModule {
                                 if (rawVersion != null) {
                                     const versionImage = theme.getFile(
                                         element.sprites.versions[logoRegion][
-                                            rawVersion as unknown as keyof z.infer<
-                                                typeof schema
-                                            >["sprites"]["versions"][typeof logoRegion]
+                                            rawVersion
                                         ]
                                     );
                                     try {
+                                        if (!versionImage)
+                                            throw "No versionImage";
                                         sharp(versionImage);
-                                        if (versionImage) {
-                                            const versionImg = new Image();
-                                            versionImg.src = versionImage;
-                                            ctx.drawImage(
-                                                versionImg,
-                                                curx,
-                                                cury,
-                                                versionImageWidth,
-                                                versionImageHeight
-                                            );
-                                            if (event.type == "existence") {
-                                                let symbol = "";
-                                                if (i != 0) {
-                                                    const lastEvent =
-                                                        actualEvents[i - 1];
-                                                    if (
-                                                        lastEvent.type ==
-                                                        "existence"
-                                                    ) {
-                                                        if (
-                                                            lastEvent.data
-                                                                .level <
-                                                            event.data.level
-                                                        )
-                                                            symbol = "↑";
-                                                        else if (
-                                                            lastEvent.data
-                                                                .level >
-                                                            event.data.level
-                                                        )
-                                                            symbol = "↓";
-                                                        else if (
-                                                            lastEvent.data
-                                                                .level ==
-                                                            event.data.level
-                                                        )
-                                                            symbol = "→";
-                                                    }
-                                                }
-                                                Util.drawText(
-                                                    ctx,
-                                                    `${symbol}${Util.truncate(event.data.level, 1)}`,
-                                                    curx +
-                                                        versionImageWidth / 2,
-                                                    cury +
-                                                        versionImageHeight +
-                                                        noteCountTextSize,
-                                                    noteCountTextSize,
-                                                    height * 0.806 * 0.04,
-                                                    Infinity,
-                                                    "center",
-                                                    "white",
-                                                    new Color(curColor)
-                                                        .darken(0.3)
-                                                        .hexa()
-                                                );
-                                            } else if (
-                                                event.type == "removal"
-                                            ) {
-                                                Util.drawText(
-                                                    ctx,
-                                                    `❌`,
-                                                    curx +
-                                                        versionImageWidth / 2,
-                                                    cury +
-                                                        versionImageHeight +
-                                                        noteCountTextSize,
-                                                    noteCountTextSize,
-                                                    height * 0.806 * 0.04,
-                                                    Infinity,
-                                                    "center",
-                                                    "white",
-                                                    new Color(curColor)
-                                                        .darken(0.3)
-                                                        .hexa()
-                                                );
+                                        const versionImg = new Image();
+                                        versionImg.src = versionImage;
+                                        ctx.drawImage(
+                                            versionImg,
+                                            curx,
+                                            cury,
+                                            versionImageWidth,
+                                            versionImageHeight
+                                        );
+                                    } catch {
+                                        const str = `${event.version.gameVersion.isDX ? "DX " : ""}${event.version.gameVersion.major}.${event.version.gameVersion.minor}`;
+                                        const measurement = Util.measureText(
+                                            ctx,
+                                            str,
+                                            noteCountTextSize * 1.2,
+                                            Infinity
+                                        );
+                                        Util.drawText(
+                                            ctx,
+                                            str,
+                                            curx + versionImageWidth / 2,
+                                            cury +
+                                                versionImageHeight / 2 -
+                                                (measurement.actualBoundingBoxDescent -
+                                                    measurement.actualBoundingBoxAscent) /
+                                                    2,
+                                            noteCountTextSize * 1.2,
+                                            height * 0.806 * 0.04,
+                                            Infinity,
+                                            "center",
+                                            "white",
+                                            new Color(curColor)
+                                                .darken(0.3)
+                                                .hexa()
+                                        );
+                                    }
+
+                                    if (event.type == "existence") {
+                                        let symbol = "";
+                                        if (i != 0) {
+                                            const lastEvent =
+                                                actualEvents[i - 1];
+                                            if (lastEvent.type == "existence") {
+                                                if (
+                                                    lastEvent.data.level <
+                                                    event.data.level
+                                                )
+                                                    symbol = "↑";
+                                                else if (
+                                                    lastEvent.data.level >
+                                                    event.data.level
+                                                )
+                                                    symbol = "↓";
+                                                else if (
+                                                    lastEvent.data.level ==
+                                                    event.data.level
+                                                )
+                                                    symbol = "→";
                                             }
-                                            curx += versionImageWidth + addGap;
                                         }
-                                    } catch {}
+                                        Util.drawText(
+                                            ctx,
+                                            `${symbol}${Util.truncate(event.data.level, 1)}`,
+                                            curx + versionImageWidth / 2,
+                                            cury +
+                                                versionImageHeight +
+                                                noteCountTextSize,
+                                            noteCountTextSize,
+                                            height * 0.806 * 0.04,
+                                            Infinity,
+                                            "center",
+                                            "white",
+                                            new Color(curColor)
+                                                .darken(0.3)
+                                                .hexa()
+                                        );
+                                    } else if (event.type == "removal") {
+                                        Util.drawText(
+                                            ctx,
+                                            `❌`,
+                                            curx + versionImageWidth / 2,
+                                            cury +
+                                                versionImageHeight +
+                                                noteCountTextSize,
+                                            noteCountTextSize,
+                                            height * 0.806 * 0.04,
+                                            Infinity,
+                                            "center",
+                                            "white",
+                                            new Color(curColor)
+                                                .darken(0.3)
+                                                .hexa()
+                                        );
+                                    }
+                                    curx += versionImageWidth + addGap;
                                 }
                             }
                         }

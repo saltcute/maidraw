@@ -757,45 +757,9 @@ export namespace ChunithmPainterModule {
                         none: z.string(),
                     }),
                     versions: z.object({
-                        JPN: z.object({
-                            "100": z.string(),
-                            "105": z.string(),
-                            "110": z.string(),
-                            "115": z.string(),
-                            "120": z.string(),
-                            "125": z.string(),
-                            "130": z.string(),
-                            "135": z.string(),
-                            "140": z.string(),
-                            "145": z.string(),
-                            "150": z.string(),
-                            "155": z.string(),
-                            "200": z.string(),
-                            "205": z.string(),
-                            "210": z.string(),
-                            "215": z.string(),
-                            "220": z.string(),
-                            "225": z.string(),
-                            "230": z.string(),
-                            "240": z.string(),
-                        }),
-                        INT: z.object({
-                            "100": z.string(),
-                            "105": z.string(),
-                            "110": z.string(),
-                            "115": z.string(),
-                            "120": z.string(),
-                            "125": z.string(),
-                            "130": z.string(),
-                            "135": z.string(),
-                            "140": z.string(),
-                        }),
-                        CHN: z.object({
-                            "100": z.string(),
-                            "110": z.string(),
-                            "120": z.string(),
-                            "130": z.string(),
-                        }),
+                        JPN: z.record(z.string(), z.string()),
+                        INT: z.record(z.string(), z.string()),
+                        CHN: z.record(z.string(), z.string()),
                     }),
                 }),
             });
@@ -1251,9 +1215,7 @@ export namespace ChunithmPainterModule {
                             if (rawVersion) {
                                 const versionImage = theme.getFile(
                                     element.sprites.versions[version.region][
-                                        rawVersion as unknown as keyof z.infer<
-                                            typeof schema
-                                        >["sprites"]["versions"][typeof version.region]
+                                        rawVersion
                                     ]
                                 );
                                 try {
@@ -1516,93 +1478,107 @@ export namespace ChunithmPainterModule {
                                 if (rawVersion) {
                                     const versionImage = theme.getFile(
                                         element.sprites.versions[targetRegion][
-                                            rawVersion as unknown as keyof z.infer<
-                                                typeof schema
-                                            >["sprites"]["versions"][typeof version.region]
+                                            rawVersion
                                         ]
                                     );
                                     try {
+                                        if (!versionImage)
+                                            throw "No versionImage";
                                         sharp(versionImage);
-                                        if (versionImage) {
-                                            const versionImg = new Image();
-                                            versionImg.src = versionImage;
-                                            ctx.drawImage(
-                                                versionImg,
-                                                curx,
-                                                cury,
-                                                versionImageWidth,
-                                                versionImageHeight
-                                            );
-                                            if (event.type == "existence") {
-                                                let symbol = "";
-                                                if (i != 0) {
-                                                    const lastEvent =
-                                                        actualEvents[i - 1];
-                                                    if (
-                                                        lastEvent.type ==
-                                                        "existence"
-                                                    ) {
-                                                        if (
-                                                            lastEvent.data
-                                                                .level <
-                                                            event.data.level
-                                                        )
-                                                            symbol = "↑";
-                                                        else if (
-                                                            lastEvent.data
-                                                                .level >
-                                                            event.data.level
-                                                        )
-                                                            symbol = "↓";
-                                                        else if (
-                                                            lastEvent.data
-                                                                .level ==
-                                                            event.data.level
-                                                        )
-                                                            symbol = "→";
-                                                    }
-                                                }
-                                                Util.drawText(
-                                                    ctx,
-                                                    `${symbol}${Util.truncate(event.data.level, 1)}`,
-                                                    curx +
-                                                        versionImageWidth / 2,
-                                                    cury +
-                                                        versionImageHeight +
-                                                        noteCountTextSize,
-                                                    noteCountTextSize,
-                                                    height * 0.806 * 0.04,
-                                                    Infinity,
-                                                    "center",
-                                                    "white",
-                                                    new Color(curColor)
-                                                        .darken(0.3)
-                                                        .hexa()
-                                                );
-                                            } else if (
-                                                event.type == "removal"
-                                            ) {
-                                                Util.drawText(
-                                                    ctx,
-                                                    `❌`,
-                                                    curx +
-                                                        versionImageWidth / 2,
-                                                    cury +
-                                                        versionImageHeight +
-                                                        noteCountTextSize,
-                                                    noteCountTextSize,
-                                                    height * 0.806 * 0.04,
-                                                    Infinity,
-                                                    "center",
-                                                    "white",
-                                                    new Color(curColor)
-                                                        .darken(0.3)
-                                                        .hexa()
-                                                );
+                                        const versionImg = new Image();
+                                        versionImg.src = versionImage;
+                                        ctx.drawImage(
+                                            versionImg,
+                                            curx,
+                                            cury,
+                                            versionImageWidth,
+                                            versionImageHeight
+                                        );
+                                    } catch {
+                                        const str = `${event.version.gameVersion.major}.${event.version.gameVersion.minor}`;
+                                        const measurement = Util.measureText(
+                                            ctx,
+                                            str,
+                                            noteCountTextSize * 1.2,
+                                            Infinity
+                                        );
+                                        Util.drawText(
+                                            ctx,
+                                            str,
+                                            curx + versionImageWidth / 2,
+                                            cury +
+                                                versionImageHeight / 2 -
+                                                (measurement.actualBoundingBoxDescent -
+                                                    measurement.actualBoundingBoxAscent) /
+                                                    2,
+                                            noteCountTextSize * 1.2,
+                                            height * 0.806 * 0.04,
+                                            Infinity,
+                                            "center",
+                                            "white",
+                                            new Color(curColor)
+                                                .darken(0.3)
+                                                .hexa()
+                                        );
+                                    }
+                                    if (event.type == "existence") {
+                                        let symbol = "";
+                                        if (i != 0) {
+                                            const lastEvent =
+                                                actualEvents[i - 1];
+                                            if (lastEvent.type == "existence") {
+                                                if (
+                                                    lastEvent.data.level <
+                                                    event.data.level
+                                                )
+                                                    symbol = "↑";
+                                                else if (
+                                                    lastEvent.data.level >
+                                                    event.data.level
+                                                )
+                                                    symbol = "↓";
+                                                else if (
+                                                    lastEvent.data.level ==
+                                                    event.data.level
+                                                )
+                                                    symbol = "→";
                                             }
-                                            curx += versionImageWidth + addGap;
                                         }
-                                    } catch {}
+                                        Util.drawText(
+                                            ctx,
+                                            `${symbol}${Util.truncate(event.data.level, 1)}`,
+                                            curx + versionImageWidth / 2,
+                                            cury +
+                                                versionImageHeight +
+                                                noteCountTextSize,
+                                            noteCountTextSize,
+                                            height * 0.806 * 0.04,
+                                            Infinity,
+                                            "center",
+                                            "white",
+                                            new Color(curColor)
+                                                .darken(0.3)
+                                                .hexa()
+                                        );
+                                    } else if (event.type == "removal") {
+                                        Util.drawText(
+                                            ctx,
+                                            `❌`,
+                                            curx + versionImageWidth / 2,
+                                            cury +
+                                                versionImageHeight +
+                                                noteCountTextSize,
+                                            noteCountTextSize,
+                                            height * 0.806 * 0.04,
+                                            Infinity,
+                                            "center",
+                                            "white",
+                                            new Color(curColor)
+                                                .darken(0.3)
+                                                .hexa()
+                                        );
+                                    }
+                                    curx += versionImageWidth + addGap;
                                 }
                             }
                         }
