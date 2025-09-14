@@ -460,19 +460,6 @@ export namespace OngekiPainterModule {
                         );
                     } /** End Jacket Gradient Mask Draw*/
 
-                    ctx.beginPath();
-                    ctx.roundRect(
-                        x + element.scoreBubble.margin,
-                        y + element.scoreBubble.margin,
-                        element.scoreBubble.width -
-                            element.scoreBubble.margin * 2,
-                        element.scoreBubble.height * 0.806 -
-                            element.scoreBubble.margin * 2,
-                        (element.scoreBubble.height * 0.806 -
-                            element.scoreBubble.margin * 2) /
-                            7
-                    );
-
                     /** Begin Title Draw */ {
                         Util.drawText(
                             ctx,
@@ -503,9 +490,9 @@ export namespace OngekiPainterModule {
                                     (0.144 + 0.072),
                             element.scoreBubble.width -
                                 (jacketSize * 13) / 16 -
-                                element.scoreBubble.margin * 2,
+                                element.scoreBubble.margin,
                             element.scoreBubble.height * 0.806 * 0.02,
-                            element.scoreBubble.height * 0.806 * 0.16
+                            (element.scoreBubble.height * 0.806 * 0.02) / 2
                         );
                         ctx.fillStyle = jacketMaskGradDark;
                         ctx.fill();
@@ -654,6 +641,7 @@ export namespace OngekiPainterModule {
                         const comboBackground = comboWidth * 0.9;
                         const comboBgRatio = 64 / 272;
                         const sizeDiff = comboWidth - comboBackground;
+                        ctx.beginPath();
                         ctx.fillStyle = "#e8eaec";
                         ctx.roundRect(
                             x +
