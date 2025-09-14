@@ -17,11 +17,11 @@ const upath = require("upath");
             let result = await painter.drawWithScoreSource(
                 kamai,
                 {
-                    username: "",
-                    chartId: 11451,
+                    username: process.env.NAME,
+                    chartId: process.env.CHART ?? 11451,
                 },
                 {
-                    scale: 0.5,
+                    scale: process.env.SCALE ?? 1,
                     theme,
                     region,
                 }

@@ -16,15 +16,13 @@ const upath = require("upath");
         for (const region of ["JPN"]) {
             let result = await painter.drawWithScoreSource(
                 kamai,
-                // lxns,
-                // "",
                 {
-                    username: "",
-                    chartId: 18,
+                    username: process.env.NAME,
+                    chartId: process.env.CHART ?? 18,
                     type: "recents",
                 },
                 {
-                    scale: 1,
+                    scale: process.env.SCALE ?? 1,
                     theme,
                     region,
                 }

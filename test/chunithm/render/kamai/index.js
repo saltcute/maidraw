@@ -17,16 +17,15 @@ const upath = require("upath");
         "jp-verse-landscape-new",
     ];
     const source = kamai.luminous();
-    const username = "salt";
     for (let theme of themes) {
         const options = {
-            scale: 1,
+            scale: process.env.SCALE ?? 1,
             type: theme.endsWith("-new") ? "new" : "recents",
             theme,
         };
         const result = await painter.drawWithScoreSource(
             source,
-            { username },
+            { username: process.env.NAME },
             options
         );
         if (result instanceof Buffer) {

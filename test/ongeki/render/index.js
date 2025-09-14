@@ -15,16 +15,15 @@ const upath = require("upath");
         "jp-refresh-landscape-refresh",
     ];
     const source = kamai.brightMemoryAct3();
-    const username = "salt";
     for (let theme of themes) {
         const options = {
-            scale: 0.5,
+            scale: process.env.SCALE ?? 1,
             type: theme.endsWith("-refresh") ? "refresh" : "classic",
             theme,
         };
         const result = await painter.drawWithScoreSource(
             source,
-            { username },
+            { username: process.env.NAME },
             options
         );
         if (result instanceof Buffer) {
