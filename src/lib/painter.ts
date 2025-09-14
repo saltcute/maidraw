@@ -96,6 +96,7 @@ export class Theme<T> {
     ) {}
 
     public getFile(file: string) {
+        if (typeof file !== "string") return Buffer.from([]);
         const path = upath.join(this.basePath, file);
         if (fs.existsSync(path)) return fs.readFileSync(path);
         else return Buffer.from([]);
