@@ -2081,7 +2081,8 @@ export namespace OngekiPainterModule {
                 /* End character draw */
 
                 /* Begin Detail Draw */
-                const textSizeSecondary = jacketMargin;
+                const textSizeTitle = jacketMargin;
+                const textSizeSecondary = jacketMargin * (3 / 4);
 
                 const textLineWidth = element.width * (7 / 512);
                 const textColor = new Color(element.color.card)
@@ -2092,7 +2093,7 @@ export namespace OngekiPainterModule {
                     const characterNameMetrics = Util.measureText(
                         ctx,
                         `Lv.${character.level} ${character.character.name}`,
-                        textSizeSecondary,
+                        textSizeTitle,
                         Infinity
                     );
                     const characterNameActualHeight = Math.abs(
@@ -2104,7 +2105,7 @@ export namespace OngekiPainterModule {
                         `Lv.${character.level} ${character.character.name}`,
                         element.x + characterImgWidth / 2,
                         element.y + jacketMargin + characterNameActualHeight,
-                        textSizeSecondary,
+                        textSizeTitle,
                         textLineWidth,
                         Infinity,
                         "center",
@@ -2125,75 +2126,30 @@ export namespace OngekiPainterModule {
                                     ];
                                 }
                                 if (chara.voiceLines.length > 0) {
-                                    const curX =
-                                            element.x +
-                                            characterImgWidth -
-                                            jacketMargin * 3,
-                                        curY =
-                                            element.y +
-                                            jacketMargin * 2 +
-                                            characterImgHeight * (35 / 100) +
-                                            characterNameActualHeight / 2;
-                                    ctx.save();
-                                    ctx.translate(curX, curY);
-                                    ctx.rotate((4 * Math.PI) / 180);
-                                    const content = `「${getRandomFromArray(chara.voiceLines)}」`;
-                                    const lines: string[] = [];
-                                    const breaker = new LineBreaker(content);
-                                    let lastPossibleBreak = 0,
-                                        lastBreak = 0;
-                                    for (
-                                        let bk = breaker.nextBreak();
-                                        bk;
-                                        lastPossibleBreak = bk.position,
-                                            bk = breaker.nextBreak()
-                                    ) {
-                                        const cur = content.substring(
-                                            lastBreak,
-                                            bk.position
-                                        );
-                                        if (cur.length > 8) {
-                                            lines.push(
-                                                content
-                                                    .substring(
-                                                        lastBreak,
-                                                        lastPossibleBreak
-                                                    )
-                                                    .trim()
-                                            );
-                                            lastBreak = lastPossibleBreak;
-                                        }
-                                    }
-                                    lines.push(
-                                        content.substring(lastBreak).trim()
+                                    const quote = getRandomFromArray(
+                                        chara.voiceLines
                                     );
-                                    for (let i = 0; i < lines.length; ++i) {
-                                        const line = lines[i];
-                                        const secondaryMetrics =
-                                            Util.measureText(
-                                                ctx,
-                                                lines[i - 1] || "",
-                                                textSizeSecondary,
-                                                Infinity
-                                            );
-                                        const textHeight = Math.abs(
-                                            secondaryMetrics.actualBoundingBoxAscent -
-                                                secondaryMetrics.actualBoundingBoxDescent
-                                        );
-                                        Util.drawText(
+                                    if (quote) {
+                                        const curX =
+                                                element.x +
+                                                characterImgWidth -
+                                                jacketMargin,
+                                            curY = element.y + jacketMargin * 2;
+                                        ctx.save();
+                                        ctx.translate(curX, curY);
+                                        ctx.rotate((5 * Math.PI) / 180);
+                                        Util.drawVerticalText(
                                             ctx,
-                                            line,
+                                            `「${quote}」`,
                                             0,
-                                            textHeight * (3 / 2) * i,
+                                            0,
                                             textSizeSecondary,
                                             textLineWidth,
-                                            Infinity,
-                                            "left",
                                             "white",
                                             textColor
                                         );
+                                        ctx.restore();
                                     }
-                                    ctx.restore();
                                 }
                             }
                         }
