@@ -2001,7 +2001,6 @@ export namespace OngekiPainterModule {
                 }
             ) {
                 const jacketMargin = element.margin;
-                const textMargin = element.margin;
                 const backGroundBorderRadius =
                     Math.min(theme.content.width, theme.content.height) *
                     (3 / 128);
@@ -2036,11 +2035,13 @@ export namespace OngekiPainterModule {
                 const characterImgHeight = element.height - jacketMargin * 2;
                 const characterImgWidth =
                     characterImgHeight * characterImgRatio;
+                const cardCenterOffset =
+                    (element.width - characterImgWidth) / 2;
                 if (characterImg) {
                     characterImage.src = characterImg;
                     ctx.beginPath();
                     ctx.roundRect(
-                        element.x,
+                        element.x + cardCenterOffset,
                         element.y +
                             jacketMargin * 2 +
                             characterImgHeight * (30 / 100),
@@ -2059,18 +2060,18 @@ export namespace OngekiPainterModule {
 
                     ctx.beginPath();
                     ctx.roundRect(
-                        element.x,
+                        element.x + cardCenterOffset,
                         element.y + jacketMargin * 2,
                         characterImgWidth,
                         characterImgHeight,
-                        [0, characterBorderRadius, 0, 0]
+                        [characterBorderRadius, characterBorderRadius, 0, 0]
                     );
                     ctx.save();
                     ctx.clip();
 
                     ctx.drawImage(
                         characterImage,
-                        element.x,
+                        element.x + cardCenterOffset,
                         element.y + jacketMargin * 2,
                         characterImgWidth,
                         characterImgHeight
@@ -2103,7 +2104,7 @@ export namespace OngekiPainterModule {
                     Util.drawText(
                         ctx,
                         `Lv.${character.level} ${character.character.name}`,
-                        element.x + characterImgWidth / 2,
+                        element.x + cardCenterOffset + characterImgWidth / 2,
                         element.y + jacketMargin + characterNameActualHeight,
                         textSizeTitle,
                         textLineWidth,
@@ -2132,6 +2133,7 @@ export namespace OngekiPainterModule {
                                     if (quote) {
                                         const curX =
                                                 element.x +
+                                                cardCenterOffset +
                                                 characterImgWidth -
                                                 jacketMargin,
                                             curY = element.y + jacketMargin * 2;
