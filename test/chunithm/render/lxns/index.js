@@ -2,26 +2,23 @@ const sharp = require("sharp");
 const upath = require("upath");
 (async () => {
     const { MaiDraw } = require("../../../../dist");
-    const lxns = new MaiDraw.Chuni.Best50.LXNS({
-        auth: "",
+    const lxns = new MaiDraw.Chuni.Adapters.LXNS({
+        auth: process.env.LXNS_AUTH,
     });
-    MaiDraw.Chuni.Chart.Database.setLocalDatabasePath(
-        "../maimai-songs-database"
-    );
+    const painter = new MaiDraw.Chuni.Painters.Best50();
+    MaiDraw.Chuni.Database.setLocalDatabasePath("../maimai-songs-database");
 
     const fs = require("fs");
-    const themes = ["jp-verse-landscape-recents"];
-    const source = lxns;
-    const username = "";
+    const themes = ["jp-verse-landscape-new"];
     for (let theme of themes) {
         const options = {
-            scale: 2,
-            type: "recents",
+            scale: process.env.SCALE ?? 1,
+            type: "new",
             theme,
         };
-        const result = await MaiDraw.Chuni.Best50.drawWithScoreSource(
-            source,
-            username,
+        const result = await painter.drawWithScoreSource(
+            lxns,
+            { username: process.env.NAME },
             options
         );
         if (result instanceof Buffer) {
