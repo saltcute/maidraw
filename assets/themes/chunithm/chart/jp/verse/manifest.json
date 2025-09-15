@@ -151,7 +151,7 @@
             "probability": 0.1,
             "customLines": [
                 "../../../../../hitokoto/general.json",
-                "../../../../../hitokoto/support/maimaidx.json"
+                "../../../../../hitokoto/support/chunithm.json"
             ]
         }
     ]
