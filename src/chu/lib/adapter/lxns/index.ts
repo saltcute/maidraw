@@ -21,8 +21,8 @@ export class LXNS extends ScoreTrackerAdapter {
         this.axios.defaults.headers.common["Authorization"] = auth;
     }
 
-    async getPlayerRawBest40(friendCode: string) {
-        return this.get<LXNS.IAPIResponse<LXNS.IBest40Response>>(
+    async getPlayerRawBest50(friendCode: string) {
+        return this.get<LXNS.IAPIResponse<LXNS.IBest50Response>>(
             `/player/${friendCode}/bests`,
             undefined,
             60 * 1000
@@ -94,10 +94,15 @@ export class LXNS extends ScoreTrackerAdapter {
             .filter((v) => v !== null);
     }
     async getPlayerBest50(friendCode: string) {
+        const b50 = await this.getPlayerRawBest50(friendCode);
+        if (!b50?.data) return null;
+        const chartList = await this.getChartList([
+            ...b50.data.new_bests,
+            ...b50.data.bests,
+        ]);
         return {
-            new: [],
-            old: [],
-            best: [],
+            new: this.toMaiDrawScore(b50.data.new_bests, chartList),
+            old: this.toMaiDrawScore(b50.data.bests, chartList),
         };
     }
     async getSongList(): Promise<LXNS.ISongListResponse> {
@@ -130,27 +135,21 @@ export class LXNS extends ScoreTrackerAdapter {
         });
     }
     async getPlayerRecent40(friendCode: string) {
-        const b50 = await this.getPlayerRawBest40(friendCode);
-        if (!b50?.data) return null;
-        const chartList = await this.getChartList([
-            ...b50.data.recents,
-            ...b50.data.bests,
-        ]);
         return {
-            recent: this.toMaiDrawScore(b50.data.recents, chartList),
-            best: this.toMaiDrawScore(b50.data.bests, chartList),
+            recent: [],
+            best: [],
         };
     }
     async getPlayerInfo(friendCode: string, type: "new" | "recents") {
         if (type == "new") {
-            return null;
-        } else if (type == "recents") {
             const profile = await this.getPlayerRawProfile(friendCode);
             if (!profile?.data) return null;
             return {
                 name: profile.data.name,
                 rating: profile.data.rating,
             };
+        } else if (type == "recents") {
+            return null;
         } else return null;
     }
     async getPlayerRawProfile(friendCode: string) {
@@ -374,6 +373,17 @@ export namespace LXNS {
         description: string;
         genre: string;
         required: any;
+    }
+    export interface IBest50Response {
+        /**
+         * Old version top 30 scores.
+         */
+        bests: IScore[];
+        /**
+         * New version top 20 scores.
+         */
+        new_bests: IScore[];
+        selections: IScore[];
     }
     export interface IBest40Response {
         /**
