@@ -2,6 +2,7 @@ import _ from "lodash";
 import sharp from "sharp";
 import Color from "color";
 import { z } from "zod/v4";
+import LineBreaker from "linebreak";
 import { CanvasRenderingContext2D, Image } from "canvas";
 
 import { Database } from "../lib/database";
@@ -16,6 +17,7 @@ import {
 
 import { Util } from "@maidraw/lib/util";
 import { Painter, Theme, ThemeManager } from "@maidraw/lib/painter";
+import { OngekiUtil } from "../lib/util";
 
 export abstract class OngekiPainter<
     Schema extends typeof ThemeManager.BaseObject,
@@ -770,6 +772,1437 @@ export namespace OngekiPainterModule {
 
                 ctx.restore();
                 /** End Card Draw */
+            }
+        }
+    }
+
+    export namespace Chart {
+        const JPN_LATEST = 150;
+        const INT_LATEST = 0;
+        const CHN_LATEST = 0;
+
+        const ONGEKI_VERSIONS = [
+            150, 145, 140, 135, 130, 125, 120, 115, 110, 105, 100,
+        ] as const;
+        const ONGEKI_INT_VERSIONS = [] as const;
+        const YINJI_VERSIONS = [] as const;
+
+        function findVersion(v: number, region: "JPN" | "INT" | "CHN") {
+            const target = (() => {
+                switch (region) {
+                    case "INT":
+                        return ONGEKI_INT_VERSIONS;
+                    case "CHN":
+                        return YINJI_VERSIONS;
+                    case "JPN":
+                    default:
+                        return ONGEKI_VERSIONS;
+                }
+            })();
+            for (const version of target) {
+                if (v >= version) return version;
+            }
+            return null;
+        }
+
+        export namespace ChartGrid {
+            export const schema = ThemeManager.Element.extend({
+                type: z.literal("chart-grid"),
+                width: z.number().min(1),
+                height: z.number().min(1),
+                margin: z.number().min(0),
+                gap: z.number().min(0),
+                bubble: z.object({
+                    margin: z.number().min(0),
+                    color: z.object({
+                        basic: Util.z.color(),
+                        advanced: Util.z.color(),
+                        expert: Util.z.color(),
+                        master: Util.z.color(),
+                        lunatic: Util.z.color(),
+                    }),
+                }),
+                color: z.object({
+                    card: Util.z.color(),
+                }),
+                sprites: z.object({
+                    achievement: z.object({
+                        d: z.string(),
+                        c: z.string(),
+                        b: z.string(),
+                        bb: z.string(),
+                        bbb: z.string(),
+                        a: z.string(),
+                        aa: z.string(),
+                        aaa: z.string(),
+                        s: z.string(),
+                        ss: z.string(),
+                        sss: z.string(),
+                        sssp: z.string(),
+                    }),
+                    milestone: z.object({
+                        ab: z.string(),
+                        abp: z.string(),
+                        fc: z.string(),
+                        fb: z.string(),
+                        none: z.string(),
+                    }),
+                    versions: z.object({
+                        JPN: z.record(z.string(), z.string()),
+                    }),
+                }),
+            });
+
+            export async function draw(
+                ctx: CanvasRenderingContext2D,
+                theme: Theme<any>,
+                element: z.infer<typeof schema>,
+                chartId: number,
+                scores: (IScore | null)[],
+                region: "JPN" = "JPN"
+            ) {
+                /* Begin Background Draw */
+                ctx.roundRect(
+                    element.x,
+                    element.y,
+                    element.width,
+                    element.height,
+                    Math.min(theme.content.width, theme.content.height) *
+                        (3 / 128)
+                );
+                ctx.fillStyle = element.color.card;
+                ctx.strokeStyle = new Color(element.color.card)
+                    .darken(0.6)
+                    .hex();
+                ctx.lineWidth =
+                    Math.min(theme.content.width, theme.content.height) *
+                    (3 / 512);
+                ctx.stroke();
+                ctx.fill();
+                /* End Background Draw */
+
+                const difficulties = [];
+                for (let i = EDifficulty.BASIC; i <= EDifficulty.LUNATIC; ++i) {
+                    const chart = Database.getLocalChart(chartId, i);
+                    if (chart) difficulties.push(chart);
+                }
+
+                const cardWidth = element.width - element.margin * 2;
+                const cardHeight =
+                    (element.height - element.margin * 2 - element.gap * 3) / 4;
+                for (
+                    let y = element.y + element.margin, i = 0;
+                    i < difficulties.length;
+                    ++i, y += cardHeight + element.gap
+                ) {
+                    const chart = difficulties[i];
+                    if (chart)
+                        if (difficulties.length > 4 && i == 0) {
+                            await drawChartGridCard(
+                                ctx,
+                                theme,
+                                element,
+                                chart,
+                                element.x + element.margin,
+                                y,
+                                (cardWidth - element.margin) / 2,
+                                cardHeight,
+                                true,
+                                region,
+                                scores[i]
+                            );
+                            i++;
+                            const chartA = difficulties[i];
+                            if (chartA)
+                                await drawChartGridCard(
+                                    ctx,
+                                    theme,
+                                    element,
+                                    chartA,
+                                    element.x +
+                                        element.margin +
+                                        (cardWidth + element.margin) / 2,
+                                    y,
+                                    (cardWidth - element.margin) / 2,
+                                    cardHeight,
+                                    true,
+                                    region,
+                                    scores[i]
+                                );
+                        } else {
+                            await drawChartGridCard(
+                                ctx,
+                                theme,
+                                element,
+                                chart,
+                                element.x + element.margin,
+                                y,
+                                cardWidth,
+                                cardHeight,
+                                false,
+                                region,
+                                scores[i]
+                            );
+                        }
+                }
+            }
+
+            async function drawChartGridCard(
+                ctx: CanvasRenderingContext2D,
+                theme: Theme<any>,
+                element: z.infer<typeof schema>,
+                chart: Database.IChart,
+                x: number,
+                y: number,
+                width: number,
+                height: number,
+                isShort: boolean,
+                targetRegion: "JPN" = "JPN",
+                score?: IScore | null
+            ) {
+                let curColor = "#FFFFFF";
+                switch (chart.difficulty) {
+                    case EDifficulty.BASIC:
+                        curColor = element.bubble.color.basic;
+                        break;
+                    case EDifficulty.ADVANCED:
+                        curColor = element.bubble.color.advanced;
+                        break;
+                    case EDifficulty.EXPERT:
+                        curColor = element.bubble.color.expert;
+                        break;
+                    case EDifficulty.MASTER:
+                        curColor = element.bubble.color.master;
+                        break;
+                    case EDifficulty.LUNATIC:
+                        curColor = element.bubble.color.lunatic;
+                        break;
+                }
+
+                /** Begin Card Draw */
+                ctx.save();
+                ctx.fillStyle = new Color(curColor).lighten(0.4).hexa();
+                ctx.beginPath();
+                ctx.roundRect(x, y, width, height, (height * 0.806) / 7);
+                ctx.strokeStyle = new Color(curColor).darken(0.3).hexa();
+                ctx.lineWidth = element.bubble.margin / 4;
+                ctx.stroke();
+                ctx.fill();
+                ctx.beginPath();
+                ctx.roundRect(x, y, width, height, (height * 0.806) / 7);
+                ctx.clip();
+
+                /** Begin Main Content Draw */
+                {
+                    ctx.save();
+                    ctx.beginPath();
+                    ctx.rect(x, y, width, height);
+                    ctx.clip();
+                    ctx.fillStyle = curColor;
+                    ctx.fill();
+
+                    const titleSize = height * (47 / 256);
+                    /** Begin Difficulty Text & Separation Line Draw */
+                    {
+                        let difficultiy = "";
+                        switch (chart.difficulty) {
+                            case EDifficulty.BASIC:
+                                difficultiy = "BASIC";
+                                break;
+                            case EDifficulty.ADVANCED:
+                                difficultiy = "ADVANCED";
+                                break;
+                            case EDifficulty.EXPERT:
+                                difficultiy = "EXPERT";
+                                break;
+                            case EDifficulty.MASTER:
+                                difficultiy = "MASTER";
+                                break;
+                            case EDifficulty.LUNATIC:
+                                difficultiy = "LUNATIC";
+                                break;
+                        }
+                        const levelTextSize = titleSize * (5 / 8);
+                        Util.drawText(
+                            ctx,
+                            difficultiy,
+                            x + element.bubble.margin,
+                            y +
+                                element.bubble.margin +
+                                titleSize -
+                                element.bubble.margin * (1 / 4),
+                            titleSize,
+                            height * 0.806 * 0.04,
+                            Infinity,
+                            "left",
+                            "white",
+                            new Color(curColor).darken(0.3).hexa()
+                        );
+                        const difficultyTextWidth = Util.measureText(
+                            ctx,
+                            difficultiy,
+                            titleSize,
+                            Infinity
+                        ).width;
+                        Util.drawText(
+                            ctx,
+                            `Lv. ${Util.truncate(
+                                chart.events
+                                    .filter(
+                                        (v) => v.version.region == targetRegion
+                                    )
+                                    .reverse()
+                                    .find((v) => v.type == "existence")?.data
+                                    .level || 0,
+                                1
+                            )}${score ? `　↑${Util.truncate(score.rating, 1)}` : ""}`,
+                            x + element.bubble.margin * 2 + difficultyTextWidth,
+                            y +
+                                element.bubble.margin +
+                                titleSize -
+                                element.bubble.margin * (1 / 4),
+                            levelTextSize,
+                            height * 0.806 * 0.04,
+                            Infinity,
+                            "left",
+                            "white",
+                            new Color(curColor).darken(0.3).hexa()
+                        );
+
+                        ctx.beginPath();
+                        ctx.roundRect(
+                            x + element.bubble.margin,
+                            y +
+                                element.bubble.margin +
+                                titleSize +
+                                element.bubble.margin * (1 / 4),
+                            height * 2 - element.bubble.margin * 2,
+                            height * 0.806 * 0.02,
+                            height * 0.806 * 0.16
+                        );
+                        ctx.fillStyle = new Color(curColor).darken(0.3).hex();
+                        ctx.fill();
+                    }
+                    /** End Difficulty Text & Separation Line Draw */
+
+                    /** Begin Achievement Rate Draw */
+                    {
+                        const scoreSize = height * 0.806 * 0.208;
+                        Util.drawText(
+                            ctx,
+                            score ? Util.truncate(score.score, 0) : "NO RECORD",
+                            x +
+                                height * 2 -
+                                element.bubble.margin -
+                                height * 0.806 * 0.02,
+                            y +
+                                element.bubble.margin +
+                                titleSize +
+                                element.bubble.margin * (5 / 8) +
+                                scoreSize,
+                            scoreSize,
+                            height * 0.806 * 0.04,
+                            Infinity,
+                            "right",
+                            "white",
+                            new Color(curColor).darken(0.3).hexa()
+                        );
+                    }
+                    /** End Achievement Rate Draw */
+
+                    /** Begin Achievement Rank Draw */
+                    {
+                        if (score) {
+                            let rankImg: Buffer;
+                            switch (score.rank) {
+                                case EAchievementTypes.D:
+                                    rankImg = theme.getFile(
+                                        element.sprites.achievement.d
+                                    );
+                                    break;
+                                case EAchievementTypes.C:
+                                    rankImg = theme.getFile(
+                                        element.sprites.achievement.c
+                                    );
+                                    break;
+                                case EAchievementTypes.B:
+                                    rankImg = theme.getFile(
+                                        element.sprites.achievement.b
+                                    );
+                                    break;
+                                case EAchievementTypes.BB:
+                                    rankImg = theme.getFile(
+                                        element.sprites.achievement.bb
+                                    );
+                                    break;
+                                case EAchievementTypes.BBB:
+                                    rankImg = theme.getFile(
+                                        element.sprites.achievement.bbb
+                                    );
+                                    break;
+                                case EAchievementTypes.A:
+                                    rankImg = theme.getFile(
+                                        element.sprites.achievement.a
+                                    );
+                                    break;
+                                case EAchievementTypes.AA:
+                                    rankImg = theme.getFile(
+                                        element.sprites.achievement.aa
+                                    );
+                                    break;
+                                case EAchievementTypes.AAA:
+                                    rankImg = theme.getFile(
+                                        element.sprites.achievement.aaa
+                                    );
+                                    break;
+                                case EAchievementTypes.S:
+                                    rankImg = theme.getFile(
+                                        element.sprites.achievement.s
+                                    );
+                                    break;
+                                case EAchievementTypes.SS:
+                                    rankImg = theme.getFile(
+                                        element.sprites.achievement.ss
+                                    );
+                                    break;
+                                case EAchievementTypes.SSS:
+                                    rankImg = theme.getFile(
+                                        element.sprites.achievement.sss
+                                    );
+                                    break;
+                                default:
+                                    rankImg = theme.getFile(
+                                        element.sprites.achievement.sssp
+                                    );
+                            }
+                            const achievementRankHeight =
+                                height * 0.806 * 0.3 * 0.85;
+                            const achievementRankWidth =
+                                achievementRankHeight * (286 / 143);
+
+                            const img = new Image();
+                            img.src = rankImg;
+                            ctx.drawImage(
+                                img,
+                                x + element.bubble.margin * (1 / 2),
+                                y +
+                                    element.bubble.margin +
+                                    titleSize +
+                                    element.bubble.margin * (1 / 2),
+                                achievementRankWidth,
+                                achievementRankHeight
+                            );
+
+                            /** End Achievement Rank Draw */
+
+                            /** Begin Milestone Draw */
+
+                            const comboImgRatio = 84 / 290;
+                            const comboBgRatio = 64 / 272;
+                            const comboWidth =
+                                achievementRankHeight / comboImgRatio;
+                            const comboBackground = comboWidth * 0.9;
+                            const sizeDiff = comboWidth - comboBackground;
+
+                            const curX =
+                                    x +
+                                    element.bubble.margin * (1 / 2) +
+                                    achievementRankWidth,
+                                curY =
+                                    y +
+                                    element.bubble.margin * (3 / 2) +
+                                    titleSize;
+
+                            ctx.beginPath();
+                            ctx.fillStyle = "#e8eaec";
+                            ctx.roundRect(
+                                curX + sizeDiff / 2,
+                                curY + ((sizeDiff * 3) / 2) * comboBgRatio,
+                                comboBackground,
+                                comboBackground * comboBgRatio,
+                                (comboBackground * comboBgRatio) / 2
+                            );
+                            ctx.roundRect(
+                                curX + sizeDiff / 2,
+                                curY +
+                                    comboWidth * comboImgRatio +
+                                    sizeDiff * (1 / 2) * comboBgRatio,
+                                comboBackground,
+                                comboBackground * comboBgRatio,
+                                (comboBackground * comboBgRatio) / 2
+                            );
+                            ctx.fill();
+                            let comboImg: Buffer;
+                            switch (score.combo) {
+                                case EComboTypes.NONE:
+                                    comboImg = theme.getFile(
+                                        element.sprites.milestone.none
+                                    );
+                                    break;
+                                case EComboTypes.FULL_COMBO:
+                                    comboImg = theme.getFile(
+                                        element.sprites.milestone.fc
+                                    );
+                                    break;
+                                case EComboTypes.ALL_BREAK:
+                                    comboImg = theme.getFile(
+                                        element.sprites.milestone.ab
+                                    );
+                                    break;
+                                case EComboTypes.ALL_BREAK_PLUS:
+                                    comboImg = theme.getFile(
+                                        element.sprites.milestone.abp
+                                    );
+                                    break;
+                            }
+                            let bellImg: Buffer;
+                            switch (score.bell) {
+                                case EBellTypes.NONE:
+                                    bellImg = theme.getFile(
+                                        element.sprites.milestone.none
+                                    );
+                                    break;
+                                case EBellTypes.FULL_BELL:
+                                    bellImg = theme.getFile(
+                                        element.sprites.milestone.fb
+                                    );
+                                    break;
+                            }
+                            const combo = new Image();
+                            combo.src = comboImg;
+                            const bell = new Image();
+                            bell.src = bellImg;
+
+                            ctx.drawImage(
+                                combo,
+                                curX,
+                                curY,
+                                comboWidth,
+                                comboWidth * comboImgRatio
+                            );
+                            ctx.drawImage(
+                                bell,
+                                curX,
+                                curY +
+                                    comboWidth * comboImgRatio -
+                                    sizeDiff * comboBgRatio,
+                                comboWidth,
+                                comboWidth * comboImgRatio
+                            );
+                        }
+                    }
+                    /** End Milestone Draw */
+
+                    /** Begin Version Draw */
+                    {
+                        const version: {
+                            region: "JPN";
+                            version?: Database.IVersion;
+                        } = {
+                            region: "JPN",
+                            version: undefined,
+                        };
+                        const VER =
+                            chart.difficulty == EDifficulty.LUNATIC
+                                ? chart.events.find(
+                                      (v) =>
+                                          v.type == "existence" &&
+                                          v.version.region == targetRegion
+                                  )?.version
+                                : chart.addVersion;
+                        version.version = VER;
+                        version.region = targetRegion;
+                        const versionImageHeight =
+                            (height - element.bubble.margin * 2) *
+                            (isShort ? 5 / 8 : 1 / 2);
+                        const versionImageWidth =
+                            (versionImageHeight / 270) * 360;
+                        const curx = x + width - element.bubble.margin,
+                            cury = y + element.bubble.margin;
+                        if (version.version) {
+                            const rawVersion = findVersion(
+                                OngekiUtil.getNumberVersion(version.version),
+                                targetRegion
+                            );
+                            if (rawVersion) {
+                                const versionImage = theme.getFile(
+                                    element.sprites.versions[version.region][
+                                        rawVersion
+                                    ]
+                                );
+                                try {
+                                    sharp(versionImage);
+                                    if (versionImage) {
+                                        const versionImg = new Image();
+                                        versionImg.src = versionImage;
+                                        ctx.drawImage(
+                                            versionImg,
+                                            curx - versionImageWidth,
+                                            cury,
+                                            versionImageWidth,
+                                            versionImageHeight
+                                        );
+                                    }
+                                } catch {}
+                            }
+                        }
+                        /** End Version Draw */
+
+                        /** Begin Note Count Draw */
+                        const noteCountTexts = Object.entries(
+                            chart.meta.notes
+                        ).map(([k, v]) => `${Util.capitalize(k)}: ${v}`);
+                        const noteCountTextSize =
+                            (height - element.bubble.margin * 4) /
+                            noteCountTexts.length;
+                        let noteCountLength = 0;
+                        noteCountTexts.forEach((v, i) => {
+                            Util.drawText(
+                                ctx,
+                                v,
+                                x +
+                                    element.bubble.margin * (3 / 2) +
+                                    height * 2,
+                                y +
+                                    element.bubble.margin +
+                                    noteCountTextSize +
+                                    (noteCountTextSize +
+                                        (element.bubble.margin * 2) /
+                                            (noteCountTexts.length - 1)) *
+                                        i,
+                                noteCountTextSize,
+                                height * 0.806 * 0.04,
+                                Infinity,
+                                "left",
+                                "white",
+                                new Color(curColor).darken(0.3).hexa()
+                            );
+                            const length = Util.measureText(
+                                ctx,
+                                v,
+                                noteCountTextSize,
+                                Infinity
+                            ).width;
+                            if (length > noteCountLength)
+                                noteCountLength = length;
+                        });
+                        /** End Note Count Draw */
+
+                        /** Begin Internal Level Trend Draw */
+                        if (!isShort) {
+                            const CURRENT_VER = (() => {
+                                switch (targetRegion) {
+                                    // case "INT":
+                                    //     return INT_LATEST;
+                                    // case "CHN":
+                                    //     return CHN_LATEST;
+                                    case "JPN":
+                                    default:
+                                        return JPN_LATEST;
+                                }
+                            })();
+                            const maxWidth =
+                                width -
+                                height * 2 -
+                                element.bubble.margin * 4 -
+                                noteCountLength -
+                                versionImageWidth;
+                            const maxFitTrendCount = Math.trunc(
+                                maxWidth / versionImageWidth
+                            );
+                            const trendEvents = chart.events.filter(
+                                (v) =>
+                                    v.type == "existence" &&
+                                    v.version.region == targetRegion
+                            ) as Database.Events.Existence[];
+                            let actualEvents: Database.Events[] = _.uniqWith(
+                                trendEvents,
+                                (a, b) => {
+                                    return _.isEqual(
+                                        a.data.level,
+                                        b.data.level
+                                    );
+                                }
+                            );
+
+                            if (actualEvents.length == maxFitTrendCount) {
+                            } else if (actualEvents.length > maxFitTrendCount) {
+                                while (actualEvents.length > maxFitTrendCount)
+                                    actualEvents.shift();
+                                actualEvents.shift();
+                                actualEvents.shift();
+                                actualEvents.unshift(trendEvents[0]);
+                                actualEvents.push(
+                                    trendEvents[trendEvents.length - 1]
+                                );
+                            } else if (trendEvents.length > maxFitTrendCount) {
+                                actualEvents = _.filter(
+                                    actualEvents,
+                                    (v) =>
+                                        !(
+                                            _.isEqual(
+                                                v.version.gameVersion,
+                                                trendEvents[0].version
+                                                    .gameVersion
+                                            ) ||
+                                            _.isEqual(
+                                                v.version.gameVersion,
+                                                trendEvents[
+                                                    trendEvents.length - 1
+                                                ].version.gameVersion
+                                            )
+                                        )
+                                );
+                                for (
+                                    let i = trendEvents.length - 2;
+                                    i > 0 &&
+                                    actualEvents.length < maxFitTrendCount - 2;
+                                    --i
+                                ) {
+                                    const event = trendEvents[i];
+                                    if (event) actualEvents.push(event);
+                                    actualEvents = _.uniqWith(
+                                        actualEvents,
+                                        (a, b) => {
+                                            return (
+                                                _.isEqual(
+                                                    a.version.gameVersion.major,
+                                                    b.version.gameVersion.major
+                                                ) &&
+                                                _.isEqual(
+                                                    a.version.gameVersion.minor,
+                                                    b.version.gameVersion.minor
+                                                )
+                                            );
+                                        }
+                                    );
+                                }
+                                actualEvents.unshift(trendEvents[0]);
+                                actualEvents.push(
+                                    trendEvents[trendEvents.length - 1]
+                                );
+                                actualEvents = _.uniqWith(
+                                    actualEvents,
+                                    (a, b) => {
+                                        return (
+                                            _.isEqual(
+                                                a.version.gameVersion.major,
+                                                b.version.gameVersion.major
+                                            ) &&
+                                            _.isEqual(
+                                                a.version.gameVersion.minor,
+                                                b.version.gameVersion.minor
+                                            )
+                                        );
+                                    }
+                                );
+                                actualEvents = _.sortBy(actualEvents, (v) =>
+                                    OngekiUtil.getNumberVersion(v.version)
+                                );
+                                if (trendEvents.length > 1) {
+                                    if (actualEvents.length >= maxFitTrendCount)
+                                        actualEvents.pop();
+                                    actualEvents.push(
+                                        trendEvents[trendEvents.length - 1]
+                                    );
+                                }
+                                const removalEvent = chart.events.find(
+                                    (v) =>
+                                        v.type == "removal" &&
+                                        v.version.region == targetRegion
+                                ) as Database.Events.Removal | undefined;
+                                if (removalEvent) {
+                                    actualEvents.pop();
+                                    actualEvents.push(removalEvent);
+                                }
+                            } else {
+                                actualEvents = [...trendEvents];
+                            }
+                            if (
+                                OngekiUtil.getNumberVersion(
+                                    actualEvents[actualEvents.length - 1]
+                                        .version
+                                ) < CURRENT_VER
+                            ) {
+                                while (actualEvents.length >= maxFitTrendCount)
+                                    actualEvents.pop();
+                                actualEvents.push({
+                                    type: "removal",
+                                    version: OngekiUtil.Version.toEventVersion(
+                                        OngekiUtil.Version.getNextVersion(
+                                            trendEvents[trendEvents.length - 1]
+                                                .version
+                                        )
+                                    ),
+                                });
+                            }
+                            actualEvents = _.uniqWith(actualEvents, (a, b) => {
+                                return (
+                                    _.isEqual(
+                                        a.version.gameVersion.major,
+                                        b.version.gameVersion.major
+                                    ) &&
+                                    _.isEqual(
+                                        a.version.gameVersion.minor,
+                                        b.version.gameVersion.minor
+                                    ) &&
+                                    _.isEqual(a.type, b.type)
+                                );
+                            });
+                            let positionAdjustment = 0;
+                            let addGap =
+                                (maxWidth -
+                                    actualEvents.length * versionImageWidth) /
+                                (actualEvents.length - 1);
+                            if (addGap > maxWidth / 5) {
+                                addGap = maxWidth / 5;
+                                positionAdjustment =
+                                    (maxWidth -
+                                        (addGap * (actualEvents.length - 1) +
+                                            versionImageWidth *
+                                                actualEvents.length)) /
+                                    2;
+                            }
+                            for (
+                                let i = 0,
+                                    curx =
+                                        x +
+                                        positionAdjustment +
+                                        height * 2 +
+                                        element.bubble.margin * (5 / 2) +
+                                        noteCountLength,
+                                    cury =
+                                        y +
+                                        element.bubble.margin +
+                                        versionImageHeight * (1 / 2);
+                                i < actualEvents.length;
+                                ++i
+                            ) {
+                                const event = actualEvents[i];
+                                const rawVersion = findVersion(
+                                    OngekiUtil.getNumberVersion(event.version),
+                                    targetRegion
+                                );
+                                if (rawVersion) {
+                                    const versionImage = theme.getFile(
+                                        element.sprites.versions[targetRegion][
+                                            rawVersion
+                                        ]
+                                    );
+                                    try {
+                                        if (!versionImage)
+                                            throw "No versionImage";
+                                        sharp(versionImage);
+                                        const versionImg = new Image();
+                                        versionImg.src = versionImage;
+                                        ctx.drawImage(
+                                            versionImg,
+                                            curx,
+                                            cury,
+                                            versionImageWidth,
+                                            versionImageHeight
+                                        );
+                                    } catch {
+                                        const str = `${event.version.gameVersion.major}.${event.version.gameVersion.minor}`;
+                                        const measurement = Util.measureText(
+                                            ctx,
+                                            str,
+                                            noteCountTextSize * 1.2,
+                                            Infinity
+                                        );
+                                        Util.drawText(
+                                            ctx,
+                                            str,
+                                            curx + versionImageWidth / 2,
+                                            cury +
+                                                versionImageHeight / 2 -
+                                                (measurement.actualBoundingBoxDescent -
+                                                    measurement.actualBoundingBoxAscent) /
+                                                    2,
+                                            noteCountTextSize * 1.2,
+                                            height * 0.806 * 0.04,
+                                            Infinity,
+                                            "center",
+                                            "white",
+                                            new Color(curColor)
+                                                .darken(0.3)
+                                                .hexa()
+                                        );
+                                    }
+                                    if (event.type == "existence") {
+                                        let symbol = "";
+                                        if (i != 0) {
+                                            const lastEvent =
+                                                actualEvents[i - 1];
+                                            if (lastEvent.type == "existence") {
+                                                if (
+                                                    lastEvent.data.level <
+                                                    event.data.level
+                                                )
+                                                    symbol = "↑";
+                                                else if (
+                                                    lastEvent.data.level >
+                                                    event.data.level
+                                                )
+                                                    symbol = "↓";
+                                                else if (
+                                                    lastEvent.data.level ==
+                                                    event.data.level
+                                                )
+                                                    symbol = "→";
+                                            }
+                                        }
+                                        Util.drawText(
+                                            ctx,
+                                            `${symbol}${Util.truncate(event.data.level, 1)}`,
+                                            curx + versionImageWidth / 2,
+                                            cury +
+                                                versionImageHeight +
+                                                noteCountTextSize,
+                                            noteCountTextSize,
+                                            height * 0.806 * 0.04,
+                                            Infinity,
+                                            "center",
+                                            "white",
+                                            new Color(curColor)
+                                                .darken(0.3)
+                                                .hexa()
+                                        );
+                                    } else if (event.type == "removal") {
+                                        Util.drawText(
+                                            ctx,
+                                            `❌`,
+                                            curx + versionImageWidth / 2,
+                                            cury +
+                                                versionImageHeight +
+                                                noteCountTextSize,
+                                            noteCountTextSize,
+                                            height * 0.806 * 0.04,
+                                            Infinity,
+                                            "center",
+                                            "white",
+                                            new Color(curColor)
+                                                .darken(0.3)
+                                                .hexa()
+                                        );
+                                    }
+                                    curx += versionImageWidth + addGap;
+                                }
+                            }
+                        }
+                    }
+                    /** End Internal Level Trend Draw */
+
+                    ctx.restore();
+                }
+                /** End Main Content Draw */
+
+                ctx.fillStyle = new Color(curColor).lighten(0.4).hexa();
+                ctx.beginPath();
+                ctx.roundRect(
+                    x,
+                    y + height * 0.742,
+                    height * 2,
+                    height * (1 - 0.742),
+                    [0, (height * 0.806) / 7, 0, (height * 0.806) / 7]
+                );
+                ctx.fill();
+                /** Begin Difficulty & Platinum Rating Draw */
+                {
+                    ctx.save();
+                    ctx.clip();
+                    Util.drawText(
+                        ctx,
+                        chart.designer || "-",
+                        x + element.bubble.margin,
+                        y + height * (0.806 + (1 - 0.806) / 2),
+                        height * 0.806 * 0.128,
+                        height * 0.806 * 0.04,
+                        Infinity,
+                        "left",
+                        "white",
+                        new Color(curColor).darken(0.3).hexa()
+                    );
+                    ctx.restore();
+
+                    Util.drawText(
+                        ctx,
+                        `${score ? `${score.platinumScore}/` : "MAX PT SCR: "}${chart.meta.maxPlatinumScore}`,
+                        x + height * 2 - element.bubble.margin,
+                        y + height - element.bubble.margin * 3.1,
+                        height * 0.806 * 0.128,
+                        height * 0.806 * 0.04,
+                        Infinity,
+                        "right",
+                        "white",
+                        new Color(curColor).darken(0.3).hexa()
+                    );
+                }
+                /** End Difficulty & Platinum Rating Draw */
+
+                ctx.restore();
+                /** End Card Draw */
+            }
+        }
+
+        export namespace DetailInfo {
+            export const schema = ThemeManager.Element.extend({
+                type: z.literal("detail-info"),
+                width: z.number().min(1),
+                height: z.number().min(1),
+                margin: z.number().min(0),
+                color: z.object({
+                    card: Util.z.color(),
+                }),
+            });
+
+            export async function draw(
+                ctx: CanvasRenderingContext2D,
+                theme: Theme<any>,
+                element: z.infer<typeof schema>,
+                chartId: number
+            ) {
+                const jacketMargin = element.margin;
+                const textMargin = element.margin;
+                const backGroundBorderRadius =
+                    Math.min(theme.content.width, theme.content.height) *
+                    (3 / 128);
+
+                let chart: Database.IChart | null = null;
+                for (let i = EDifficulty.BASIC; i <= EDifficulty.LUNATIC; ++i) {
+                    chart = Database.getLocalChart(chartId, i);
+                    if (chart !== null) break;
+                }
+                const jacket = await Database.fetchJacket(chartId);
+                /* Begin Background Draw */
+                ctx.beginPath();
+                ctx.roundRect(
+                    element.x,
+                    element.y,
+                    element.width,
+                    element.height,
+                    backGroundBorderRadius
+                );
+                ctx.fillStyle = element.color.card;
+                ctx.strokeStyle = new Color(element.color.card)
+                    .darken(0.6)
+                    .hex();
+                ctx.lineWidth = backGroundBorderRadius / 4;
+                ctx.stroke();
+                ctx.fill();
+                /* End Background Draw */
+
+                /* Begin jacket draw */
+                if (jacket) {
+                    const jacketImage = new Image();
+                    const jacketBorderRadius = backGroundBorderRadius / 2;
+                    jacketImage.src = jacket;
+                    ctx.beginPath();
+                    ctx.roundRect(
+                        element.x + jacketMargin,
+                        element.y + jacketMargin,
+                        element.width - jacketMargin * 2,
+                        element.width - jacketMargin * 2,
+                        jacketBorderRadius
+                    );
+                    ctx.save();
+                    ctx.clip();
+                    ctx.drawImage(
+                        jacketImage,
+                        element.x + jacketMargin,
+                        element.y + jacketMargin,
+                        element.width - jacketMargin * 2,
+                        element.width - jacketMargin * 2
+                    );
+                    ctx.restore();
+                }
+                /* End jacket draw */
+
+                /* Begin Detail Draw */
+                if (chart) {
+                    const textSizeTitle = element.width * (1 / 16);
+                    const textSizeSecondary = element.width * (1 / 24);
+                    const {
+                        actualBoundingBoxAscent: ascent,
+                        actualBoundingBoxDescent: decent,
+                    } = Util.measureText(
+                        ctx,
+                        chart.name,
+                        textSizeTitle,
+                        Infinity
+                    );
+                    const titleActualHeight = Math.abs(ascent - decent);
+
+                    const textLineWidth = element.width * (7 / 512);
+                    const textColor = new Color(element.color.card)
+                        .darken(0.5)
+                        .hex();
+                    const textTitleMaxWidth = element.width - textMargin * 2;
+
+                    const titleMetrics = Util.measureText(
+                        ctx,
+                        chart.name,
+                        textSizeTitle,
+                        textTitleMaxWidth
+                    );
+
+                    Util.drawText(
+                        ctx,
+                        chart.name,
+                        element.x + textMargin,
+                        element.y +
+                            jacketMargin +
+                            textMargin * (1 / 2) +
+                            (element.width - jacketMargin * 2) +
+                            textSizeTitle,
+                        textSizeTitle,
+                        textLineWidth,
+                        textTitleMaxWidth,
+                        "left",
+                        "white",
+                        textColor
+                    );
+
+                    Util.drawText(
+                        ctx,
+                        chart.artist,
+                        element.x + textMargin,
+                        element.y +
+                            jacketMargin +
+                            textMargin * (1 / 2) +
+                            (element.width - jacketMargin * 2) +
+                            textSizeTitle * 2,
+                        textSizeSecondary,
+                        textLineWidth,
+                        element.width - textMargin * 2,
+                        "left",
+                        "white",
+                        textColor
+                    );
+                    function getBpmRange(bpms: number[]) {
+                        const uniqueBpms = _.uniq(bpms);
+                        if (uniqueBpms.length <= 0) return "0";
+                        else if (uniqueBpms.length == 1)
+                            return `${uniqueBpms[0]}`;
+                        else {
+                            const minBpm = Math.min(...uniqueBpms);
+                            const maxBpm = Math.max(...uniqueBpms);
+                            return `${minBpm}-${maxBpm}`;
+                        }
+                    }
+                    Util.drawText(
+                        ctx,
+                        `#${chart.id} BPM: ${getBpmRange(chart.bpms)}`,
+                        element.x + textMargin,
+                        element.y +
+                            jacketMargin +
+                            textMargin * (1 / 2) +
+                            (element.width - jacketMargin * 2) +
+                            textSizeTitle * 3,
+                        textSizeSecondary,
+                        textLineWidth,
+                        element.width - textMargin * 2,
+                        "left",
+                        "white",
+                        textColor
+                    );
+
+                    const EVENT_JPN = chart.events
+                        .filter(
+                            (v) =>
+                                v.version.region == "JPN" &&
+                                OngekiUtil.getNumberVersion(v.version) >=
+                                    JPN_LATEST
+                        )
+                        .map((v) => v.type);
+                    const EVENT_INT = chart.events
+                        .filter(
+                            (v) =>
+                                // @ts-expect-error
+                                v.version.region == "INT" &&
+                                OngekiUtil.getNumberVersion(v.version) >=
+                                    INT_LATEST
+                        )
+                        .map((v) => v.type);
+                    const EVENT_CHN = chart.events
+                        .filter(
+                            (v) =>
+                                // @ts-expect-error
+                                v.version.region == "CHN" &&
+                                OngekiUtil.getNumberVersion(v.version) >=
+                                    CHN_LATEST
+                        )
+                        .map((v) => v.type);
+                    const EXIST_JPN =
+                        EVENT_JPN.includes("existence") &&
+                        !EVENT_JPN.includes("removal")
+                            ? "🇯🇵"
+                            : "";
+                    const EXIST_INT =
+                        EVENT_INT.includes("existence") &&
+                        !EVENT_INT.includes("removal")
+                            ? "🌏"
+                            : "";
+                    const EXIST_CHN =
+                        EVENT_CHN.includes("existence") &&
+                        !EVENT_CHN.includes("removal")
+                            ? "🇨🇳"
+                            : "";
+                    const title = [];
+                    if (EXIST_JPN) title.push(EXIST_JPN);
+                    if (EXIST_INT) title.push(EXIST_INT);
+                    if (EXIST_CHN) title.push(EXIST_CHN);
+                    await Util.drawEmojiOrGlyph(
+                        ctx,
+                        title.join(" "),
+                        element.x + element.width - textMargin,
+                        element.y +
+                            jacketMargin +
+                            textMargin * (1 / 2) +
+                            (element.width - jacketMargin * 2) +
+                            textSizeTitle * 3,
+                        textSizeSecondary * (9 / 8),
+                        element.width - textMargin * 2,
+                        "right",
+                        "white",
+                        textColor
+                    );
+                }
+                /* End Detail Draw */
+            }
+        }
+
+        export namespace CharacterInfo {
+            export const schema = ThemeManager.Element.extend({
+                type: z.literal("character-info"),
+                width: z.number().min(1),
+                height: z.number().min(1),
+                margin: z.number().min(0),
+                color: z.object({
+                    card: Util.z.color(),
+                }),
+            });
+
+            export async function draw(
+                ctx: CanvasRenderingContext2D,
+                theme: Theme<any>,
+                element: z.infer<typeof schema>,
+                character?: {
+                    card: {
+                        id: number;
+                        name: string;
+                    };
+                    character: {
+                        rarity: string;
+                        name: string;
+                        comment?: string;
+                    };
+                    level: number;
+                }
+            ) {
+                const jacketMargin = element.margin;
+                const textMargin = element.margin;
+                const backGroundBorderRadius =
+                    Math.min(theme.content.width, theme.content.height) *
+                    (3 / 128);
+
+                const characterImg = character
+                    ? await Database.getCardImage(character.card.id)
+                    : null;
+                /* Begin Background Draw */
+                ctx.beginPath();
+                ctx.roundRect(
+                    element.x,
+                    element.y,
+                    element.width,
+                    element.height,
+                    backGroundBorderRadius
+                );
+                ctx.fillStyle = element.color.card;
+                ctx.strokeStyle = new Color(element.color.card)
+                    .darken(0.6)
+                    .hex();
+                ctx.lineWidth = backGroundBorderRadius / 4;
+                ctx.stroke();
+                ctx.fill();
+                /* End Background Draw */
+
+                ctx.save();
+                ctx.clip();
+                /* Begin character draw */
+                const characterImgRatio = 768 / 1052;
+                const characterImage = new Image();
+                const characterBorderRadius = backGroundBorderRadius / 2;
+                const characterImgHeight = element.height - jacketMargin * 2;
+                const characterImgWidth =
+                    characterImgHeight * characterImgRatio;
+                if (characterImg) {
+                    characterImage.src = characterImg;
+                    ctx.beginPath();
+                    ctx.roundRect(
+                        element.x,
+                        element.y +
+                            jacketMargin * 2 +
+                            characterImgHeight * (30 / 100),
+                        characterImgWidth,
+                        characterImgHeight * (70 / 100),
+                        [characterImgWidth / 2, characterImgWidth / 2, 0, 0]
+                    );
+                    ctx.fillStyle = new Color(element.color.card)
+                        .lighten(0.1)
+                        .hex();
+                    ctx.strokeStyle = new Color(element.color.card)
+                        .darken(0.3)
+                        .hex();
+                    ctx.lineWidth = backGroundBorderRadius / 4;
+                    ctx.fill();
+
+                    ctx.beginPath();
+                    ctx.roundRect(
+                        element.x,
+                        element.y + jacketMargin * 2,
+                        characterImgWidth,
+                        characterImgHeight,
+                        [0, characterBorderRadius, 0, 0]
+                    );
+                    ctx.save();
+                    ctx.clip();
+
+                    ctx.drawImage(
+                        characterImage,
+                        element.x,
+                        element.y + jacketMargin * 2,
+                        characterImgWidth,
+                        characterImgHeight
+                    );
+
+                    ctx.restore();
+                }
+                /* End character draw */
+
+                /* Begin Detail Draw */
+                const textSizeSecondary = jacketMargin;
+
+                const textLineWidth = element.width * (7 / 512);
+                const textColor = new Color(element.color.card)
+                    .darken(0.5)
+                    .hex();
+
+                if (character) {
+                    const characterNameMetrics = Util.measureText(
+                        ctx,
+                        `Lv.${character.level} ${character.character.name}`,
+                        textSizeSecondary,
+                        Infinity
+                    );
+                    const characterNameActualHeight = Math.abs(
+                        characterNameMetrics.actualBoundingBoxAscent -
+                            characterNameMetrics.actualBoundingBoxDescent
+                    );
+                    Util.drawText(
+                        ctx,
+                        `Lv.${character.level} ${character.character.name}`,
+                        element.x + characterImgWidth / 2,
+                        element.y + jacketMargin + characterNameActualHeight,
+                        textSizeSecondary,
+                        textLineWidth,
+                        Infinity,
+                        "center",
+                        "white",
+                        textColor
+                    );
+
+                    if (character.character.comment) {
+                        const card = Database.getLocalCard(character.card.id);
+                        if (card) {
+                            const chara = Database.getLocalCharacter(
+                                card?.characterId
+                            );
+                            if (chara) {
+                                function getRandomFromArray(arr: string[]) {
+                                    return arr[
+                                        Math.floor(Math.random() * arr.length)
+                                    ];
+                                }
+                                if (chara.voiceLines.length > 0) {
+                                    const curX =
+                                            element.x +
+                                            characterImgWidth -
+                                            jacketMargin * 3,
+                                        curY =
+                                            element.y +
+                                            jacketMargin * 2 +
+                                            characterImgHeight * (35 / 100) +
+                                            characterNameActualHeight / 2;
+                                    ctx.save();
+                                    ctx.translate(curX, curY);
+                                    ctx.rotate((4 * Math.PI) / 180);
+                                    const content = `「${getRandomFromArray(chara.voiceLines)}」`;
+                                    const lines: string[] = [];
+                                    const breaker = new LineBreaker(content);
+                                    let lastPossibleBreak = 0,
+                                        lastBreak = 0;
+                                    for (
+                                        let bk = breaker.nextBreak();
+                                        bk;
+                                        lastPossibleBreak = bk.position,
+                                            bk = breaker.nextBreak()
+                                    ) {
+                                        const cur = content.substring(
+                                            lastBreak,
+                                            bk.position
+                                        );
+                                        if (cur.length > 8) {
+                                            lines.push(
+                                                content
+                                                    .substring(
+                                                        lastBreak,
+                                                        lastPossibleBreak
+                                                    )
+                                                    .trim()
+                                            );
+                                            lastBreak = lastPossibleBreak;
+                                        }
+                                    }
+                                    lines.push(
+                                        content.substring(lastBreak).trim()
+                                    );
+                                    for (let i = 0; i < lines.length; ++i) {
+                                        const line = lines[i];
+                                        const secondaryMetrics =
+                                            Util.measureText(
+                                                ctx,
+                                                lines[i - 1] || "",
+                                                textSizeSecondary,
+                                                Infinity
+                                            );
+                                        const textHeight = Math.abs(
+                                            secondaryMetrics.actualBoundingBoxAscent -
+                                                secondaryMetrics.actualBoundingBoxDescent
+                                        );
+                                        Util.drawText(
+                                            ctx,
+                                            line,
+                                            0,
+                                            textHeight * (3 / 2) * i,
+                                            textSizeSecondary,
+                                            textLineWidth,
+                                            Infinity,
+                                            "left",
+                                            "white",
+                                            textColor
+                                        );
+                                    }
+                                    ctx.restore();
+                                }
+                            }
+                        }
+                    }
+                }
+
+                /* End Detail Draw */
+
+                ctx.restore();
             }
         }
     }

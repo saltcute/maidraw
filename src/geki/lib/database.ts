@@ -2,6 +2,7 @@ import fs from "fs";
 import upath from "upath";
 import { Cache } from "@maidraw/lib/cache";
 import { Geki } from "..";
+import { EDifficulty } from "../type";
 
 export class Database {
     private static localDatabasePath: string = "";
@@ -48,35 +49,248 @@ export class Database {
             Geki.logger.trace(`GET Jacket-${id}, database HIT`);
             return fs.readFileSync(localFilePath);
         }
-        // const beginTimestamp = Date.now();
-        // const res = await axios
-        //     .get(`https://assets2.lxns.net/chunithm/jacket/${id}.png`, {
-        //         responseType: "arraybuffer",
-        //     })
-        //     .then((res) => res.data)
-        //     .catch((e) => null);
-        // const timeDifference = Date.now() - beginTimestamp;
-        // Chuni.logger.trace(
-        //     `GET Jacket-${id}, database MISS, took ${timeDifference}ms`
-        // );
-        // return res;
         return null;
     }
-    // public static getLocalChart(
-    //     id: number,
-    //     difficulty: EDifficulty
-    // ): IChart | null {
-    //     const localFilePath = upath.join(
-    //         this.localDatabasePath,
-    //         "assets",
-    //         "maimai",
-    //         "charts",
-    //         `${id.toString().padStart(6, "0")}`,
-    //         `${difficulty}.json`
-    //     );
-    //     if (fs.existsSync(localFilePath)) {
-    //         return JSON.parse(fs.readFileSync(localFilePath, "utf-8"));
-    //     }
-    //     return null;
-    // }
+    public static getLocalChart(
+        id: number,
+        difficulty: EDifficulty
+    ): Database.IChart | null {
+        const localFilePath = upath.join(
+            this.localDatabasePath,
+            "assets",
+            "ongeki",
+            "charts",
+            `${id.toString().padStart(4, "0")}`,
+            `${difficulty}.json`
+        );
+        if (fs.existsSync(localFilePath)) {
+            return JSON.parse(fs.readFileSync(localFilePath, "utf-8"));
+        }
+        return null;
+    }
+    public static async getAllSongs() {
+        const cached = await this.cache.get("all-ongeki-songs");
+        if (cached) return cached as Database.IChart[];
+        const localFolderPath = upath.join(
+            this.localDatabasePath,
+            "assets",
+            "ongeki",
+            "charts"
+        );
+        const chartFolders = fs.readdirSync(localFolderPath);
+        const songs: Database.IChart[] = [];
+        for (const folder of chartFolders) {
+            const charts = fs.readdirSync(upath.join(localFolderPath, folder));
+            for (const chart of charts) {
+                const path = upath.join(localFolderPath, folder, chart);
+                try {
+                    songs.push(require(path));
+                } catch {}
+            }
+        }
+        await this.cache.put("all-ongeki-songs", songs, 1000 * 60 * 60 * 2);
+        return songs;
+    }
+    public static async findLocalChartWithNameAndLevel(
+        name: string,
+        level: number
+    ) {
+        const allSongs = await this.getAllSongs();
+        const found = allSongs
+            .filter((v) => v.name == name)
+            .flatMap((v) =>
+                v.events
+                    .filter((v) => v.type == "existence")
+                    .map((v1) => {
+                        return {
+                            level: v1.data.level,
+                            chart: v,
+                        };
+                    })
+                    .sort(
+                        (a, b) =>
+                            Math.abs(a.level - level) -
+                            Math.abs(b.level - level)
+                    )
+                    .map((v) => v.chart)
+            );
+        return found.shift() || null;
+    }
+    public static async getCardImage(id: number): Promise<Buffer | null> {
+        const cacheKey = `geki-card-${id}`;
+        const cached = await this.cache.get(cacheKey);
+        if (cached instanceof Buffer) {
+            Geki.logger.trace(`GET Card-${id}-image, cache HIT`);
+            return cached;
+        } else {
+            Geki.logger.trace(`GET Card-${id}-image, cache MISS`);
+            const localFilePath = upath.join(
+                this.localDatabasePath,
+                "assets",
+                "ongeki",
+                "cards",
+                "images",
+                `${id.toString().padStart(6, "0")}.png`
+            );
+            if (fs.existsSync(localFilePath)) {
+                Geki.logger.trace(`GET Card-${id}-image, database HIT`);
+                const card = fs.readFileSync(localFilePath);
+                if (card) this.cache.put(cacheKey, card, 5 * 60 * 60);
+                return card;
+            }
+        }
+        return null;
+    }
+
+    public static getLocalCard(id: number): Database.ICard | null {
+        const localFilePath = upath.join(
+            this.localDatabasePath,
+            "assets",
+            "ongeki",
+            "cards",
+            id.toString().padStart(6, "0"),
+            `${id.toString().padStart(6, "0")}.json`
+        );
+        if (fs.existsSync(localFilePath)) {
+            return JSON.parse(fs.readFileSync(localFilePath, "utf-8"));
+        }
+        return null;
+    }
+    public static getLocalCharacter(id: number): Database.ICharacter | null {
+        const localFilePath = upath.join(
+            this.localDatabasePath,
+            "assets",
+            "ongeki",
+            "characters",
+            id.toString().padStart(6, "0"),
+            `${id.toString().padStart(6, "0")}.json`
+        );
+        if (fs.existsSync(localFilePath)) {
+            return JSON.parse(fs.readFileSync(localFilePath, "utf-8"));
+        }
+        return null;
+    }
+}
+export namespace Database {
+    export interface IChart {
+        /**
+         * Unique Chart ID, i.e. a 4 digit number-like string.
+         */
+        id: number;
+        /**
+         * Name of the song.
+         */
+        name: string;
+        /**
+         * Name of the artist.
+         */
+        artist: string;
+        /**
+         * BPM of the song.
+         */
+        bpms: number[];
+        /**
+         * Difficulty category of the chart.
+         */
+        difficulty: EDifficulty;
+        addVersion: IVersion;
+        /**
+         * Metadata of the chart.
+         */
+        meta: {
+            /**
+             * Note count of the chart.
+             */
+            notes: {
+                tap: number;
+                hold: number;
+                side: number;
+                flick: number;
+                bell: number;
+            };
+            boss: {
+                card: {
+                    id: number;
+                    name: string;
+                };
+                character: {
+                    rarity: string;
+                    name: string;
+                    comment?: string;
+                };
+                level: number;
+            };
+            maxPlatinumScore: number;
+        };
+        /**
+         * Events that happened to the chart in versions.
+         */
+        events: Events[];
+        designer: string;
+    }
+    export namespace Events {
+        interface Base {
+            type: string;
+            data?: any;
+            version: IEventVersion;
+        }
+        export interface Existence extends Base {
+            type: "existence";
+            data: {
+                level: number;
+            };
+        }
+        export interface Absence extends Base {
+            type: "absence";
+        }
+        export interface Removal extends Base {
+            type: "removal";
+        }
+    }
+    export type Events = Events.Existence | Events.Absence | Events.Removal;
+    export interface IVersion {
+        /**
+         * Full name of the version.
+         * @example "オンゲキ Re:Fresh"
+         */
+        name: string;
+        /**
+         * Version number as it is used internally.
+         * Formatted as `{major}.{minor}.{patch}`.
+         */
+        gameVersion: {
+            major: number;
+            minor: number;
+            release?: number;
+        };
+    }
+    export interface IEventVersion extends IVersion {
+        gameVersion: {
+            major: number;
+            minor: number;
+            release: number;
+        };
+        region: "JPN";
+    }
+    export enum EBloodType {
+        A = "A",
+        B = "B",
+        O = "O",
+        AB = "AB",
+    }
+    export interface ICharacter {
+        id: number;
+        name: string;
+        voiceLines: string[];
+        bloodType: EBloodType;
+        personality?: string;
+        height: number;
+    }
+    export interface ICard {
+        id: number;
+        name: string;
+        rarity: string;
+        characterId: number;
+        attribute: string;
+    }
 }

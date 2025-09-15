@@ -1,6 +1,7 @@
 import Bunyan from "bunyan";
 
 import * as bests from "./painter/best50";
+import * as chart from "./painter/chart";
 
 import * as database from "./lib/database";
 
@@ -44,6 +45,7 @@ export namespace Geki {
 
     export namespace Painters {
         export import Best50 = bests.Best50Painter;
+        export import Chart = chart.ChartPainter;
     }
     export namespace Adapters {
         export import KamaiTachi = kamaiTachi.KamaiTachi;

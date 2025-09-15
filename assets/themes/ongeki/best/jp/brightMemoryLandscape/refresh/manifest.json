@@ -225,8 +225,8 @@
             "align": "left",
             "probability": 0.1,
             "customLines": [
-                "../../../../../hitokoto/general.json",
-                "../../../../../hitokoto/support/ongeki.json"
+                "../../../../../../hitokoto/general.json",
+                "../../../../../../hitokoto/support/ongeki.json"
             ]
         }
     ]

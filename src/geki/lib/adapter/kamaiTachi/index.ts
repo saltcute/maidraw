@@ -21,6 +21,78 @@ export class KamaiTachi extends ScoreTrackerAdapter {
         this.CURRENT_VERSION = currentVersion;
     }
 
+    async getPlayerScore(username: string, chartId: number) {
+        const rawPBs = await this.getPlayerPB(username);
+        if (!rawPBs?.body)
+            return {
+                basic: null,
+                advanced: null,
+                expert: null,
+                master: null,
+                lunatic: null,
+            };
+        const pbs: {
+            chart: KamaiTachi.IChart;
+            song: KamaiTachi.ISong;
+            pb: KamaiTachi.IPb;
+        }[] = [];
+        for (const pb of rawPBs.body.pbs) {
+            let chart = rawPBs.body.charts.find((v) => v.chartID == pb.chartID);
+            let song = rawPBs.body.songs.find((v) => v.id == pb.songID);
+            if (chart && song) {
+                pbs.push({ pb, chart, song });
+            }
+        }
+        function difficultyCompare(payload: KamaiTachi.IChart, target: string) {
+            return payload.difficulty.toLowerCase() == target.toLowerCase();
+        }
+        const basic = pbs.find(
+            (v) =>
+                difficultyCompare(v.chart, "Basic") &&
+                v.chart.data.inGameID == chartId
+        );
+        const advanced = pbs.find(
+            (v) =>
+                difficultyCompare(v.chart, "Advanced") &&
+                v.chart.data.inGameID == chartId
+        );
+        const expert = pbs.find(
+            (v) =>
+                difficultyCompare(v.chart, "Expert") &&
+                v.chart.data.inGameID == chartId
+        );
+        const master = pbs.find(
+            (v) =>
+                difficultyCompare(v.chart, "Master") &&
+                v.chart.data.inGameID == chartId
+        );
+        const lunatic = pbs.find(
+            (v) =>
+                difficultyCompare(v.chart, "Lunatic") &&
+                v.chart.data.inGameID == chartId
+        );
+        return {
+            basic: basic
+                ? this.toMaiDrawScore(basic.pb, basic.chart, basic.song)
+                : null,
+            advanced: advanced
+                ? this.toMaiDrawScore(
+                      advanced.pb,
+                      advanced.chart,
+                      advanced.song
+                  )
+                : null,
+            expert: expert
+                ? this.toMaiDrawScore(expert.pb, expert.chart, expert.song)
+                : null,
+            master: master
+                ? this.toMaiDrawScore(master.pb, master.chart, master.song)
+                : null,
+            lunatic: lunatic
+                ? this.toMaiDrawScore(lunatic.pb, lunatic.chart, lunatic.song)
+                : null,
+        };
+    }
     getPlatinumScore(score: KamaiTachi.IScore | KamaiTachi.IPb) {
         const ASSUMED_PLAT_SCORE_RATE = 0;
         if (score.scoreData.platinumScore) return score.scoreData.platinumScore;

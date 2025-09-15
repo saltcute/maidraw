@@ -103,6 +103,16 @@ export default abstract class ScoreTrackerAdapter {
         plat: IScore[];
         best: IScore[];
     } | null>;
+    abstract getPlayerScore(
+        username: string,
+        chartId: number
+    ): Promise<{
+        basic: IScore | null;
+        advanced: IScore | null;
+        expert: IScore | null;
+        master: IScore | null;
+        lunatic: IScore | null;
+    } | null>;
     abstract getPlayerInfo(
         username: string,
         type: "refresh" | "classic"
