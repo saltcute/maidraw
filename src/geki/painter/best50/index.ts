@@ -27,7 +27,12 @@ export class Best50Painter extends OngekiPainter<typeof Best50Painter.Theme> {
             theme: {
                 schema: Best50Painter.Theme,
                 searchPaths: [
-                    upath.join(Best50Painter.assetsPath, "themes", "ongeki"),
+                    upath.join(
+                        Best50Painter.assetsPath,
+                        "themes",
+                        "ongeki",
+                        "best"
+                    ),
                 ],
                 defaultTheme: Best50Painter.DEFAULT_THEME,
             },
@@ -160,37 +165,17 @@ export class Best50Painter extends OngekiPainter<typeof Best50Painter.Theme> {
                                 const starRating =
                                     variables.recentOrPlatinumScores
                                         .slice(0, 50)
-                                        .map((v) => {
-                                            const platinumScoreRatio =
-                                                v.platinumScore /
-                                                v.chart.maxPlatinumScore;
-                                            let coefficient = 0;
-                                            if (platinumScoreRatio >= 0.98)
-                                                coefficient = 5;
-                                            else if (platinumScoreRatio >= 0.97)
-                                                coefficient = 4;
-                                            else if (platinumScoreRatio >= 0.96)
-                                                coefficient = 3;
-                                            else if (platinumScoreRatio >= 0.95)
-                                                coefficient = 2;
-                                            else if (platinumScoreRatio >= 0.94)
-                                                coefficient = 1;
-                                            return (
-                                                Util.truncateNumber(
-                                                    coefficient *
-                                                        v.chart.level *
-                                                        v.chart.level,
-                                                    2
-                                                ) / 1000
-                                            );
-                                        })
+                                        .map((v) => v.starRating)
                                         .reduce((sum, v) => sum + v, 0);
                                 return (
                                     Util.truncateNumber(scoreRating / 50, 3) +
                                     Util.truncateNumber(starRating / 50, 3)
                                 );
                             } else {
-                                return getRatingAvg(bestScores, 45);
+                                return Util.truncateNumber(
+                                    getRatingAvg(bestScores, 45),
+                                    2
+                                );
                             }
                         }
                         function getRatingAvg(

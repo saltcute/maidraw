@@ -153,25 +153,29 @@ export namespace OngekiUtil {
         switch (true) {
             case score >= 1010000: {
                 scoreCoef = 2.0;
-                bonus += 0.3; // SSS+ bonus;
                 break;
             }
             case score >= 1007500: {
-                scoreCoef = 1.75 + ((score - 1007500) / 2500) * 0.25;
-                bonus += 0.2; // SSS bonus;
+                // scoreCoef = 1.75 + ((score - 1007500) / 2500) * 0.25;
+                scoreCoef = 1.75 + (score - 1007500) / 10000;
+                bonus += 0.3; // SSS+ bonus;
                 break;
             }
             case score >= 1000000: {
-                scoreCoef = 1.25 + ((score - 1000000) / 5000) * 0.5;
-                bonus += 0.1; // SS bonus;
+                // scoreCoef = 1.25 + ((score - 1000000) / 7500) * 0.5;
+                scoreCoef = 1.25 + (score - 1000000) / 15000;
+                bonus += 0.2; // SSS bonus;
                 break;
             }
             case score >= 990000: {
-                scoreCoef = 0.75 + ((score - 990000) / 10000) * 0.5;
+                // scoreCoef = 0.75 + ((score - 990000) / 10000) * 0.5;
+                scoreCoef = 0.75 + (score - 990000) / 20000;
+                bonus += 0.1; // SS bonus;
                 break;
             }
             case score >= 970000: {
-                scoreCoef = 0 + ((score - 970000) / 20000) * 0.75;
+                // scoreCoef = 0 + ((score - 970000) / 20000) * 0.75;
+                scoreCoef = 0 + ((score - 970000) / 80000) * 3;
                 break;
             }
             case score >= 900000: {
@@ -206,20 +210,30 @@ export namespace OngekiUtil {
 
         return Math.max(
             0,
-            internalLevel + Util.truncateNumber(scoreCoef, 3) + bonus
+            parseFloat(
+                (
+                    internalLevel +
+                    Util.truncateNumber(scoreCoef, 3) +
+                    bonus
+                ).toFixed(3)
+            )
         );
     }
 
-    export function calculateReFreshStarRating(
-        internalLevel: number,
-        starRatio: number
-    ) {
+    export function getStar(starRatio: number) {
         let starCount = 0;
         if (starRatio >= 0.98) starCount = 5;
         else if (starRatio >= 0.97) starCount = 4;
         else if (starRatio >= 0.96) starCount = 3;
         else if (starRatio >= 0.95) starCount = 2;
         else if (starRatio >= 0.94) starCount = 1;
+        return starCount;
+    }
+
+    export function calculateReFreshStarRating(
+        internalLevel: number,
+        starCount: number
+    ) {
         return Math.floor(starCount * internalLevel * internalLevel) / 1000;
     }
 
@@ -231,11 +245,11 @@ export namespace OngekiUtil {
                 break;
             }
             case score >= 1000000: {
-                scoreCoef = 1.5 + ((score - 1000000) / 5000) * 0.5;
+                scoreCoef = 1.5 + ((score - 1000000) / 7500) * 0.5;
                 break;
             }
             case score >= 970000: {
-                scoreCoef = 0 + ((score - 970000) / 20000) * 1.5;
+                scoreCoef = 0 + ((score - 970000) / 30000) * 1.5;
                 break;
             }
             case score >= 900000: {

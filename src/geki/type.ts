@@ -40,6 +40,7 @@ export interface IScore {
     score: number;
     rank: EAchievementTypes;
     rating: number;
+    starRating: number;
     platinumScore: number;
 }
 

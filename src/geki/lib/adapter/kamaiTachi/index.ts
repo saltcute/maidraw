@@ -7,6 +7,8 @@ import {
 } from "@maidraw/geki/type";
 import ScoreTrackerAdapter from "..";
 import { Util } from "@maidraw/lib/util";
+import { OngekiUtil } from "../../util";
+import { Database } from "../../database";
 
 export class KamaiTachi extends ScoreTrackerAdapter {
     private readonly CURRENT_VERSION: KamaiTachi.EGameVersions;
@@ -149,12 +151,56 @@ export class KamaiTachi extends ScoreTrackerAdapter {
             60 * 1000
         );
     }
+    private getDatabaseDifficulty(chart: KamaiTachi.IChart) {
+        switch (true) {
+            case chart.difficulty.toUpperCase().includes("LUNATIC"):
+                return EDifficulty.LUNATIC;
+            case chart.difficulty.toUpperCase().includes("MASTER"):
+                return EDifficulty.MASTER;
+            case chart.difficulty.toUpperCase().includes("EXPERT"):
+                return EDifficulty.EXPERT;
+            case chart.difficulty.toUpperCase().includes("ADVANCED"):
+                return EDifficulty.ADVANCED;
+            case chart.difficulty.toUpperCase().includes("BASIC"):
+            default:
+                return EDifficulty.BASIC;
+        }
+    }
     private toMaiDrawScore(
         score: KamaiTachi.IPb | KamaiTachi.IScore,
         chart: KamaiTachi.IChart,
         song: KamaiTachi.ISong,
         type: "refresh" | "classic" = "refresh"
     ): IScore {
+        const localChart = Database.getLocalChart(
+            chart.data.inGameID,
+            this.getDatabaseDifficulty(chart)
+        );
+        const internalLevel =
+            localChart?.events
+                .filter((v) => v.type === "existence")
+                .find((v) => v.version.name == this.CURRENT_VERSION)?.data
+                .level ?? chart.levelNum;
+        const combo = (() => {
+            switch (score.scoreData.noteLamp) {
+                case "FULL COMBO":
+                    return EComboTypes.FULL_COMBO;
+                case "ALL BREAK":
+                    return EComboTypes.ALL_BREAK;
+                case "ALL BREAK+":
+                    return EComboTypes.ALL_BREAK_PLUS;
+                default:
+                    return EComboTypes.NONE;
+            }
+        })();
+        const bell = (() => {
+            switch (score.scoreData.bellLamp) {
+                case "FULL BELL":
+                    return EBellTypes.FULL_BELL;
+                default:
+                    return EBellTypes.NONE;
+            }
+        })();
         return {
             chart: (() => {
                 return {
@@ -175,30 +221,12 @@ export class KamaiTachi extends ScoreTrackerAdapter {
                                 return EDifficulty.BASIC;
                         }
                     })(),
-                    level: chart.levelNum,
+                    level: internalLevel,
                     maxPlatinumScore: chart.data.maxPlatScore,
                 };
             })(),
-            combo: (() => {
-                switch (score.scoreData.noteLamp) {
-                    case "FULL COMBO":
-                        return EComboTypes.FULL_COMBO;
-                    case "ALL BREAK":
-                        return EComboTypes.ALL_BREAK;
-                    case "ALL BREAK+":
-                        return EComboTypes.ALL_BREAK_PLUS;
-                    default:
-                        return EComboTypes.NONE;
-                }
-            })(),
-            bell: (() => {
-                switch (score.scoreData.bellLamp) {
-                    case "FULL BELL":
-                        return EBellTypes.FULL_BELL;
-                    default:
-                        return EBellTypes.NONE;
-                }
-            })(),
+            combo,
+            bell,
             score: score.scoreData.score,
             platinumScore: this.getPlatinumScore(score),
             rank: (() => {
@@ -231,87 +259,28 @@ export class KamaiTachi extends ScoreTrackerAdapter {
                 }
             })(),
             rating: (() => {
-                const RANK_RATING_ADJUSTMENT = {
-                    "1010000": 2.0,
-                    "1007500": 1.75,
-                    "1000000": 1.25,
-                    "990000": 0.75,
-                    "970000": 0,
-                    "900000": -4,
-                    "800000": -6,
-                };
-                if (type == "classic") return score.calculatedData.rating;
-                else return score.calculatedData.scoreRating;
-                // else {
-                //     let rating = 0,
-                //         scoreNum = score.scoreData.score;
-
-                //     if (scoreNum > 1007500) {
-                //         rating +=
-                //             ((scoreNum - 1007500) / 2500) *
-                //                 (RANK_RATING_ADJUSTMENT["1010000"] -
-                //                     RANK_RATING_ADJUSTMENT["1007500"]) +
-                //             RANK_RATING_ADJUSTMENT["1007500"];
-                //     } else if (scoreNum > 1000000) {
-                //         rating +=
-                //             ((scoreNum - 1000000) / 7500) *
-                //                 (RANK_RATING_ADJUSTMENT["1007500"] -
-                //                     RANK_RATING_ADJUSTMENT["1000000"]) +
-                //             RANK_RATING_ADJUSTMENT["1000000"];
-                //     } else if (scoreNum > 990000) {
-                //         rating +=
-                //             ((scoreNum - 990000) / 10000) *
-                //                 (RANK_RATING_ADJUSTMENT["1000000"] -
-                //                     RANK_RATING_ADJUSTMENT["990000"]) +
-                //             RANK_RATING_ADJUSTMENT["990000"];
-                //     } else if (scoreNum > 970000) {
-                //         rating +=
-                //             ((scoreNum - 970000) / 20000) *
-                //             RANK_RATING_ADJUSTMENT["990000"];
-                //     } else if (scoreNum > 900000) {
-                //         rating +=
-                //             (1 - (scoreNum - 900000) / 70000) *
-                //             RANK_RATING_ADJUSTMENT["900000"];
-                //     } else if (scoreNum > 800000) {
-                //         rating +=
-                //             (1 - (scoreNum - 800000) / 100000) *
-                //                 (RANK_RATING_ADJUSTMENT["800000"] -
-                //                     RANK_RATING_ADJUSTMENT["900000"]) +
-                //             RANK_RATING_ADJUSTMENT["900000"];
-                //     } else if (scoreNum > 500000) {
-                //         rating *=
-                //             ((scoreNum - 500000) / 300000) *
-                //             (chart.levelNum + RANK_RATING_ADJUSTMENT["800000"]);
-                //     } else rating = 0;
-
-                //     switch (score.scoreData.noteLamp) {
-                //         case "FULL COMBO":
-                //             rating += 0.1;
-                //             break;
-                //         case "ALL BREAK":
-                //             rating += 0.3;
-                //             break;
-                //         case "ALL BREAK+":
-                //             rating += 0.35;
-                //             break;
-                //     }
-                //     switch (score.scoreData.bellLamp) {
-                //         case "FULL BELL":
-                //             rating += 0.05;
-                //             break;
-                //     }
-                //     switch (score.scoreData.grade) {
-                //         case "SS":
-                //             rating += 0.1;
-                //         case "SSS":
-                //             rating += 0.2;
-                //         case "SSS+":
-                //             rating += 0.3;
-                //     }
-
-                //     rating += chart.levelNum;
-                //     return rating;
-                // }
+                if (type == "classic")
+                    return OngekiUtil.calculateScoreRating(
+                        internalLevel,
+                        score.scoreData.score
+                    );
+                else
+                    return OngekiUtil.calculateReFreshScoreRating(
+                        internalLevel,
+                        score.scoreData.score,
+                        bell,
+                        combo
+                    );
+                // if (type == "classic") return score.calculatedData.rating;
+                // else return score.calculatedData.scoreRating;
+            })(),
+            starRating: (() => {
+                if (score.scoreData.platinumStars)
+                    return OngekiUtil.calculateReFreshStarRating(
+                        internalLevel,
+                        score.scoreData.platinumStars
+                    );
+                else return 0;
             })(),
         };
     }
@@ -370,20 +339,12 @@ export class KamaiTachi extends ScoreTrackerAdapter {
                 )
                 .slice(0, 50),
             plat: bestScores
-                .sort((a, b) => {
-                    return (
-                        // this.getPlatinumScoreRatio(b.chart, b.pb) -
-                        //     this.getPlatinumScoreRatio(a.chart, a.pb) ||
-                        b.pb.calculatedData.starRating -
-                            a.pb.calculatedData.starRating ||
-                        b.pb.calculatedData.scoreRating -
-                            a.pb.calculatedData.scoreRating ||
-                        // b.pb.calculatedData.rating -
-                        //     a.pb.calculatedData.rating ||
-                        b.pb.scoreData.score - a.pb.scoreData.score
-                    );
-                })
                 .map((v) => this.toMaiDrawScore(v.pb, v.chart, v.song))
+                .sort((a, b) =>
+                    b.starRating - a.starRating
+                        ? b.starRating - a.starRating
+                        : b.score - a.score
+                )
                 .slice(0, 50),
             best: bestScores
                 .map((v) => this.toMaiDrawScore(v.pb, v.chart, v.song))
@@ -571,21 +532,7 @@ export class KamaiTachi extends ScoreTrackerAdapter {
                 .map((v) => v.rating)
                 .reduce((sum, v) => sum + v, 0);
             const platRating = scores.plat
-                .map((v) => {
-                    const platinumScoreRatio =
-                        v.platinumScore / v.chart.maxPlatinumScore;
-                    let coefficient = 0;
-                    if (platinumScoreRatio >= 0.98) coefficient = 5;
-                    else if (platinumScoreRatio >= 0.97) coefficient = 4;
-                    else if (platinumScoreRatio >= 0.96) coefficient = 3;
-                    else if (platinumScoreRatio >= 0.95) coefficient = 2;
-                    else if (platinumScoreRatio >= 0.94) coefficient = 1;
-                    return (
-                        Math.floor(
-                            coefficient * v.chart.level * v.chart.level
-                        ) / 1000
-                    );
-                })
+                .map((v) => v.starRating)
                 .reduce((sum, v) => sum + v, 0);
             return {
                 name: profile?.body.username,
@@ -603,7 +550,7 @@ export class KamaiTachi extends ScoreTrackerAdapter {
             );
             return {
                 name: profile?.body.username,
-                rating: rating / 55,
+                rating: Util.truncateNumber(rating / 55, 2),
             };
         } else return null;
     }
