@@ -324,35 +324,22 @@ export class KamaiTachi extends ScoreTrackerAdapter {
         return {
             new: newScores
                 .map((v) => this.toMaiDrawScore(v.pb, v.chart, v.song))
-                .sort((a, b) =>
-                    b.rating - a.rating
-                        ? b.rating - a.rating
-                        : b.score - a.score
-                )
+                .sort((a, b) => b.rating - a.rating || b.score - a.score)
                 .slice(0, 10),
             old: oldScores
                 .map((v) => this.toMaiDrawScore(v.pb, v.chart, v.song))
-                .sort((a, b) =>
-                    b.rating - a.rating
-                        ? b.rating - a.rating
-                        : b.score - a.score
-                )
+                .sort((a, b) => b.rating - a.rating || b.score - a.score)
                 .slice(0, 50),
             plat: bestScores
                 .map((v) => this.toMaiDrawScore(v.pb, v.chart, v.song))
-                .sort((a, b) =>
-                    b.starRating - a.starRating
-                        ? b.starRating - a.starRating
-                        : b.score - a.score
+                .sort(
+                    (a, b) => b.starRating - a.starRating || b.score - a.score
                 )
+                .filter((v) => v.starRating > 0)
                 .slice(0, 50),
             best: bestScores
                 .map((v) => this.toMaiDrawScore(v.pb, v.chart, v.song))
-                .sort((a, b) =>
-                    b.rating - a.rating
-                        ? b.rating - a.rating
-                        : b.score - a.score
-                )
+                .sort((a, b) => b.rating - a.rating || b.score - a.score)
                 .slice(0, 60),
         };
     }
@@ -486,38 +473,23 @@ export class KamaiTachi extends ScoreTrackerAdapter {
                     .filter((v) => v.chart.difficulty != EDifficulty.LUNATIC)
             ),
             new: newScores
-                .sort((a, b) =>
-                    b.pb.calculatedData.rating - a.pb.calculatedData.rating
-                        ? b.pb.calculatedData.rating -
-                          a.pb.calculatedData.rating
-                        : b.pb.scoreData.score - a.pb.scoreData.score
-                )
-                .slice(0, 15)
                 .map((v) =>
                     this.toMaiDrawScore(v.pb, v.chart, v.song, "classic")
-                ),
+                )
+                .sort((a, b) => b.rating - a.rating || b.score - a.score)
+                .slice(0, 15),
             old: oldScores
-                .sort((a, b) =>
-                    b.pb.calculatedData.rating - a.pb.calculatedData.rating
-                        ? b.pb.calculatedData.rating -
-                          a.pb.calculatedData.rating
-                        : b.pb.scoreData.score - a.pb.scoreData.score
-                )
-                .slice(0, 30)
                 .map((v) =>
                     this.toMaiDrawScore(v.pb, v.chart, v.song, "classic")
-                ),
+                )
+                .sort((a, b) => b.rating - a.rating || b.score - a.score)
+                .slice(0, 30),
             best: pbs
-                .sort((a, b) =>
-                    b.pb.calculatedData.rating - a.pb.calculatedData.rating
-                        ? b.pb.calculatedData.rating -
-                          a.pb.calculatedData.rating
-                        : b.pb.scoreData.score - a.pb.scoreData.score
-                )
-                .slice(0, 45)
                 .map((v) =>
                     this.toMaiDrawScore(v.pb, v.chart, v.song, "classic")
-                ),
+                )
+                .sort((a, b) => b.rating - a.rating || b.score - a.score)
+                .slice(0, 45),
         };
     }
     async getPlayerInfo(userId: string, type: "refresh" | "classic") {
