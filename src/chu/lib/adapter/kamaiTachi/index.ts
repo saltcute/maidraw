@@ -148,6 +148,50 @@ export class KamaiTachi extends ScoreTrackerAdapter {
                 return EDifficulty.BASIC;
         }
     }
+    private getKamaiVersion(version: string) {
+        switch (version) {
+            case "CHUNITHM":
+                return KamaiTachi.EGameVersions.CHUNITHM;
+            case "CHUNITHM PLUS":
+                return KamaiTachi.EGameVersions.CHUNITHM_PLUS;
+            case "CHUNITHM AIR":
+                return KamaiTachi.EGameVersions.CHUNITHM_AIR;
+            case "CHUNITHM AIR PLUS":
+                return KamaiTachi.EGameVersions.CHUNITHM_AIR_PLUS;
+            case "CHUNITHM STAR":
+                return KamaiTachi.EGameVersions.CHUNITHM_STAR;
+            case "CHUNITHM STAR PLUS":
+                return KamaiTachi.EGameVersions.CHUNITHM_STAR_PLUS;
+            case "CHUNITHM AMAZON":
+                return KamaiTachi.EGameVersions.CHUNITHM_AMAZON;
+            case "CHUNITHM AMAZON PLUS":
+                return KamaiTachi.EGameVersions.CHUNITHM_AMAZON_PLUS;
+            case "CHUNITHM CRYSTAL":
+                return KamaiTachi.EGameVersions.CHUNITHM_CRYSTAL;
+            case "CHUNITHM CRYSTAL PLUS":
+                return KamaiTachi.EGameVersions.CHUNITHM_CRYSTAL_PLUS;
+            case "CHUNITHM PARADISE":
+                return KamaiTachi.EGameVersions.CHUNITHM_PARADISE;
+            case "CHUNITHM PARADISE LOST":
+                return KamaiTachi.EGameVersions.CHUNITHM_PARADISE_LOST;
+            case "CHUNITHM NEW!!":
+                return KamaiTachi.EGameVersions.CHUNITHM_NEW;
+            case "CHUNITHM NEW PLUS!!":
+                return KamaiTachi.EGameVersions.CHUNITHM_NEW_PLUS;
+            case "CHUNITHM SUN":
+                return KamaiTachi.EGameVersions.CHUNITHM_SUN;
+            case "CHUNITHM SUN PLUS":
+                return KamaiTachi.EGameVersions.CHUNITHM_SUN_PLUS;
+            case "CHUNITHM LUMINOUS":
+                return KamaiTachi.EGameVersions.CHUNITHM_LUMINOUS;
+            case "CHUNITHM LUMINOUS PLUS":
+                return KamaiTachi.EGameVersions.CHUNITHM_LUMINOUS_PLUS;
+            case "CHUNITHM VERSE":
+                return KamaiTachi.EGameVersions.CHUNITHM_VERSE;
+            default:
+                return null;
+        }
+    }
     private toMaiDrawScore(
         score: KamaiTachi.IPb | KamaiTachi.IScore,
         chart: KamaiTachi.IChart,
@@ -157,12 +201,11 @@ export class KamaiTachi extends ScoreTrackerAdapter {
             chart.data.inGameID,
             this.getDatabaseDifficulty(chart)
         );
-        const internalLevel = localChart
-            ? localChart.events
-                  .filter((v) => v.type === "existence")
-                  .find((v) => v.version.name == this.CURRENT_VERSION)?.data
-                  .level
-            : undefined;
+        const internalLevel =
+            localChart?.events
+                .filter((v) => v.type === "existence")
+                .find((v) => v.version.name == this.CURRENT_VERSION)?.data
+                .level ?? chart.levelNum;
         return {
             chart: (() => {
                 return {
@@ -183,7 +226,7 @@ export class KamaiTachi extends ScoreTrackerAdapter {
                                 return EDifficulty.BASIC;
                         }
                     })(),
-                    level: internalLevel || chart.levelNum,
+                    level: internalLevel,
                 };
             })(),
             combo: (() => {
@@ -232,13 +275,31 @@ export class KamaiTachi extends ScoreTrackerAdapter {
                         return EAchievementTypes.D;
                 }
             })(),
-            rating: internalLevel
-                ? ChunithmUtil.calculateRating(
-                      internalLevel,
-                      score.scoreData.score
-                  )
-                : score.calculatedData.rating,
+            rating: ChunithmUtil.calculateRating(
+                internalLevel,
+                score.scoreData.score
+            ),
         };
+    }
+    private getDatabaseVersion(
+        kchart: KamaiTachi.IChart
+    ): KamaiTachi.EGameVersions | null {
+        if (!Database.hasLocalDatabase()) return null;
+        const diff = this.getDatabaseDifficulty(kchart);
+        const chart = Database.getLocalChart(kchart.data.inGameID, diff);
+        if (chart) {
+            if (diff === EDifficulty.ULTIMA) {
+                const addVersion = chart.events.find(
+                    (v) => v.type == "existence" && v.version.region == "JPN"
+                )?.version;
+                if (addVersion) {
+                    return this.getKamaiVersion(addVersion?.name);
+                }
+            } else {
+                return this.getKamaiVersion(chart.addVersion.name);
+            }
+        }
+        return null;
     }
     async getPlayerBest50(
         userId: string,
@@ -262,19 +323,22 @@ export class KamaiTachi extends ScoreTrackerAdapter {
         const newScores = pbs.filter(
             (v) => v.song.data.displayVersion == currentVersion
         );
-        const oldScores = pbs.filter(
-            (v) =>
-                v.chart &&
-                KamaiTachi.compareGameVersions(
-                    currentVersion,
-                    v.song.data.displayVersion
-                ) > 0 &&
+        const oldScores = pbs.filter((v) => {
+            const diff = this.getDatabaseDifficulty(v.chart);
+            const version =
+                (diff == EDifficulty.ULTIMA
+                    ? this.getDatabaseVersion(v.chart)
+                    : null) ?? v.song.data.displayVersion;
+            return (
+                KamaiTachi.compareGameVersions(currentVersion, version) > 0 &&
                 (omnimix ||
                     !(
                         v.chart.versions[0].includes("-omni") &&
                         v.chart.versions[1].includes("-omni")
                     ))
-        );
+            );
+        });
+
         return {
             new: newScores
                 .map((v) => this.toMaiDrawScore(v.pb, v.chart, v.song))
@@ -336,32 +400,36 @@ export class KamaiTachi extends ScoreTrackerAdapter {
                 recents.push({ scores: recent, chart, song });
             }
         }
-        const bestScores = pbs.filter(
-            (v) =>
-                v.chart &&
-                KamaiTachi.compareGameVersions(
-                    currentVersion,
-                    v.song.data.displayVersion
-                ) >= 0 &&
+        const bestScores = pbs.filter((v) => {
+            const diff = this.getDatabaseDifficulty(v.chart);
+            const version =
+                (diff == EDifficulty.ULTIMA
+                    ? this.getDatabaseVersion(v.chart)
+                    : null) ?? v.song.data.displayVersion;
+            return (
+                KamaiTachi.compareGameVersions(currentVersion, version) >= 0 &&
                 (omnimix ||
                     !(
                         v.chart.versions[0].includes("-omni") &&
                         v.chart.versions[1].includes("-omni")
                     ))
-        );
-        const recentScores = recents.filter(
-            (v) =>
-                v.chart &&
-                KamaiTachi.compareGameVersions(
-                    currentVersion,
-                    v.song.data.displayVersion
-                ) >= 0 &&
+            );
+        });
+        const recentScores = recents.filter((v) => {
+            const diff = this.getDatabaseDifficulty(v.chart);
+            const version =
+                (diff == EDifficulty.ULTIMA
+                    ? this.getDatabaseVersion(v.chart)
+                    : null) ?? v.song.data.displayVersion;
+            return (
+                KamaiTachi.compareGameVersions(currentVersion, version) >= 0 &&
                 (omnimix ||
                     !(
                         v.chart.versions[0].includes("-omni") &&
                         v.chart.versions[1].includes("-omni")
                     ))
-        );
+            );
+        });
         function ratingGuardSimulation(scores: IScore[]) {
             let r30: {
                 score: IScore;
@@ -425,6 +493,7 @@ export class KamaiTachi extends ScoreTrackerAdapter {
                 .slice(0, 10)
                 .map((v) => v.score);
         }
+
         return {
             recent: ratingGuardSimulation(
                 recentScores
@@ -433,11 +502,7 @@ export class KamaiTachi extends ScoreTrackerAdapter {
             ),
             best: bestScores
                 .map((v) => this.toMaiDrawScore(v.pb, v.chart, v.song))
-                .sort((a, b) =>
-                    b.rating - a.rating
-                        ? b.rating - a.rating
-                        : b.score - a.score
-                )
+                .sort((a, b) => b.rating - a.rating || b.score - a.score)
                 .slice(0, 50),
         };
     }
