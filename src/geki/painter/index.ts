@@ -735,9 +735,15 @@ export namespace OngekiPainterModule {
 
                 /** Begin Difficulty & Rating Draw */
                 {
+                    let content = "";
+                    if (element.region === "recent" && type === "refresh") {
+                        content = `★${OngekiUtil.getStar(score.platinumScore / score.chart.maxPlatinumScore)}  +${Util.truncate(score.starRating, 3)}`;
+                    } else {
+                        content = `${Util.truncate(score.chart.level, 1)}  ↑${Util.truncate(score.rating, type === "refresh" ? 3 : 2)}`;
+                    }
                     Util.drawText(
                         ctx,
-                        `${Util.truncate(score.chart.level, 1)}  ↑${Util.truncate(score.rating, type === "refresh" ? 3 : 2)}`,
+                        content,
                         x + element.scoreBubble.margin * 2,
                         y +
                             element.scoreBubble.height *
