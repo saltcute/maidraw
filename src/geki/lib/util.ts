@@ -210,24 +210,27 @@ export namespace OngekiUtil {
 
         return Math.max(
             0,
-            parseFloat(
-                (
-                    internalLevel +
-                    Util.truncateNumber(scoreCoef, 3) +
-                    bonus
-                ).toFixed(3)
+            Util.truncateNumber(
+                parseFloat(
+                    (
+                        internalLevel +
+                        Util.truncateNumber(scoreCoef, 3) +
+                        bonus
+                    ).toFixed(6)
+                ),
+                3
             )
         );
     }
 
     export function getStar(starRatio: number) {
-        let starCount = 0;
-        if (starRatio >= 0.98) starCount = 5;
-        else if (starRatio >= 0.97) starCount = 4;
-        else if (starRatio >= 0.96) starCount = 3;
-        else if (starRatio >= 0.95) starCount = 2;
-        else if (starRatio >= 0.94) starCount = 1;
-        return starCount;
+        if (starRatio < 0 || starRatio > 1) return 0;
+        if (starRatio >= 0.98) return 5;
+        else if (starRatio >= 0.97) return 4;
+        else if (starRatio >= 0.96) return 3;
+        else if (starRatio >= 0.95) return 2;
+        else if (starRatio >= 0.94) return 1;
+        else return 0;
     }
 
     export function calculateReFreshStarRating(
@@ -266,6 +269,16 @@ export namespace OngekiUtil {
             }
         }
 
-        return Math.max(0, internalLevel + Util.truncateNumber(scoreCoef, 2));
+        return Math.max(
+            0,
+            Util.truncateNumber(
+                parseFloat(
+                    (internalLevel + Util.truncateNumber(scoreCoef, 2)).toFixed(
+                        4
+                    )
+                ),
+                2
+            )
+        );
     }
 }
