@@ -246,12 +246,12 @@ export namespace MaimaiPainterModule {
                         const aspectRatio = width / height;
                         const image = new Image();
                         image.src = ratingImgBuffer;
-                        const drawHeight = (element.height * 7) / 32;
+                        const drawHeight = (element.height * 11) / 64;
                         ctx.drawImage(
                             image,
                             element.x + element.height * 1.785,
-                            element.y + element.height * 0.12,
-                            drawHeight * aspectRatio * 0.8,
+                            element.y + element.height * 0.15,
+                            drawHeight * aspectRatio,
                             drawHeight
                         );
                     }
@@ -316,7 +316,7 @@ export namespace MaimaiPainterModule {
                 if (!curDigit) continue;
                 const img = new Image();
                 img.src = curDigit;
-                ctx.drawImage(img, unitWidth * i * 0.88, 0);
+                ctx.drawImage(img, unitWidth * i * 0.89, 0);
             }
             return canvas.toBuffer();
         }
