@@ -76,8 +76,8 @@
                     "sssp": "../../common/buddies/achievement/sssp.png"
                 },
                 "mode": {
-                    "standard": "../../common/versionless/mode/jp/standard.png",
-                    "dx": "../../common/versionless/mode/jp/dx.png"
+                    "standard": "../../common/versionless/mode/cn/standard.png",
+                    "dx": "../../common/versionless/mode/cn/dx.png"
                 },
                 "milestone": {
                     "ap": "../../common/versionless/milestone/ap.png",
@@ -133,8 +133,8 @@
                     "sssp": "../../common/buddies/achievement/sssp.png"
                 },
                 "mode": {
-                    "standard": "../../common/versionless/mode/jp/standard.png",
-                    "dx": "../../common/versionless/mode/jp/dx.png"
+                    "standard": "../../common/versionless/mode/cn/standard.png",
+                    "dx": "../../common/versionless/mode/cn/dx.png"
                 },
                 "milestone": {
                     "ap": "../../common/versionless/milestone/ap.png",
@@ -157,17 +157,17 @@
             "height": 129,
             "sprites": {
                 "dxRating": {
-                    "white": "../../common/versionless/dxRating/jp/white.png",
-                    "blue": "../../common/versionless/dxRating/jp/blue.png",
-                    "green": "../../common/versionless/dxRating/jp/green.png",
-                    "yellow": "../../common/versionless/dxRating/jp/yellow.png",
-                    "red": "../../common/versionless/dxRating/jp/red.png",
-                    "purple": "../../common/versionless/dxRating/jp/purple.png",
-                    "bronze": "../../common/versionless/dxRating/jp/bronze.png",
-                    "silver": "../../common/versionless/dxRating/jp/silver.png",
-                    "gold": "../../common/versionless/dxRating/jp/gold.png",
-                    "platinum": "../../common/versionless/dxRating/jp/platinum.png",
-                    "rainbow": "../../common/versionless/dxRating/jp/rainbow.png"
+                    "white": "../../common/versionless/dxRating/cn/white.png",
+                    "blue": "../../common/versionless/dxRating/cn/blue.png",
+                    "green": "../../common/versionless/dxRating/cn/green.png",
+                    "yellow": "../../common/versionless/dxRating/cn/yellow.png",
+                    "red": "../../common/versionless/dxRating/cn/red.png",
+                    "purple": "../../common/versionless/dxRating/cn/purple.png",
+                    "bronze": "../../common/versionless/dxRating/cn/bronze.png",
+                    "silver": "../../common/versionless/dxRating/cn/silver.png",
+                    "gold": "../../common/versionless/dxRating/cn/gold.png",
+                    "platinum": "../../common/versionless/dxRating/cn/platinum.png",
+                    "rainbow": "../../common/versionless/dxRating/cn/rainbow.png"
                 },
                 "dxRatingNumberMap": "../../common/versionless/dxRating/numberMap.png",
                 "profile": {
