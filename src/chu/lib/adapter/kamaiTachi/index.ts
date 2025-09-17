@@ -13,7 +13,7 @@ export class KamaiTachi extends ScoreTrackerAdapter {
     private readonly CURRENT_VERSION: KamaiTachi.EGameVersions;
     constructor({
         baseURL = "https://kamai.tachi.ac/",
-        currentVersion = KamaiTachi.EGameVersions.CHUNITHM_SUN_PLUS,
+        currentVersion = KamaiTachi.EGameVersions.CHUNITHM_VERSE,
     }: {
         baseURL?: string;
         currentVersion?: KamaiTachi.EGameVersions;
@@ -782,6 +782,7 @@ export namespace KamaiTachi {
     }
 
     export enum EGameVersions {
+        CHUNITHM_XVERSE = "CHUNITHM X-VERSE",
         CHUNITHM_VERSE = "CHUNITHM VERSE",
         CHUNITHM_LUMINOUS_PLUS = "CHUNITHM LUMINOUS PLUS",
         CHUNITHM_LUMINOUS = "CHUNITHM LUMINOUS",
@@ -805,6 +806,7 @@ export namespace KamaiTachi {
         CHUNITHM = "CHUNITHM",
     }
     const GameVersions = [
+        EGameVersions.CHUNITHM_XVERSE,
         EGameVersions.CHUNITHM_VERSE,
         EGameVersions.CHUNITHM_LUMINOUS_PLUS,
         EGameVersions.CHUNITHM_LUMINOUS,

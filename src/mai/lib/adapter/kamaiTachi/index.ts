@@ -17,7 +17,7 @@ export class KamaiTachi extends ScoreTrackerAdapter {
     private currentRegion: "DX" | "EX" | "CN";
     constructor({
         baseURL = "https://kamai.tachi.ac/",
-        version = KamaiTachi.GameVersions.PRISM,
+        version = KamaiTachi.GameVersions.PRISM_PLUS,
         region = "DX",
     }: {
         baseURL?: string;
@@ -835,6 +835,12 @@ export namespace KamaiTachi {
     }
 
     export const GameVersions = {
+        CIRCLE: {
+            kamai: "maimaiでらっくす CiRCLE",
+            DX: "maimai でらっくす CiRCLE",
+            EX: "maimai DX CiRCLE",
+            CN: "舞萌DX 2026",
+        },
         PRISM_PLUS: {
             kamai: "maimaiでらっくす PRiSM PLUS",
             DX: "maimai でらっくす PRiSM PLUS",
@@ -1017,6 +1023,7 @@ export namespace KamaiTachi {
         GameVersions.BUDDIES_PLUS,
         GameVersions.PRISM,
         GameVersions.PRISM_PLUS,
+        GameVersions.CIRCLE,
     ] as const;
 
     export function getGameVersion(payload: string): AllGameVersions | null {
