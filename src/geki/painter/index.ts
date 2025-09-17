@@ -2,8 +2,7 @@ import _ from "lodash";
 import sharp from "sharp";
 import Color from "color";
 import { z } from "zod/v4";
-import LineBreaker from "linebreak";
-import { CanvasRenderingContext2D, Image } from "canvas";
+import { Canvas, CanvasRenderingContext2D, Image, loadImage } from "canvas";
 
 import { Database } from "../lib/database";
 import ScoreTrackerAdapter from "../lib/adapter";
@@ -40,7 +39,36 @@ export namespace OngekiPainterModule {
         export const schema = ThemeManager.Element.extend({
             type: z.literal("profile"),
             sprites: z.object({
-                ratingNumberMap: z.string(),
+                rating: z.object({
+                    numberMap: z.object({
+                        blue: z.string(),
+                        green: z.string(),
+                        orange: z.string(),
+                        red: z.string(),
+                        purple: z.string(),
+                        bronze: z.string(),
+                        silver: z.string(),
+                        gold: z.string(),
+                        platinum: z.string(),
+                        rainbow: z.string(),
+                        rainbow2: z.string(),
+                        rainbow3: z.string(),
+                    }),
+                    headerText: z.object({
+                        blue: z.string(),
+                        green: z.string(),
+                        orange: z.string(),
+                        red: z.string(),
+                        purple: z.string(),
+                        bronze: z.string(),
+                        silver: z.string(),
+                        gold: z.string(),
+                        platinum: z.string(),
+                        rainbow: z.string(),
+                        rainbow2: z.string(),
+                        rainbow3: z.string(),
+                    }),
+                }),
                 profile: z.object({
                     userplate: z.string(),
                     icon: z.string(),
@@ -101,21 +129,21 @@ export namespace OngekiPainterModule {
                 );
             } catch {}
 
+            ctx.save();
+            ctx.translate(
+                element.x + theme.content.width * (7 / 32) * (59 / 128),
+                element.y + theme.content.width * (7 / 32) * (16 / 128)
+            );
+
             /* Begin Profile Picture Draw */
             {
                 ctx.save();
                 ctx.beginPath();
-                ctx.roundRect(
-                    element.x + theme.content.width * (7 / 32) * (233 / 128),
-                    element.y + theme.content.width * (3 / 32) * (19 / 64),
+                ctx.rect(
+                    0,
+                    0,
                     theme.content.width * (7 / 32) * 0.45,
-                    theme.content.width * (7 / 32) * 0.45,
-                    [
-                        0,
-                        theme.content.width * (7 / 32) * 0.05,
-                        theme.content.width * (7 / 32) * 0.05,
-                        0,
-                    ]
+                    theme.content.width * (7 / 32) * 0.45
                 );
                 ctx.clip();
                 ctx.fillStyle = "white";
@@ -140,26 +168,19 @@ export namespace OngekiPainterModule {
                     (icon.height - cropSize) / 2,
                     cropSize,
                     cropSize,
-                    element.x + theme.content.width * (7 / 32) * (233 / 128),
-                    element.y + theme.content.width * (3 / 32) * (19 / 64),
+                    0,
+                    0,
                     theme.content.width * (7 / 32) * 0.45,
                     theme.content.width * (7 / 32) * 0.45
                 );
 
                 if (profilePicture) {
                     ctx.beginPath();
-                    ctx.roundRect(
-                        element.x +
-                            theme.content.width * (7 / 32) * (233 / 128),
-                        element.y + theme.content.width * (3 / 32) * (19 / 64),
+                    ctx.rect(
+                        0,
+                        0,
                         theme.content.width * (7 / 32) * 0.45,
-                        theme.content.width * (7 / 32) * 0.45,
-                        [
-                            0,
-                            theme.content.width * (7 / 32) * 0.05,
-                            theme.content.width * (7 / 32) * 0.05,
-                            0,
-                        ]
+                        theme.content.width * (7 / 32) * 0.45
                     );
                     ctx.strokeStyle = Color.rgb(dominant).darken(0.3).hex();
                     ctx.lineWidth = (theme.content.width * (7 / 32)) / 128;
@@ -171,109 +192,307 @@ export namespace OngekiPainterModule {
 
             /* Begin Username Draw */
             {
-                ctx.beginPath();
-                ctx.roundRect(
-                    element.x + theme.content.width * (7 / 32) * (59 / 128),
-                    element.y + theme.content.width * (7 / 32) * (16 / 128),
-                    theme.content.width * (7 / 32) * (85 / 64),
-                    theme.content.width * (7 / 32) * 0.45,
-                    [
-                        theme.content.width * (7 / 32) * 0.05,
+                ctx.save();
+                ctx.translate(theme.content.width * (7 / 32) * 0.45, 0);
+                {
+                    ctx.beginPath();
+                    ctx.rect(
                         0,
+                        theme.content.width * (7 / 32) * (19 / 128),
+                        theme.content.width * (7 / 32) * (41 / 128),
+                        theme.content.width * (7 / 32) * (20 / 128)
+                    );
+                    ctx.fillStyle = "#3e3e3e";
+                    ctx.fill();
+                    ctx.beginPath();
+                    ctx.rect(
+                        theme.content.width * (7 / 32) * (41 / 128),
+                        theme.content.width * (7 / 32) * (19 / 128),
+                        theme.content.width * (7 / 32) * (135 / 128),
+                        theme.content.width * (7 / 32) * (20 / 128)
+                    );
+                    ctx.fillStyle = "white";
+                    ctx.fill();
+                    Util.drawText(
+                        ctx,
+                        "Lv.",
+                        theme.content.width * (7 / 32) * (5 / 128),
+                        theme.content.width * (7 / 32) * (37 / 128),
+                        theme.content.width * (7 / 32) * (8 / 128),
                         0,
-                        theme.content.width * (7 / 32) * 0.05,
-                    ]
-                );
-                ctx.fillStyle = "rgba(255, 255, 255, 0.45)";
-                ctx.fill();
+                        (((theme.content.width * (7 / 32)) / 3) * 5.108 * 3.1) /
+                            5,
+                        "left",
+                        "white",
+                        "white",
+                        "ongeki-font-level"
+                    );
+                    Util.drawText(
+                        ctx,
+                        "39",
+                        theme.content.width * (7 / 32) * (14 / 128),
+                        theme.content.width * (7 / 32) * (37 / 128),
+                        theme.content.width * (7 / 32) * (21 / 128),
+                        0,
+                        (((theme.content.width * (7 / 32)) / 3) * 5.108 * 3.1) /
+                            5,
+                        "left",
+                        "white",
+                        "white",
+                        "ongeki-font-level"
+                    );
 
-                // const ratingImgBuffer = await this.getRatingNumber(rating, theme);
-                // if (ratingImgBuffer) {
-                //     const { width, height } =
-                //         await sharp(ratingImgBuffer).metadata();
-                //     if (width && height) {
-                //         const aspectRatio = width / height;
-                //         const image = new Image();
-                //         image.src = ratingImgBuffer;
-                //         const drawHeight = (theme.content.width * (7/32) * 7) / 32;
-                //         ctx.drawImage(
-                //             image,
-                //             element.x + theme.content.width * (7/32) * 2.0,
-                //             element.y + theme.content.width * (7/32) * 0.3,
-                //             drawHeight * aspectRatio * 0.8,
-                //             drawHeight
-                //         );
-                //     }
-                // }
-                Util.drawText(
-                    ctx,
-                    "Lv.",
-                    element.x + theme.content.width * (7 / 32) * (62 / 128),
-                    element.y + theme.content.width * (7 / 32) * (49 / 128),
-                    (theme.content.width * (7 / 32) * 1) / 16,
-                    0,
-                    (((theme.content.width * (7 / 32)) / 3) * 5.108 * 3.1) / 5,
-                    "left",
-                    "black",
-                    "black",
-                    "standard-font-username"
-                );
-                Util.drawText(
-                    ctx,
-                    "99",
-                    element.x + theme.content.width * (7 / 32) * (74 / 128),
-                    element.y + theme.content.width * (7 / 32) * (49 / 128),
-                    (theme.content.width * (7 / 32) * 1) / 11,
-                    0,
-                    (((theme.content.width * (7 / 32)) / 3) * 5.108 * 3.1) / 5,
-                    "left",
-                    "black",
-                    "black",
-                    "standard-font-username"
-                );
+                    Util.drawText(
+                        ctx,
+                        Util.HalfFullWidthConvert.toFullWidth(username),
+                        theme.content.width * (7 / 32) * (108 / 128),
+                        theme.content.width * (7 / 32) * (36 / 128),
+                        theme.content.width * (7 / 32) * (1 / 8),
+                        0,
+                        theme.content.width * (7 / 32) * (135 / 128),
+                        "center",
+                        "black",
+                        "black",
+                        "standard-font-username"
+                    );
 
-                Util.drawText(
-                    ctx,
-                    Util.HalfFullWidthConvert.toFullWidth(username),
-                    element.x + theme.content.width * (7 / 32) * (89 / 128),
-                    element.y + theme.content.width * (7 / 32) * (49 / 128),
-                    (theme.content.width * (7 / 32) * 1) / 8,
-                    0,
-                    theme.content.width * (7 / 32) * (140 / 128),
-                    "left",
-                    "black",
-                    "black",
-                    "standard-font-username"
-                );
+                    const { number: ratingNumberImg, text: ratingTextImg } =
+                        await getRatingNumber(rating, theme, element, type);
 
-                Util.drawText(
-                    ctx,
-                    "RATING",
-                    element.x + theme.content.width * (7 / 32) * (62 / 128),
-                    element.y + theme.content.width * (7 / 32) * (70 / 128),
-                    (theme.content.width * (7 / 32) * 7) / 88,
-                    0,
-                    (((theme.content.width * (7 / 32)) / 3) * 5.108 * 3.1) / 5,
-                    "left",
-                    "black",
-                    "black",
-                    "standard-font-username"
+                    if (ratingTextImg) {
+                        const image = await loadImage(ratingTextImg);
+                        const { width, height } = image;
+                        const aspectRatio = width / height;
+                        const drawHeight =
+                            theme.content.width * (7 / 32) * (12 / 128);
+                        const drawWidth = drawHeight * aspectRatio;
+                        ctx.drawImage(
+                            image,
+                            theme.content.width * (7 / 32) * (-1 / 128),
+                            theme.content.width * (7 / 32) * (46 / 128),
+                            drawWidth,
+                            drawHeight
+                        );
+                    }
+                    if (ratingNumberImg) {
+                        const image = await loadImage(ratingNumberImg);
+                        const { width, height } = image;
+                        const aspectRatio = width / height;
+                        const drawHeight =
+                            theme.content.width * (7 / 32) * (20 / 128);
+                        const drawWidth = drawHeight * aspectRatio;
+                        ctx.drawImage(
+                            image,
+                            theme.content.width * (7 / 32) * (48 / 128),
+                            theme.content.width * (7 / 32) * (39 / 128),
+                            drawWidth,
+                            drawHeight
+                        );
+                    }
+                }
+                ctx.restore();
+            }
+
+            async function getRatingNumber(
+                num: number,
+                theme: Theme<any>,
+                element: z.infer<typeof schema>,
+                type: "refresh" | "classic"
+            ) {
+                async function getRatingDigit(
+                    map: Buffer,
+                    digit: number,
+                    unitWidth: number,
+                    unitHeight: number
+                ) {
+                    digit = Math.trunc(digit % 10);
+                    return await sharp(map)
+                        .extract({
+                            left: (digit % 4) * unitWidth,
+                            top: Math.trunc(digit / 4) * (unitHeight + 1),
+                            width: unitWidth,
+                            height: unitHeight,
+                        })
+                        .toBuffer();
+                }
+                async function getRatingDot(
+                    map: Buffer,
+                    unitWidth: number,
+                    unitHeight: number
+                ) {
+                    const { height } = await sharp(map).metadata();
+                    return await sharp(map)
+                        .extract({
+                            left: 0,
+                            top: height ? height - unitHeight : unitHeight * 3,
+                            width: unitWidth,
+                            height: unitHeight,
+                        })
+                        .toBuffer();
+                }
+                function getRatingColor(
+                    rating: number,
+                    type: "refresh" | "classic"
+                ) {
+                    if (type == "classic") {
+                        if (rating >= 15) {
+                            return "rainbow";
+                        } else if (rating >= 14.5) {
+                            return "platinum";
+                        } else if (rating >= 14) {
+                            return "gold";
+                        } else if (rating >= 13) {
+                            return "silver";
+                        } else if (rating >= 12) {
+                            return "bronze";
+                        } else if (rating >= 10) {
+                            return "purple";
+                        } else if (rating >= 7) {
+                            return "red";
+                        } else if (rating >= 4) {
+                            return "orange";
+                        } else if (rating >= 2) {
+                            return "green";
+                        } else {
+                            return "blue";
+                        }
+                    } else {
+                        if (rating >= 22) {
+                            return "rainbow3";
+                        } else if (rating >= 21) {
+                            return "rainbow2";
+                        } else if (rating >= 19) {
+                            return "rainbow";
+                        } else if (rating >= 18) {
+                            return "platinum";
+                        } else if (rating >= 17) {
+                            return "gold";
+                        } else if (rating >= 15) {
+                            return "silver";
+                        } else if (rating >= 13) {
+                            return "bronze";
+                        } else if (rating >= 11) {
+                            return "purple";
+                        } else if (rating >= 9) {
+                            return "red";
+                        } else if (rating >= 7) {
+                            return "orange";
+                        } else if (rating >= 4) {
+                            return "green";
+                        } else {
+                            return "blue";
+                        }
+                    }
+                }
+                const map = theme.getFile(
+                    element.sprites.rating.numberMap[getRatingColor(num, type)]
                 );
-                Util.drawText(
-                    ctx,
-                    Util.truncate(rating, type === "refresh" ? 3 : 2),
-                    element.x + theme.content.width * (7 / 32) * (109 / 128),
-                    element.y + theme.content.width * (7 / 32) * (70 / 128),
-                    (theme.content.width * (7 / 32) * 5) / 44,
-                    0,
-                    (((theme.content.width * (7 / 32)) / 3) * 5.108 * 3.1) / 5,
-                    "left",
-                    "black",
-                    "black",
-                    "standard-font-username"
+                const { width, height } = await sharp(map).metadata();
+                if (!(width && height)) return { number: null, text: null };
+                const unitWidth = Math.trunc(width / 4),
+                    unitHeight = Math.trunc(height / 4);
+                const digits: {
+                    str: string;
+                    img: Buffer | null;
+                }[] = await Promise.all(
+                    Util.truncate(num, type === "classic" ? 2 : 3)
+                        .padStart(5, " ")
+                        .split("")
+                        .map((v) => {
+                            if (v === ".")
+                                return getRatingDot(
+                                    map,
+                                    unitWidth,
+                                    unitHeight
+                                ).then((img) => {
+                                    return {
+                                        str: v,
+                                        img,
+                                    };
+                                });
+                            else if ("0" <= v && v <= "9")
+                                return getRatingDigit(
+                                    map,
+                                    parseInt(v),
+                                    unitWidth,
+                                    unitHeight
+                                ).then((img) => {
+                                    return {
+                                        str: v,
+                                        img,
+                                    };
+                                });
+                            else if ("0" <= v && v <= "9")
+                                return getRatingDigit(
+                                    map,
+                                    parseInt(v),
+                                    unitWidth,
+                                    unitHeight
+                                ).then((img) => {
+                                    return {
+                                        str: v,
+                                        img,
+                                    };
+                                });
+                            else
+                                return {
+                                    str: v,
+                                    img: null,
+                                };
+                        })
                 );
+                const integerPartScale = 1.3;
+                const canvas = new Canvas(
+                    unitWidth * digits.length,
+                    unitHeight * integerPartScale
+                );
+                const ctx = canvas.getContext("2d");
+                let state: "large" | "small" = "large";
+                for (let i = 0, curx = 0; i < digits.length; ++i) {
+                    const curDigit = digits[i];
+                    if (!curDigit || !curDigit.img) continue;
+                    const img = new Image();
+                    img.src = curDigit.img;
+                    if (curDigit.str === ".") {
+                        ctx.drawImage(
+                            img,
+                            curx,
+                            unitHeight * (integerPartScale - 1)
+                        );
+                        curx += unitWidth * 0.45;
+                        state = "small";
+                    } else {
+                        if (state === "small") {
+                            ctx.drawImage(
+                                img,
+                                curx,
+                                unitHeight * (integerPartScale - 1) * 0.75
+                            );
+                            curx += unitWidth * 0.6;
+                        } else {
+                            ctx.drawImage(
+                                img,
+                                curx,
+                                0,
+                                unitWidth * integerPartScale,
+                                unitHeight * integerPartScale
+                            );
+                            curx += unitWidth * 0.6 * integerPartScale;
+                        }
+                    }
+                }
+                return {
+                    number: canvas.toBuffer(),
+                    text: theme.getFile(
+                        element.sprites.rating.headerText[
+                            getRatingColor(rating, type)
+                        ]
+                    ),
+                };
             }
             /* End Username Draw*/
+
+            ctx.restore();
         }
     }
 

@@ -107,7 +107,36 @@
             "x": 0,
             "y": 0,
             "sprites": {
-                "ratingNumberMap": "../../../best/common/versionless/numberMap.png",
+                "rating": {
+                    "numberMap": {
+                        "blue": "../../../best/common/versionless/rating/numberMap/blue.png",
+                        "green": "../../../best/common/versionless/rating/numberMap/green.png",
+                        "orange": "../../../best/common/versionless/rating/numberMap/orange.png",
+                        "red": "../../../best/common/versionless/rating/numberMap/red.png",
+                        "purple": "../../../best/common/versionless/rating/numberMap/purple.png",
+                        "bronze": "../../../best/common/versionless/rating/numberMap/bronze.png",
+                        "silver": "../../../best/common/versionless/rating/numberMap/silver.png",
+                        "gold": "../../../best/common/versionless/rating/numberMap/gold.png",
+                        "platinum": "../../../best/common/versionless/rating/numberMap/platinum.png",
+                        "rainbow": "../../../best/common/versionless/rating/numberMap/rainbow.png",
+                        "rainbow2": "../../../best/common/versionless/rating/numberMap/rainbow2.png",
+                        "rainbow3": "../../../best/common/versionless/rating/numberMap/rainbow3.png"
+                    },
+                    "headerText": {
+                        "blue": "../../../best/common/versionless/rating/headerText/blue.png",
+                        "green": "../../../best/common/versionless/rating/headerText/green.png",
+                        "orange": "../../../best/common/versionless/rating/headerText/orange.png",
+                        "red": "../../../best/common/versionless/rating/headerText/red.png",
+                        "purple": "../../../best/common/versionless/rating/headerText/purple.png",
+                        "bronze": "../../../best/common/versionless/rating/headerText/bronze.png",
+                        "silver": "../../../best/common/versionless/rating/headerText/silver.png",
+                        "gold": "../../../best/common/versionless/rating/headerText/gold.png",
+                        "platinum": "../../../best/common/versionless/rating/headerText/platinum.png",
+                        "rainbow": "../../../best/common/versionless/rating/headerText/rainbow.png",
+                        "rainbow2": "../../../best/common/versionless/rating/headerText/rainbow2.png",
+                        "rainbow3": "../../../best/common/versionless/rating/headerText/rainbow3.png"
+                    }
+                },
                 "profile": {
                     "userplate": "../../../best/common/versionless/userplateIchigeki.png",
                     "icon": "../../../best/common/versionless/icon.png"

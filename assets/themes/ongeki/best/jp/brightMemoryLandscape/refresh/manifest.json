@@ -152,7 +152,36 @@
             "x": 0,
             "y": 0,
             "sprites": {
-                "ratingNumberMap": "../../../common/versionless/numberMap.png",
+                "rating": {
+                    "numberMap": {
+                        "blue": "../../../common/versionless/rating/numberMap/blue.png",
+                        "green": "../../../common/versionless/rating/numberMap/green.png",
+                        "orange": "../../../common/versionless/rating/numberMap/orange.png",
+                        "red": "../../../common/versionless/rating/numberMap/red.png",
+                        "purple": "../../../common/versionless/rating/numberMap/purple.png",
+                        "bronze": "../../../common/versionless/rating/numberMap/bronze.png",
+                        "silver": "../../../common/versionless/rating/numberMap/silver.png",
+                        "gold": "../../../common/versionless/rating/numberMap/gold.png",
+                        "platinum": "../../../common/versionless/rating/numberMap/platinum.png",
+                        "rainbow": "../../../common/versionless/rating/numberMap/rainbow.png",
+                        "rainbow2": "../../../common/versionless/rating/numberMap/rainbow2.png",
+                        "rainbow3": "../../../common/versionless/rating/numberMap/rainbow3.png"
+                    },
+                    "headerText": {
+                        "blue": "../../../common/versionless/rating/headerText/blue.png",
+                        "green": "../../../common/versionless/rating/headerText/green.png",
+                        "orange": "../../../common/versionless/rating/headerText/orange.png",
+                        "red": "../../../common/versionless/rating/headerText/red.png",
+                        "purple": "../../../common/versionless/rating/headerText/purple.png",
+                        "bronze": "../../../common/versionless/rating/headerText/bronze.png",
+                        "silver": "../../../common/versionless/rating/headerText/silver.png",
+                        "gold": "../../../common/versionless/rating/headerText/gold.png",
+                        "platinum": "../../../common/versionless/rating/headerText/platinum.png",
+                        "rainbow": "../../../common/versionless/rating/headerText/rainbow.png",
+                        "rainbow2": "../../../common/versionless/rating/headerText/rainbow2.png",
+                        "rainbow3": "../../../common/versionless/rating/headerText/rainbow3.png"
+                    }
+                },
                 "profile": {
                     "userplate": "../../../common/versionless/userplateIchigeki.png",
                     "icon": "../../../common/versionless/icon.png"

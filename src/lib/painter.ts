@@ -76,6 +76,12 @@ export abstract class Painter<
                 family: "standard-font-emoji",
             }
         );
+        registerFont(
+            upath.join(Painter.assetsPath, "fonts", "jost", "Jost-Regular.ttf"),
+            {
+                family: "ongeki-font-level",
+            }
+        );
     }
 
     public abstract draw(
