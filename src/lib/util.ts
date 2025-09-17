@@ -188,7 +188,6 @@ export class Util {
                 curY += width + verticalSpacing;
             }
         }
-        console.log(str);
     }
     static async drawEmojiOrGlyph(
         ctx: CanvasRenderingContext2D,
