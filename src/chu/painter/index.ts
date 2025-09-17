@@ -2,7 +2,7 @@ import _ from "lodash";
 import sharp from "sharp";
 import Color from "color";
 import { z } from "zod/v4";
-import { CanvasRenderingContext2D, Image } from "canvas";
+import { Canvas, CanvasRenderingContext2D, Image, loadImage } from "canvas";
 
 import { Database } from "../lib/database";
 import { ChunithmUtil } from "../lib/util";
@@ -34,7 +34,15 @@ export namespace ChunithmPainterModule {
             type: z.literal("profile"),
             height: z.number().min(1),
             sprites: z.object({
-                ratingNumberMap: z.string(),
+                ratingNumberMap: z.object({
+                    white: z.string(),
+                    bronze: z.string(),
+                    silver: z.string(),
+                    gold: z.string(),
+                    platinum: z.string(),
+                    rainbow: z.string(),
+                    kiwami: z.string(),
+                }),
                 profile: z.object({
                     nameplate: z.string(),
                     icon: z.string(),
@@ -129,24 +137,6 @@ export namespace ChunithmPainterModule {
                 ctx.fillStyle = "rgba(255, 255, 255, 0.45)";
                 ctx.fill();
 
-                // const ratingImgBuffer = await this.getRatingNumber(rating, theme);
-                // if (ratingImgBuffer) {
-                //     const { width, height } =
-                //         await sharp(ratingImgBuffer).metadata();
-                //     if (width && height) {
-                //         const aspectRatio = width / height;
-                //         const image = new Image();
-                //         image.src = ratingImgBuffer;
-                //         const drawHeight = (element.height * 7) / 32;
-                //         ctx.drawImage(
-                //             image,
-                //             element.x + element.height * 2.0,
-                //             element.y + element.height * 0.3,
-                //             drawHeight * aspectRatio * 0.8,
-                //             drawHeight
-                //         );
-                //     }
-                // }
                 Util.drawText(
                     ctx,
                     "Lv.",
@@ -177,7 +167,7 @@ export namespace ChunithmPainterModule {
                 Util.drawText(
                     ctx,
                     Util.HalfFullWidthConvert.toFullWidth(username),
-                    element.x + element.height * (56 / 64),
+                    element.x + element.height * (57 / 64),
                     element.y + element.height * (0.3 + 1 / 4),
                     (element.height * 1) / 8,
                     0,
@@ -188,32 +178,192 @@ export namespace ChunithmPainterModule {
                     "standard-font-username"
                 );
 
-                Util.drawText(
-                    ctx,
-                    "RATING",
-                    element.x + element.height * (43 / 64),
-                    element.y + element.height * (47 / 64),
-                    (element.height * 7) / 88,
-                    0,
-                    ((element.height / 3) * 5.108 * 3.1) / 5,
-                    "left",
-                    "black",
-                    "black",
-                    "standard-font-username"
+                const { number: ratingNumberImg, text: ratingTextImg } =
+                    await getRatingNumber(rating, theme, element);
+
+                const drawHeight = (element.height * 5) / 44;
+                if (ratingTextImg) {
+                    const image = await loadImage(ratingTextImg);
+                    const { width, height } = image;
+                    const aspectRatio = width / height;
+                    const drawWidth = drawHeight * aspectRatio;
+                    ctx.drawImage(
+                        image,
+                        element.x + element.height * (41 / 64),
+                        element.y + element.height * (82 / 128),
+                        drawWidth,
+                        drawHeight
+                    );
+                }
+                if (ratingNumberImg) {
+                    const image = await loadImage(ratingNumberImg);
+                    const { width, height } = image;
+                    const aspectRatio = width / height;
+                    const drawWidth = drawHeight * aspectRatio;
+                    ctx.drawImage(
+                        image,
+                        element.x + element.height * (63 / 64),
+                        element.y + element.height * (81 / 128),
+                        drawWidth,
+                        drawHeight
+                    );
+                }
+            }
+            // TODO: render color on rating < 12
+            async function getRatingNumber(
+                num: number,
+                theme: Theme<any>,
+                element: z.infer<typeof schema>
+            ) {
+                async function getRatingDigit(
+                    map: Buffer,
+                    digit: number,
+                    unitWidth: number,
+                    unitHeight: number
+                ) {
+                    digit = Math.trunc(digit % 10);
+                    return await sharp(map)
+                        .extract({
+                            left: (digit % 4) * unitWidth,
+                            top: Math.trunc(digit / 4) * unitHeight,
+                            width: unitWidth,
+                            height: unitHeight,
+                        })
+                        .toBuffer();
+                }
+                async function getRatingDot(
+                    map: Buffer,
+                    unitWidth: number,
+                    unitHeight: number
+                ) {
+                    return await sharp(map)
+                        .extract({
+                            left: 2 * unitWidth,
+                            top: 2 * unitHeight,
+                            width: unitWidth,
+                            height: unitHeight,
+                        })
+                        .toBuffer();
+                }
+                async function getRatingText(
+                    map: Buffer,
+                    unitWidth: number,
+                    unitHeight: number
+                ) {
+                    return await sharp(map)
+                        .extract({
+                            left: 0,
+                            top: 3 * unitHeight,
+                            width: unitWidth * 3,
+                            height: unitHeight,
+                        })
+                        .toBuffer();
+                }
+                const map = (() => {
+                    if (num >= 17)
+                        return theme.getFile(
+                            element.sprites.ratingNumberMap.kiwami
+                        );
+                    else if (num >= 16)
+                        return theme.getFile(
+                            element.sprites.ratingNumberMap.rainbow
+                        );
+                    else if (num >= 15.25)
+                        return theme.getFile(
+                            element.sprites.ratingNumberMap.platinum
+                        );
+                    else if (num >= 14.5)
+                        return theme.getFile(
+                            element.sprites.ratingNumberMap.gold
+                        );
+                    else if (num >= 13.25)
+                        return theme.getFile(
+                            element.sprites.ratingNumberMap.silver
+                        );
+                    else if (num >= 12)
+                        return theme.getFile(
+                            element.sprites.ratingNumberMap.bronze
+                        );
+                    else
+                        return theme.getFile(
+                            element.sprites.ratingNumberMap.white
+                        );
+                })();
+                const { width, height } = await sharp(map).metadata();
+                if (!(width && height)) return { number: null, text: null };
+                const unitWidth = width / 4,
+                    unitHeight = height / 4;
+                const digits: {
+                    str: string;
+                    img: Buffer | null;
+                }[] = await Promise.all(
+                    Util.truncate(num, 2)
+                        .padStart(5, " ")
+                        .split("")
+                        .map((v) => {
+                            if (v === ".")
+                                return getRatingDot(
+                                    map,
+                                    unitWidth,
+                                    unitHeight
+                                ).then((img) => {
+                                    return {
+                                        str: v,
+                                        img,
+                                    };
+                                });
+                            else if ("0" <= v && v <= "9")
+                                return getRatingDigit(
+                                    map,
+                                    parseInt(v),
+                                    unitWidth,
+                                    unitHeight
+                                ).then((img) => {
+                                    return {
+                                        str: v,
+                                        img,
+                                    };
+                                });
+                            else if ("0" <= v && v <= "9")
+                                return getRatingDigit(
+                                    map,
+                                    parseInt(v),
+                                    unitWidth,
+                                    unitHeight
+                                ).then((img) => {
+                                    return {
+                                        str: v,
+                                        img,
+                                    };
+                                });
+                            else
+                                return {
+                                    str: v,
+                                    img: null,
+                                };
+                        })
                 );
-                Util.drawText(
-                    ctx,
-                    Util.truncate(rating, 2),
-                    element.x + element.height * (67 / 64),
-                    element.y + element.height * (47 / 64),
-                    (element.height * 5) / 44,
-                    0,
-                    ((element.height / 3) * 5.108 * 3.1) / 5,
-                    "left",
-                    "black",
-                    "black",
-                    "standard-font-username"
+                const canvas = new Canvas(
+                    unitWidth * digits.length,
+                    unitHeight
                 );
+                const ctx = canvas.getContext("2d");
+                for (let i = 0, curx = 0; i < digits.length; ++i) {
+                    const curDigit = digits[i];
+                    if (!curDigit || !curDigit.img) continue;
+                    const img = new Image();
+                    img.src = curDigit.img;
+                    ctx.drawImage(img, curx, 0);
+                    if (curDigit.str === ".") {
+                        curx += unitWidth * 0.4;
+                    } else {
+                        curx += unitWidth * 0.7;
+                    }
+                }
+                return {
+                    number: canvas.toBuffer(),
+                    text: await getRatingText(map, unitWidth, unitHeight),
+                };
             }
             /* End Username Draw*/
         }

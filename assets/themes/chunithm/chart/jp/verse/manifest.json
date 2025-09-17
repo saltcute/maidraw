@@ -125,7 +125,15 @@
             "y": 10,
             "height": 293,
             "sprites": {
-                "ratingNumberMap": "../../../best/common/versionless/numberMap.png",
+                "ratingNumberMap": {
+                    "white": "../../../best/common/versionless/rating/numberMaps/white.png",
+                    "bronze": "../../../best/common/versionless/rating/numberMaps/bronze.png",
+                    "silver": "../../../best/common/versionless/rating/numberMaps/silver.png",
+                    "gold": "../../../best/common/versionless/rating/numberMaps/gold.png",
+                    "platinum": "../../../best/common/versionless/rating/numberMaps/platinum.png",
+                    "rainbow": "../../../best/common/versionless/rating/numberMaps/rainbow.png",
+                    "kiwami": "../../../best/common/versionless/rating/numberMaps/kiwami.png"
+                },
                 "profile": {
                     "nameplate": "../../../best/common/versionless/nameplate.png",
                     "icon": "../../../best/common/versionless/icon.png"
