@@ -4,11 +4,7 @@ import Color from "color";
 import { z } from "zod/v4";
 import { globSync } from "glob";
 import stringFormat from "string-template";
-import {
-    CanvasRenderingContext2D,
-    Image as CanvasImage,
-    registerFont,
-} from "canvas";
+import { CanvasRenderingContext2D, registerFont, loadImage } from "canvas";
 
 import { Util } from "./util";
 
@@ -201,8 +197,8 @@ export namespace PainterModule {
     export namespace Image {
         export const schema = ThemeManager.Element.extend({
             type: z.literal("image"),
-            width: z.number().min(1),
-            height: z.number().min(1),
+            width: z.number().min(1).optional(),
+            height: z.number().min(1).optional(),
             path: z.string(),
         });
         export async function draw(
@@ -210,15 +206,24 @@ export namespace PainterModule {
             theme: Theme<any>,
             element: z.infer<typeof schema>
         ) {
-            const img = new CanvasImage();
-            img.src = theme.getFile(element.path);
-            ctx.drawImage(
-                img,
-                element.x,
-                element.y,
-                element.width,
-                element.height
-            );
+            const img = await loadImage(theme.getFile(element.path));
+            const { width: imgWidth, height: imgHeight } = img;
+            const aspectRatio = imgWidth / imgHeight;
+            let width, height;
+            if (element.width && element.height) {
+                width = element.width;
+                height = element.height;
+            } else if (element.width) {
+                width = element.width;
+                height = width / aspectRatio;
+            } else if (element.height) {
+                height = element.height;
+                width = height * aspectRatio;
+            } else {
+                width = imgWidth;
+                height = imgHeight;
+            }
+            ctx.drawImage(img, element.x, element.y, width, height);
         }
     }
     export namespace Text {
