@@ -10,7 +10,7 @@
             "y": -480,
             "width": 2560,
             "height": 1920,
-            "path": "./image/background.png"
+            "path": "../../common/salt/background.png"
         },
         {
             "type": "image",
@@ -18,7 +18,7 @@
             "y": 70,
             "width": 690,
             "height": 633,
-            "path": "./image/chara.png"
+            "path": "../../common/salt/chara.png"
         },
         {
             "type": "image",
@@ -26,7 +26,7 @@
             "y": 120,
             "width": 470,
             "height": 195,
-            "path": "./image/logo.png"
+            "path": "../../common/salt/logo.png"
         },
         {
             "type": "score-grid",
@@ -52,20 +52,20 @@
             },
             "sprites": {
                 "achievement": {
-                    "d": "./image/achievement/d.png",
-                    "c": "./image/achievement/c.png",
-                    "b": "./image/achievement/b.png",
-                    "bb": "./image/achievement/bb.png",
-                    "bbb": "./image/achievement/bbb.png",
-                    "a": "./image/achievement/a.png",
-                    "aa": "./image/achievement/aa.png",
-                    "aaa": "./image/achievement/aaa.png",
-                    "s": "./image/achievement/s.png",
-                    "sp": "./image/achievement/sp.png",
-                    "ss": "./image/achievement/ss.png",
-                    "ssp": "./image/achievement/ssp.png",
-                    "sss": "./image/achievement/sss.png",
-                    "sssp": "./image/achievement/sssp.png"
+                    "d": "../../common/salt/achievement/d.png",
+                    "c": "../../common/salt/achievement/c.png",
+                    "b": "../../common/salt/achievement/b.png",
+                    "bb": "../../common/salt/achievement/bb.png",
+                    "bbb": "../../common/salt/achievement/bbb.png",
+                    "a": "../../common/salt/achievement/a.png",
+                    "aa": "../../common/salt/achievement/aa.png",
+                    "aaa": "../../common/salt/achievement/aaa.png",
+                    "s": "../../common/salt/achievement/s.png",
+                    "sp": "../../common/salt/achievement/sp.png",
+                    "ss": "../../common/salt/achievement/ss.png",
+                    "ssp": "../../common/salt/achievement/ssp.png",
+                    "sss": "../../common/salt/achievement/sss.png",
+                    "sssp": "../../common/salt/achievement/sssp.png"
                 },
                 "mode": {
                     "standard": "../../common/versionless/mode/jp/standard.png",
@@ -109,20 +109,20 @@
             },
             "sprites": {
                 "achievement": {
-                    "d": "./image/achievement/d.png",
-                    "c": "./image/achievement/c.png",
-                    "b": "./image/achievement/b.png",
-                    "bb": "./image/achievement/bb.png",
-                    "bbb": "./image/achievement/bbb.png",
-                    "a": "./image/achievement/a.png",
-                    "aa": "./image/achievement/aa.png",
-                    "aaa": "./image/achievement/aaa.png",
-                    "s": "./image/achievement/s.png",
-                    "sp": "./image/achievement/sp.png",
-                    "ss": "./image/achievement/ss.png",
-                    "ssp": "./image/achievement/ssp.png",
-                    "sss": "./image/achievement/sss.png",
-                    "sssp": "./image/achievement/sssp.png"
+                    "d": "../../common/salt/achievement/d.png",
+                    "c": "../../common/salt/achievement/c.png",
+                    "b": "../../common/salt/achievement/b.png",
+                    "bb": "../../common/salt/achievement/bb.png",
+                    "bbb": "../../common/salt/achievement/bbb.png",
+                    "a": "../../common/salt/achievement/a.png",
+                    "aa": "../../common/salt/achievement/aa.png",
+                    "aaa": "../../common/salt/achievement/aaa.png",
+                    "s": "../../common/salt/achievement/s.png",
+                    "sp": "../../common/salt/achievement/sp.png",
+                    "ss": "../../common/salt/achievement/ss.png",
+                    "ssp": "../../common/salt/achievement/ssp.png",
+                    "sss": "../../common/salt/achievement/sss.png",
+                    "sssp": "../../common/salt/achievement/sssp.png"
                 },
                 "mode": {
                     "standard": "../../common/versionless/mode/jp/standard.png",

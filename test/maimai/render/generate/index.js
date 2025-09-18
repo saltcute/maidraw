@@ -10,6 +10,8 @@ const upath = require("upath");
     const fs = require("fs");
 
     const themes = [
+        "jp-circle-landscape",
+        "jp-circle-portrait",
         "cn-2025-landscape",
         "cn-2025-portrait",
         "salt-2026-landscape",
@@ -31,7 +33,7 @@ const upath = require("upath");
         let result = null;
         if (type === "full") {
             result = await painter.drawWithScoreSource(
-                kamai,
+                kamai.versions().prism(),
                 { username: process.env.NAME },
                 {
                     scale: process.env.SCALE ?? 1,

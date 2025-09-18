@@ -1,0 +1,219 @@
+{
+    "displayName": "maimai でらっくす CiRCLE, Landscape",
+    "name": "jp-circle-landscape",
+    "width": 2560,
+    "height": 1440,
+    "elements": [
+        {
+            "type": "image",
+            "x": 0,
+            "y": 0,
+            "width": 2560,
+            "height": 1440,
+            "path": "../../common/circle/jp/background/landscape.png"
+        },
+        {
+            "type": "image",
+            "x": 535,
+            "y": 70,
+            "height": 705,
+            "path": "../../common/circle/jp/chara.png"
+        },
+        {
+            "type": "image",
+            "x": 325,
+            "y": 46,
+            "width": 225,
+            "path": "../../common/circle/jp/laundry.png"
+        },
+        {
+            "type": "image",
+            "x": 285,
+            "y": 116,
+            "width": 450,
+            "path": "../../common/circle/jp/logo.png"
+        },
+        {
+            "type": "score-grid",
+            "x": 70,
+            "y": 500,
+            "horizontalSize": 3,
+            "verticalSize": 5,
+            "region": "new",
+            "index": 0,
+            "scoreBubble": {
+                "width": 280,
+                "height": 155,
+                "margin": 10,
+                "gap": 20,
+                "color": {
+                    "basic": "#70E262",
+                    "advanced": "#FFBB00",
+                    "expert": "#FF4A5A",
+                    "master": "#A04FDA",
+                    "remaster": "#DDBDF5",
+                    "utage": "#70E262"
+                }
+            },
+            "sprites": {
+                "achievement": {
+                    "d": "../../common/salt/achievement/d.png",
+                    "c": "../../common/salt/achievement/c.png",
+                    "b": "../../common/salt/achievement/b.png",
+                    "bb": "../../common/salt/achievement/bb.png",
+                    "bbb": "../../common/salt/achievement/bbb.png",
+                    "a": "../../common/salt/achievement/a.png",
+                    "aa": "../../common/salt/achievement/aa.png",
+                    "aaa": "../../common/salt/achievement/aaa.png",
+                    "s": "../../common/salt/achievement/s.png",
+                    "sp": "../../common/salt/achievement/sp.png",
+                    "ss": "../../common/salt/achievement/ss.png",
+                    "ssp": "../../common/salt/achievement/ssp.png",
+                    "sss": "../../common/salt/achievement/sss.png",
+                    "sssp": "../../common/salt/achievement/sssp.png"
+                },
+                "mode": {
+                    "standard": "../../common/versionless/mode/jp/standard.png",
+                    "dx": "../../common/versionless/mode/jp/dx.png"
+                },
+                "milestone": {
+                    "ap": "../../common/versionless/milestone/ap.png",
+                    "app": "../../common/versionless/milestone/app.png",
+                    "fc": "../../common/versionless/milestone/fc.png",
+                    "fcp": "../../common/versionless/milestone/fcp.png",
+                    "fdx": "../../common/versionless/milestone/fdx.png",
+                    "fdxp": "../../common/versionless/milestone/fdxp.png",
+                    "fs": "../../common/versionless/milestone/fs.png",
+                    "fsp": "../../common/versionless/milestone/fsp.png",
+                    "sync": "../../common/versionless/milestone/sync.png",
+                    "none": "../../common/versionless/milestone/none.png"
+                }
+            }
+        },
+        {
+            "type": "score-grid",
+            "x": 1010,
+            "y": 150,
+            "horizontalSize": 5,
+            "verticalSize": 7,
+            "region": "old",
+            "index": 0,
+            "scoreBubble": {
+                "width": 280,
+                "height": 155,
+                "margin": 10,
+                "gap": 20,
+                "color": {
+                    "basic": "#70E262",
+                    "advanced": "#FFBB00",
+                    "expert": "#FF4A5A",
+                    "master": "#A04FDA",
+                    "remaster": "#DDBDF5",
+                    "utage": "#70E262"
+                }
+            },
+            "sprites": {
+                "achievement": {
+                    "d": "../../common/salt/achievement/d.png",
+                    "c": "../../common/salt/achievement/c.png",
+                    "b": "../../common/salt/achievement/b.png",
+                    "bb": "../../common/salt/achievement/bb.png",
+                    "bbb": "../../common/salt/achievement/bbb.png",
+                    "a": "../../common/salt/achievement/a.png",
+                    "aa": "../../common/salt/achievement/aa.png",
+                    "aaa": "../../common/salt/achievement/aaa.png",
+                    "s": "../../common/salt/achievement/s.png",
+                    "sp": "../../common/salt/achievement/sp.png",
+                    "ss": "../../common/salt/achievement/ss.png",
+                    "ssp": "../../common/salt/achievement/ssp.png",
+                    "sss": "../../common/salt/achievement/sss.png",
+                    "sssp": "../../common/salt/achievement/sssp.png"
+                },
+                "mode": {
+                    "standard": "../../common/versionless/mode/jp/standard.png",
+                    "dx": "../../common/versionless/mode/jp/dx.png"
+                },
+                "milestone": {
+                    "ap": "../../common/versionless/milestone/ap.png",
+                    "app": "../../common/versionless/milestone/app.png",
+                    "fc": "../../common/versionless/milestone/fc.png",
+                    "fcp": "../../common/versionless/milestone/fcp.png",
+                    "fdx": "../../common/versionless/milestone/fdx.png",
+                    "fdxp": "../../common/versionless/milestone/fdxp.png",
+                    "fs": "../../common/versionless/milestone/fs.png",
+                    "fsp": "../../common/versionless/milestone/fsp.png",
+                    "sync": "../../common/versionless/milestone/sync.png",
+                    "none": "../../common/versionless/milestone/none.png"
+                }
+            }
+        },
+        {
+            "type": "profile",
+            "x": 110,
+            "y": 345,
+            "height": 129,
+            "sprites": {
+                "dxRating": {
+                    "white": "../../common/versionless/dxRating/jp/white.png",
+                    "blue": "../../common/versionless/dxRating/jp/blue.png",
+                    "green": "../../common/versionless/dxRating/jp/green.png",
+                    "yellow": "../../common/versionless/dxRating/jp/yellow.png",
+                    "red": "../../common/versionless/dxRating/jp/red.png",
+                    "purple": "../../common/versionless/dxRating/jp/purple.png",
+                    "bronze": "../../common/versionless/dxRating/jp/bronze.png",
+                    "silver": "../../common/versionless/dxRating/jp/silver.png",
+                    "gold": "../../common/versionless/dxRating/jp/gold.png",
+                    "platinum": "../../common/versionless/dxRating/jp/platinum.png",
+                    "rainbow": "../../common/versionless/dxRating/jp/rainbow.png"
+                },
+                "dxRatingNumberMap": "../../common/versionless/dxRating/numberMap.png",
+                "profile": {
+                    "nameplate": "../../common/versionless/nameplate.png",
+                    "icon": "../../common/versionless/icon.png"
+                }
+            }
+        },
+        {
+            "type": "text",
+            "size": 32,
+            "x": 2480,
+            "y": 1407,
+            "borderColor": "#ff1a82",
+            "align": "right",
+            "content": "Generated by saltbot | maimaidx.cab/discord | maimaidx.cab/invite"
+        },
+        {
+            "type": "text",
+            "size": 24,
+            "x": 1030,
+            "y": 100,
+            "borderColor": "#ff1a82",
+            "align": "left",
+            "content": "{newScoreRatingAvgString}\n{oldScoreRatingAvgString}"
+        },
+        {
+            "type": "text",
+            "size": 24,
+            "x": 1355,
+            "y": 100,
+            "borderColor": "#ff1a82",
+            "align": "left",
+            "content": "{newScoreMilestone}\n{oldScoreMilestone}"
+        },
+        {
+            "type": "hitokoto",
+            "size": 24,
+            "x": 80,
+            "y": 1403,
+            "width": 1000,
+            "linebreak": true,
+            "borderColor": "#ff1a82",
+            "align": "left",
+            "probability": 0.1,
+            "customLines": [
+                "../../../../../hitokoto/general.json",
+                "../../../../../hitokoto/support/maimaidx.json"
+            ]
+        }
+    ]
+}
