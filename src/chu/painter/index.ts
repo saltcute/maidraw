@@ -2,7 +2,7 @@ import _ from "lodash";
 import sharp from "sharp";
 import Color from "color";
 import { z } from "zod/v4";
-import { Canvas, CanvasRenderingContext2D, Image, loadImage } from "canvas";
+import { Canvas, CanvasRenderingContext2D, loadImage } from "canvas";
 
 import { Database } from "../lib/database";
 import { ChunithmUtil } from "../lib/util";
@@ -57,8 +57,9 @@ export namespace ChunithmPainterModule {
             rating: number,
             profilePicture?: Buffer
         ) {
-            const nameplate = new Image();
-            nameplate.src = theme.getFile(element.sprites.profile.nameplate);
+            const nameplate = await loadImage(
+                theme.getFile(element.sprites.profile.nameplate)
+            );
             ctx.drawImage(
                 nameplate,
                 element.x,
@@ -81,7 +82,6 @@ export namespace ChunithmPainterModule {
                 ctx.clip();
                 ctx.fillStyle = "white";
                 ctx.fill();
-                const icon = new Image();
                 try {
                     sharp(profilePicture);
                 } catch {
@@ -92,7 +92,7 @@ export namespace ChunithmPainterModule {
                     profilePicture ||
                     theme.getFile(element.sprites.profile.icon);
                 const { dominant } = await sharp(pfp).stats();
-                icon.src = await sharp(pfp).png().toBuffer();
+                const icon = await loadImage(await sharp(pfp).png().toBuffer());
 
                 const cropSize = Math.min(icon.width, icon.height);
                 ctx.drawImage(
@@ -351,8 +351,7 @@ export namespace ChunithmPainterModule {
                 for (let i = 0, curx = 0; i < digits.length; ++i) {
                     const curDigit = digits[i];
                     if (!curDigit || !curDigit.img) continue;
-                    const img = new Image();
-                    img.src = curDigit.img;
+                    const img = await loadImage(curDigit.img);
                     ctx.drawImage(img, curx, 0);
                     if (curDigit.str === ".") {
                         curx += unitWidth * 0.4;
@@ -533,8 +532,7 @@ export namespace ChunithmPainterModule {
                     let jacket = await Database.fetchJacket(score.chart.id);
                     if (!jacket) jacket = await Database.fetchJacket(-1);
                     if (jacket) {
-                        const img = new Image();
-                        img.src = jacket;
+                        const img = await loadImage(jacket);
                         ctx.drawImage(img, x, y, jacketSize, jacketSize);
                     } else {
                         ctx.fillStyle = "#b6ffab";
@@ -686,8 +684,7 @@ export namespace ChunithmPainterModule {
                                     element.sprites.achievement.sssp
                                 );
                         }
-                        const img = new Image();
-                        img.src = rankImg;
+                        const img = await loadImage(rankImg);
                         ctx.drawImage(
                             img,
                             x + jacketSize * (13 / 16),
@@ -746,8 +743,7 @@ export namespace ChunithmPainterModule {
                             (element.scoreBubble.height * 0.806 * 0.32 * 3) / 56
                         );
                         ctx.fill();
-                        const combo = new Image();
-                        combo.src = comboImg;
+                        const combo = await loadImage(comboImg);
                         ctx.drawImage(
                             combo,
                             x -
@@ -1256,8 +1252,7 @@ export namespace ChunithmPainterModule {
                             const blockHeight = height * 0.806 * 0.3 * 0.85,
                                 blockWidth = blockHeight * (540 / 180);
 
-                            const img = new Image();
-                            img.src = rankImg;
+                            const img = await loadImage(rankImg);
                             ctx.drawImage(
                                 img,
                                 x + element.bubble.margin * (1 / 2),
@@ -1318,8 +1313,7 @@ export namespace ChunithmPainterModule {
                                     );
                                     break;
                             }
-                            const combo = new Image();
-                            combo.src = comboImg;
+                            const combo = await loadImage(comboImg);
                             ctx.drawImage(
                                 combo,
                                 curX,
@@ -1371,8 +1365,8 @@ export namespace ChunithmPainterModule {
                                 try {
                                     sharp(versionImage);
                                     if (versionImage) {
-                                        const versionImg = new Image();
-                                        versionImg.src = versionImage;
+                                        const versionImg =
+                                            await loadImage(versionImage);
                                         ctx.drawImage(
                                             versionImg,
                                             curx - versionImageWidth,
@@ -1635,8 +1629,8 @@ export namespace ChunithmPainterModule {
                                         if (!versionImage)
                                             throw "No versionImage";
                                         sharp(versionImage);
-                                        const versionImg = new Image();
-                                        versionImg.src = versionImage;
+                                        const versionImg =
+                                            await loadImage(versionImage);
                                         ctx.drawImage(
                                             versionImg,
                                             curx,
@@ -1840,9 +1834,8 @@ export namespace ChunithmPainterModule {
 
                 /* Begin jacket draw */
                 if (jacket) {
-                    const jacketImage = new Image();
                     const jacketBorderRadius = backGroundBorderRadius / 2;
-                    jacketImage.src = jacket;
+                    const jacketImage = await loadImage(jacket);
                     ctx.beginPath();
                     ctx.roundRect(
                         element.x + jacketMargin,

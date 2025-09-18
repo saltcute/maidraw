@@ -2,7 +2,7 @@ import _ from "lodash";
 import sharp from "sharp";
 import Color from "color";
 import { z } from "zod/v4";
-import { Canvas, CanvasRenderingContext2D, Image } from "canvas";
+import { Canvas, CanvasRenderingContext2D, loadImage } from "canvas";
 
 import {
     EAchievementTypes,
@@ -68,8 +68,9 @@ export namespace MaimaiPainterModule {
             rating: number,
             profilePicture?: Buffer
         ) {
-            const nameplate = new Image();
-            nameplate.src = theme.getFile(element.sprites.profile.nameplate);
+            const nameplate = await loadImage(
+                theme.getFile(element.sprites.profile.nameplate)
+            );
             ctx.drawImage(
                 nameplate,
                 element.x,
@@ -92,7 +93,6 @@ export namespace MaimaiPainterModule {
                 ctx.clip();
                 ctx.fillStyle = "white";
                 ctx.fill();
-                const icon = new Image();
                 try {
                     sharp(profilePicture);
                 } catch {
@@ -103,7 +103,7 @@ export namespace MaimaiPainterModule {
                     profilePicture ||
                     theme.getFile(element.sprites.profile.icon);
                 const { dominant } = await sharp(pfp).stats();
-                icon.src = await sharp(pfp).png().toBuffer();
+                const icon = await loadImage(await sharp(pfp).png().toBuffer());
 
                 const cropSize = Math.min(icon.width, icon.height);
                 ctx.drawImage(
@@ -137,7 +137,6 @@ export namespace MaimaiPainterModule {
 
             /* Begin DX Rating Draw */
             {
-                const dxRating = new Image();
                 let dxRatingImg: Buffer;
                 switch (true) {
                     case rating >= 15000: {
@@ -207,7 +206,7 @@ export namespace MaimaiPainterModule {
                         break;
                     }
                 }
-                dxRating.src = dxRatingImg;
+                const dxRating = await loadImage(dxRatingImg);
                 ctx.drawImage(
                     dxRating,
                     element.x + element.height,
@@ -244,8 +243,7 @@ export namespace MaimaiPainterModule {
                         await sharp(ratingImgBuffer).metadata();
                     if (width && height) {
                         const aspectRatio = width / height;
-                        const image = new Image();
-                        image.src = ratingImgBuffer;
+                        const image = await loadImage(ratingImgBuffer);
                         const drawHeight = (element.height * 11) / 64;
                         ctx.drawImage(
                             image,
@@ -314,8 +312,7 @@ export namespace MaimaiPainterModule {
             for (let i = 0; i < digits.length; ++i) {
                 const curDigit = digits[i];
                 if (!curDigit) continue;
-                const img = new Image();
-                img.src = curDigit;
+                const img = await loadImage(curDigit);
                 ctx.drawImage(img, unitWidth * i * 0.89, 0);
             }
             return canvas.toBuffer();
@@ -551,8 +548,7 @@ export namespace MaimaiPainterModule {
                     let jacket = await Database.fetchJacket(score.chart.id);
                     if (!jacket) jacket = await Database.fetchJacket(0);
                     if (jacket) {
-                        const img = new Image();
-                        img.src = jacket;
+                        const img = await loadImage(jacket);
                         ctx.drawImage(img, x, y, jacketSize, jacketSize);
                     } else {
                         ctx.fillStyle = "#b6ffab";
@@ -704,8 +700,7 @@ export namespace MaimaiPainterModule {
                                     element.sprites.achievement.sssp
                                 );
                         }
-                        const img = new Image();
-                        img.src = rankImg;
+                        const img = await loadImage(rankImg);
                         ctx.drawImage(
                             img,
                             x + jacketSize,
@@ -782,8 +777,7 @@ export namespace MaimaiPainterModule {
                                 );
                                 break;
                         }
-                        const combo = new Image();
-                        combo.src = comboImg;
+                        const combo = await loadImage(comboImg);
                         ctx.drawImage(
                             combo,
                             x +
@@ -799,8 +793,7 @@ export namespace MaimaiPainterModule {
                             element.scoreBubble.height * 0.806 * 0.32,
                             element.scoreBubble.height * 0.806 * 0.32
                         );
-                        const sync = new Image();
-                        sync.src = syncImg;
+                        const sync = await loadImage(syncImg);
                         ctx.drawImage(
                             sync,
                             x +
@@ -821,7 +814,6 @@ export namespace MaimaiPainterModule {
 
                     /** Begin Chart Mode Draw */
                     {
-                        const mode = new Image();
                         const chartModeBadgeImg = theme.getFile(
                             score.chart.id > 10000
                                 ? element.sprites.mode.dx
@@ -830,7 +822,7 @@ export namespace MaimaiPainterModule {
                         const { width, height } =
                             await sharp(chartModeBadgeImg).metadata();
                         const aspectRatio = (width ?? 0) / (height ?? 1) || 3;
-                        mode.src = chartModeBadgeImg;
+                        const mode = await loadImage(chartModeBadgeImg);
                         const drawHeight = (jacketSize * 6) / 8;
                         ctx.drawImage(
                             mode,
@@ -1326,8 +1318,7 @@ export namespace MaimaiPainterModule {
                                         element.sprites.achievement.sssp
                                     );
                             }
-                            const img = new Image();
-                            img.src = rankImg;
+                            const img = await loadImage(rankImg);
                             ctx.drawImage(
                                 img,
                                 x + element.bubble.margin * (1 / 4),
@@ -1405,8 +1396,7 @@ export namespace MaimaiPainterModule {
                                     );
                                     break;
                             }
-                            const combo = new Image();
-                            combo.src = comboImg;
+                            const combo = await loadImage(comboImg);
                             ctx.drawImage(
                                 combo,
                                 x +
@@ -1420,8 +1410,7 @@ export namespace MaimaiPainterModule {
                                 height * 0.806 * 0.32,
                                 height * 0.806 * 0.32
                             );
-                            const sync = new Image();
-                            sync.src = syncImg;
+                            const sync = await loadImage(syncImg);
                             ctx.drawImage(
                                 sync,
                                 x +
@@ -1606,8 +1595,8 @@ export namespace MaimaiPainterModule {
                                     try {
                                         sharp(versionImage);
                                         if (versionImage) {
-                                            const versionImg = new Image();
-                                            versionImg.src = versionImage;
+                                            const versionImg =
+                                                await loadImage(versionImage);
                                             let text;
                                             switch (version.region) {
                                                 case "DX":
@@ -1916,8 +1905,8 @@ export namespace MaimaiPainterModule {
                                         if (!versionImage)
                                             throw "No versionImage";
                                         sharp(versionImage);
-                                        const versionImg = new Image();
-                                        versionImg.src = versionImage;
+                                        const versionImg =
+                                            await loadImage(versionImage);
                                         ctx.drawImage(
                                             versionImg,
                                             curx,
@@ -2125,9 +2114,8 @@ export namespace MaimaiPainterModule {
 
                 /* Begin jacket draw */
                 if (jacket) {
-                    const jacketImage = new Image();
                     const jacketBorderRadius = backGroundBorderRadius / 2;
-                    jacketImage.src = jacket;
+                    const jacketImage = await loadImage(jacket);
                     ctx.beginPath();
                     ctx.roundRect(
                         element.x + jacketMargin,
@@ -2163,7 +2151,6 @@ export namespace MaimaiPainterModule {
                         Infinity
                     );
                     const titleActualHeight = Math.abs(ascent - decent);
-                    const mode = new Image();
                     const chartModeBadgeImg = theme.getFile(
                         chart.id > 10000
                             ? element.sprites.mode.dx
@@ -2314,7 +2301,7 @@ export namespace MaimaiPainterModule {
 
                     /** Begin Chart Mode Draw */
                     {
-                        mode.src = chartModeBadgeImg;
+                        const mode = await loadImage(chartModeBadgeImg);
                         ctx.drawImage(
                             mode,
                             element.x +
