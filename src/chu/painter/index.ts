@@ -141,7 +141,7 @@ export namespace ChunithmPainterModule {
                     ctx,
                     "Lv.",
                     element.x + element.height * (43 / 64),
-                    element.y + element.height * (0.3 + 1 / 4),
+                    element.y + element.height * (35 / 64),
                     (element.height * 1) / 16,
                     0,
                     {
@@ -155,7 +155,7 @@ export namespace ChunithmPainterModule {
                     ctx,
                     "99",
                     element.x + element.height * (49 / 64),
-                    element.y + element.height * (0.3 + 1 / 4),
+                    element.y + element.height * (35 / 64),
                     (element.height * 1) / 11,
                     0,
                     {
@@ -170,7 +170,7 @@ export namespace ChunithmPainterModule {
                     ctx,
                     Util.HalfFullWidthConvert.toFullWidth(username),
                     element.x + element.height * (57 / 64),
-                    element.y + element.height * (0.3 + 1 / 4),
+                    element.y + element.height * (35 / 64),
                     (element.height * 1) / 8,
                     0,
                     {
@@ -178,7 +178,8 @@ export namespace ChunithmPainterModule {
                         textAlign: "left",
                         mainColor: "black",
                         borderColor: "black",
-                        font: "standard-font-username",
+                        font: "chunithm-font-username",
+                        widthConstraintType: "shrink",
                     }
                 );
 

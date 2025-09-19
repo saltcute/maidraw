@@ -78,6 +78,17 @@ export abstract class Painter<
                 family: "ongeki-font-level",
             }
         );
+        registerFont(
+            upath.join(
+                Painter.assetsPath,
+                "fonts",
+                "sega-sans-db",
+                "SegaKakuGothic-DB.ttf"
+            ),
+            {
+                family: "chunithm-font-username",
+            }
+        );
     }
 
     public abstract draw(
