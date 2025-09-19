@@ -268,6 +268,8 @@ export namespace MaimaiPainterModule {
                         mainColor: "black",
                         borderColor: "black",
                         font: "standard-font-username",
+                        widthConstraintType: "shrink",
+                        shrinkAnchor: "center",
                     }
                 );
             }

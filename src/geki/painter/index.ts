@@ -263,8 +263,8 @@ export namespace OngekiPainterModule {
                             mainColor: "black",
                             borderColor: "black",
                             font: "standard-font-username",
-                            lineBreakSuffix: "",
                             widthConstraintType: "shrink",
+                            shrinkAnchor: "center",
                         }
                     );
 
