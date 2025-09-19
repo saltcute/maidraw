@@ -2,7 +2,7 @@ import _ from "lodash";
 import sharp from "sharp";
 import Color from "color";
 import { z } from "zod/v4";
-import { Canvas, CanvasRenderingContext2D, loadImage } from "canvas";
+import { Canvas, CanvasRenderingContext2D } from "canvas";
 
 import {
     EAchievementTypes,
@@ -68,7 +68,7 @@ export namespace MaimaiPainterModule {
             rating: number,
             profilePicture?: Buffer
         ) {
-            const nameplate = await loadImage(
+            const nameplate = await Util.loadImage(
                 theme.getFile(element.sprites.profile.nameplate)
             );
             ctx.drawImage(
@@ -103,7 +103,9 @@ export namespace MaimaiPainterModule {
                     profilePicture ||
                     theme.getFile(element.sprites.profile.icon);
                 const { dominant } = await sharp(pfp).stats();
-                const icon = await loadImage(await sharp(pfp).png().toBuffer());
+                const icon = await Util.loadImage(
+                    await sharp(pfp).png().toBuffer()
+                );
 
                 const cropSize = Math.min(icon.width, icon.height);
                 ctx.drawImage(
@@ -206,7 +208,7 @@ export namespace MaimaiPainterModule {
                         break;
                     }
                 }
-                const dxRating = await loadImage(dxRatingImg);
+                const dxRating = await Util.loadImage(dxRatingImg);
                 ctx.drawImage(
                     dxRating,
                     element.x + element.height,
@@ -243,7 +245,7 @@ export namespace MaimaiPainterModule {
                         await sharp(ratingImgBuffer).metadata();
                     if (width && height) {
                         const aspectRatio = width / height;
-                        const image = await loadImage(ratingImgBuffer);
+                        const image = await Util.loadImage(ratingImgBuffer);
                         const drawHeight = (element.height * 11) / 64;
                         ctx.drawImage(
                             image,
@@ -316,7 +318,7 @@ export namespace MaimaiPainterModule {
             for (let i = 0; i < digits.length; ++i) {
                 const curDigit = digits[i];
                 if (!curDigit) continue;
-                const img = await loadImage(curDigit);
+                const img = await Util.loadImage(curDigit);
                 ctx.drawImage(img, unitWidth * i * 0.89, 0);
             }
             return canvas.toBuffer();
@@ -552,7 +554,7 @@ export namespace MaimaiPainterModule {
                     let jacket = await Database.fetchJacket(score.chart.id);
                     if (!jacket) jacket = await Database.fetchJacket(0);
                     if (jacket) {
-                        const img = await loadImage(jacket);
+                        const img = await Util.loadImage(jacket);
                         ctx.drawImage(img, x, y, jacketSize, jacketSize);
                     } else {
                         ctx.fillStyle = "#b6ffab";
@@ -708,7 +710,7 @@ export namespace MaimaiPainterModule {
                                     element.sprites.achievement.sssp
                                 );
                         }
-                        const img = await loadImage(rankImg);
+                        const img = await Util.loadImage(rankImg);
                         ctx.drawImage(
                             img,
                             x + jacketSize,
@@ -785,7 +787,7 @@ export namespace MaimaiPainterModule {
                                 );
                                 break;
                         }
-                        const combo = await loadImage(comboImg);
+                        const combo = await Util.loadImage(comboImg);
                         ctx.drawImage(
                             combo,
                             x +
@@ -801,7 +803,7 @@ export namespace MaimaiPainterModule {
                             element.scoreBubble.height * 0.806 * 0.32,
                             element.scoreBubble.height * 0.806 * 0.32
                         );
-                        const sync = await loadImage(syncImg);
+                        const sync = await Util.loadImage(syncImg);
                         ctx.drawImage(
                             sync,
                             x +
@@ -830,7 +832,7 @@ export namespace MaimaiPainterModule {
                         const { width, height } =
                             await sharp(chartModeBadgeImg).metadata();
                         const aspectRatio = (width ?? 0) / (height ?? 1) || 3;
-                        const mode = await loadImage(chartModeBadgeImg);
+                        const mode = await Util.loadImage(chartModeBadgeImg);
                         const drawHeight = (jacketSize * 6) / 8;
                         ctx.drawImage(
                             mode,
@@ -1342,7 +1344,7 @@ export namespace MaimaiPainterModule {
                                         element.sprites.achievement.sssp
                                     );
                             }
-                            const img = await loadImage(rankImg);
+                            const img = await Util.loadImage(rankImg);
                             ctx.drawImage(
                                 img,
                                 x + element.bubble.margin * (1 / 4),
@@ -1420,7 +1422,7 @@ export namespace MaimaiPainterModule {
                                     );
                                     break;
                             }
-                            const combo = await loadImage(comboImg);
+                            const combo = await Util.loadImage(comboImg);
                             ctx.drawImage(
                                 combo,
                                 x +
@@ -1434,7 +1436,7 @@ export namespace MaimaiPainterModule {
                                 height * 0.806 * 0.32,
                                 height * 0.806 * 0.32
                             );
-                            const sync = await loadImage(syncImg);
+                            const sync = await Util.loadImage(syncImg);
                             ctx.drawImage(
                                 sync,
                                 x +
@@ -1620,7 +1622,9 @@ export namespace MaimaiPainterModule {
                                         sharp(versionImage);
                                         if (versionImage) {
                                             const versionImg =
-                                                await loadImage(versionImage);
+                                                await Util.loadImage(
+                                                    versionImage
+                                                );
                                             let text;
                                             switch (version.region) {
                                                 case "DX":
@@ -1933,7 +1937,7 @@ export namespace MaimaiPainterModule {
                                             throw "No versionImage";
                                         sharp(versionImage);
                                         const versionImg =
-                                            await loadImage(versionImage);
+                                            await Util.loadImage(versionImage);
                                         ctx.drawImage(
                                             versionImg,
                                             curx,
@@ -2147,7 +2151,7 @@ export namespace MaimaiPainterModule {
                 /* Begin jacket draw */
                 if (jacket) {
                     const jacketBorderRadius = backGroundBorderRadius / 2;
-                    const jacketImage = await loadImage(jacket);
+                    const jacketImage = await Util.loadImage(jacket);
                     ctx.beginPath();
                     ctx.roundRect(
                         element.x + jacketMargin,
@@ -2339,7 +2343,7 @@ export namespace MaimaiPainterModule {
 
                     /** Begin Chart Mode Draw */
                     {
-                        const mode = await loadImage(chartModeBadgeImg);
+                        const mode = await Util.loadImage(chartModeBadgeImg);
                         ctx.drawImage(
                             mode,
                             element.x +

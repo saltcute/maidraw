@@ -4,7 +4,7 @@ import Color from "color";
 import { z } from "zod/v4";
 import { globSync } from "glob";
 import stringFormat from "string-template";
-import { CanvasRenderingContext2D, registerFont, loadImage } from "canvas";
+import { CanvasRenderingContext2D, registerFont } from "canvas";
 
 import { Util } from "./util";
 
@@ -217,7 +217,7 @@ export namespace PainterModule {
             theme: Theme<any>,
             element: z.infer<typeof schema>
         ) {
-            const img = await loadImage(theme.getFile(element.path));
+            const img = await Util.loadImage(theme.getFile(element.path));
             const { width: imgWidth, height: imgHeight } = img;
             const aspectRatio = imgWidth / imgHeight;
             let width, height;

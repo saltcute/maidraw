@@ -2,7 +2,7 @@ import _ from "lodash";
 import sharp from "sharp";
 import Color from "color";
 import { z } from "zod/v4";
-import { Canvas, CanvasRenderingContext2D, loadImage } from "canvas";
+import { Canvas, CanvasRenderingContext2D } from "canvas";
 
 import { Database } from "../lib/database";
 import { ChunithmUtil } from "../lib/util";
@@ -57,7 +57,7 @@ export namespace ChunithmPainterModule {
             rating: number,
             profilePicture?: Buffer
         ) {
-            const nameplate = await loadImage(
+            const nameplate = await Util.loadImage(
                 theme.getFile(element.sprites.profile.nameplate)
             );
             ctx.drawImage(
@@ -92,7 +92,9 @@ export namespace ChunithmPainterModule {
                     profilePicture ||
                     theme.getFile(element.sprites.profile.icon);
                 const { dominant } = await sharp(pfp).stats();
-                const icon = await loadImage(await sharp(pfp).png().toBuffer());
+                const icon = await Util.loadImage(
+                    await sharp(pfp).png().toBuffer()
+                );
 
                 const cropSize = Math.min(icon.width, icon.height);
                 ctx.drawImage(
@@ -188,7 +190,7 @@ export namespace ChunithmPainterModule {
 
                 const drawHeight = (element.height * 5) / 44;
                 if (ratingTextImg) {
-                    const image = await loadImage(ratingTextImg);
+                    const image = await Util.loadImage(ratingTextImg);
                     const { width, height } = image;
                     const aspectRatio = width / height;
                     const drawWidth = drawHeight * aspectRatio;
@@ -201,7 +203,7 @@ export namespace ChunithmPainterModule {
                     );
                 }
                 if (ratingNumberImg) {
-                    const image = await loadImage(ratingNumberImg);
+                    const image = await Util.loadImage(ratingNumberImg);
                     const { width, height } = image;
                     const aspectRatio = width / height;
                     const drawWidth = drawHeight * aspectRatio;
@@ -356,7 +358,7 @@ export namespace ChunithmPainterModule {
                 for (let i = 0, curx = 0; i < digits.length; ++i) {
                     const curDigit = digits[i];
                     if (!curDigit || !curDigit.img) continue;
-                    const img = await loadImage(curDigit.img);
+                    const img = await Util.loadImage(curDigit.img);
                     ctx.drawImage(img, curx, 0);
                     if (curDigit.str === ".") {
                         curx += unitWidth * 0.4;
@@ -537,7 +539,7 @@ export namespace ChunithmPainterModule {
                     let jacket = await Database.fetchJacket(score.chart.id);
                     if (!jacket) jacket = await Database.fetchJacket(-1);
                     if (jacket) {
-                        const img = await loadImage(jacket);
+                        const img = await Util.loadImage(jacket);
                         ctx.drawImage(img, x, y, jacketSize, jacketSize);
                     } else {
                         ctx.fillStyle = "#b6ffab";
@@ -693,7 +695,7 @@ export namespace ChunithmPainterModule {
                                     element.sprites.achievement.sssp
                                 );
                         }
-                        const img = await loadImage(rankImg);
+                        const img = await Util.loadImage(rankImg);
                         ctx.drawImage(
                             img,
                             x + jacketSize * (13 / 16),
@@ -752,7 +754,7 @@ export namespace ChunithmPainterModule {
                             (element.scoreBubble.height * 0.806 * 0.32 * 3) / 56
                         );
                         ctx.fill();
-                        const combo = await loadImage(comboImg);
+                        const combo = await Util.loadImage(comboImg);
                         ctx.drawImage(
                             combo,
                             x -
@@ -1275,7 +1277,7 @@ export namespace ChunithmPainterModule {
                             const blockHeight = height * 0.806 * 0.3 * 0.85,
                                 blockWidth = blockHeight * (540 / 180);
 
-                            const img = await loadImage(rankImg);
+                            const img = await Util.loadImage(rankImg);
                             ctx.drawImage(
                                 img,
                                 x + element.bubble.margin * (1 / 2),
@@ -1336,7 +1338,7 @@ export namespace ChunithmPainterModule {
                                     );
                                     break;
                             }
-                            const combo = await loadImage(comboImg);
+                            const combo = await Util.loadImage(comboImg);
                             ctx.drawImage(
                                 combo,
                                 curX,
@@ -1389,7 +1391,7 @@ export namespace ChunithmPainterModule {
                                     sharp(versionImage);
                                     if (versionImage) {
                                         const versionImg =
-                                            await loadImage(versionImage);
+                                            await Util.loadImage(versionImage);
                                         ctx.drawImage(
                                             versionImg,
                                             curx - versionImageWidth,
@@ -1656,7 +1658,7 @@ export namespace ChunithmPainterModule {
                                             throw "No versionImage";
                                         sharp(versionImage);
                                         const versionImg =
-                                            await loadImage(versionImage);
+                                            await Util.loadImage(versionImage);
                                         ctx.drawImage(
                                             versionImg,
                                             curx,
@@ -1865,7 +1867,7 @@ export namespace ChunithmPainterModule {
                 /* Begin jacket draw */
                 if (jacket) {
                     const jacketBorderRadius = backGroundBorderRadius / 2;
-                    const jacketImage = await loadImage(jacket);
+                    const jacketImage = await Util.loadImage(jacket);
                     ctx.beginPath();
                     ctx.roundRect(
                         element.x + jacketMargin,

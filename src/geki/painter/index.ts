@@ -2,7 +2,7 @@ import _ from "lodash";
 import sharp from "sharp";
 import Color from "color";
 import { z } from "zod/v4";
-import { Canvas, CanvasRenderingContext2D, loadImage } from "canvas";
+import { Canvas, CanvasRenderingContext2D } from "canvas";
 
 import { Database } from "../lib/database";
 import ScoreTrackerAdapter from "../lib/adapter";
@@ -106,8 +106,8 @@ export namespace OngekiPainterModule {
                     })
                     .png()
                     .toBuffer();
-                const upperImage = await loadImage(upper);
-                const lowerImage = await loadImage(lower);
+                const upperImage = await Util.loadImage(upper);
+                const lowerImage = await Util.loadImage(lower);
 
                 ctx.drawImage(
                     upperImage,
@@ -156,7 +156,9 @@ export namespace OngekiPainterModule {
                     profilePicture ||
                     theme.getFile(element.sprites.profile.icon);
                 const { dominant } = await sharp(pfp).stats();
-                const icon = await loadImage(await sharp(pfp).png().toBuffer());
+                const icon = await Util.loadImage(
+                    await sharp(pfp).png().toBuffer()
+                );
 
                 const cropSize = Math.min(icon.width, icon.height);
                 ctx.drawImage(
@@ -272,7 +274,7 @@ export namespace OngekiPainterModule {
                         await getRatingNumber(rating, theme, element, type);
 
                     if (ratingTextImg) {
-                        const image = await loadImage(ratingTextImg);
+                        const image = await Util.loadImage(ratingTextImg);
                         const { width, height } = image;
                         const aspectRatio = width / height;
                         const drawHeight =
@@ -287,7 +289,7 @@ export namespace OngekiPainterModule {
                         );
                     }
                     if (ratingNumberImg) {
-                        const image = await loadImage(ratingNumberImg);
+                        const image = await Util.loadImage(ratingNumberImg);
                         const { width, height } = image;
                         const aspectRatio = width / height;
                         const drawHeight =
@@ -463,7 +465,7 @@ export namespace OngekiPainterModule {
                 for (let i = 0, curx = 0; i < digits.length; ++i) {
                     const curDigit = digits[i];
                     if (!curDigit || !curDigit.img) continue;
-                    const img = await loadImage(curDigit.img);
+                    const img = await Util.loadImage(curDigit.img);
                     if (curDigit.str === ".") {
                         ctx.drawImage(
                             img,
@@ -673,7 +675,7 @@ export namespace OngekiPainterModule {
                     let jacket = await Database.fetchJacket(score.chart.id);
                     if (!jacket) jacket = await Database.fetchJacket(0);
                     if (jacket) {
-                        const img = await loadImage(jacket);
+                        const img = await Util.loadImage(jacket);
                         ctx.drawImage(img, x, y, jacketSize, jacketSize);
                     } else {
                         ctx.fillStyle = "#b6ffab";
@@ -819,7 +821,7 @@ export namespace OngekiPainterModule {
                                     element.sprites.achievement.sssp
                                 );
                         }
-                        const img = await loadImage(rankImg);
+                        const img = await Util.loadImage(rankImg);
                         ctx.drawImage(
                             img,
                             x + jacketSize * (31 / 32),
@@ -910,8 +912,8 @@ export namespace OngekiPainterModule {
                             (comboBackground * comboBgRatio) / 2
                         );
                         ctx.fill();
-                        const combo = await loadImage(comboImg);
-                        const bell = await loadImage(bellImg);
+                        const combo = await Util.loadImage(comboImg);
+                        const bell = await Util.loadImage(bellImg);
 
                         ctx.drawImage(
                             bell,
@@ -1432,7 +1434,7 @@ export namespace OngekiPainterModule {
                             const achievementRankWidth =
                                 achievementRankHeight * (286 / 143);
 
-                            const img = await loadImage(rankImg);
+                            const img = await Util.loadImage(rankImg);
                             ctx.drawImage(
                                 img,
                                 x + element.bubble.margin * (1 / 2),
@@ -1519,8 +1521,8 @@ export namespace OngekiPainterModule {
                                     );
                                     break;
                             }
-                            const combo = await loadImage(comboImg);
-                            const bell = await loadImage(bellImg);
+                            const combo = await Util.loadImage(comboImg);
+                            const bell = await Util.loadImage(bellImg);
 
                             ctx.drawImage(
                                 combo,
@@ -1583,7 +1585,7 @@ export namespace OngekiPainterModule {
                                     sharp(versionImage);
                                     if (versionImage) {
                                         const versionImg =
-                                            await loadImage(versionImage);
+                                            await Util.loadImage(versionImage);
                                         ctx.drawImage(
                                             versionImg,
                                             curx - versionImageWidth,
@@ -1846,7 +1848,7 @@ export namespace OngekiPainterModule {
                                             throw "No versionImage";
                                         sharp(versionImage);
                                         const versionImg =
-                                            await loadImage(versionImage);
+                                            await Util.loadImage(versionImage);
                                         ctx.drawImage(
                                             versionImg,
                                             curx,
@@ -2052,7 +2054,7 @@ export namespace OngekiPainterModule {
                 /* Begin jacket draw */
                 if (jacket) {
                     const jacketBorderRadius = backGroundBorderRadius / 2;
-                    const jacketImage = await loadImage(jacket);
+                    const jacketImage = await Util.loadImage(jacket);
                     ctx.beginPath();
                     ctx.roundRect(
                         element.x + jacketMargin,
@@ -2299,7 +2301,7 @@ export namespace OngekiPainterModule {
                 const cardCenterOffset =
                     (element.width - characterImgWidth) / 2;
                 if (characterImg) {
-                    const characterImage = await loadImage(characterImg);
+                    const characterImage = await Util.loadImage(characterImg);
                     ctx.beginPath();
                     ctx.roundRect(
                         element.x + cardCenterOffset,
