@@ -657,6 +657,11 @@ export class KamaiTachi extends ScoreTrackerAdapter {
             currentVersion: KamaiTachi.EGameVersions.CHUNITHM_VERSE,
         });
     }
+    public xverse() {
+        return new KamaiTachi({
+            currentVersion: KamaiTachi.EGameVersions.CHUNITHM_XVERSE,
+        });
+    }
 }
 
 export namespace KamaiTachi {

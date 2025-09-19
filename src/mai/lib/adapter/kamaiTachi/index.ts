@@ -669,6 +669,12 @@ export class KamaiTachiBuilder {
             region,
         });
     }
+    public circle(region?: "DX" | "EX") {
+        return new KamaiTachi({
+            version: KamaiTachi.GameVersions.CIRCLE,
+            region,
+        });
+    }
     public CN() {
         return {
             DX() {
