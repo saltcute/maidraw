@@ -292,16 +292,18 @@ export namespace PainterModule {
                     element.y + i * element.size * 1.3,
                     element.size,
                     element.size / 3.5,
-                    element.width || Infinity,
-                    element.align,
-                    element.color || "#FFFFFF",
-                    element.borderColor
-                        ? element.borderColor
-                        : Color.rgb(element.color || "#FFFFFF")
-                              .darken(0.3)
-                              .hex(),
-                    element.font,
-                    element.linebreak ? "" : "..."
+                    {
+                        maxWidth: element.width || Infinity,
+                        textAlign: element.align,
+                        mainColor: element.color || "#FFFFFF",
+                        borderColor: element.borderColor
+                            ? element.borderColor
+                            : Color.rgb(element.color || "#FFFFFF")
+                                  .darken(0.3)
+                                  .hex(),
+                        font: element.font,
+                        lineBreakSuffix: element.linebreak ? "" : "...",
+                    }
                 );
             }
         }

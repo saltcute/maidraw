@@ -144,11 +144,12 @@ export namespace ChunithmPainterModule {
                     element.y + element.height * (0.3 + 1 / 4),
                     (element.height * 1) / 16,
                     0,
-                    ((element.height / 3) * 5.108 * 3.1) / 5,
-                    "left",
-                    "black",
-                    "black",
-                    "standard-font-username"
+                    {
+                        textAlign: "left",
+                        mainColor: "black",
+                        borderColor: "black",
+                        font: "standard-font-username",
+                    }
                 );
                 Util.drawText(
                     ctx,
@@ -157,11 +158,12 @@ export namespace ChunithmPainterModule {
                     element.y + element.height * (0.3 + 1 / 4),
                     (element.height * 1) / 11,
                     0,
-                    ((element.height / 3) * 5.108 * 3.1) / 5,
-                    "left",
-                    "black",
-                    "black",
-                    "standard-font-username"
+                    {
+                        textAlign: "left",
+                        mainColor: "black",
+                        borderColor: "black",
+                        font: "standard-font-username",
+                    }
                 );
 
                 Util.drawText(
@@ -171,11 +173,13 @@ export namespace ChunithmPainterModule {
                     element.y + element.height * (0.3 + 1 / 4),
                     (element.height * 1) / 8,
                     0,
-                    element.height * (65 / 64),
-                    "left",
-                    "black",
-                    "black",
-                    "standard-font-username"
+                    {
+                        maxWidth: element.height * (65 / 64),
+                        textAlign: "left",
+                        mainColor: "black",
+                        borderColor: "black",
+                        font: "standard-font-username",
+                    }
                 );
 
                 const { number: ratingNumberImg, text: ratingTextImg } =
@@ -560,12 +564,15 @@ export namespace ChunithmPainterModule {
                                 element.scoreBubble.height * 0.806 * 0.144,
                             element.scoreBubble.height * 0.806 * 0.144,
                             element.scoreBubble.height * 0.806 * 0.04,
-                            element.scoreBubble.width -
-                                (jacketSize * 7) / 8 -
-                                element.scoreBubble.margin,
-                            "left",
-                            "white",
-                            jacketMaskGradDark
+                            {
+                                maxWidth:
+                                    element.scoreBubble.width -
+                                    (jacketSize * 7) / 8 -
+                                    element.scoreBubble.margin,
+                                textAlign: "left",
+                                mainColor: "white",
+                                borderColor: jacketMaskGradDark,
+                            }
                         );
                     } /** End Title Draw */
 
@@ -603,10 +610,11 @@ export namespace ChunithmPainterModule {
                                 (0.144 + 0.144 + 0.208 - 0.04),
                         element.scoreBubble.height * 0.806 * 0.208,
                         element.scoreBubble.height * 0.806 * 0.04,
-                        Infinity,
-                        "right",
-                        "white",
-                        new Color(curColor).darken(0.3).hexa()
+                        {
+                            textAlign: "right",
+                            mainColor: "white",
+                            borderColor: new Color(curColor).darken(0.3).hexa(),
+                        }
                     );
                     /** End Achievement Rate Draw */
 
@@ -772,10 +780,13 @@ export namespace ChunithmPainterModule {
                             y + jacketSize - element.scoreBubble.margin * 2,
                             element.scoreBubble.height * 0.806 * 0.128,
                             element.scoreBubble.height * 0.806 * 0.04,
-                            Infinity,
-                            "left",
-                            "white",
-                            new Color(curColor).darken(0.3).hexa()
+                            {
+                                textAlign: "left",
+                                mainColor: "white",
+                                borderColor: new Color(curColor)
+                                    .darken(0.3)
+                                    .hexa(),
+                            }
                         );
                     }
                     /** End Bests Index Draw */
@@ -795,10 +806,11 @@ export namespace ChunithmPainterModule {
                                 (0.806 + (1 - 0.806) / 2),
                         element.scoreBubble.height * 0.806 * 0.128,
                         element.scoreBubble.height * 0.806 * 0.04,
-                        Infinity,
-                        "left",
-                        "white",
-                        new Color(curColor).darken(0.3).hexa()
+                        {
+                            textAlign: "left",
+                            mainColor: "white",
+                            borderColor: new Color(curColor).darken(0.3).hexa(),
+                        }
                     );
 
                     Util.drawText(
@@ -812,10 +824,11 @@ export namespace ChunithmPainterModule {
                                 (0.806 + (1 - 0.806) / 2),
                         element.scoreBubble.height * 0.806 * 0.128,
                         element.scoreBubble.height * 0.806 * 0.04,
-                        Infinity,
-                        "right",
-                        "white",
-                        new Color(curColor).darken(0.3).hexa()
+                        {
+                            textAlign: "right",
+                            mainColor: "white",
+                            borderColor: new Color(curColor).darken(0.3).hexa(),
+                        }
                     );
                 }
                 /** End Difficulty & Rating Draw */
@@ -1096,10 +1109,13 @@ export namespace ChunithmPainterModule {
                                 element.bubble.margin * (1 / 4),
                             titleSize,
                             height * 0.806 * 0.04,
-                            Infinity,
-                            "left",
-                            "white",
-                            new Color(curColor).darken(0.3).hexa()
+                            {
+                                textAlign: "left",
+                                mainColor: "white",
+                                borderColor: new Color(curColor)
+                                    .darken(0.3)
+                                    .hexa(),
+                            }
                         );
                         const difficultyTextWidth = Util.measureText(
                             ctx,
@@ -1126,10 +1142,13 @@ export namespace ChunithmPainterModule {
                                 element.bubble.margin * (1 / 4),
                             levelTextSize,
                             height * 0.806 * 0.04,
-                            Infinity,
-                            "left",
-                            "white",
-                            new Color(curColor).darken(0.3).hexa()
+                            {
+                                textAlign: "left",
+                                mainColor: "white",
+                                borderColor: new Color(curColor)
+                                    .darken(0.3)
+                                    .hexa(),
+                            }
                         );
 
                         ctx.beginPath();
@@ -1165,10 +1184,13 @@ export namespace ChunithmPainterModule {
                                 scoreSize,
                             scoreSize,
                             height * 0.806 * 0.04,
-                            Infinity,
-                            "right",
-                            "white",
-                            new Color(curColor).darken(0.3).hexa()
+                            {
+                                textAlign: "right",
+                                mainColor: "white",
+                                borderColor: new Color(curColor)
+                                    .darken(0.3)
+                                    .hexa(),
+                            }
                         );
                     }
                     /** End Achievement Rate Draw */
@@ -1404,10 +1426,13 @@ export namespace ChunithmPainterModule {
                                         i,
                                 noteCountTextSize,
                                 height * 0.806 * 0.04,
-                                Infinity,
-                                "left",
-                                "white",
-                                new Color(curColor).darken(0.3).hexa()
+                                {
+                                    textAlign: "left",
+                                    mainColor: "white",
+                                    borderColor: new Color(curColor)
+                                        .darken(0.3)
+                                        .hexa(),
+                                }
                             );
                             const length = Util.measureText(
                                 ctx,
@@ -1657,12 +1682,13 @@ export namespace ChunithmPainterModule {
                                                     2,
                                             noteCountTextSize * 1.2,
                                             height * 0.806 * 0.04,
-                                            Infinity,
-                                            "center",
-                                            "white",
-                                            new Color(curColor)
-                                                .darken(0.3)
-                                                .hexa()
+                                            {
+                                                textAlign: "center",
+                                                mainColor: "white",
+                                                borderColor: new Color(curColor)
+                                                    .darken(0.3)
+                                                    .hexa(),
+                                            }
                                         );
                                     }
                                     if (event.type == "existence") {
@@ -1697,12 +1723,13 @@ export namespace ChunithmPainterModule {
                                                 noteCountTextSize,
                                             noteCountTextSize,
                                             height * 0.806 * 0.04,
-                                            Infinity,
-                                            "center",
-                                            "white",
-                                            new Color(curColor)
-                                                .darken(0.3)
-                                                .hexa()
+                                            {
+                                                textAlign: "center",
+                                                mainColor: "white",
+                                                borderColor: new Color(curColor)
+                                                    .darken(0.3)
+                                                    .hexa(),
+                                            }
                                         );
                                     } else if (event.type == "removal") {
                                         Util.drawText(
@@ -1714,12 +1741,13 @@ export namespace ChunithmPainterModule {
                                                 noteCountTextSize,
                                             noteCountTextSize,
                                             height * 0.806 * 0.04,
-                                            Infinity,
-                                            "center",
-                                            "white",
-                                            new Color(curColor)
-                                                .darken(0.3)
-                                                .hexa()
+                                            {
+                                                textAlign: "center",
+                                                mainColor: "white",
+                                                borderColor: new Color(curColor)
+                                                    .darken(0.3)
+                                                    .hexa(),
+                                            }
                                         );
                                     }
                                     curx += versionImageWidth + addGap;
@@ -1754,10 +1782,11 @@ export namespace ChunithmPainterModule {
                         y + height * (0.806 + (1 - 0.806) / 2),
                         height * 0.806 * 0.128,
                         height * 0.806 * 0.04,
-                        Infinity,
-                        "left",
-                        "white",
-                        new Color(curColor).darken(0.3).hexa()
+                        {
+                            textAlign: "left",
+                            mainColor: "white",
+                            borderColor: new Color(curColor).darken(0.3).hexa(),
+                        }
                     );
                     ctx.restore();
 
@@ -1896,10 +1925,12 @@ export namespace ChunithmPainterModule {
                             textSizeTitle,
                         textSizeTitle,
                         textLineWidth,
-                        textTitleMaxWidth,
-                        "left",
-                        "white",
-                        textColor
+                        {
+                            maxWidth: textTitleMaxWidth,
+                            textAlign: "left",
+                            mainColor: "white",
+                            borderColor: textColor,
+                        }
                     );
 
                     Util.drawText(
@@ -1913,10 +1944,12 @@ export namespace ChunithmPainterModule {
                             textSizeTitle * 2,
                         textSizeSecondary,
                         textLineWidth,
-                        element.width - textMargin * 2,
-                        "left",
-                        "white",
-                        textColor
+                        {
+                            maxWidth: element.width - textMargin * 2,
+                            textAlign: "left",
+                            mainColor: "white",
+                            borderColor: textColor,
+                        }
                     );
                     function getBpmRange(bpms: number[]) {
                         const uniqueBpms = _.uniq(bpms);
@@ -1940,10 +1973,12 @@ export namespace ChunithmPainterModule {
                             textSizeTitle * 3,
                         textSizeSecondary,
                         textLineWidth,
-                        element.width - textMargin * 2,
-                        "left",
-                        "white",
-                        textColor
+                        {
+                            maxWidth: element.width - textMargin * 2,
+                            textAlign: "left",
+                            mainColor: "white",
+                            borderColor: textColor,
+                        }
                     );
 
                     const EVENT_JPN = chart.events

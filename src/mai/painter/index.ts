@@ -262,11 +262,13 @@ export namespace MaimaiPainterModule {
                     element.y + element.height * (0.064 + 0.333 + 1 / 4),
                     (element.height * 1) / 6,
                     0,
-                    ((element.height / 3) * 5.108 * 6) / 5,
-                    "left",
-                    "black",
-                    "black",
-                    "standard-font-username"
+                    {
+                        maxWidth: ((element.height / 3) * 5.108 * 6) / 5,
+                        textAlign: "left",
+                        mainColor: "black",
+                        borderColor: "black",
+                        font: "standard-font-username",
+                    }
                 );
             }
             /* End Username Draw*/
@@ -576,12 +578,15 @@ export namespace MaimaiPainterModule {
                                 element.scoreBubble.height * 0.806 * 0.144,
                             element.scoreBubble.height * 0.806 * 0.144,
                             element.scoreBubble.height * 0.806 * 0.04,
-                            element.scoreBubble.width -
-                                (jacketSize * 7) / 8 -
-                                element.scoreBubble.margin,
-                            "left",
-                            "white",
-                            jacketMaskGradDark
+                            {
+                                maxWidth:
+                                    element.scoreBubble.width -
+                                    (jacketSize * 7) / 8 -
+                                    element.scoreBubble.margin,
+                                textAlign: "left",
+                                mainColor: "white",
+                                borderColor: jacketMaskGradDark,
+                            }
                         );
                     } /** End Title Draw */
 
@@ -619,10 +624,11 @@ export namespace MaimaiPainterModule {
                                 (0.144 + 0.144 + 0.208 - 0.04),
                         element.scoreBubble.height * 0.806 * 0.208,
                         element.scoreBubble.height * 0.806 * 0.04,
-                        Infinity,
-                        "right",
-                        "white",
-                        new Color(curColor).darken(0.3).hexa()
+                        {
+                            textAlign: "right",
+                            mainColor: "white",
+                            borderColor: new Color(curColor).darken(0.3).hexa(),
+                        }
                     );
                     /** End Achievement Rate Draw */
 
@@ -845,10 +851,13 @@ export namespace MaimaiPainterModule {
                             y + jacketSize - element.scoreBubble.margin * 2,
                             element.scoreBubble.height * 0.806 * 0.128,
                             element.scoreBubble.height * 0.806 * 0.04,
-                            Infinity,
-                            "left",
-                            "white",
-                            new Color(curColor).darken(0.3).hexa()
+                            {
+                                textAlign: "left",
+                                mainColor: "white",
+                                borderColor: new Color(curColor)
+                                    .darken(0.3)
+                                    .hexa(),
+                            }
                         );
                     }
                     /** End Bests Index Draw */
@@ -868,10 +877,11 @@ export namespace MaimaiPainterModule {
                                 (0.806 + (1 - 0.806) / 2),
                         element.scoreBubble.height * 0.806 * 0.128,
                         element.scoreBubble.height * 0.806 * 0.04,
-                        Infinity,
-                        "left",
-                        "white",
-                        new Color(curColor).darken(0.3).hexa()
+                        {
+                            textAlign: "left",
+                            mainColor: "white",
+                            borderColor: new Color(curColor).darken(0.3).hexa(),
+                        }
                     );
 
                     if (score.dxScore >= 0 && score.chart.maxDxScore > 0) {
@@ -886,10 +896,13 @@ export namespace MaimaiPainterModule {
                                     (0.806 + (1 - 0.806) / 2),
                             element.scoreBubble.height * 0.806 * 0.128,
                             element.scoreBubble.height * 0.806 * 0.04,
-                            Infinity,
-                            "right",
-                            "white",
-                            new Color(curColor).darken(0.3).hexa()
+                            {
+                                textAlign: "right",
+                                mainColor: "white",
+                                borderColor: new Color(curColor)
+                                    .darken(0.3)
+                                    .hexa(),
+                            }
                         );
                     }
                 }
@@ -1173,10 +1186,13 @@ export namespace MaimaiPainterModule {
                                 element.bubble.margin * (1 / 4),
                             titleSize,
                             height * 0.806 * 0.04,
-                            Infinity,
-                            "left",
-                            "white",
-                            new Color(curColor).darken(0.3).hexa()
+                            {
+                                textAlign: "left",
+                                mainColor: "white",
+                                borderColor: new Color(curColor)
+                                    .darken(0.3)
+                                    .hexa(),
+                            }
                         );
                         const difficultyTextWidth = Util.measureText(
                             ctx,
@@ -1194,10 +1210,13 @@ export namespace MaimaiPainterModule {
                                 element.bubble.margin * (1 / 4),
                             levelTextSize,
                             height * 0.806 * 0.04,
-                            Infinity,
-                            "left",
-                            "white",
-                            new Color(curColor).darken(0.3).hexa()
+                            {
+                                textAlign: "left",
+                                mainColor: "white",
+                                borderColor: new Color(curColor)
+                                    .darken(0.3)
+                                    .hexa(),
+                            }
                         );
 
                         ctx.beginPath();
@@ -1235,10 +1254,13 @@ export namespace MaimaiPainterModule {
                                 scoreSize,
                             scoreSize,
                             height * 0.806 * 0.04,
-                            Infinity,
-                            "right",
-                            "white",
-                            new Color(curColor).darken(0.3).hexa()
+                            {
+                                textAlign: "right",
+                                mainColor: "white",
+                                borderColor: new Color(curColor)
+                                    .darken(0.3)
+                                    .hexa(),
+                            }
                         );
                     }
                     /** End Achievement Rate Draw */
@@ -1669,10 +1691,13 @@ export namespace MaimaiPainterModule {
                                         i,
                                 noteCountTextSize,
                                 height * 0.806 * 0.04,
-                                Infinity,
-                                "left",
-                                "white",
-                                new Color(curColor).darken(0.3).hexa()
+                                {
+                                    textAlign: "left",
+                                    mainColor: "white",
+                                    borderColor: new Color(curColor)
+                                        .darken(0.3)
+                                        .hexa(),
+                                }
                             );
                             const length = Util.measureText(
                                 ctx,
@@ -1933,12 +1958,13 @@ export namespace MaimaiPainterModule {
                                                     2,
                                             noteCountTextSize * 1.2,
                                             height * 0.806 * 0.04,
-                                            Infinity,
-                                            "center",
-                                            "white",
-                                            new Color(curColor)
-                                                .darken(0.3)
-                                                .hexa()
+                                            {
+                                                textAlign: "center",
+                                                mainColor: "white",
+                                                borderColor: new Color(curColor)
+                                                    .darken(0.3)
+                                                    .hexa(),
+                                            }
                                         );
                                     }
 
@@ -1974,12 +2000,13 @@ export namespace MaimaiPainterModule {
                                                 noteCountTextSize,
                                             noteCountTextSize,
                                             height * 0.806 * 0.04,
-                                            Infinity,
-                                            "center",
-                                            "white",
-                                            new Color(curColor)
-                                                .darken(0.3)
-                                                .hexa()
+                                            {
+                                                textAlign: "center",
+                                                mainColor: "white",
+                                                borderColor: new Color(curColor)
+                                                    .darken(0.3)
+                                                    .hexa(),
+                                            }
                                         );
                                     } else if (event.type == "removal") {
                                         Util.drawText(
@@ -1991,12 +2018,13 @@ export namespace MaimaiPainterModule {
                                                 noteCountTextSize,
                                             noteCountTextSize,
                                             height * 0.806 * 0.04,
-                                            Infinity,
-                                            "center",
-                                            "white",
-                                            new Color(curColor)
-                                                .darken(0.3)
-                                                .hexa()
+                                            {
+                                                textAlign: "center",
+                                                mainColor: "white",
+                                                borderColor: new Color(curColor)
+                                                    .darken(0.3)
+                                                    .hexa(),
+                                            }
                                         );
                                     }
                                     curx += versionImageWidth + addGap;
@@ -2031,10 +2059,11 @@ export namespace MaimaiPainterModule {
                         y + height * (0.806 + (1 - 0.806) / 2),
                         height * 0.806 * 0.128,
                         height * 0.806 * 0.04,
-                        Infinity,
-                        "left",
-                        "white",
-                        new Color(curColor).darken(0.3).hexa()
+                        {
+                            textAlign: "left",
+                            mainColor: "white",
+                            borderColor: new Color(curColor).darken(0.3).hexa(),
+                        }
                     );
                     ctx.restore();
 
@@ -2045,10 +2074,11 @@ export namespace MaimaiPainterModule {
                         y + height - element.bubble.margin * 3.1,
                         height * 0.806 * 0.128,
                         height * 0.806 * 0.04,
-                        Infinity,
-                        "right",
-                        "white",
-                        new Color(curColor).darken(0.3).hexa()
+                        {
+                            textAlign: "right",
+                            mainColor: "white",
+                            borderColor: new Color(curColor).darken(0.3).hexa(),
+                        }
                     );
                 }
                 /** End Difficulty & DX Rating Draw */
@@ -2188,10 +2218,12 @@ export namespace MaimaiPainterModule {
                             textSizeTitle,
                         textSizeTitle,
                         textLineWidth,
-                        textTitleMaxWidth,
-                        "left",
-                        "white",
-                        textColor
+                        {
+                            maxWidth: textTitleMaxWidth,
+                            textAlign: "left",
+                            mainColor: "white",
+                            borderColor: textColor,
+                        }
                     );
 
                     Util.drawText(
@@ -2205,10 +2237,12 @@ export namespace MaimaiPainterModule {
                             textSizeTitle * 2,
                         textSizeSecondary,
                         textLineWidth,
-                        element.width - textMargin * 2,
-                        "left",
-                        "white",
-                        textColor
+                        {
+                            maxWidth: element.width - textMargin * 2,
+                            textAlign: "left",
+                            mainColor: "white",
+                            borderColor: textColor,
+                        }
                     );
                     Util.drawText(
                         ctx,
@@ -2221,10 +2255,12 @@ export namespace MaimaiPainterModule {
                             textSizeTitle * 3,
                         textSizeSecondary,
                         textLineWidth,
-                        element.width - textMargin * 2,
-                        "left",
-                        "white",
-                        textColor
+                        {
+                            maxWidth: element.width - textMargin * 2,
+                            textAlign: "left",
+                            mainColor: "white",
+                            borderColor: textColor,
+                        }
                     );
 
                     const isUSALocked = (() => {

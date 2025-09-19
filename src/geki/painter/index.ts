@@ -217,12 +217,17 @@ export namespace OngekiPainterModule {
                         theme.content.width * (7 / 32) * (37 / 128),
                         theme.content.width * (7 / 32) * (8 / 128),
                         0,
-                        (((theme.content.width * (7 / 32)) / 3) * 5.108 * 3.1) /
-                            5,
-                        "left",
-                        "white",
-                        "white",
-                        "ongeki-font-level"
+                        {
+                            maxWidth:
+                                (((theme.content.width * (7 / 32)) / 3) *
+                                    5.108 *
+                                    3.1) /
+                                5,
+                            textAlign: "left",
+                            mainColor: "white",
+                            borderColor: "white",
+                            font: "ongeki-font-level",
+                        }
                     );
                     Util.drawText(
                         ctx,
@@ -231,12 +236,17 @@ export namespace OngekiPainterModule {
                         theme.content.width * (7 / 32) * (37 / 128),
                         theme.content.width * (7 / 32) * (21 / 128),
                         0,
-                        (((theme.content.width * (7 / 32)) / 3) * 5.108 * 3.1) /
-                            5,
-                        "left",
-                        "white",
-                        "white",
-                        "ongeki-font-level"
+                        {
+                            maxWidth:
+                                (((theme.content.width * (7 / 32)) / 3) *
+                                    5.108 *
+                                    3.1) /
+                                5,
+                            textAlign: "left",
+                            mainColor: "white",
+                            borderColor: "white",
+                            font: "ongeki-font-level",
+                        }
                     );
 
                     Util.drawText(
@@ -246,11 +256,16 @@ export namespace OngekiPainterModule {
                         theme.content.width * (7 / 32) * (36 / 128),
                         theme.content.width * (7 / 32) * (1 / 8),
                         0,
-                        theme.content.width * (7 / 32) * (135 / 128),
-                        "center",
-                        "black",
-                        "black",
-                        "standard-font-username"
+                        {
+                            maxWidth:
+                                theme.content.width * (7 / 32) * (135 / 128),
+                            textAlign: "center",
+                            mainColor: "black",
+                            borderColor: "black",
+                            font: "standard-font-username",
+                            lineBreakSuffix: "",
+                            widthConstraintType: "shrink",
+                        }
                     );
 
                     const { number: ratingNumberImg, text: ratingTextImg } =
@@ -686,12 +701,15 @@ export namespace OngekiPainterModule {
                                 element.scoreBubble.height * 0.806 * 0.144,
                             element.scoreBubble.height * 0.806 * 0.144,
                             element.scoreBubble.height * 0.806 * 0.04,
-                            element.scoreBubble.width -
-                                (jacketSize * 7) / 8 -
-                                element.scoreBubble.margin,
-                            "left",
-                            "white",
-                            jacketMaskGradDark
+                            {
+                                maxWidth:
+                                    element.scoreBubble.width -
+                                    (jacketSize * 7) / 8 -
+                                    element.scoreBubble.margin,
+                                textAlign: "left",
+                                mainColor: "white",
+                                borderColor: jacketMaskGradDark,
+                            }
                         );
                     } /** End Title Draw */
 
@@ -729,10 +747,11 @@ export namespace OngekiPainterModule {
                                 (0.144 + 0.144 + 0.208 - 0.04),
                         element.scoreBubble.height * 0.806 * 0.208,
                         element.scoreBubble.height * 0.806 * 0.04,
-                        Infinity,
-                        "right",
-                        "white",
-                        new Color(curColor).darken(0.3).hexa()
+                        {
+                            textAlign: "right",
+                            mainColor: "white",
+                            borderColor: new Color(curColor).darken(0.3).hexa(),
+                        }
                     );
                     /** End Achievement Rate Draw */
 
@@ -932,10 +951,13 @@ export namespace OngekiPainterModule {
                             y + jacketSize - element.scoreBubble.margin * 2,
                             element.scoreBubble.height * 0.806 * 0.128,
                             element.scoreBubble.height * 0.806 * 0.04,
-                            Infinity,
-                            "left",
-                            "white",
-                            new Color(curColor).darken(0.3).hexa()
+                            {
+                                textAlign: "left",
+                                mainColor: "white",
+                                borderColor: new Color(curColor)
+                                    .darken(0.3)
+                                    .hexa(),
+                            }
                         );
                     }
                     /** End Bests Index Draw */
@@ -961,10 +983,11 @@ export namespace OngekiPainterModule {
                                 (0.806 + (1 - 0.806) / 2),
                         element.scoreBubble.height * 0.806 * 0.128,
                         element.scoreBubble.height * 0.806 * 0.04,
-                        Infinity,
-                        "left",
-                        "white",
-                        new Color(curColor).darken(0.3).hexa()
+                        {
+                            textAlign: "left",
+                            mainColor: "white",
+                            borderColor: new Color(curColor).darken(0.3).hexa(),
+                        }
                     );
 
                     if (score.platinumScore && score.chart.maxPlatinumScore)
@@ -979,10 +1002,13 @@ export namespace OngekiPainterModule {
                                     (0.806 + (1 - 0.806) / 2),
                             element.scoreBubble.height * 0.806 * 0.128,
                             element.scoreBubble.height * 0.806 * 0.04,
-                            Infinity,
-                            "right",
-                            "white",
-                            new Color(curColor).darken(0.3).hexa()
+                            {
+                                textAlign: "right",
+                                mainColor: "white",
+                                borderColor: new Color(curColor)
+                                    .darken(0.3)
+                                    .hexa(),
+                            }
                         );
                 }
                 /** End Difficulty & Rating Draw */
@@ -1250,10 +1276,13 @@ export namespace OngekiPainterModule {
                                 element.bubble.margin * (1 / 4),
                             titleSize,
                             height * 0.806 * 0.04,
-                            Infinity,
-                            "left",
-                            "white",
-                            new Color(curColor).darken(0.3).hexa()
+                            {
+                                textAlign: "left",
+                                mainColor: "white",
+                                borderColor: new Color(curColor)
+                                    .darken(0.3)
+                                    .hexa(),
+                            }
                         );
                         const difficultyTextWidth = Util.measureText(
                             ctx,
@@ -1280,10 +1309,13 @@ export namespace OngekiPainterModule {
                                 element.bubble.margin * (1 / 4),
                             levelTextSize,
                             height * 0.806 * 0.04,
-                            Infinity,
-                            "left",
-                            "white",
-                            new Color(curColor).darken(0.3).hexa()
+                            {
+                                textAlign: "left",
+                                mainColor: "white",
+                                borderColor: new Color(curColor)
+                                    .darken(0.3)
+                                    .hexa(),
+                            }
                         );
 
                         ctx.beginPath();
@@ -1319,10 +1351,13 @@ export namespace OngekiPainterModule {
                                 scoreSize,
                             scoreSize,
                             height * 0.806 * 0.04,
-                            Infinity,
-                            "right",
-                            "white",
-                            new Color(curColor).darken(0.3).hexa()
+                            {
+                                textAlign: "right",
+                                mainColor: "white",
+                                borderColor: new Color(curColor)
+                                    .darken(0.3)
+                                    .hexa(),
+                            }
                         );
                     }
                     /** End Achievement Rate Draw */
@@ -1586,10 +1621,13 @@ export namespace OngekiPainterModule {
                                         i,
                                 noteCountTextSize,
                                 height * 0.806 * 0.04,
-                                Infinity,
-                                "left",
-                                "white",
-                                new Color(curColor).darken(0.3).hexa()
+                                {
+                                    textAlign: "left",
+                                    mainColor: "white",
+                                    borderColor: new Color(curColor)
+                                        .darken(0.3)
+                                        .hexa(),
+                                }
                             );
                             const length = Util.measureText(
                                 ctx,
@@ -1835,12 +1873,13 @@ export namespace OngekiPainterModule {
                                                     2,
                                             noteCountTextSize * 1.2,
                                             height * 0.806 * 0.04,
-                                            Infinity,
-                                            "center",
-                                            "white",
-                                            new Color(curColor)
-                                                .darken(0.3)
-                                                .hexa()
+                                            {
+                                                textAlign: "center",
+                                                mainColor: "white",
+                                                borderColor: new Color(curColor)
+                                                    .darken(0.3)
+                                                    .hexa(),
+                                            }
                                         );
                                     }
                                     if (event.type == "existence") {
@@ -1875,12 +1914,13 @@ export namespace OngekiPainterModule {
                                                 noteCountTextSize,
                                             noteCountTextSize,
                                             height * 0.806 * 0.04,
-                                            Infinity,
-                                            "center",
-                                            "white",
-                                            new Color(curColor)
-                                                .darken(0.3)
-                                                .hexa()
+                                            {
+                                                textAlign: "center",
+                                                mainColor: "white",
+                                                borderColor: new Color(curColor)
+                                                    .darken(0.3)
+                                                    .hexa(),
+                                            }
                                         );
                                     } else if (event.type == "removal") {
                                         Util.drawText(
@@ -1892,12 +1932,13 @@ export namespace OngekiPainterModule {
                                                 noteCountTextSize,
                                             noteCountTextSize,
                                             height * 0.806 * 0.04,
-                                            Infinity,
-                                            "center",
-                                            "white",
-                                            new Color(curColor)
-                                                .darken(0.3)
-                                                .hexa()
+                                            {
+                                                textAlign: "center",
+                                                mainColor: "white",
+                                                borderColor: new Color(curColor)
+                                                    .darken(0.3)
+                                                    .hexa(),
+                                            }
                                         );
                                     }
                                     curx += versionImageWidth + addGap;
@@ -1932,10 +1973,11 @@ export namespace OngekiPainterModule {
                         y + height * (0.806 + (1 - 0.806) / 2),
                         height * 0.806 * 0.128,
                         height * 0.806 * 0.04,
-                        Infinity,
-                        "left",
-                        "white",
-                        new Color(curColor).darken(0.3).hexa()
+                        {
+                            textAlign: "left",
+                            mainColor: "white",
+                            borderColor: new Color(curColor).darken(0.3).hexa(),
+                        }
                     );
                     ctx.restore();
 
@@ -1946,10 +1988,11 @@ export namespace OngekiPainterModule {
                         y + height - element.bubble.margin * 3.1,
                         height * 0.806 * 0.128,
                         height * 0.806 * 0.04,
-                        Infinity,
-                        "right",
-                        "white",
-                        new Color(curColor).darken(0.3).hexa()
+                        {
+                            textAlign: "right",
+                            mainColor: "white",
+                            borderColor: new Color(curColor).darken(0.3).hexa(),
+                        }
                     );
                 }
                 /** End Difficulty & Platinum Rating Draw */
@@ -2070,10 +2113,12 @@ export namespace OngekiPainterModule {
                             textSizeTitle,
                         textSizeTitle,
                         textLineWidth,
-                        textTitleMaxWidth,
-                        "left",
-                        "white",
-                        textColor
+                        {
+                            maxWidth: textTitleMaxWidth,
+                            textAlign: "left",
+                            mainColor: "white",
+                            borderColor: textColor,
+                        }
                     );
 
                     Util.drawText(
@@ -2087,10 +2132,12 @@ export namespace OngekiPainterModule {
                             textSizeTitle * 2,
                         textSizeSecondary,
                         textLineWidth,
-                        element.width - textMargin * 2,
-                        "left",
-                        "white",
-                        textColor
+                        {
+                            maxWidth: element.width - textMargin * 2,
+                            textAlign: "left",
+                            mainColor: "white",
+                            borderColor: textColor,
+                        }
                     );
                     function getBpmRange(bpms: number[]) {
                         const uniqueBpms = _.uniq(bpms);
@@ -2114,10 +2161,12 @@ export namespace OngekiPainterModule {
                             textSizeTitle * 3,
                         textSizeSecondary,
                         textLineWidth,
-                        element.width - textMargin * 2,
-                        "left",
-                        "white",
-                        textColor
+                        {
+                            maxWidth: element.width - textMargin * 2,
+                            textAlign: "left",
+                            mainColor: "white",
+                            borderColor: textColor,
+                        }
                     );
 
                     const EVENT_JPN = chart.events
@@ -2320,10 +2369,11 @@ export namespace OngekiPainterModule {
                         element.y + jacketMargin + characterNameActualHeight,
                         textSizeTitle,
                         textLineWidth,
-                        Infinity,
-                        "center",
-                        "white",
-                        textColor
+                        {
+                            textAlign: "center",
+                            mainColor: "white",
+                            borderColor: textColor,
+                        }
                     );
 
                     if (character.character.comment) {

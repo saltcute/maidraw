@@ -88,18 +88,66 @@ export class Util {
          * Line width of the text stroke.
          */
         linewidth: number,
-        /**
-         * Max width of the text block.
-         */
-        maxWidth: number,
-        textAlign: "left" | "center" | "right" = "left",
-        mainColor: string | CanvasGradient | CanvasPattern = "white",
-        borderColor: string | CanvasGradient | CanvasPattern = "black",
-        font: string = `"standard-font-title-latin", "standard-font-title-jp"`,
-        lineBreakSuffix = "..."
+        {
+            /**
+             * Max width of the text block.
+             */
+            maxWidth = Infinity,
+            textAlign = "left",
+            mainColor = "white",
+            borderColor = "black",
+            font = `"standard-font-title-latin", "standard-font-title-jp"`,
+            lineBreakSuffix = "...",
+            widthConstraintType = "cut",
+            shrinkAnchor = "bottom",
+        }: {
+            maxWidth?: number;
+            textAlign?: "left" | "center" | "right";
+            mainColor?: string | CanvasGradient | CanvasPattern;
+            borderColor?: string | CanvasGradient | CanvasPattern;
+            font?: string;
+            lineBreakSuffix?: string;
+            widthConstraintType?: "cut" | "shrink";
+            shrinkAnchor?: "top" | "center" | "bottom";
+        }
     ) {
         ctx.font = `${fontSize}px ${font}`;
-        str = this.findMaxFitString(ctx, str, maxWidth, lineBreakSuffix);
+        if (widthConstraintType == "cut")
+            str = this.findMaxFitString(ctx, str, maxWidth, lineBreakSuffix);
+        if (widthConstraintType == "shrink") {
+            for (let fs = fontSize; fs >= 4; fs--) {
+                const measurement = this.measureText(
+                    ctx,
+                    str,
+                    fs,
+                    Infinity,
+                    font
+                );
+                if (measurement.width <= maxWidth) {
+                    const originalMesurement = this.measureText(
+                        ctx,
+                        str,
+                        fontSize,
+                        Infinity,
+                        font
+                    );
+                    const originalHeight =
+                        originalMesurement.actualBoundingBoxAscent +
+                        originalMesurement.actualBoundingBoxDescent;
+                    const newHeight =
+                        measurement.actualBoundingBoxAscent +
+                        measurement.actualBoundingBoxDescent;
+                    if (shrinkAnchor == "top") {
+                        y -= originalHeight;
+                        y += newHeight;
+                    } else if (shrinkAnchor == "center") {
+                        y -= (originalHeight - newHeight) / 2;
+                    }
+                    fontSize = fs;
+                    break;
+                }
+            }
+        }
         if (linewidth > 0) {
             ctx.strokeStyle = borderColor;
             ctx.lineWidth = linewidth;
@@ -150,19 +198,12 @@ export class Util {
             if (!char.match(/[0-9a-zA-Z「」ー～…]/)) {
                 ctx.save();
                 ctx.textBaseline = "top";
-                Util.drawText(
-                    ctx,
-                    char,
-                    curX,
-                    curY,
-                    fontSize,
-                    linewidth,
-                    Infinity,
-                    "left",
+                Util.drawText(ctx, char, curX, curY, fontSize, linewidth, {
+                    textAlign: "left",
                     mainColor,
                     borderColor,
-                    font
-                );
+                    font,
+                });
                 ctx.restore();
                 curY += ctx.measureText(char).width + verticalSpacing;
             } else {
@@ -178,11 +219,12 @@ export class Util {
                     width * (3 / 16),
                     fontSize,
                     linewidth,
-                    Infinity,
-                    "left",
-                    mainColor,
-                    borderColor,
-                    font
+                    {
+                        textAlign: "left",
+                        mainColor,
+                        borderColor,
+                        font,
+                    }
                 );
                 ctx.restore();
                 curY += width + verticalSpacing;
