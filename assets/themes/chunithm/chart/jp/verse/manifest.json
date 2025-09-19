@@ -10,7 +10,7 @@
             "y": 0,
             "width": 2560,
             "height": 1440,
-            "path": "../../common/verse/jp/background.png"
+            "path": "../../common/verse/jp/background.webp"
         },
         {
             "type": "image",
@@ -18,7 +18,7 @@
             "y": 262,
             "width": 391,
             "height": 305,
-            "path": "../../../best/common/verse/jp/logo.png"
+            "path": "../../../best/common/verse/jp/logo.webp"
         },
         {
             "type": "chart-grid",
@@ -44,66 +44,66 @@
             },
             "sprites": {
                 "achievement": {
-                    "d": "../../../best/common/verse/achievement/D.png",
-                    "c": "../../../best/common/verse/achievement/C.png",
-                    "b": "../../../best/common/verse/achievement/B.png",
-                    "bb": "../../../best/common/verse/achievement/BB.png",
-                    "bbb": "../../../best/common/verse/achievement/BBB.png",
-                    "a": "../../../best/common/verse/achievement/A.png",
-                    "aa": "../../../best/common/verse/achievement/AA.png",
-                    "aaa": "../../../best/common/verse/achievement/AAA.png",
-                    "s": "../../../best/common/verse/achievement/S.png",
-                    "sp": "../../../best/common/verse/achievement/SP.png",
-                    "ss": "../../../best/common/verse/achievement/SS.png",
-                    "ssp": "../../../best/common/verse/achievement/SSP.png",
-                    "sss": "../../../best/common/verse/achievement/SS.png",
-                    "sssp": "../../../best/common/verse/achievement/SSSP.png"
+                    "d": "../../../best/common/verse/achievement/D.webp",
+                    "c": "../../../best/common/verse/achievement/C.webp",
+                    "b": "../../../best/common/verse/achievement/B.webp",
+                    "bb": "../../../best/common/verse/achievement/BB.webp",
+                    "bbb": "../../../best/common/verse/achievement/BBB.webp",
+                    "a": "../../../best/common/verse/achievement/A.webp",
+                    "aa": "../../../best/common/verse/achievement/AA.webp",
+                    "aaa": "../../../best/common/verse/achievement/AAA.webp",
+                    "s": "../../../best/common/verse/achievement/S.webp",
+                    "sp": "../../../best/common/verse/achievement/SP.webp",
+                    "ss": "../../../best/common/verse/achievement/SS.webp",
+                    "ssp": "../../../best/common/verse/achievement/SSP.webp",
+                    "sss": "../../../best/common/verse/achievement/SS.webp",
+                    "sssp": "../../../best/common/verse/achievement/SSSP.webp"
                 },
                 "milestone": {
-                    "aj": "../../../best/common/versionless/milestone/aj.png",
-                    "ajc": "../../../best/common/versionless/milestone/ajc.png",
-                    "fc": "../../../best/common/versionless/milestone/fc.png",
-                    "none": "../../../best/common/versionless/void.png"
+                    "aj": "../../../best/common/versionless/milestone/aj.webp",
+                    "ajc": "../../../best/common/versionless/milestone/ajc.webp",
+                    "fc": "../../../best/common/versionless/milestone/fc.webp",
+                    "none": "../../../best/common/versionless/void.webp"
                 },
                 "versions": {
                     "JPN": {
-                        "100": "../../common/versionless/logo/jpn/100.png",
-                        "105": "../../common/versionless/logo/jpn/105.png",
-                        "110": "../../common/versionless/logo/jpn/110.png",
-                        "115": "../../common/versionless/logo/jpn/115.png",
-                        "120": "../../common/versionless/logo/jpn/120.png",
-                        "125": "../../common/versionless/logo/jpn/125.png",
-                        "130": "../../common/versionless/logo/jpn/130.png",
-                        "135": "../../common/versionless/logo/jpn/135.png",
-                        "140": "../../common/versionless/logo/jpn/140.png",
-                        "145": "../../common/versionless/logo/jpn/145.png",
-                        "150": "../../common/versionless/logo/jpn/150.png",
-                        "155": "../../common/versionless/logo/jpn/155.png",
-                        "200": "../../common/versionless/logo/jpn/200.png",
-                        "205": "../../common/versionless/logo/jpn/205.png",
-                        "210": "../../common/versionless/logo/jpn/210.png",
-                        "215": "../../common/versionless/logo/jpn/215.png",
-                        "220": "../../common/versionless/logo/jpn/220.png",
-                        "225": "../../common/versionless/logo/jpn/225.png",
-                        "230": "../../common/versionless/logo/jpn/230.png",
-                        "240": "../../common/versionless/logo/jpn/240.png"
+                        "100": "../../common/versionless/logo/jpn/100.webp",
+                        "105": "../../common/versionless/logo/jpn/105.webp",
+                        "110": "../../common/versionless/logo/jpn/110.webp",
+                        "115": "../../common/versionless/logo/jpn/115.webp",
+                        "120": "../../common/versionless/logo/jpn/120.webp",
+                        "125": "../../common/versionless/logo/jpn/125.webp",
+                        "130": "../../common/versionless/logo/jpn/130.webp",
+                        "135": "../../common/versionless/logo/jpn/135.webp",
+                        "140": "../../common/versionless/logo/jpn/140.webp",
+                        "145": "../../common/versionless/logo/jpn/145.webp",
+                        "150": "../../common/versionless/logo/jpn/150.webp",
+                        "155": "../../common/versionless/logo/jpn/155.webp",
+                        "200": "../../common/versionless/logo/jpn/200.webp",
+                        "205": "../../common/versionless/logo/jpn/205.webp",
+                        "210": "../../common/versionless/logo/jpn/210.webp",
+                        "215": "../../common/versionless/logo/jpn/215.webp",
+                        "220": "../../common/versionless/logo/jpn/220.webp",
+                        "225": "../../common/versionless/logo/jpn/225.webp",
+                        "230": "../../common/versionless/logo/jpn/230.webp",
+                        "240": "../../common/versionless/logo/jpn/240.webp"
                     },
                     "INT": {
-                        "100": "../../common/versionless/logo/int/100.png",
-                        "105": "../../common/versionless/logo/int/105.png",
-                        "110": "../../common/versionless/logo/jpn/200.png",
-                        "115": "../../common/versionless/logo/jpn/205.png",
-                        "120": "../../common/versionless/logo/jpn/210.png",
-                        "125": "../../common/versionless/logo/jpn/215.png",
-                        "130": "../../common/versionless/logo/jpn/220.png",
-                        "135": "../../common/versionless/logo/jpn/225.png",
-                        "140": "../../common/versionless/logo/jpn/230.png"
+                        "100": "../../common/versionless/logo/int/100.webp",
+                        "105": "../../common/versionless/logo/int/105.webp",
+                        "110": "../../common/versionless/logo/jpn/200.webp",
+                        "115": "../../common/versionless/logo/jpn/205.webp",
+                        "120": "../../common/versionless/logo/jpn/210.webp",
+                        "125": "../../common/versionless/logo/jpn/215.webp",
+                        "130": "../../common/versionless/logo/jpn/220.webp",
+                        "135": "../../common/versionless/logo/jpn/225.webp",
+                        "140": "../../common/versionless/logo/jpn/230.webp"
                     },
                     "CHN": {
-                        "100": "../../common/versionless/logo/chn/100.png",
-                        "110": "../../common/versionless/logo/chn/110.png",
-                        "120": "../../common/versionless/logo/chn/120.png",
-                        "130": "../../common/versionless/logo/chn/130.png"
+                        "100": "../../common/versionless/logo/chn/100.webp",
+                        "110": "../../common/versionless/logo/chn/110.webp",
+                        "120": "../../common/versionless/logo/chn/120.webp",
+                        "130": "../../common/versionless/logo/chn/130.webp"
                     }
                 }
             }
@@ -126,17 +126,17 @@
             "height": 293,
             "sprites": {
                 "ratingNumberMap": {
-                    "white": "../../../best/common/versionless/rating/numberMaps/white.png",
-                    "bronze": "../../../best/common/versionless/rating/numberMaps/bronze.png",
-                    "silver": "../../../best/common/versionless/rating/numberMaps/silver.png",
-                    "gold": "../../../best/common/versionless/rating/numberMaps/gold.png",
-                    "platinum": "../../../best/common/versionless/rating/numberMaps/platinum.png",
-                    "rainbow": "../../../best/common/versionless/rating/numberMaps/rainbow.png",
-                    "kiwami": "../../../best/common/versionless/rating/numberMaps/kiwami.png"
+                    "white": "../../../best/common/versionless/rating/numberMaps/white.webp",
+                    "bronze": "../../../best/common/versionless/rating/numberMaps/bronze.webp",
+                    "silver": "../../../best/common/versionless/rating/numberMaps/silver.webp",
+                    "gold": "../../../best/common/versionless/rating/numberMaps/gold.webp",
+                    "platinum": "../../../best/common/versionless/rating/numberMaps/platinum.webp",
+                    "rainbow": "../../../best/common/versionless/rating/numberMaps/rainbow.webp",
+                    "kiwami": "../../../best/common/versionless/rating/numberMaps/kiwami.webp"
                 },
                 "profile": {
-                    "nameplate": "../../../best/common/versionless/nameplate.png",
-                    "icon": "../../../best/common/versionless/icon.png"
+                    "nameplate": "../../../best/common/versionless/nameplate.webp",
+                    "icon": "../../../best/common/versionless/icon.webp"
                 }
             }
         },

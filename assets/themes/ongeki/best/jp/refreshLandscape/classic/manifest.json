@@ -5,59 +5,59 @@
     "height": 2215,
     "sprites": {
         "achievement": {
-            "d": "../../../common/versionless/achievement/d.png",
-            "c": "../../../common/versionless/achievement/c.png",
-            "b": "../../../common/versionless/achievement/b.png",
-            "bb": "../../../common/versionless/achievement/bb.png",
-            "bbb": "../../../common/versionless/achievement/bbb.png",
-            "a": "../../../common/versionless/achievement/a.png",
-            "aa": "../../../common/versionless/achievement/aa.png",
-            "aaa": "../../../common/versionless/achievement/aaa.png",
-            "s": "../../../common/versionless/achievement/s.png",
-            "ss": "../../../common/versionless/achievement/ss.png",
-            "sss": "../../../common/versionless/achievement/sss.png",
-            "sssp": "../../../common/versionless/achievement/sssp.png"
+            "d": "../../../common/versionless/achievement/d.webp",
+            "c": "../../../common/versionless/achievement/c.webp",
+            "b": "../../../common/versionless/achievement/b.webp",
+            "bb": "../../../common/versionless/achievement/bb.webp",
+            "bbb": "../../../common/versionless/achievement/bbb.webp",
+            "a": "../../../common/versionless/achievement/a.webp",
+            "aa": "../../../common/versionless/achievement/aa.webp",
+            "aaa": "../../../common/versionless/achievement/aaa.webp",
+            "s": "../../../common/versionless/achievement/s.webp",
+            "ss": "../../../common/versionless/achievement/ss.webp",
+            "sss": "../../../common/versionless/achievement/sss.webp",
+            "sssp": "../../../common/versionless/achievement/sssp.webp"
         },
         "milestone": {
-            "ab": "../../../common/versionless/milestone/ab.png",
-            "abp": "../../../common/versionless/milestone/abp.png",
-            "fc": "../../../common/versionless/milestone/fc.png",
-            "fb": "../../../common/versionless/milestone/fb.png",
-            "none": "../../../common/versionless/void.png"
+            "ab": "../../../common/versionless/milestone/ab.webp",
+            "abp": "../../../common/versionless/milestone/abp.webp",
+            "fc": "../../../common/versionless/milestone/fc.webp",
+            "fb": "../../../common/versionless/milestone/fb.webp",
+            "none": "../../../common/versionless/void.webp"
         },
         "rating": {
             "numberMap": {
-                "blue": "../../../common/versionless/rating/numberMap/blue.png",
-                "green": "../../../common/versionless/rating/numberMap/green.png",
-                "orange": "../../../common/versionless/rating/numberMap/orange.png",
-                "red": "../../../common/versionless/rating/numberMap/red.png",
-                "purple": "../../../common/versionless/rating/numberMap/purple.png",
-                "bronze": "../../../common/versionless/rating/numberMap/bronze.png",
-                "silver": "../../../common/versionless/rating/numberMap/silver.png",
-                "gold": "../../../common/versionless/rating/numberMap/gold.png",
-                "platinum": "../../../common/versionless/rating/numberMap/platinum.png",
-                "rainbow": "../../../common/versionless/rating/numberMap/rainbow.png",
-                "rainbow2": "../../../common/versionless/rating/numberMap/rainbow2.png",
-                "rainbow3": "../../../common/versionless/rating/numberMap/rainbow3.png"
+                "blue": "../../../common/versionless/rating/numberMap/blue.webp",
+                "green": "../../../common/versionless/rating/numberMap/green.webp",
+                "orange": "../../../common/versionless/rating/numberMap/orange.webp",
+                "red": "../../../common/versionless/rating/numberMap/red.webp",
+                "purple": "../../../common/versionless/rating/numberMap/purple.webp",
+                "bronze": "../../../common/versionless/rating/numberMap/bronze.webp",
+                "silver": "../../../common/versionless/rating/numberMap/silver.webp",
+                "gold": "../../../common/versionless/rating/numberMap/gold.webp",
+                "platinum": "../../../common/versionless/rating/numberMap/platinum.webp",
+                "rainbow": "../../../common/versionless/rating/numberMap/rainbow.webp",
+                "rainbow2": "../../../common/versionless/rating/numberMap/rainbow2.webp",
+                "rainbow3": "../../../common/versionless/rating/numberMap/rainbow3.webp"
             },
             "headerText": {
-                "blue": "../../../common/versionless/rating/headerText/blue.png",
-                "green": "../../../common/versionless/rating/headerText/green.png",
-                "orange": "../../../common/versionless/rating/headerText/orange.png",
-                "red": "../../../common/versionless/rating/headerText/red.png",
-                "purple": "../../../common/versionless/rating/headerText/purple.png",
-                "bronze": "../../../common/versionless/rating/headerText/bronze.png",
-                "silver": "../../../common/versionless/rating/headerText/silver.png",
-                "gold": "../../../common/versionless/rating/headerText/gold.png",
-                "platinum": "../../../common/versionless/rating/headerText/platinum.png",
-                "rainbow": "../../../common/versionless/rating/headerText/rainbow.png",
-                "rainbow2": "../../../common/versionless/rating/headerText/rainbow2.png",
-                "rainbow3": "../../../common/versionless/rating/headerText/rainbow3.png"
+                "blue": "../../../common/versionless/rating/headerText/blue.webp",
+                "green": "../../../common/versionless/rating/headerText/green.webp",
+                "orange": "../../../common/versionless/rating/headerText/orange.webp",
+                "red": "../../../common/versionless/rating/headerText/red.webp",
+                "purple": "../../../common/versionless/rating/headerText/purple.webp",
+                "bronze": "../../../common/versionless/rating/headerText/bronze.webp",
+                "silver": "../../../common/versionless/rating/headerText/silver.webp",
+                "gold": "../../../common/versionless/rating/headerText/gold.webp",
+                "platinum": "../../../common/versionless/rating/headerText/platinum.webp",
+                "rainbow": "../../../common/versionless/rating/headerText/rainbow.webp",
+                "rainbow2": "../../../common/versionless/rating/headerText/rainbow2.webp",
+                "rainbow3": "../../../common/versionless/rating/headerText/rainbow3.webp"
             }
         },
         "profile": {
-            "userplate": "../../../common/versionless/userplateIchigeki.png",
-            "icon": "../../../common/versionless/icon.png"
+            "userplate": "../../../common/versionless/userplateIchigeki.webp",
+            "icon": "../../../common/versionless/icon.webp"
         }
     },
     "elements": [
@@ -67,7 +67,7 @@
             "y": -1130,
             "width": 2320,
             "height": 4124,
-            "path": "../../../common/refresh/background.png"
+            "path": "../../../common/refresh/background.webp"
         },
         {
             "type": "score-grid",
@@ -92,25 +92,25 @@
             },
             "sprites": {
                 "achievement": {
-                    "d": "../../../common/versionless/achievement/d.png",
-                    "c": "../../../common/versionless/achievement/c.png",
-                    "b": "../../../common/versionless/achievement/b.png",
-                    "bb": "../../../common/versionless/achievement/bb.png",
-                    "bbb": "../../../common/versionless/achievement/bbb.png",
-                    "a": "../../../common/versionless/achievement/a.png",
-                    "aa": "../../../common/versionless/achievement/aa.png",
-                    "aaa": "../../../common/versionless/achievement/aaa.png",
-                    "s": "../../../common/versionless/achievement/s.png",
-                    "ss": "../../../common/versionless/achievement/ss.png",
-                    "sss": "../../../common/versionless/achievement/sss.png",
-                    "sssp": "../../../common/versionless/achievement/sssp.png"
+                    "d": "../../../common/versionless/achievement/d.webp",
+                    "c": "../../../common/versionless/achievement/c.webp",
+                    "b": "../../../common/versionless/achievement/b.webp",
+                    "bb": "../../../common/versionless/achievement/bb.webp",
+                    "bbb": "../../../common/versionless/achievement/bbb.webp",
+                    "a": "../../../common/versionless/achievement/a.webp",
+                    "aa": "../../../common/versionless/achievement/aa.webp",
+                    "aaa": "../../../common/versionless/achievement/aaa.webp",
+                    "s": "../../../common/versionless/achievement/s.webp",
+                    "ss": "../../../common/versionless/achievement/ss.webp",
+                    "sss": "../../../common/versionless/achievement/sss.webp",
+                    "sssp": "../../../common/versionless/achievement/sssp.webp"
                 },
                 "milestone": {
-                    "ab": "../../../common/versionless/milestone/ab.png",
-                    "abp": "../../../common/versionless/milestone/abp.png",
-                    "fc": "../../../common/versionless/milestone/fc.png",
-                    "fb": "../../../common/versionless/milestone/fb.png",
-                    "none": "../../../common/versionless/void.png"
+                    "ab": "../../../common/versionless/milestone/ab.webp",
+                    "abp": "../../../common/versionless/milestone/abp.webp",
+                    "fc": "../../../common/versionless/milestone/fc.webp",
+                    "fb": "../../../common/versionless/milestone/fb.webp",
+                    "none": "../../../common/versionless/void.webp"
                 }
             }
         },
@@ -137,25 +137,25 @@
             },
             "sprites": {
                 "achievement": {
-                    "d": "../../../common/versionless/achievement/d.png",
-                    "c": "../../../common/versionless/achievement/c.png",
-                    "b": "../../../common/versionless/achievement/b.png",
-                    "bb": "../../../common/versionless/achievement/bb.png",
-                    "bbb": "../../../common/versionless/achievement/bbb.png",
-                    "a": "../../../common/versionless/achievement/a.png",
-                    "aa": "../../../common/versionless/achievement/aa.png",
-                    "aaa": "../../../common/versionless/achievement/aaa.png",
-                    "s": "../../../common/versionless/achievement/s.png",
-                    "ss": "../../../common/versionless/achievement/ss.png",
-                    "sss": "../../../common/versionless/achievement/sss.png",
-                    "sssp": "../../../common/versionless/achievement/sssp.png"
+                    "d": "../../../common/versionless/achievement/d.webp",
+                    "c": "../../../common/versionless/achievement/c.webp",
+                    "b": "../../../common/versionless/achievement/b.webp",
+                    "bb": "../../../common/versionless/achievement/bb.webp",
+                    "bbb": "../../../common/versionless/achievement/bbb.webp",
+                    "a": "../../../common/versionless/achievement/a.webp",
+                    "aa": "../../../common/versionless/achievement/aa.webp",
+                    "aaa": "../../../common/versionless/achievement/aaa.webp",
+                    "s": "../../../common/versionless/achievement/s.webp",
+                    "ss": "../../../common/versionless/achievement/ss.webp",
+                    "sss": "../../../common/versionless/achievement/sss.webp",
+                    "sssp": "../../../common/versionless/achievement/sssp.webp"
                 },
                 "milestone": {
-                    "ab": "../../../common/versionless/milestone/ab.png",
-                    "abp": "../../../common/versionless/milestone/abp.png",
-                    "fc": "../../../common/versionless/milestone/fc.png",
-                    "fb": "../../../common/versionless/milestone/fb.png",
-                    "none": "../../../common/versionless/void.png"
+                    "ab": "../../../common/versionless/milestone/ab.webp",
+                    "abp": "../../../common/versionless/milestone/abp.webp",
+                    "fc": "../../../common/versionless/milestone/fc.webp",
+                    "fb": "../../../common/versionless/milestone/fb.webp",
+                    "none": "../../../common/versionless/void.webp"
                 }
             }
         },
@@ -182,25 +182,25 @@
             },
             "sprites": {
                 "achievement": {
-                    "d": "../../../common/versionless/achievement/d.png",
-                    "c": "../../../common/versionless/achievement/c.png",
-                    "b": "../../../common/versionless/achievement/b.png",
-                    "bb": "../../../common/versionless/achievement/bb.png",
-                    "bbb": "../../../common/versionless/achievement/bbb.png",
-                    "a": "../../../common/versionless/achievement/a.png",
-                    "aa": "../../../common/versionless/achievement/aa.png",
-                    "aaa": "../../../common/versionless/achievement/aaa.png",
-                    "s": "../../../common/versionless/achievement/s.png",
-                    "ss": "../../../common/versionless/achievement/ss.png",
-                    "sss": "../../../common/versionless/achievement/sss.png",
-                    "sssp": "../../../common/versionless/achievement/sssp.png"
+                    "d": "../../../common/versionless/achievement/d.webp",
+                    "c": "../../../common/versionless/achievement/c.webp",
+                    "b": "../../../common/versionless/achievement/b.webp",
+                    "bb": "../../../common/versionless/achievement/bb.webp",
+                    "bbb": "../../../common/versionless/achievement/bbb.webp",
+                    "a": "../../../common/versionless/achievement/a.webp",
+                    "aa": "../../../common/versionless/achievement/aa.webp",
+                    "aaa": "../../../common/versionless/achievement/aaa.webp",
+                    "s": "../../../common/versionless/achievement/s.webp",
+                    "ss": "../../../common/versionless/achievement/ss.webp",
+                    "sss": "../../../common/versionless/achievement/sss.webp",
+                    "sssp": "../../../common/versionless/achievement/sssp.webp"
                 },
                 "milestone": {
-                    "ab": "../../../common/versionless/milestone/ab.png",
-                    "abp": "../../../common/versionless/milestone/abp.png",
-                    "fc": "../../../common/versionless/milestone/fc.png",
-                    "fb": "../../../common/versionless/milestone/fb.png",
-                    "none": "../../../common/versionless/void.png"
+                    "ab": "../../../common/versionless/milestone/ab.webp",
+                    "abp": "../../../common/versionless/milestone/abp.webp",
+                    "fc": "../../../common/versionless/milestone/fc.webp",
+                    "fb": "../../../common/versionless/milestone/fb.webp",
+                    "none": "../../../common/versionless/void.webp"
                 }
             }
         },
@@ -230,25 +230,25 @@
             },
             "sprites": {
                 "achievement": {
-                    "d": "../../../common/versionless/achievement/d.png",
-                    "c": "../../../common/versionless/achievement/c.png",
-                    "b": "../../../common/versionless/achievement/b.png",
-                    "bb": "../../../common/versionless/achievement/bb.png",
-                    "bbb": "../../../common/versionless/achievement/bbb.png",
-                    "a": "../../../common/versionless/achievement/a.png",
-                    "aa": "../../../common/versionless/achievement/aa.png",
-                    "aaa": "../../../common/versionless/achievement/aaa.png",
-                    "s": "../../../common/versionless/achievement/s.png",
-                    "ss": "../../../common/versionless/achievement/ss.png",
-                    "sss": "../../../common/versionless/achievement/sss.png",
-                    "sssp": "../../../common/versionless/achievement/sssp.png"
+                    "d": "../../../common/versionless/achievement/d.webp",
+                    "c": "../../../common/versionless/achievement/c.webp",
+                    "b": "../../../common/versionless/achievement/b.webp",
+                    "bb": "../../../common/versionless/achievement/bb.webp",
+                    "bbb": "../../../common/versionless/achievement/bbb.webp",
+                    "a": "../../../common/versionless/achievement/a.webp",
+                    "aa": "../../../common/versionless/achievement/aa.webp",
+                    "aaa": "../../../common/versionless/achievement/aaa.webp",
+                    "s": "../../../common/versionless/achievement/s.webp",
+                    "ss": "../../../common/versionless/achievement/ss.webp",
+                    "sss": "../../../common/versionless/achievement/sss.webp",
+                    "sssp": "../../../common/versionless/achievement/sssp.webp"
                 },
                 "milestone": {
-                    "ab": "../../../common/versionless/milestone/ab.png",
-                    "abp": "../../../common/versionless/milestone/abp.png",
-                    "fc": "../../../common/versionless/milestone/fc.png",
-                    "fb": "../../../common/versionless/milestone/fb.png",
-                    "none": "../../../common/versionless/void.png"
+                    "ab": "../../../common/versionless/milestone/ab.webp",
+                    "abp": "../../../common/versionless/milestone/abp.webp",
+                    "fc": "../../../common/versionless/milestone/fc.webp",
+                    "fb": "../../../common/versionless/milestone/fb.webp",
+                    "none": "../../../common/versionless/void.webp"
                 }
             }
         },
@@ -259,37 +259,37 @@
             "sprites": {
                 "rating": {
                     "numberMap": {
-                        "blue": "../../../common/versionless/rating/numberMap/blue.png",
-                        "green": "../../../common/versionless/rating/numberMap/green.png",
-                        "orange": "../../../common/versionless/rating/numberMap/orange.png",
-                        "red": "../../../common/versionless/rating/numberMap/red.png",
-                        "purple": "../../../common/versionless/rating/numberMap/purple.png",
-                        "bronze": "../../../common/versionless/rating/numberMap/bronze.png",
-                        "silver": "../../../common/versionless/rating/numberMap/silver.png",
-                        "gold": "../../../common/versionless/rating/numberMap/gold.png",
-                        "platinum": "../../../common/versionless/rating/numberMap/platinum.png",
-                        "rainbow": "../../../common/versionless/rating/numberMap/rainbow.png",
-                        "rainbow2": "../../../common/versionless/rating/numberMap/rainbow2.png",
-                        "rainbow3": "../../../common/versionless/rating/numberMap/rainbow3.png"
+                        "blue": "../../../common/versionless/rating/numberMap/blue.webp",
+                        "green": "../../../common/versionless/rating/numberMap/green.webp",
+                        "orange": "../../../common/versionless/rating/numberMap/orange.webp",
+                        "red": "../../../common/versionless/rating/numberMap/red.webp",
+                        "purple": "../../../common/versionless/rating/numberMap/purple.webp",
+                        "bronze": "../../../common/versionless/rating/numberMap/bronze.webp",
+                        "silver": "../../../common/versionless/rating/numberMap/silver.webp",
+                        "gold": "../../../common/versionless/rating/numberMap/gold.webp",
+                        "platinum": "../../../common/versionless/rating/numberMap/platinum.webp",
+                        "rainbow": "../../../common/versionless/rating/numberMap/rainbow.webp",
+                        "rainbow2": "../../../common/versionless/rating/numberMap/rainbow2.webp",
+                        "rainbow3": "../../../common/versionless/rating/numberMap/rainbow3.webp"
                     },
                     "headerText": {
-                        "blue": "../../../common/versionless/rating/headerText/blue.png",
-                        "green": "../../../common/versionless/rating/headerText/green.png",
-                        "orange": "../../../common/versionless/rating/headerText/orange.png",
-                        "red": "../../../common/versionless/rating/headerText/red.png",
-                        "purple": "../../../common/versionless/rating/headerText/purple.png",
-                        "bronze": "../../../common/versionless/rating/headerText/bronze.png",
-                        "silver": "../../../common/versionless/rating/headerText/silver.png",
-                        "gold": "../../../common/versionless/rating/headerText/gold.png",
-                        "platinum": "../../../common/versionless/rating/headerText/platinum.png",
-                        "rainbow": "../../../common/versionless/rating/headerText/rainbow.png",
-                        "rainbow2": "../../../common/versionless/rating/headerText/rainbow2.png",
-                        "rainbow3": "../../../common/versionless/rating/headerText/rainbow3.png"
+                        "blue": "../../../common/versionless/rating/headerText/blue.webp",
+                        "green": "../../../common/versionless/rating/headerText/green.webp",
+                        "orange": "../../../common/versionless/rating/headerText/orange.webp",
+                        "red": "../../../common/versionless/rating/headerText/red.webp",
+                        "purple": "../../../common/versionless/rating/headerText/purple.webp",
+                        "bronze": "../../../common/versionless/rating/headerText/bronze.webp",
+                        "silver": "../../../common/versionless/rating/headerText/silver.webp",
+                        "gold": "../../../common/versionless/rating/headerText/gold.webp",
+                        "platinum": "../../../common/versionless/rating/headerText/platinum.webp",
+                        "rainbow": "../../../common/versionless/rating/headerText/rainbow.webp",
+                        "rainbow2": "../../../common/versionless/rating/headerText/rainbow2.webp",
+                        "rainbow3": "../../../common/versionless/rating/headerText/rainbow3.webp"
                     }
                 },
                 "profile": {
-                    "userplate": "../../../common/versionless/userplateIchigeki.png",
-                    "icon": "../../../common/versionless/icon.png"
+                    "userplate": "../../../common/versionless/userplateIchigeki.webp",
+                    "icon": "../../../common/versionless/icon.webp"
                 }
             }
         },
@@ -299,7 +299,7 @@
             "y": -100,
             "width": 616,
             "height": 500,
-            "path": "../../../common/refresh/logo.png"
+            "path": "../../../common/refresh/logo.webp"
         },
         {
             "type": "image",
@@ -307,7 +307,7 @@
             "y": 1330,
             "width": 161,
             "height": 180,
-            "path": "../../../common/versionless/emote.png"
+            "path": "../../../common/versionless/emote.webp"
         },
         {
             "type": "text",

@@ -10,28 +10,28 @@
             "y": 0,
             "width": 2560,
             "height": 1440,
-            "path": "../../common/circle/jp/background/landscape.png"
+            "path": "../../common/circle/jp/background/landscape.webp"
         },
         {
             "type": "image",
             "x": 535,
             "y": 70,
             "height": 705,
-            "path": "../../common/circle/jp/chara.png"
+            "path": "../../common/circle/jp/chara.webp"
         },
         {
             "type": "image",
             "x": 325,
             "y": 46,
             "width": 225,
-            "path": "../../common/circle/jp/laundry.png"
+            "path": "../../common/circle/jp/laundry.webp"
         },
         {
             "type": "image",
             "x": 285,
             "y": 116,
             "width": 450,
-            "path": "../../common/circle/jp/logo.png"
+            "path": "../../common/circle/jp/logo.webp"
         },
         {
             "type": "score-grid",
@@ -57,36 +57,36 @@
             },
             "sprites": {
                 "achievement": {
-                    "d": "../../common/salt/achievement/d.png",
-                    "c": "../../common/salt/achievement/c.png",
-                    "b": "../../common/salt/achievement/b.png",
-                    "bb": "../../common/salt/achievement/bb.png",
-                    "bbb": "../../common/salt/achievement/bbb.png",
-                    "a": "../../common/salt/achievement/a.png",
-                    "aa": "../../common/salt/achievement/aa.png",
-                    "aaa": "../../common/salt/achievement/aaa.png",
-                    "s": "../../common/salt/achievement/s.png",
-                    "sp": "../../common/salt/achievement/sp.png",
-                    "ss": "../../common/salt/achievement/ss.png",
-                    "ssp": "../../common/salt/achievement/ssp.png",
-                    "sss": "../../common/salt/achievement/sss.png",
-                    "sssp": "../../common/salt/achievement/sssp.png"
+                    "d": "../../common/salt/achievement/d.webp",
+                    "c": "../../common/salt/achievement/c.webp",
+                    "b": "../../common/salt/achievement/b.webp",
+                    "bb": "../../common/salt/achievement/bb.webp",
+                    "bbb": "../../common/salt/achievement/bbb.webp",
+                    "a": "../../common/salt/achievement/a.webp",
+                    "aa": "../../common/salt/achievement/aa.webp",
+                    "aaa": "../../common/salt/achievement/aaa.webp",
+                    "s": "../../common/salt/achievement/s.webp",
+                    "sp": "../../common/salt/achievement/sp.webp",
+                    "ss": "../../common/salt/achievement/ss.webp",
+                    "ssp": "../../common/salt/achievement/ssp.webp",
+                    "sss": "../../common/salt/achievement/sss.webp",
+                    "sssp": "../../common/salt/achievement/sssp.webp"
                 },
                 "mode": {
-                    "standard": "../../common/versionless/mode/jp/standard.png",
-                    "dx": "../../common/versionless/mode/jp/dx.png"
+                    "standard": "../../common/versionless/mode/jp/standard.webp",
+                    "dx": "../../common/versionless/mode/jp/dx.webp"
                 },
                 "milestone": {
-                    "ap": "../../common/versionless/milestone/ap.png",
-                    "app": "../../common/versionless/milestone/app.png",
-                    "fc": "../../common/versionless/milestone/fc.png",
-                    "fcp": "../../common/versionless/milestone/fcp.png",
-                    "fdx": "../../common/versionless/milestone/fdx.png",
-                    "fdxp": "../../common/versionless/milestone/fdxp.png",
-                    "fs": "../../common/versionless/milestone/fs.png",
-                    "fsp": "../../common/versionless/milestone/fsp.png",
-                    "sync": "../../common/versionless/milestone/sync.png",
-                    "none": "../../common/versionless/milestone/none.png"
+                    "ap": "../../common/versionless/milestone/ap.webp",
+                    "app": "../../common/versionless/milestone/app.webp",
+                    "fc": "../../common/versionless/milestone/fc.webp",
+                    "fcp": "../../common/versionless/milestone/fcp.webp",
+                    "fdx": "../../common/versionless/milestone/fdx.webp",
+                    "fdxp": "../../common/versionless/milestone/fdxp.webp",
+                    "fs": "../../common/versionless/milestone/fs.webp",
+                    "fsp": "../../common/versionless/milestone/fsp.webp",
+                    "sync": "../../common/versionless/milestone/sync.webp",
+                    "none": "../../common/versionless/milestone/none.webp"
                 }
             }
         },
@@ -114,36 +114,36 @@
             },
             "sprites": {
                 "achievement": {
-                    "d": "../../common/salt/achievement/d.png",
-                    "c": "../../common/salt/achievement/c.png",
-                    "b": "../../common/salt/achievement/b.png",
-                    "bb": "../../common/salt/achievement/bb.png",
-                    "bbb": "../../common/salt/achievement/bbb.png",
-                    "a": "../../common/salt/achievement/a.png",
-                    "aa": "../../common/salt/achievement/aa.png",
-                    "aaa": "../../common/salt/achievement/aaa.png",
-                    "s": "../../common/salt/achievement/s.png",
-                    "sp": "../../common/salt/achievement/sp.png",
-                    "ss": "../../common/salt/achievement/ss.png",
-                    "ssp": "../../common/salt/achievement/ssp.png",
-                    "sss": "../../common/salt/achievement/sss.png",
-                    "sssp": "../../common/salt/achievement/sssp.png"
+                    "d": "../../common/salt/achievement/d.webp",
+                    "c": "../../common/salt/achievement/c.webp",
+                    "b": "../../common/salt/achievement/b.webp",
+                    "bb": "../../common/salt/achievement/bb.webp",
+                    "bbb": "../../common/salt/achievement/bbb.webp",
+                    "a": "../../common/salt/achievement/a.webp",
+                    "aa": "../../common/salt/achievement/aa.webp",
+                    "aaa": "../../common/salt/achievement/aaa.webp",
+                    "s": "../../common/salt/achievement/s.webp",
+                    "sp": "../../common/salt/achievement/sp.webp",
+                    "ss": "../../common/salt/achievement/ss.webp",
+                    "ssp": "../../common/salt/achievement/ssp.webp",
+                    "sss": "../../common/salt/achievement/sss.webp",
+                    "sssp": "../../common/salt/achievement/sssp.webp"
                 },
                 "mode": {
-                    "standard": "../../common/versionless/mode/jp/standard.png",
-                    "dx": "../../common/versionless/mode/jp/dx.png"
+                    "standard": "../../common/versionless/mode/jp/standard.webp",
+                    "dx": "../../common/versionless/mode/jp/dx.webp"
                 },
                 "milestone": {
-                    "ap": "../../common/versionless/milestone/ap.png",
-                    "app": "../../common/versionless/milestone/app.png",
-                    "fc": "../../common/versionless/milestone/fc.png",
-                    "fcp": "../../common/versionless/milestone/fcp.png",
-                    "fdx": "../../common/versionless/milestone/fdx.png",
-                    "fdxp": "../../common/versionless/milestone/fdxp.png",
-                    "fs": "../../common/versionless/milestone/fs.png",
-                    "fsp": "../../common/versionless/milestone/fsp.png",
-                    "sync": "../../common/versionless/milestone/sync.png",
-                    "none": "../../common/versionless/milestone/none.png"
+                    "ap": "../../common/versionless/milestone/ap.webp",
+                    "app": "../../common/versionless/milestone/app.webp",
+                    "fc": "../../common/versionless/milestone/fc.webp",
+                    "fcp": "../../common/versionless/milestone/fcp.webp",
+                    "fdx": "../../common/versionless/milestone/fdx.webp",
+                    "fdxp": "../../common/versionless/milestone/fdxp.webp",
+                    "fs": "../../common/versionless/milestone/fs.webp",
+                    "fsp": "../../common/versionless/milestone/fsp.webp",
+                    "sync": "../../common/versionless/milestone/sync.webp",
+                    "none": "../../common/versionless/milestone/none.webp"
                 }
             }
         },
@@ -154,22 +154,22 @@
             "height": 129,
             "sprites": {
                 "dxRating": {
-                    "white": "../../common/versionless/dxRating/jp/white.png",
-                    "blue": "../../common/versionless/dxRating/jp/blue.png",
-                    "green": "../../common/versionless/dxRating/jp/green.png",
-                    "yellow": "../../common/versionless/dxRating/jp/yellow.png",
-                    "red": "../../common/versionless/dxRating/jp/red.png",
-                    "purple": "../../common/versionless/dxRating/jp/purple.png",
-                    "bronze": "../../common/versionless/dxRating/jp/bronze.png",
-                    "silver": "../../common/versionless/dxRating/jp/silver.png",
-                    "gold": "../../common/versionless/dxRating/jp/gold.png",
-                    "platinum": "../../common/versionless/dxRating/jp/platinum.png",
-                    "rainbow": "../../common/versionless/dxRating/jp/rainbow.png"
+                    "white": "../../common/versionless/dxRating/jp/white.webp",
+                    "blue": "../../common/versionless/dxRating/jp/blue.webp",
+                    "green": "../../common/versionless/dxRating/jp/green.webp",
+                    "yellow": "../../common/versionless/dxRating/jp/yellow.webp",
+                    "red": "../../common/versionless/dxRating/jp/red.webp",
+                    "purple": "../../common/versionless/dxRating/jp/purple.webp",
+                    "bronze": "../../common/versionless/dxRating/jp/bronze.webp",
+                    "silver": "../../common/versionless/dxRating/jp/silver.webp",
+                    "gold": "../../common/versionless/dxRating/jp/gold.webp",
+                    "platinum": "../../common/versionless/dxRating/jp/platinum.webp",
+                    "rainbow": "../../common/versionless/dxRating/jp/rainbow.webp"
                 },
-                "dxRatingNumberMap": "../../common/versionless/dxRating/numberMap.png",
+                "dxRatingNumberMap": "../../common/versionless/dxRating/numberMap.webp",
                 "profile": {
-                    "nameplate": "../../common/versionless/nameplate.png",
-                    "icon": "../../common/versionless/icon.png"
+                    "nameplate": "../../common/versionless/nameplate.webp",
+                    "icon": "../../common/versionless/icon.webp"
                 }
             }
         },

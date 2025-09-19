@@ -10,7 +10,7 @@
             "y": 0,
             "width": 2560,
             "height": 1920,
-            "path": "../../common/finale/background.png"
+            "path": "../../common/finale/background.webp"
         },
         {
             "type": "image",
@@ -18,7 +18,7 @@
             "y": -25,
             "width": 557,
             "height": 372,
-            "path": "../../common/finale/logo.png"
+            "path": "../../common/finale/logo.webp"
         },
         {
             "type": "score-grid",
@@ -44,36 +44,36 @@
             },
             "sprites": {
                 "achievement": {
-                    "d": "../../common/finale/achievement/d.png",
-                    "c": "../../common/finale/achievement/c.png",
-                    "b": "../../common/finale/achievement/b.png",
-                    "bb": "../../common/finale/achievement/bb.png",
-                    "bbb": "../../common/finale/achievement/bbb.png",
-                    "a": "../../common/finale/achievement/a.png",
-                    "aa": "../../common/finale/achievement/aa.png",
-                    "aaa": "../../common/finale/achievement/aaa.png",
-                    "s": "../../common/finale/achievement/s.png",
-                    "sp": "../../common/finale/achievement/sp.png",
-                    "ss": "../../common/finale/achievement/ss.png",
-                    "ssp": "../../common/finale/achievement/ssp.png",
-                    "sss": "../../common/finale/achievement/sss.png",
-                    "sssp": "../../common/finale/achievement/sssp.png"
+                    "d": "../../common/finale/achievement/d.webp",
+                    "c": "../../common/finale/achievement/c.webp",
+                    "b": "../../common/finale/achievement/b.webp",
+                    "bb": "../../common/finale/achievement/bb.webp",
+                    "bbb": "../../common/finale/achievement/bbb.webp",
+                    "a": "../../common/finale/achievement/a.webp",
+                    "aa": "../../common/finale/achievement/aa.webp",
+                    "aaa": "../../common/finale/achievement/aaa.webp",
+                    "s": "../../common/finale/achievement/s.webp",
+                    "sp": "../../common/finale/achievement/sp.webp",
+                    "ss": "../../common/finale/achievement/ss.webp",
+                    "ssp": "../../common/finale/achievement/ssp.webp",
+                    "sss": "../../common/finale/achievement/sss.webp",
+                    "sssp": "../../common/finale/achievement/sssp.webp"
                 },
                 "mode": {
-                    "standard": "../../common/versionless/mode/jp/standard.png",
-                    "dx": "../../common/versionless/mode/jp/dx.png"
+                    "standard": "../../common/versionless/mode/jp/standard.webp",
+                    "dx": "../../common/versionless/mode/jp/dx.webp"
                 },
                 "milestone": {
-                    "ap": "../../common/versionless/milestone/ap.png",
-                    "app": "../../common/versionless/milestone/app.png",
-                    "fc": "../../common/versionless/milestone/fc.png",
-                    "fcp": "../../common/versionless/milestone/fcp.png",
-                    "fdx": "../../common/versionless/milestone/fdx.png",
-                    "fdxp": "../../common/versionless/milestone/fdxp.png",
-                    "fs": "../../common/versionless/milestone/fs.png",
-                    "fsp": "../../common/versionless/milestone/fsp.png",
-                    "sync": "../../common/versionless/milestone/sync.png",
-                    "none": "../../common/versionless/milestone/none.png"
+                    "ap": "../../common/versionless/milestone/ap.webp",
+                    "app": "../../common/versionless/milestone/app.webp",
+                    "fc": "../../common/versionless/milestone/fc.webp",
+                    "fcp": "../../common/versionless/milestone/fcp.webp",
+                    "fdx": "../../common/versionless/milestone/fdx.webp",
+                    "fdxp": "../../common/versionless/milestone/fdxp.webp",
+                    "fs": "../../common/versionless/milestone/fs.webp",
+                    "fsp": "../../common/versionless/milestone/fsp.webp",
+                    "sync": "../../common/versionless/milestone/sync.webp",
+                    "none": "../../common/versionless/milestone/none.webp"
                 }
             }
         },
@@ -101,36 +101,36 @@
             },
             "sprites": {
                 "achievement": {
-                    "d": "../../common/finale/achievement/d.png",
-                    "c": "../../common/finale/achievement/c.png",
-                    "b": "../../common/finale/achievement/b.png",
-                    "bb": "../../common/finale/achievement/bb.png",
-                    "bbb": "../../common/finale/achievement/bbb.png",
-                    "a": "../../common/finale/achievement/a.png",
-                    "aa": "../../common/finale/achievement/aa.png",
-                    "aaa": "../../common/finale/achievement/aaa.png",
-                    "s": "../../common/finale/achievement/s.png",
-                    "sp": "../../common/finale/achievement/sp.png",
-                    "ss": "../../common/finale/achievement/ss.png",
-                    "ssp": "../../common/finale/achievement/ssp.png",
-                    "sss": "../../common/finale/achievement/sss.png",
-                    "sssp": "../../common/finale/achievement/sssp.png"
+                    "d": "../../common/finale/achievement/d.webp",
+                    "c": "../../common/finale/achievement/c.webp",
+                    "b": "../../common/finale/achievement/b.webp",
+                    "bb": "../../common/finale/achievement/bb.webp",
+                    "bbb": "../../common/finale/achievement/bbb.webp",
+                    "a": "../../common/finale/achievement/a.webp",
+                    "aa": "../../common/finale/achievement/aa.webp",
+                    "aaa": "../../common/finale/achievement/aaa.webp",
+                    "s": "../../common/finale/achievement/s.webp",
+                    "sp": "../../common/finale/achievement/sp.webp",
+                    "ss": "../../common/finale/achievement/ss.webp",
+                    "ssp": "../../common/finale/achievement/ssp.webp",
+                    "sss": "../../common/finale/achievement/sss.webp",
+                    "sssp": "../../common/finale/achievement/sssp.webp"
                 },
                 "mode": {
-                    "standard": "../../common/versionless/mode/jp/standard.png",
-                    "dx": "../../common/versionless/mode/jp/dx.png"
+                    "standard": "../../common/versionless/mode/jp/standard.webp",
+                    "dx": "../../common/versionless/mode/jp/dx.webp"
                 },
                 "milestone": {
-                    "ap": "../../common/versionless/milestone/ap.png",
-                    "app": "../../common/versionless/milestone/app.png",
-                    "fc": "../../common/versionless/milestone/fc.png",
-                    "fcp": "../../common/versionless/milestone/fcp.png",
-                    "fdx": "../../common/versionless/milestone/fdx.png",
-                    "fdxp": "../../common/versionless/milestone/fdxp.png",
-                    "fs": "../../common/versionless/milestone/fs.png",
-                    "fsp": "../../common/versionless/milestone/fsp.png",
-                    "sync": "../../common/versionless/milestone/sync.png",
-                    "none": "../../common/versionless/milestone/none.png"
+                    "ap": "../../common/versionless/milestone/ap.webp",
+                    "app": "../../common/versionless/milestone/app.webp",
+                    "fc": "../../common/versionless/milestone/fc.webp",
+                    "fcp": "../../common/versionless/milestone/fcp.webp",
+                    "fdx": "../../common/versionless/milestone/fdx.webp",
+                    "fdxp": "../../common/versionless/milestone/fdxp.webp",
+                    "fs": "../../common/versionless/milestone/fs.webp",
+                    "fsp": "../../common/versionless/milestone/fsp.webp",
+                    "sync": "../../common/versionless/milestone/sync.webp",
+                    "none": "../../common/versionless/milestone/none.webp"
                 }
             }
         },
@@ -141,22 +141,22 @@
             "height": 129,
             "sprites": {
                 "dxRating": {
-                    "white": "../../common/versionless/dxRating/jp/white.png",
-                    "blue": "../../common/versionless/dxRating/jp/blue.png",
-                    "green": "../../common/versionless/dxRating/jp/green.png",
-                    "yellow": "../../common/versionless/dxRating/jp/yellow.png",
-                    "red": "../../common/versionless/dxRating/jp/red.png",
-                    "purple": "../../common/versionless/dxRating/jp/purple.png",
-                    "bronze": "../../common/versionless/dxRating/jp/bronze.png",
-                    "silver": "../../common/versionless/dxRating/jp/silver.png",
-                    "gold": "../../common/versionless/dxRating/jp/gold.png",
-                    "platinum": "../../common/versionless/dxRating/jp/platinum.png",
-                    "rainbow": "../../common/versionless/dxRating/jp/rainbow.png"
+                    "white": "../../common/versionless/dxRating/jp/white.webp",
+                    "blue": "../../common/versionless/dxRating/jp/blue.webp",
+                    "green": "../../common/versionless/dxRating/jp/green.webp",
+                    "yellow": "../../common/versionless/dxRating/jp/yellow.webp",
+                    "red": "../../common/versionless/dxRating/jp/red.webp",
+                    "purple": "../../common/versionless/dxRating/jp/purple.webp",
+                    "bronze": "../../common/versionless/dxRating/jp/bronze.webp",
+                    "silver": "../../common/versionless/dxRating/jp/silver.webp",
+                    "gold": "../../common/versionless/dxRating/jp/gold.webp",
+                    "platinum": "../../common/versionless/dxRating/jp/platinum.webp",
+                    "rainbow": "../../common/versionless/dxRating/jp/rainbow.webp"
                 },
-                "dxRatingNumberMap": "../../common/versionless/dxRating/numberMap.png",
+                "dxRatingNumberMap": "../../common/versionless/dxRating/numberMap.webp",
                 "profile": {
-                    "nameplate": "../../common/versionless/nameplate.png",
-                    "icon": "../../common/versionless/icon.png"
+                    "nameplate": "../../common/versionless/nameplate.webp",
+                    "icon": "../../common/versionless/icon.webp"
                 }
             }
         },

@@ -10,7 +10,7 @@
             "y": 0,
             "width": 3086,
             "height": 2315,
-            "path": "../../common/buddies/jp/background.png"
+            "path": "../../common/buddies/jp/background.webp"
         },
         {
             "type": "image",
@@ -18,7 +18,7 @@
             "y": 180,
             "width": 900,
             "height": 695,
-            "path": "../../common/buddies/plus/chara.png"
+            "path": "../../common/buddies/plus/chara.webp"
         },
         {
             "type": "image",
@@ -26,7 +26,7 @@
             "y": 50,
             "width": 300,
             "height": 132,
-            "path": "../../common/buddies/plus/laundry.png"
+            "path": "../../common/buddies/plus/laundry.webp"
         },
         {
             "type": "image",
@@ -34,7 +34,7 @@
             "y": 100,
             "width": 450,
             "height": 267,
-            "path": "../../common/buddies/plus/logo.png"
+            "path": "../../common/buddies/plus/logo.webp"
         },
         {
             "type": "score-grid",
@@ -60,36 +60,36 @@
             },
             "sprites": {
                 "achievement": {
-                    "d": "../../common/buddies/achievement/d.png",
-                    "c": "../../common/buddies/achievement/c.png",
-                    "b": "../../common/buddies/achievement/b.png",
-                    "bb": "../../common/buddies/achievement/bb.png",
-                    "bbb": "../../common/buddies/achievement/bbb.png",
-                    "a": "../../common/buddies/achievement/a.png",
-                    "aa": "../../common/buddies/achievement/aa.png",
-                    "aaa": "../../common/buddies/achievement/aaa.png",
-                    "s": "../../common/buddies/achievement/s.png",
-                    "sp": "../../common/buddies/achievement/sp.png",
-                    "ss": "../../common/buddies/achievement/ss.png",
-                    "ssp": "../../common/buddies/achievement/ssp.png",
-                    "sss": "../../common/buddies/achievement/sss.png",
-                    "sssp": "../../common/buddies/achievement/sssp.png"
+                    "d": "../../common/buddies/achievement/d.webp",
+                    "c": "../../common/buddies/achievement/c.webp",
+                    "b": "../../common/buddies/achievement/b.webp",
+                    "bb": "../../common/buddies/achievement/bb.webp",
+                    "bbb": "../../common/buddies/achievement/bbb.webp",
+                    "a": "../../common/buddies/achievement/a.webp",
+                    "aa": "../../common/buddies/achievement/aa.webp",
+                    "aaa": "../../common/buddies/achievement/aaa.webp",
+                    "s": "../../common/buddies/achievement/s.webp",
+                    "sp": "../../common/buddies/achievement/sp.webp",
+                    "ss": "../../common/buddies/achievement/ss.webp",
+                    "ssp": "../../common/buddies/achievement/ssp.webp",
+                    "sss": "../../common/buddies/achievement/sss.webp",
+                    "sssp": "../../common/buddies/achievement/sssp.webp"
                 },
                 "mode": {
-                    "standard": "../../common/versionless/mode/jp/standard.png",
-                    "dx": "../../common/versionless/mode/jp/dx.png"
+                    "standard": "../../common/versionless/mode/jp/standard.webp",
+                    "dx": "../../common/versionless/mode/jp/dx.webp"
                 },
                 "milestone": {
-                    "ap": "../../common/versionless/milestone/ap.png",
-                    "app": "../../common/versionless/milestone/app.png",
-                    "fc": "../../common/versionless/milestone/fc.png",
-                    "fcp": "../../common/versionless/milestone/fcp.png",
-                    "fdx": "../../common/versionless/milestone/fdx.png",
-                    "fdxp": "../../common/versionless/milestone/fdxp.png",
-                    "fs": "../../common/versionless/milestone/fs.png",
-                    "fsp": "../../common/versionless/milestone/fsp.png",
-                    "sync": "../../common/versionless/milestone/sync.png",
-                    "none": "../../common/versionless/milestone/none.png"
+                    "ap": "../../common/versionless/milestone/ap.webp",
+                    "app": "../../common/versionless/milestone/app.webp",
+                    "fc": "../../common/versionless/milestone/fc.webp",
+                    "fcp": "../../common/versionless/milestone/fcp.webp",
+                    "fdx": "../../common/versionless/milestone/fdx.webp",
+                    "fdxp": "../../common/versionless/milestone/fdxp.webp",
+                    "fs": "../../common/versionless/milestone/fs.webp",
+                    "fsp": "../../common/versionless/milestone/fsp.webp",
+                    "sync": "../../common/versionless/milestone/sync.webp",
+                    "none": "../../common/versionless/milestone/none.webp"
                 }
             }
         },
@@ -117,36 +117,36 @@
             },
             "sprites": {
                 "achievement": {
-                    "d": "../../common/buddies/achievement/d.png",
-                    "c": "../../common/buddies/achievement/c.png",
-                    "b": "../../common/buddies/achievement/b.png",
-                    "bb": "../../common/buddies/achievement/bb.png",
-                    "bbb": "../../common/buddies/achievement/bbb.png",
-                    "a": "../../common/buddies/achievement/a.png",
-                    "aa": "../../common/buddies/achievement/aa.png",
-                    "aaa": "../../common/buddies/achievement/aaa.png",
-                    "s": "../../common/buddies/achievement/s.png",
-                    "sp": "../../common/buddies/achievement/sp.png",
-                    "ss": "../../common/buddies/achievement/ss.png",
-                    "ssp": "../../common/buddies/achievement/ssp.png",
-                    "sss": "../../common/buddies/achievement/sss.png",
-                    "sssp": "../../common/buddies/achievement/sssp.png"
+                    "d": "../../common/buddies/achievement/d.webp",
+                    "c": "../../common/buddies/achievement/c.webp",
+                    "b": "../../common/buddies/achievement/b.webp",
+                    "bb": "../../common/buddies/achievement/bb.webp",
+                    "bbb": "../../common/buddies/achievement/bbb.webp",
+                    "a": "../../common/buddies/achievement/a.webp",
+                    "aa": "../../common/buddies/achievement/aa.webp",
+                    "aaa": "../../common/buddies/achievement/aaa.webp",
+                    "s": "../../common/buddies/achievement/s.webp",
+                    "sp": "../../common/buddies/achievement/sp.webp",
+                    "ss": "../../common/buddies/achievement/ss.webp",
+                    "ssp": "../../common/buddies/achievement/ssp.webp",
+                    "sss": "../../common/buddies/achievement/sss.webp",
+                    "sssp": "../../common/buddies/achievement/sssp.webp"
                 },
                 "mode": {
-                    "standard": "../../common/versionless/mode/jp/standard.png",
-                    "dx": "../../common/versionless/mode/jp/dx.png"
+                    "standard": "../../common/versionless/mode/jp/standard.webp",
+                    "dx": "../../common/versionless/mode/jp/dx.webp"
                 },
                 "milestone": {
-                    "ap": "../../common/versionless/milestone/ap.png",
-                    "app": "../../common/versionless/milestone/app.png",
-                    "fc": "../../common/versionless/milestone/fc.png",
-                    "fcp": "../../common/versionless/milestone/fcp.png",
-                    "fdx": "../../common/versionless/milestone/fdx.png",
-                    "fdxp": "../../common/versionless/milestone/fdxp.png",
-                    "fs": "../../common/versionless/milestone/fs.png",
-                    "fsp": "../../common/versionless/milestone/fsp.png",
-                    "sync": "../../common/versionless/milestone/sync.png",
-                    "none": "../../common/versionless/milestone/none.png"
+                    "ap": "../../common/versionless/milestone/ap.webp",
+                    "app": "../../common/versionless/milestone/app.webp",
+                    "fc": "../../common/versionless/milestone/fc.webp",
+                    "fcp": "../../common/versionless/milestone/fcp.webp",
+                    "fdx": "../../common/versionless/milestone/fdx.webp",
+                    "fdxp": "../../common/versionless/milestone/fdxp.webp",
+                    "fs": "../../common/versionless/milestone/fs.webp",
+                    "fsp": "../../common/versionless/milestone/fsp.webp",
+                    "sync": "../../common/versionless/milestone/sync.webp",
+                    "none": "../../common/versionless/milestone/none.webp"
                 }
             }
         },
@@ -157,22 +157,22 @@
             "height": 150,
             "sprites": {
                 "dxRating": {
-                    "white": "../../common/versionless/dxRating/jp/white.png",
-                    "blue": "../../common/versionless/dxRating/jp/blue.png",
-                    "green": "../../common/versionless/dxRating/jp/green.png",
-                    "yellow": "../../common/versionless/dxRating/jp/yellow.png",
-                    "red": "../../common/versionless/dxRating/jp/red.png",
-                    "purple": "../../common/versionless/dxRating/jp/purple.png",
-                    "bronze": "../../common/versionless/dxRating/jp/bronze.png",
-                    "silver": "../../common/versionless/dxRating/jp/silver.png",
-                    "gold": "../../common/versionless/dxRating/jp/gold.png",
-                    "platinum": "../../common/versionless/dxRating/jp/platinum.png",
-                    "rainbow": "../../common/versionless/dxRating/jp/rainbow.png"
+                    "white": "../../common/versionless/dxRating/jp/white.webp",
+                    "blue": "../../common/versionless/dxRating/jp/blue.webp",
+                    "green": "../../common/versionless/dxRating/jp/green.webp",
+                    "yellow": "../../common/versionless/dxRating/jp/yellow.webp",
+                    "red": "../../common/versionless/dxRating/jp/red.webp",
+                    "purple": "../../common/versionless/dxRating/jp/purple.webp",
+                    "bronze": "../../common/versionless/dxRating/jp/bronze.webp",
+                    "silver": "../../common/versionless/dxRating/jp/silver.webp",
+                    "gold": "../../common/versionless/dxRating/jp/gold.webp",
+                    "platinum": "../../common/versionless/dxRating/jp/platinum.webp",
+                    "rainbow": "../../common/versionless/dxRating/jp/rainbow.webp"
                 },
-                "dxRatingNumberMap": "../../common/versionless/dxRating/numberMap.png",
+                "dxRatingNumberMap": "../../common/versionless/dxRating/numberMap.webp",
                 "profile": {
-                    "nameplate": "../../common/versionless/nameplate.png",
-                    "icon": "../../common/versionless/icon.png"
+                    "nameplate": "../../common/versionless/nameplate.webp",
+                    "icon": "../../common/versionless/icon.webp"
                 }
             }
         },
