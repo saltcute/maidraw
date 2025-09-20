@@ -210,6 +210,9 @@ export namespace PainterModule {
             type: z.literal("image"),
             width: z.number().min(1).optional(),
             height: z.number().min(1).optional(),
+            anchor: z
+                .literal(["lt", "ct", "rt", "lm", "cm", "rm", "lb", "cb", "rb"])
+                .optional(),
             path: z.string(),
         });
         export async function draw(
@@ -234,7 +237,38 @@ export namespace PainterModule {
                 width = imgWidth;
                 height = imgHeight;
             }
+            ctx.save();
+            switch (element.anchor) {
+                case "lt":
+                default:
+                    break;
+                case "ct":
+                    ctx.translate(-width / 2, 0);
+                    break;
+                case "rt":
+                    ctx.translate(-width, 0);
+                    break;
+                case "lm":
+                    ctx.translate(0, -height / 2);
+                    break;
+                case "cm":
+                    ctx.translate(-width / 2, -height / 2);
+                    break;
+                case "rm":
+                    ctx.translate(-width, -height / 2);
+                    break;
+                case "lb":
+                    ctx.translate(0, -height);
+                    break;
+                case "cb":
+                    ctx.translate(-width / 2, -height);
+                    break;
+                case "rb":
+                    ctx.translate(-width, -height);
+                    break;
+            }
             ctx.drawImage(img, element.x, element.y, width, height);
+            ctx.restore();
         }
     }
     export namespace Text {
