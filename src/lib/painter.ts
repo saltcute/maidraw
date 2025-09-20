@@ -62,17 +62,6 @@ export abstract class Painter<
             }
         );
         registerFont(
-            upath.join(
-                Painter.assetsPath,
-                "fonts",
-                "noto-color-emoji",
-                "NotoColorEmoji-Regular.ttf"
-            ),
-            {
-                family: "standard-font-emoji",
-            }
-        );
-        registerFont(
             upath.join(Painter.assetsPath, "fonts", "jost", "Jost-Regular.ttf"),
             {
                 family: "ongeki-font-level",
