@@ -40,7 +40,7 @@
                 }
             },
             "color": {
-                "card": "#b9eae5"
+                "card": "#ffa7c5"
             },
             "sprites": {
                 "achievement": {
@@ -124,7 +124,7 @@
             "height": 745,
             "margin": 40,
             "color": {
-                "card": "#b9eae5"
+                "card": "#ffa7c5"
             },
             "sprites": {
                 "mode": {
