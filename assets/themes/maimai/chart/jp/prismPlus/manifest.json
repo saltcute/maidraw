@@ -1,0 +1,185 @@
+{
+    "displayName": "maimai でらっくす PRiSM PLUS",
+    "name": "jp-prismplus",
+    "width": 2560,
+    "height": 1440,
+    "elements": [
+        {
+            "type": "image",
+            "x": 1280,
+            "y": 720,
+            "width": 2560,
+            "anchor": "mm",
+            "path": "../../../best50/common/prism/plus/background.webp"
+        },
+        {
+            "type": "image",
+            "x": 2152,
+            "y": 262,
+            "height": 305,
+            "anchor": "mt",
+            "path": "../../../best50/common/prism/plus/logo.webp"
+        },
+        {
+            "type": "chart-grid",
+            "x": 100,
+            "y": 262,
+            "width": 1645,
+            "height": 1045,
+            "margin": 70,
+            "gap": 40,
+            "bubble": {
+                "margin": 20,
+                "color": {
+                    "basic": "#70E262",
+                    "advanced": "#FFBB00",
+                    "expert": "#FF4A5A",
+                    "master": "#A04FDA",
+                    "remaster": "#DDBDF5",
+                    "utage": "#70E262"
+                }
+            },
+            "color": {
+                "card": "#b9eae5"
+            },
+            "sprites": {
+                "achievement": {
+                    "d": "../../../best50/common/prism/achievement/d.webp",
+                    "c": "../../../best50/common/prism/achievement/c.webp",
+                    "b": "../../../best50/common/prism/achievement/b.webp",
+                    "bb": "../../../best50/common/prism/achievement/bb.webp",
+                    "bbb": "../../../best50/common/prism/achievement/bbb.webp",
+                    "a": "../../../best50/common/prism/achievement/a.webp",
+                    "aa": "../../../best50/common/prism/achievement/aa.webp",
+                    "aaa": "../../../best50/common/prism/achievement/aaa.webp",
+                    "s": "../../../best50/common/prism/achievement/s.webp",
+                    "sp": "../../../best50/common/prism/achievement/sp.webp",
+                    "ss": "../../../best50/common/prism/achievement/ss.webp",
+                    "ssp": "../../../best50/common/prism/achievement/ssp.webp",
+                    "sss": "../../../best50/common/prism/achievement/sss.webp",
+                    "sssp": "../../../best50/common/prism/achievement/sssp.webp"
+                },
+                "milestone": {
+                    "ap": "../../../best50/common/versionless/milestone/ap.webp",
+                    "app": "../../../best50/common/versionless/milestone/app.webp",
+                    "fc": "../../../best50/common/versionless/milestone/fc.webp",
+                    "fcp": "../../../best50/common/versionless/milestone/fcp.webp",
+                    "fdx": "../../../best50/common/versionless/milestone/fdx.webp",
+                    "fdxp": "../../../best50/common/versionless/milestone/fdxp.webp",
+                    "fs": "../../../best50/common/versionless/milestone/fs.webp",
+                    "fsp": "../../../best50/common/versionless/milestone/fsp.webp",
+                    "sync": "../../../best50/common/versionless/milestone/sync.webp",
+                    "none": "../../../best50/common/versionless/milestone/none.webp"
+                },
+                "versions": {
+                    "OLD": {
+                        "0": "../../common/versionless/logo/jp/100.webp",
+                        "10": "../../common/versionless/logo/jp/110.webp",
+                        "20": "../../common/versionless/logo/jp/120.webp",
+                        "30": "../../common/versionless/logo/jp/130.webp",
+                        "40": "../../common/versionless/logo/jp/140.webp",
+                        "50": "../../common/versionless/logo/jp/150.webp",
+                        "60": "../../common/versionless/logo/jp/160.webp",
+                        "70": "../../common/versionless/logo/jp/170.webp",
+                        "80": "../../common/versionless/logo/jp/180.webp",
+                        "85": "../../common/versionless/logo/jp/185.webp",
+                        "90": "../../common/versionless/logo/jp/190.webp",
+                        "95": "../../common/versionless/logo/jp/195.webp",
+                        "99": "../../common/versionless/logo/jp/199.webp"
+                    },
+                    "DX": {
+                        "0": "../../common/versionless/logo/jp/200.webp",
+                        "5": "../../common/versionless/logo/jp/205.webp",
+                        "10": "../../common/versionless/logo/jp/210.webp",
+                        "15": "../../common/versionless/logo/jp/215.webp",
+                        "20": "../../common/versionless/logo/jp/220.webp",
+                        "25": "../../common/versionless/logo/jp/225.webp",
+                        "30": "../../common/versionless/logo/jp/230.webp",
+                        "35": "../../common/versionless/logo/jp/235.webp",
+                        "40": "../../common/versionless/logo/jp/240.webp",
+                        "45": "../../common/versionless/logo/jp/245.webp",
+                        "50": "../../common/versionless/logo/jp/250.webp",
+                        "55": "../../common/versionless/logo/jp/255.webp"
+                    },
+                    "EX": {
+                        "10": "../../common/versionless/logo/intl/210.webp",
+                        "15": "../../common/versionless/logo/intl/215.webp"
+                    },
+                    "CN": {
+                        "0": "../../common/versionless/logo/cn/200.webp",
+                        "10": "../../common/versionless/logo/cn/210.webp",
+                        "20": "../../common/versionless/logo/cn/220.webp",
+                        "30": "../../common/versionless/logo/cn/230.webp",
+                        "40": "../../common/versionless/logo/cn/240.webp",
+                        "50": "../../common/versionless/logo/cn/250.webp"
+                    }
+                }
+            }
+        },
+        {
+            "type": "detail-info",
+            "x": 1845,
+            "y": 562,
+            "width": 615,
+            "height": 745,
+            "margin": 40,
+            "color": {
+                "card": "#b9eae5"
+            },
+            "sprites": {
+                "mode": {
+                    "standard": "../../../best50/common/versionless/mode/jp/standard.webp",
+                    "dx": "../../../best50/common/versionless/mode/jp/dx.webp"
+                }
+            }
+        },
+        {
+            "type": "profile",
+            "x": 150,
+            "y": 40,
+            "height": 182,
+            "sprites": {
+                "dxRating": {
+                    "white": "../../../best50/common/versionless/dxRating/jp/white.webp",
+                    "blue": "../../../best50/common/versionless/dxRating/jp/blue.webp",
+                    "green": "../../../best50/common/versionless/dxRating/jp/green.webp",
+                    "yellow": "../../../best50/common/versionless/dxRating/jp/yellow.webp",
+                    "red": "../../../best50/common/versionless/dxRating/jp/red.webp",
+                    "purple": "../../../best50/common/versionless/dxRating/jp/purple.webp",
+                    "bronze": "../../../best50/common/versionless/dxRating/jp/bronze.webp",
+                    "silver": "../../../best50/common/versionless/dxRating/jp/silver.webp",
+                    "gold": "../../../best50/common/versionless/dxRating/jp/gold.webp",
+                    "platinum": "../../../best50/common/versionless/dxRating/jp/platinum.webp",
+                    "rainbow": "../../../best50/common/versionless/dxRating/jp/rainbow.webp"
+                },
+                "dxRatingNumberMap": "../../../best50/common/versionless/dxRating/numberMap.webp",
+                "profile": {
+                    "nameplate": "../../../best50/common/versionless/nameplate.webp",
+                    "icon": "../../../best50/common/versionless/icon.webp"
+                }
+            }
+        },
+        {
+            "type": "text",
+            "size": 32,
+            "x": 2480,
+            "y": 1407,
+            "borderColor": "#226180",
+            "align": "right",
+            "content": "Generated by saltbot | maimaidx.cab/discord | maimaidx.cab/invite"
+        },
+        {
+            "type": "hitokoto",
+            "size": 24,
+            "x": 80,
+            "y": 1403,
+            "borderColor": "#226180",
+            "align": "left",
+            "probability": 0.1,
+            "customLines": [
+                "../../../../../hitokoto/general.json",
+                "../../../../../hitokoto/support/maimaidx.json"
+            ]
+        }
+    ]
+}

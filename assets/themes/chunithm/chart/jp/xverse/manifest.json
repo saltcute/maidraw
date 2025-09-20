@@ -1,0 +1,166 @@
+{
+    "displayName": "CHUNITHM X-VERSE",
+    "name": "jp-xverse",
+    "width": 2560,
+    "height": 1440,
+    "elements": [
+        {
+            "type": "image",
+            "x": 1280,
+            "y": 720,
+            "height": 1440,
+            "anchor": "cm",
+            "path": "../../../best/common/verse/xverse/background/new.webp"
+        },
+        {
+            "type": "image",
+            "x": 2152,
+            "y": 262,
+            "height": 305,
+            "anchor": "mt",
+            "path": "../../../best/common/verse/xverse/logo.webp"
+        },
+        {
+            "type": "chart-grid",
+            "x": 100,
+            "y": 262,
+            "width": 1645,
+            "height": 1045,
+            "margin": 70,
+            "gap": 40,
+            "bubble": {
+                "margin": 20,
+                "color": {
+                    "basic": "#70E262",
+                    "advanced": "#FFBB00",
+                    "expert": "#FF4A5A",
+                    "master": "#A04FDA",
+                    "ultima": "#591C28",
+                    "worldsEnd": "#70E262"
+                }
+            },
+            "color": {
+                "card": "#b9eae5"
+            },
+            "sprites": {
+                "achievement": {
+                    "d": "../../../best/common/verse/achievement/D.webp",
+                    "c": "../../../best/common/verse/achievement/C.webp",
+                    "b": "../../../best/common/verse/achievement/B.webp",
+                    "bb": "../../../best/common/verse/achievement/BB.webp",
+                    "bbb": "../../../best/common/verse/achievement/BBB.webp",
+                    "a": "../../../best/common/verse/achievement/A.webp",
+                    "aa": "../../../best/common/verse/achievement/AA.webp",
+                    "aaa": "../../../best/common/verse/achievement/AAA.webp",
+                    "s": "../../../best/common/verse/achievement/S.webp",
+                    "sp": "../../../best/common/verse/achievement/SP.webp",
+                    "ss": "../../../best/common/verse/achievement/SS.webp",
+                    "ssp": "../../../best/common/verse/achievement/SSP.webp",
+                    "sss": "../../../best/common/verse/achievement/SS.webp",
+                    "sssp": "../../../best/common/verse/achievement/SSSP.webp"
+                },
+                "milestone": {
+                    "aj": "../../../best/common/versionless/milestone/aj.webp",
+                    "ajc": "../../../best/common/versionless/milestone/ajc.webp",
+                    "fc": "../../../best/common/versionless/milestone/fc.webp",
+                    "none": "../../../best/common/versionless/void.webp"
+                },
+                "versions": {
+                    "JPN": {
+                        "100": "../../common/versionless/logo/jpn/100.webp",
+                        "105": "../../common/versionless/logo/jpn/105.webp",
+                        "110": "../../common/versionless/logo/jpn/110.webp",
+                        "115": "../../common/versionless/logo/jpn/115.webp",
+                        "120": "../../common/versionless/logo/jpn/120.webp",
+                        "125": "../../common/versionless/logo/jpn/125.webp",
+                        "130": "../../common/versionless/logo/jpn/130.webp",
+                        "135": "../../common/versionless/logo/jpn/135.webp",
+                        "140": "../../common/versionless/logo/jpn/140.webp",
+                        "145": "../../common/versionless/logo/jpn/145.webp",
+                        "150": "../../common/versionless/logo/jpn/150.webp",
+                        "155": "../../common/versionless/logo/jpn/155.webp",
+                        "200": "../../common/versionless/logo/jpn/200.webp",
+                        "205": "../../common/versionless/logo/jpn/205.webp",
+                        "210": "../../common/versionless/logo/jpn/210.webp",
+                        "215": "../../common/versionless/logo/jpn/215.webp",
+                        "220": "../../common/versionless/logo/jpn/220.webp",
+                        "225": "../../common/versionless/logo/jpn/225.webp",
+                        "230": "../../common/versionless/logo/jpn/230.webp",
+                        "240": "../../common/versionless/logo/jpn/240.webp"
+                    },
+                    "INT": {
+                        "100": "../../common/versionless/logo/int/100.webp",
+                        "105": "../../common/versionless/logo/int/105.webp",
+                        "110": "../../common/versionless/logo/jpn/200.webp",
+                        "115": "../../common/versionless/logo/jpn/205.webp",
+                        "120": "../../common/versionless/logo/jpn/210.webp",
+                        "125": "../../common/versionless/logo/jpn/215.webp",
+                        "130": "../../common/versionless/logo/jpn/220.webp",
+                        "135": "../../common/versionless/logo/jpn/225.webp",
+                        "140": "../../common/versionless/logo/jpn/230.webp"
+                    },
+                    "CHN": {
+                        "100": "../../common/versionless/logo/chn/100.webp",
+                        "110": "../../common/versionless/logo/chn/110.webp",
+                        "120": "../../common/versionless/logo/chn/120.webp",
+                        "130": "../../common/versionless/logo/chn/130.webp"
+                    }
+                }
+            }
+        },
+        {
+            "type": "detail-info",
+            "x": 1845,
+            "y": 562,
+            "width": 615,
+            "height": 745,
+            "margin": 40,
+            "color": {
+                "card": "#b9eae5"
+            }
+        },
+        {
+            "type": "profile",
+            "x": 150,
+            "y": 10,
+            "height": 293,
+            "sprites": {
+                "ratingNumberMap": {
+                    "white": "../../../best/common/versionless/rating/numberMaps/white.webp",
+                    "bronze": "../../../best/common/versionless/rating/numberMaps/bronze.webp",
+                    "silver": "../../../best/common/versionless/rating/numberMaps/silver.webp",
+                    "gold": "../../../best/common/versionless/rating/numberMaps/gold.webp",
+                    "platinum": "../../../best/common/versionless/rating/numberMaps/platinum.webp",
+                    "rainbow": "../../../best/common/versionless/rating/numberMaps/rainbow.webp",
+                    "kiwami": "../../../best/common/versionless/rating/numberMaps/kiwami.webp"
+                },
+                "profile": {
+                    "nameplate": "../../../best/common/versionless/nameplate.webp",
+                    "icon": "../../../best/common/versionless/icon.webp"
+                }
+            }
+        },
+        {
+            "type": "text",
+            "size": 32,
+            "x": 2480,
+            "y": 1407,
+            "borderColor": "#226180",
+            "align": "right",
+            "content": "Generated by saltbot | chunithm.cab/discord | chunithm.cab/invite"
+        },
+        {
+            "type": "hitokoto",
+            "size": 24,
+            "x": 80,
+            "y": 1403,
+            "borderColor": "#226180",
+            "align": "left",
+            "probability": 0.1,
+            "customLines": [
+                "../../../../../hitokoto/general.json",
+                "../../../../../hitokoto/support/chunithm.json"
+            ]
+        }
+    ]
+}

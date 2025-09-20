@@ -11,7 +11,7 @@ const upath = require("upath");
     MaiDraw.Maimai.Database.setLocalDatabasePath("../maimai-songs-database");
 
     const fs = require("fs");
-    const themes = ["jp-prism"];
+    const themes = ["jp-circle", "jp-prismplus", "jp-prism"];
     for (let theme of themes) {
         for (const region of ["DX", "EX", "CN"]) {
             let result = await painter.drawWithScoreSource(
