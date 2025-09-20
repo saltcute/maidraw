@@ -1,0 +1,180 @@
+{
+    "displayName": "オンゲキ bright MEMORY",
+    "name": "jp-brightmemory",
+    "width": 1595,
+    "height": 2502,
+    "elements": [
+        {
+            "type": "image",
+            "x": 797.5,
+            "y": 1251,
+            "width": 1595,
+            "anchor": "mm",
+            "path": "../../../best/common/brightmemory/background.webp"
+        },
+        {
+            "type": "chart-grid",
+            "x": 100,
+            "y": 1157,
+            "width": 1395,
+            "height": 1045,
+            "margin": 70,
+            "gap": 40,
+            "bubble": {
+                "margin": 20,
+                "color": {
+                    "basic": "#70E262",
+                    "advanced": "#FFBB00",
+                    "expert": "#FF4A5A",
+                    "master": "#A04FDA",
+                    "lunatic": "#591C28"
+                }
+            },
+            "color": {
+                "card": "#faf9f0"
+            },
+            "sprites": {
+                "achievement": {
+                    "d": "../../../best/common/versionless/achievement/d.webp",
+                    "c": "../../../best/common/versionless/achievement/c.webp",
+                    "b": "../../../best/common/versionless/achievement/b.webp",
+                    "bb": "../../../best/common/versionless/achievement/bb.webp",
+                    "bbb": "../../../best/common/versionless/achievement/bbb.webp",
+                    "a": "../../../best/common/versionless/achievement/a.webp",
+                    "aa": "../../../best/common/versionless/achievement/aa.webp",
+                    "aaa": "../../../best/common/versionless/achievement/aaa.webp",
+                    "s": "../../../best/common/versionless/achievement/s.webp",
+                    "ss": "../../../best/common/versionless/achievement/ss.webp",
+                    "sss": "../../../best/common/versionless/achievement/sss.webp",
+                    "sssp": "../../../best/common/versionless/achievement/sssp.webp"
+                },
+                "milestone": {
+                    "abp": "../../../best/common/versionless/milestone/abp.webp",
+                    "ab": "../../../best/common/versionless/milestone/ab.webp",
+                    "fc": "../../../best/common/versionless/milestone/fc.webp",
+                    "fb": "../../../best/common/versionless/milestone/fb.webp",
+                    "none": "../../../best/common/versionless/void.webp"
+                },
+                "versions": {
+                    "JPN": {
+                        "100": "../../common/versionless/logo/jpn/100.webp",
+                        "105": "../../common/versionless/logo/jpn/105.webp",
+                        "110": "../../common/versionless/logo/jpn/110.webp",
+                        "115": "../../common/versionless/logo/jpn/115.webp",
+                        "120": "../../common/versionless/logo/jpn/120.webp",
+                        "125": "../../common/versionless/logo/jpn/125.webp",
+                        "130": "../../common/versionless/logo/jpn/130.webp",
+                        "135": "../../common/versionless/logo/jpn/135.webp",
+                        "140": "../../common/versionless/logo/jpn/140.webp",
+                        "145": "../../common/versionless/logo/jpn/145.webp",
+                        "150": "../../common/versionless/logo/jpn/150.webp"
+                    }
+                }
+            }
+        },
+        {
+            "type": "detail-info",
+            "x": 100,
+            "y": 312,
+            "width": 615,
+            "height": 745,
+            "margin": 40,
+            "color": {
+                "card": "#faf9f0"
+            }
+        },
+        {
+            "type": "character-info",
+            "x": 815,
+            "y": 312,
+            "width": 685,
+            "height": 745,
+            "margin": 40,
+            "color": {
+                "card": "#faf9f0"
+            }
+        },
+        {
+            "type": "image",
+            "x": 1180,
+            "y": 820,
+            "width": 310,
+            "height": 251,
+            "path": "../../../best/common/brightmemory/logo.webp"
+        },
+        {
+            "type": "profile",
+            "x": 0,
+            "y": 0,
+            "sprites": {
+                "rating": {
+                    "numberMap": {
+                        "blue": "../../../best/common/versionless/rating/numberMap/blue.webp",
+                        "green": "../../../best/common/versionless/rating/numberMap/green.webp",
+                        "orange": "../../../best/common/versionless/rating/numberMap/orange.webp",
+                        "red": "../../../best/common/versionless/rating/numberMap/red.webp",
+                        "purple": "../../../best/common/versionless/rating/numberMap/purple.webp",
+                        "bronze": "../../../best/common/versionless/rating/numberMap/bronze.webp",
+                        "silver": "../../../best/common/versionless/rating/numberMap/silver.webp",
+                        "gold": "../../../best/common/versionless/rating/numberMap/gold.webp",
+                        "platinum": "../../../best/common/versionless/rating/numberMap/platinum.webp",
+                        "rainbow": "../../../best/common/versionless/rating/numberMap/rainbow.webp",
+                        "rainbow2": "../../../best/common/versionless/rating/numberMap/rainbow2.webp",
+                        "rainbow3": "../../../best/common/versionless/rating/numberMap/rainbow3.webp"
+                    },
+                    "headerText": {
+                        "blue": "../../../best/common/versionless/rating/headerText/blue.webp",
+                        "green": "../../../best/common/versionless/rating/headerText/green.webp",
+                        "orange": "../../../best/common/versionless/rating/headerText/orange.webp",
+                        "red": "../../../best/common/versionless/rating/headerText/red.webp",
+                        "purple": "../../../best/common/versionless/rating/headerText/purple.webp",
+                        "bronze": "../../../best/common/versionless/rating/headerText/bronze.webp",
+                        "silver": "../../../best/common/versionless/rating/headerText/silver.webp",
+                        "gold": "../../../best/common/versionless/rating/headerText/gold.webp",
+                        "platinum": "../../../best/common/versionless/rating/headerText/platinum.webp",
+                        "rainbow": "../../../best/common/versionless/rating/headerText/rainbow.webp",
+                        "rainbow2": "../../../best/common/versionless/rating/headerText/rainbow2.webp",
+                        "rainbow3": "../../../best/common/versionless/rating/headerText/rainbow3.webp"
+                    }
+                },
+                "profile": {
+                    "userplate": "../../../best/common/versionless/userplateIchigeki.webp",
+                    "icon": "../../../best/common/versionless/icon.webp"
+                }
+            }
+        },
+        {
+            "type": "text",
+            "size": 32,
+            "x": 80,
+            "y": 2272,
+            "borderColor": "#b89f82",
+            "align": "left",
+            "content": "Generated by saltbot |"
+        },
+        {
+            "type": "text",
+            "size": 28,
+            "x": 465,
+            "y": 2252,
+            "borderColor": "#b89f82",
+            "align": "left",
+            "content": "ongeki.cab/invite\nongeki.cab/discord"
+        },
+        {
+            "type": "hitokoto",
+            "size": 24,
+            "x": 1515,
+            "y": 2252,
+            "borderColor": "#b89f82",
+            "align": "right",
+            "width": 580,
+            "linebreak": true,
+            "probability": 0.1,
+            "customLines": [
+                "../../../../../hitokoto/general.json",
+                "../../../../../hitokoto/support/ongeki.json"
+            ]
+        }
+    ]
+}

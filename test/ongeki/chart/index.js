@@ -8,7 +8,7 @@ const upath = require("upath");
     MaiDraw.Geki.Database.setLocalDatabasePath("../maimai-songs-database");
 
     const fs = require("fs");
-    const themes = ["jp-refresh"];
+    const themes = ["jp-refresh", "jp-brightmemory"];
     for (let theme of themes) {
         for (const region of ["JPN"]) {
             let result = await painter.drawWithScoreSource(
