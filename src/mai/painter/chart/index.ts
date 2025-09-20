@@ -25,7 +25,7 @@ export class ChartPainter extends MaimaiPainter<typeof ChartPainter.Theme> {
         ),
     });
 
-    private static readonly DEFAULT_THEME = "jp-prism";
+    private static readonly DEFAULT_THEME = "jp-prismplus";
     public constructor() {
         super({
             theme: {

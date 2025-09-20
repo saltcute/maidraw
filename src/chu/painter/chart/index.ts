@@ -41,7 +41,7 @@ export class ChartPainter extends ChunithmPainter<typeof ChartPainter.Theme> {
         });
     }
 
-    private static readonly DEFAULT_THEME = "jp-verse";
+    private static readonly DEFAULT_THEME = "jp-xverse";
 
     public async draw(
         variables: {
