@@ -211,7 +211,25 @@ export namespace PainterModule {
             width: z.number().min(1).optional(),
             height: z.number().min(1).optional(),
             anchor: z
-                .literal(["lt", "ct", "rt", "lm", "cm", "rm", "lb", "cb", "rb"])
+                .literal([
+                    "lt",
+                    "ct",
+                    "rt",
+                    "lc",
+                    "cc",
+                    "rc",
+                    "lb",
+                    "cb",
+                    "rb",
+                    // Center vs Middle
+                    "mt",
+                    "mc",
+                    "mb",
+                    "lm",
+                    "cm",
+                    "rm",
+                    "mm",
+                ])
                 .optional(),
             path: z.string(),
         });
@@ -243,15 +261,20 @@ export namespace PainterModule {
                 default:
                     break;
                 case "ct":
+                case "mt":
                     ctx.translate(-width / 2, 0);
                     break;
                 case "rt":
                     ctx.translate(-width, 0);
                     break;
+                case "lc":
                 case "lm":
                     ctx.translate(0, -height / 2);
                     break;
+                case "cc":
+                case "mc":
                 case "cm":
+                case "mm":
                     ctx.translate(-width / 2, -height / 2);
                     break;
                 case "rm":
@@ -260,6 +283,7 @@ export namespace PainterModule {
                 case "lb":
                     ctx.translate(0, -height);
                     break;
+                case "mb":
                 case "cb":
                     ctx.translate(-width / 2, -height);
                     break;
