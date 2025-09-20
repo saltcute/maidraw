@@ -1543,69 +1543,39 @@ export namespace OngekiPainterModule {
                         }
                     }
                     /** End Milestone Draw */
-
-                    /** Begin Version Draw */
-                    {
-                        const version: {
-                            region: "JPN";
-                            version?: Database.IVersion;
-                        } = {
-                            region: "JPN",
-                            version: undefined,
-                        };
-                        const VER =
-                            chart.difficulty == EDifficulty.LUNATIC
-                                ? chart.events.find(
-                                      (v) =>
-                                          v.type == "existence" &&
-                                          v.version.region == targetRegion
-                                  )?.version
-                                : chart.addVersion;
-                        version.version = VER;
-                        version.region = targetRegion;
-                        const versionImageHeight =
-                            (height - element.bubble.margin * 2) *
-                            (isShort ? 5 / 8 : 1 / 2);
-                        const versionImageWidth =
-                            (versionImageHeight / 270) * 360;
-                        const curx = x + width - element.bubble.margin,
-                            cury = y + element.bubble.margin;
-                        if (version.version) {
-                            const rawVersion = findVersion(
-                                OngekiUtil.getNumberVersion(version.version),
-                                targetRegion
-                            );
-                            if (rawVersion) {
-                                const versionImage = theme.getFile(
-                                    element.sprites.versions[version.region][
-                                        rawVersion
-                                    ]
-                                );
-                                try {
-                                    sharp(versionImage);
-                                    if (versionImage) {
-                                        const versionImg =
-                                            await Util.loadImage(versionImage);
-                                        ctx.drawImage(
-                                            versionImg,
-                                            curx - versionImageWidth,
-                                            cury,
-                                            versionImageWidth,
-                                            versionImageHeight
-                                        );
-                                    }
-                                } catch {}
-                            }
-                        }
-                        /** End Version Draw */
-
-                        /** Begin Note Count Draw */
-                        const noteCountTexts = Object.entries(
-                            chart.meta.notes
-                        ).map(([k, v]) => `${Util.capitalize(k)}: ${v}`);
-                        const noteCountTextSize =
+                    const scorePartWidth =
+                        element.bubble.margin * (3 / 2) + height * 2;
+                    const noteCountTexts = Object.entries(chart.meta.notes).map(
+                        ([k, v]) => `${Util.capitalize(k)}: ${v}`
+                    );
+                    const noteCountTextSize = (() => {
+                        let base =
                             (height - element.bubble.margin * 4) /
                             noteCountTexts.length;
+                        for (
+                            ;
+                            base > 4 &&
+                            noteCountTexts
+                                .map((v) =>
+                                    Util.measureText(ctx, v, base, Infinity)
+                                )
+                                .find((v) => v.width > width - scorePartWidth);
+                            base--
+                        ) {}
+                        return base;
+                    })();
+                    const noteCountTextWidth = noteCountTexts
+                        .map((v) =>
+                            Util.measureText(
+                                ctx,
+                                v,
+                                noteCountTextSize,
+                                Infinity
+                            )
+                        )
+                        .reduce((a, b) => (a.width > b.width ? a : b)).width;
+                    /** Begin Note Count Draw */
+                    {
                         let noteCountLength = 0;
                         noteCountTexts.forEach((v, i) => {
                             Util.drawText(
@@ -1641,6 +1611,66 @@ export namespace OngekiPainterModule {
                                 noteCountLength = length;
                         });
                         /** End Note Count Draw */
+
+                        /** Begin Version Draw */
+                        const version: {
+                            region: "JPN";
+                            version?: Database.IVersion;
+                        } = {
+                            region: "JPN",
+                            version: undefined,
+                        };
+                        const VER =
+                            chart.difficulty == EDifficulty.LUNATIC
+                                ? chart.events.find(
+                                      (v) =>
+                                          v.type == "existence" &&
+                                          v.version.region == targetRegion
+                                  )?.version
+                                : chart.addVersion;
+                        version.version = VER;
+                        version.region = targetRegion;
+                        const versionImageHeight =
+                            (height - element.bubble.margin * 2) *
+                            (isShort ? 5 / 8 : 1 / 2);
+                        const versionImageWidth =
+                            (versionImageHeight / 270) * 360;
+                        const curx = x + width - element.bubble.margin,
+                            cury = y + element.bubble.margin;
+                        if (
+                            version.version &&
+                            scorePartWidth +
+                                noteCountTextWidth +
+                                versionImageWidth <
+                                width
+                        ) {
+                            const rawVersion = findVersion(
+                                OngekiUtil.getNumberVersion(version.version),
+                                targetRegion
+                            );
+                            if (rawVersion) {
+                                const versionImage = theme.getFile(
+                                    element.sprites.versions[version.region][
+                                        rawVersion
+                                    ]
+                                );
+                                try {
+                                    sharp(versionImage);
+                                    if (versionImage) {
+                                        const versionImg =
+                                            await Util.loadImage(versionImage);
+                                        ctx.drawImage(
+                                            versionImg,
+                                            curx - versionImageWidth,
+                                            cury,
+                                            versionImageWidth,
+                                            versionImageHeight
+                                        );
+                                    }
+                                } catch {}
+                            }
+                        }
+                        /** End Version Draw */
 
                         /** Begin Internal Level Trend Draw */
                         if (!isShort) {
