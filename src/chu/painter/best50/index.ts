@@ -39,7 +39,7 @@ export class Best50Painter extends ChunithmPainter<typeof Best50Painter.Theme> {
         });
     }
 
-    private static readonly DEFAULT_THEME = "jp-verse-landscape-new";
+    private static readonly DEFAULT_THEME = "jp-xverse-landscape-new";
 
     public async draw(
         variables: {

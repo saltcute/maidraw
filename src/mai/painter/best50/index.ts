@@ -29,7 +29,7 @@ export class Best50Painter extends MaimaiPainter<typeof Best50Painter.Theme> {
         ),
     });
 
-    private static readonly DEFAULT_THEME = "jp-prism-landscape";
+    private static readonly DEFAULT_THEME = "jp-circle-landscape";
     public constructor() {
         super({
             theme: {
