@@ -919,14 +919,14 @@ export namespace MaimaiPainterModule {
     }
 
     export namespace Chart {
-        const DX_LATEST = 55;
+        const DX_LATEST = 60;
         const EX_LATEST = 55;
         const CN_LATEST = 50;
         const MAIMAI_VERSIONS = [
             99, 95, 90, 85, 80, 70, 60, 50, 40, 30, 20, 10, 0,
         ] as const;
         const MAIMAIDX_VERSIONS = [
-            55, 50, 45, 40, 35, 30, 25, 20, 15, 10, 5, 0,
+            60, 55, 50, 45, 40, 35, 30, 25, 20, 15, 10, 5, 0,
         ] as const;
         const WUMENGDX_VERSIONS = [50, 40, 30, 20, 10, 0] as const;
         function findVersion(v: number, isDX: boolean, isCN: boolean) {
