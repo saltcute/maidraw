@@ -44,20 +44,20 @@
             },
             "sprites": {
                 "achievement": {
-                    "d": "../../../best50/common/prism/achievement/d.webp",
-                    "c": "../../../best50/common/prism/achievement/c.webp",
-                    "b": "../../../best50/common/prism/achievement/b.webp",
-                    "bb": "../../../best50/common/prism/achievement/bb.webp",
-                    "bbb": "../../../best50/common/prism/achievement/bbb.webp",
-                    "a": "../../../best50/common/prism/achievement/a.webp",
-                    "aa": "../../../best50/common/prism/achievement/aa.webp",
-                    "aaa": "../../../best50/common/prism/achievement/aaa.webp",
-                    "s": "../../../best50/common/prism/achievement/s.webp",
-                    "sp": "../../../best50/common/prism/achievement/sp.webp",
-                    "ss": "../../../best50/common/prism/achievement/ss.webp",
-                    "ssp": "../../../best50/common/prism/achievement/ssp.webp",
-                    "sss": "../../../best50/common/prism/achievement/sss.webp",
-                    "sssp": "../../../best50/common/prism/achievement/sssp.webp"
+                    "d": "../../../best50/common/circle/achievement/d.webp",
+                    "c": "../../../best50/common/circle/achievement/c.webp",
+                    "b": "../../../best50/common/circle/achievement/b.webp",
+                    "bb": "../../../best50/common/circle/achievement/bb.webp",
+                    "bbb": "../../../best50/common/circle/achievement/bbb.webp",
+                    "a": "../../../best50/common/circle/achievement/a.webp",
+                    "aa": "../../../best50/common/circle/achievement/aa.webp",
+                    "aaa": "../../../best50/common/circle/achievement/aaa.webp",
+                    "s": "../../../best50/common/circle/achievement/s.webp",
+                    "sp": "../../../best50/common/circle/achievement/sp.webp",
+                    "ss": "../../../best50/common/circle/achievement/ss.webp",
+                    "ssp": "../../../best50/common/circle/achievement/ssp.webp",
+                    "sss": "../../../best50/common/circle/achievement/sss.webp",
+                    "sssp": "../../../best50/common/circle/achievement/sssp.webp"
                 },
                 "milestone": {
                     "ap": "../../../best50/common/versionless/milestone/ap.webp",
@@ -99,7 +99,8 @@
                         "40": "../../common/versionless/logo/jp/240.webp",
                         "45": "../../common/versionless/logo/jp/245.webp",
                         "50": "../../common/versionless/logo/jp/250.webp",
-                        "55": "../../common/versionless/logo/jp/255.webp"
+                        "55": "../../common/versionless/logo/jp/255.webp",
+                        "60": "../../common/versionless/logo/jp/260.webp"
                     },
                     "EX": {
                         "10": "../../common/versionless/logo/intl/210.webp",
