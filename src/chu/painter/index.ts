@@ -888,8 +888,8 @@ export namespace ChunithmPainterModule {
         const CHN_LATEST = 120;
 
         const CHUNITHM_VERSIONS = [
-            240, 230, 225, 220, 215, 210, 205, 200, 150, 145, 140, 135, 130,
-            125, 120, 115, 110, 105, 100,
+            240, 230, 225, 220, 215, 210, 205, 200, 155, 150, 145, 140, 135,
+            130, 125, 120, 115, 110, 105, 100,
         ] as const;
         const CHUNITHM_INT_VERSIONS = [
             140, 135, 130, 125, 120, 115, 110, 105, 100,
