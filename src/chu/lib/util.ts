@@ -82,6 +82,13 @@ export namespace ChunithmUtil {
                 minor: 50,
             },
         };
+        static readonly PARADISE_LOST = {
+            name: "CHUNITHM PARADISE LOST",
+            gameVersion: {
+                major: 1,
+                minor: 55,
+            },
+        };
         static readonly NEW = {
             name: "CHUNITHM NEW!!",
             gameVersion: {
@@ -150,6 +157,7 @@ export namespace ChunithmUtil {
             Version.CRYSTAL,
             Version.CRYSTAL_PLUS,
             Version.PARADISE,
+            Version.PARADISE_LOST,
             Version.NEW,
             Version.NEW_PLUS,
             Version.SUN,
