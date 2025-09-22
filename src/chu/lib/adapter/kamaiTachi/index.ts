@@ -204,8 +204,21 @@ export class KamaiTachi extends ScoreTrackerAdapter {
         const internalLevel =
             localChart?.events
                 .filter((v) => v.type === "existence")
-                .find((v) => v.version.name == this.CURRENT_VERSION)?.data
-                .level ?? chart.levelNum;
+                .find((v) => {
+                    if (
+                        this.CURRENT_VERSION ===
+                            KamaiTachi.EGameVersions.CHUNITHM_PARADISE ||
+                        this.CURRENT_VERSION ===
+                            KamaiTachi.EGameVersions.CHUNITHM_PARADISE_LOST
+                    ) {
+                        return (
+                            v.version.name ===
+                                KamaiTachi.EGameVersions.CHUNITHM_PARADISE ||
+                            v.version.name ===
+                                KamaiTachi.EGameVersions.CHUNITHM_PARADISE_LOST
+                        );
+                    } else return v.version.name === this.CURRENT_VERSION;
+                })?.data.level ?? chart.levelNum;
         return {
             chart: (() => {
                 return {
