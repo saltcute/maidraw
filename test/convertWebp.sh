@@ -1,4 +1,4 @@
 for i in ./assets/**/*.png; do
-    cwebp -lossless "$i" -q 100 -o "${i:r}.webp"
+    cwebp "$i" -lossless -mt -q 100 -quiet -o "${i:r}.webp"
     rm "$i";
 done
