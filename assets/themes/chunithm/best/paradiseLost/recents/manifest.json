@@ -1,0 +1,189 @@
+{
+    "displayName": "CHUNITHM PARADISE LOST",
+    "name": "jp-paradiselost-landscape-recents",
+    "width": 2320,
+    "height": 1440,
+    "elements": [
+        {
+            "type": "image",
+            "x": 0,
+            "y": 0,
+            "width": 2320,
+            "height": 1440,
+            "path": "../../common/paradise/jp/background/recents.webp"
+        },
+        {
+            "type": "image",
+            "x": 925,
+            "y": 40,
+            "width": 450,
+            "path": "../../common/paradise/lost/logo.webp"
+        },
+        {
+            "type": "score-grid",
+            "x": 70,
+            "y": 500,
+            "horizontalSize": 2,
+            "verticalSize": 5,
+            "region": "new",
+            "index": 0,
+            "scoreBubble": {
+                "width": 290,
+                "height": 155,
+                "margin": 10,
+                "gap": 20,
+                "color": {
+                    "basic": "#70E262",
+                    "advanced": "#FFBB00",
+                    "expert": "#FF4A5A",
+                    "master": "#A04FDA",
+                    "ultima": "#591C28",
+                    "worldsEnd": "#70E262"
+                }
+            },
+            "sprites": {
+                "achievement": {
+                    "d": "../../common/paradise/achievement/D.webp",
+                    "c": "../../common/paradise/achievement/C.webp",
+                    "b": "../../common/paradise/achievement/B.webp",
+                    "bb": "../../common/paradise/achievement/BB.webp",
+                    "bbb": "../../common/paradise/achievement/BBB.webp",
+                    "a": "../../common/paradise/achievement/A.webp",
+                    "aa": "../../common/paradise/achievement/AA.webp",
+                    "aaa": "../../common/paradise/achievement/AAA.webp",
+                    "s": "../../common/paradise/achievement/S.webp",
+                    "sp": "../../common/paradise/achievement/S.webp",
+                    "ss": "../../common/paradise/achievement/SS.webp",
+                    "ssp": "../../common/paradise/achievement/SS.webp",
+                    "sss": "../../common/paradise/achievement/SSS.webp",
+                    "sssp": "../../common/paradise/achievement/SSS.webp"
+                },
+                "milestone": {
+                    "aj": "../../common/versionless/milestone/aj.webp",
+                    "ajc": "../../common/versionless/milestone/ajc.webp",
+                    "fc": "../../common/versionless/milestone/fc.webp",
+                    "none": "../../common/versionless/void.webp"
+                }
+            }
+        },
+        {
+            "type": "score-grid",
+            "x": 730,
+            "y": 325,
+            "horizontalSize": 5,
+            "verticalSize": 6,
+            "region": "old",
+            "index": 0,
+            "scoreBubble": {
+                "width": 290,
+                "height": 155,
+                "margin": 10,
+                "gap": 20,
+                "color": {
+                    "basic": "#70E262",
+                    "advanced": "#FFBB00",
+                    "expert": "#FF4A5A",
+                    "master": "#A04FDA",
+                    "ultima": "#591C28",
+                    "worldsEnd": "#70E262"
+                }
+            },
+            "sprites": {
+                "achievement": {
+                    "d": "../../common/paradise/achievement/D.webp",
+                    "c": "../../common/paradise/achievement/C.webp",
+                    "b": "../../common/paradise/achievement/B.webp",
+                    "bb": "../../common/paradise/achievement/BB.webp",
+                    "bbb": "../../common/paradise/achievement/BBB.webp",
+                    "a": "../../common/paradise/achievement/A.webp",
+                    "aa": "../../common/paradise/achievement/AA.webp",
+                    "aaa": "../../common/paradise/achievement/AAA.webp",
+                    "s": "../../common/paradise/achievement/S.webp",
+                    "sp": "../../common/paradise/achievement/S.webp",
+                    "ss": "../../common/paradise/achievement/SS.webp",
+                    "ssp": "../../common/paradise/achievement/SS.webp",
+                    "sss": "../../common/paradise/achievement/SSS.webp",
+                    "sssp": "../../common/paradise/achievement/SSS.webp"
+                },
+                "milestone": {
+                    "aj": "../../common/versionless/milestone/aj.webp",
+                    "ajc": "../../common/versionless/milestone/ajc.webp",
+                    "fc": "../../common/versionless/milestone/fc.webp",
+                    "none": "../../common/versionless/void.webp"
+                }
+            }
+        },
+        {
+            "type": "profile",
+            "x": 50,
+            "y": 50,
+            "height": 300,
+            "sprites": {
+                "ratingNumberMap": {
+                    "white": "../../common/versionless/rating/numberMaps/plost/white.webp",
+                    "bronze": "../../common/versionless/rating/numberMaps/plost/bronze.webp",
+                    "silver": "../../common/versionless/rating/numberMaps/plost/silver.webp",
+                    "gold": "../../common/versionless/rating/numberMaps/plost/gold.webp",
+                    "platinum": "../../common/versionless/rating/numberMaps/plost/platinum.webp",
+                    "rainbow": "../../common/versionless/rating/numberMaps/plost/rainbow.webp",
+                    "kiwami": "../../common/versionless/rating/numberMaps/kiwami.webp"
+                },
+                "profile": {
+                    "nameplate": "../../common/versionless/nameplate.webp",
+                    "icon": "../../common/versionless/icon.webp"
+                }
+            }
+        },
+        {
+            "type": "text",
+            "size": 32,
+            "x": 2240,
+            "y": 1407,
+            "borderColor": "#178ea1",
+            "align": "right",
+            "content": "Generated by saltbot | chunithm.cab/discord | chunithm.cab/invite"
+        },
+        {
+            "type": "text",
+            "size": 24,
+            "x": 80,
+            "y": 405,
+            "borderColor": "#178ea1",
+            "align": "left",
+            "content": "RECENT\nBEST\nNAIVE 50"
+        },
+        {
+            "type": "text",
+            "size": 11,
+            "x": 147,
+            "y": 438,
+            "borderColor": "#178ea1",
+            "align": "left",
+            "content": "NAIVE 30"
+        },
+        {
+            "type": "text",
+            "size": 24,
+            "x": 210,
+            "y": 405,
+            "borderColor": "#178ea1",
+            "align": "left",
+            "content": "scores average: {newScoreRatingAvg}\nscores average: {oldScoreRatingAvg}\nscores average: {naiveBest50}"
+        },
+        {
+            "type": "hitokoto",
+            "size": 24,
+            "x": 80,
+            "y": 1403,
+            "width": 1000,
+            "linebreak": true,
+            "borderColor": "#178ea1",
+            "align": "left",
+            "probability": 0.1,
+            "customLines": [
+                "../../../../../hitokoto/general.json",
+                "../../../../../hitokoto/support/chunithm.json"
+            ]
+        }
+    ]
+}
