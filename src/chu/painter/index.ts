@@ -55,7 +55,8 @@ export namespace ChunithmPainterModule {
             element: z.infer<typeof schema>,
             username: string,
             rating: number,
-            profilePicture?: Buffer
+            profilePicture?: Buffer,
+            type: "chunithm" | "crystal" | "new" | "verse" = "verse"
         ) {
             const nameplate = await Util.loadImage(
                 theme.getFile(element.sprites.profile.nameplate)
@@ -267,34 +268,52 @@ export namespace ChunithmPainterModule {
                         .toBuffer();
                 }
                 const map = (() => {
-                    if (num >= 17)
-                        return theme.getFile(
-                            element.sprites.ratingNumberMap.kiwami
-                        );
-                    else if (num >= 16)
-                        return theme.getFile(
-                            element.sprites.ratingNumberMap.rainbow
-                        );
-                    else if (num >= 15.25)
-                        return theme.getFile(
-                            element.sprites.ratingNumberMap.platinum
-                        );
-                    else if (num >= 14.5)
-                        return theme.getFile(
-                            element.sprites.ratingNumberMap.gold
-                        );
-                    else if (num >= 13.25)
-                        return theme.getFile(
-                            element.sprites.ratingNumberMap.silver
-                        );
-                    else if (num >= 12)
-                        return theme.getFile(
-                            element.sprites.ratingNumberMap.bronze
-                        );
-                    else
-                        return theme.getFile(
-                            element.sprites.ratingNumberMap.white
-                        );
+                    switch (true) {
+                        default:
+                        case num < 12:
+                            return theme.getFile(
+                                element.sprites.ratingNumberMap.white
+                            );
+                        case type == "chunithm" && num < 13:
+                        case type == "crystal" && num < 13:
+                        case type == "new" && num < 13.25:
+                        case type == "verse" && num < 13.25:
+                            return theme.getFile(
+                                element.sprites.ratingNumberMap.bronze
+                            );
+                        case type == "chunithm" && num < 14:
+                        case type == "crystal" && num < 14:
+                        case type == "new" && num < 14.5:
+                        case type == "verse" && num < 14.5:
+                            return theme.getFile(
+                                element.sprites.ratingNumberMap.silver
+                            );
+                        case type == "chunithm" && num < 14.5:
+                        case type == "crystal" && num < 14.5:
+                        case type == "new" && num < 15.25:
+                        case type == "verse" && num < 15.25:
+                            return theme.getFile(
+                                element.sprites.ratingNumberMap.gold
+                            );
+                        case type == "chunithm" && num < 15:
+                        case type == "crystal" && num < 15:
+                        case type == "new" && num < 16:
+                        case type == "verse" && num < 16:
+                            return theme.getFile(
+                                element.sprites.ratingNumberMap.platinum
+                            );
+                        case type == "chunithm":
+                        case type == "crystal":
+                        case type == "new":
+                        case type == "verse" && num < 17:
+                            return theme.getFile(
+                                element.sprites.ratingNumberMap.rainbow
+                            );
+                        case type == "verse":
+                            return theme.getFile(
+                                element.sprites.ratingNumberMap.kiwami
+                            );
+                    }
                 })();
                 const { width, height } = await sharp(map).metadata();
                 if (!(width && height)) return { number: null, text: null };
@@ -429,7 +448,8 @@ export namespace ChunithmPainterModule {
                 score: IScore,
                 index: number,
                 x: number,
-                y: number
+                y: number,
+                version: "chunithm" | "crystal" | "new" | "verse" = "verse"
             ) {
                 let curColor = "#FFFFFF";
                 switch (score.chart.difficulty) {
@@ -665,31 +685,51 @@ export namespace ChunithmPainterModule {
                                     element.sprites.achievement.aaa
                                 );
                                 break;
-                            case EAchievementTypes.S:
+                            case version == "chunithm" && EAchievementTypes.S:
+                            case version == "chunithm" && EAchievementTypes.SP:
+                            case version == "crystal" && EAchievementTypes.S:
+                            case version == "crystal" && EAchievementTypes.SP:
+                            case version == "new" && EAchievementTypes.S:
+                            case version == "verse" && EAchievementTypes.S:
                                 rankImg = theme.getFile(
                                     element.sprites.achievement.s
                                 );
                                 break;
-                            case EAchievementTypes.SP:
+                            case version == "new" && EAchievementTypes.SP:
+                            case version == "verse" && EAchievementTypes.SP:
                                 rankImg = theme.getFile(
                                     element.sprites.achievement.sp
                                 );
                                 break;
-                            case EAchievementTypes.SS:
+                            case version == "chunithm" && EAchievementTypes.SS:
+                            case version == "chunithm" && EAchievementTypes.SSP:
+                            case version == "crystal" && EAchievementTypes.SS:
+                            case version == "crystal" && EAchievementTypes.SSP:
+                            case version == "new" && EAchievementTypes.SS:
+                            case version == "verse" && EAchievementTypes.SS:
                                 rankImg = theme.getFile(
                                     element.sprites.achievement.ss
                                 );
                                 break;
-                            case EAchievementTypes.SSP:
+                            case version == "new" && EAchievementTypes.SSP:
+                            case version == "verse" && EAchievementTypes.SSP:
                                 rankImg = theme.getFile(
                                     element.sprites.achievement.ssp
                                 );
                                 break;
-                            case EAchievementTypes.SSS:
+                            case version == "chunithm" && EAchievementTypes.SSS:
+                            case version == "chunithm" &&
+                                EAchievementTypes.SSSP:
+                            case version == "crystal" && EAchievementTypes.SSS:
+                            case version == "crystal" && EAchievementTypes.SSSP:
+                            case version == "new" && EAchievementTypes.SSS:
+                            case version == "verse" && EAchievementTypes.SSS:
                                 rankImg = theme.getFile(
                                     element.sprites.achievement.sss
                                 );
                                 break;
+                            case version == "new" && EAchievementTypes.SSSP:
+                            case version == "verse" && EAchievementTypes.SSSP:
                             default:
                                 rankImg = theme.getFile(
                                     element.sprites.achievement.sssp

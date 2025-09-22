@@ -9,6 +9,8 @@ const upath = require("upath");
 
     const fs = require("fs");
     const themes = [
+        "jp-paradiselost-landscape-recents",
+        "jp-paradiselost-landscape-new",
         "jp-xverse-landscape-recents",
         "jp-xverse-landscape-new",
         "jp-verse-landscape-recents",
@@ -20,15 +22,15 @@ const upath = require("upath");
     ];
     const source = kamai.luminous();
     for (let theme of themes) {
-        const options = {
-            scale: process.env.SCALE ?? 1,
-            type: theme.endsWith("-new") ? "new" : "recents",
-            theme,
-        };
         const result = await painter.drawWithScoreSource(
             source,
             { username: process.env.NAME },
-            options
+            {
+                scale: process.env.SCALE ?? 1,
+                type: theme.endsWith("-new") ? "new" : "recents",
+                theme,
+                // version: "crystal",
+            }
         );
         if (result instanceof Buffer) {
             fs.writeFileSync(

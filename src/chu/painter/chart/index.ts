@@ -56,6 +56,7 @@ export class ChartPainter extends ChunithmPainter<typeof ChartPainter.Theme> {
             theme?: string;
             profilePicture?: Buffer;
             region?: "JPN" | "INT" | "CHN";
+            version?: "chunithm" | "crystal" | "new" | "verse";
         } = {}
     ): Promise<Buffer | null> {
         let currentTheme = this.theme.get(this.theme.defaultTheme);
@@ -124,7 +125,14 @@ export class ChartPainter extends ChunithmPainter<typeof ChartPainter.Theme> {
                             element,
                             variables.username,
                             variables.rating,
-                            options?.profilePicture
+                            options?.profilePicture,
+                            (() => {
+                                const type = variables.type;
+                                const version = options?.version;
+                                if (!type || version) return version;
+                                if (type == "recents") return "crystal";
+                                else return "verse";
+                            })()
                         );
                         break;
                     }
@@ -154,6 +162,7 @@ export class ChartPainter extends ChunithmPainter<typeof ChartPainter.Theme> {
             theme?: string;
             profilePicture?: Buffer | null;
             region?: "JPN" | "INT" | "CHN";
+            version?: "chunithm" | "crystal" | "new" | "verse";
         } = {}
     ) {
         const profile = await source.getPlayerInfo(

@@ -275,10 +275,19 @@ export class KamaiTachi extends ScoreTrackerAdapter {
                         return EAchievementTypes.D;
                 }
             })(),
-            rating: ChunithmUtil.calculateRating(
-                internalLevel,
-                score.scoreData.score
-            ),
+            rating:
+                KamaiTachi.compareGameVersions(
+                    this.CURRENT_VERSION,
+                    KamaiTachi.EGameVersions.CHUNITHM_NEW
+                ) >= 0
+                    ? ChunithmUtil.calculateRating(
+                          internalLevel,
+                          score.scoreData.score
+                      )
+                    : ChunithmUtil.calculatePLostRating(
+                          internalLevel,
+                          score.scoreData.score
+                      ),
         };
     }
     private getDatabaseVersion(

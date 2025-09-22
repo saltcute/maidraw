@@ -54,6 +54,7 @@ export class Best50Painter extends ChunithmPainter<typeof Best50Painter.Theme> {
             profilePicture?: Buffer;
             bestScores?: IScore[];
             type?: "new" | "recents";
+            version?: "chunithm" | "crystal" | "new" | "verse";
         }
     ): Promise<Buffer | null> {
         let currentTheme = this.theme.get(this.theme.defaultTheme);
@@ -72,6 +73,13 @@ export class Best50Painter extends ChunithmPainter<typeof Best50Painter.Theme> {
                 currentTheme.content.width * (options?.scale ?? 1),
                 currentTheme.content.height * (options?.scale ?? 1)
             );
+            const version = (() => {
+                const type = options?.type;
+                const version = options?.version;
+                if (!type || version) return version;
+                if (type == "recents") return "crystal";
+                else return "verse";
+            })();
             const ctx = canvas.getContext("2d");
             if (options?.scale) ctx.scale(options.scale, options.scale);
             ctx.imageSmoothingEnabled = true;
@@ -123,7 +131,8 @@ export class Best50Painter extends ChunithmPainter<typeof Best50Painter.Theme> {
                                         curScore,
                                         index,
                                         x,
-                                        y
+                                        y,
+                                        version
                                     );
                                 }
                             }
@@ -137,7 +146,8 @@ export class Best50Painter extends ChunithmPainter<typeof Best50Painter.Theme> {
                             element,
                             variables.username,
                             variables.rating,
-                            options?.profilePicture
+                            options?.profilePicture,
+                            version
                         );
                         break;
                     }
@@ -198,6 +208,7 @@ export class Best50Painter extends ChunithmPainter<typeof Best50Painter.Theme> {
             theme?: string;
             profilePicture?: Buffer | null;
             type?: "new" | "recents";
+            version?: "chunithm" | "crystal" | "new" | "verse";
         }
     ) {
         if (!options.type) options.type = "new";
