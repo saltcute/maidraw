@@ -4,7 +4,7 @@ A simple library to draw
 
 -   maimai DX: Best 50, Chart Detail
 -   CHUNITHM: Best 40, Best 50, Chart Detail
--   O.N.G.E.K.I.: Best 55, Best 60
+-   O.N.G.E.K.I.: Best 55, Best 60, Chart Detail
 
 images.
 
