@@ -476,21 +476,11 @@ export namespace MaimaiPainterModule {
                          * @returns
                          */
                         function getStatusColor(status: number) {
-                            const FRESHNESS_COLOUR = "#94E436";
-                            const DEAD_COLOUR = "#F54932";
-                            const NEUTRAL_COLOUR = "#c2c2c2";
+                            // const FRESHNESS_COLOUR = "#94E436";
+                            // const DEAD_COLOUR = "#F54932";
+                            // const NEUTRAL_COLOUR = "#c2c2c2";
 
-                            if (status < 0.5) {
-                                return new Color(FRESHNESS_COLOUR).mix(
-                                    new Color(NEUTRAL_COLOUR),
-                                    status / 0.5
-                                );
-                            } else {
-                                return new Color(NEUTRAL_COLOUR).mix(
-                                    new Color(DEAD_COLOUR),
-                                    status / 0.5 - 1
-                                );
-                            }
+                            return Color.hsv(87.59 * status, 76.32, 89.41);
                         }
                         ctx.fillStyle = getStatusColor(scale).hexa();
                         ctx.roundRect(
