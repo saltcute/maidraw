@@ -1,7 +1,7 @@
 {
     "name": "maidraw",
     "version": "0.11.11",
-    "description": "Kasumi module for maimai bot",
+    "description": "A simple library to draw geki/chu/mai images",
     "main": "dist/index.js",
     "scripts": {
         "build": "tsc && tsconfig-replace-paths -p tsconfig.json -s ./src -o ./dist",
@@ -12,19 +12,20 @@
     },
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/HexaNona/kasumi-module-template.git"
+        "url": "git+https://github.com/saltcute/maidraw.git"
     },
     "keywords": [
-        "Kasumi",
-        "kook",
-        "bot"
+        "maimai",
+        "CHUNITHM",
+        "ONGEKI",
+        "Best 50"
     ],
     "author": "saltcute",
     "license": "MIT",
     "bugs": {
-        "url": "https://github.com/HexaNona/kasumi-module-template/issues"
+        "url": "https://github.com/saltcute/maidraw/issues"
     },
-    "homepage": "https://github.com/HexaNona/kasumi-module-template#readme",
+    "homepage": "https://github.com/saltcute/maidraw#readme",
     "dependencies": {
         "axios": "^1.7.2",
         "bunyan": "^1.8.15",
