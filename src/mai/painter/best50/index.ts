@@ -178,7 +178,7 @@ export class Best50Painter extends MaimaiPainter<typeof Best50Painter.Theme> {
                             rating: number,
                             achievement: number
                         ) => {
-                            for (let level = 0; level <= 150; ++level) {
+                            for (let level = 10; level <= 150; ++level) {
                                 const calculateRating =
                                     MaimaiUtil.calculateRating(
                                         level / 10,
@@ -210,7 +210,7 @@ export class Best50Painter extends MaimaiPainter<typeof Best50Painter.Theme> {
                                     });
                                 }
                             }
-                            if (targets.length > 0)
+                            if (scores.length >= length && targets.length > 0)
                                 return `Next rating boost: ${_.uniqWith(
                                     targets.sort((a, b) => a.level - b.level),
                                     (a, b) => a.level == b.level
