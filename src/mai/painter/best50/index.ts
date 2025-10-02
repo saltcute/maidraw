@@ -15,6 +15,7 @@ import { Util } from "@maidraw/lib/util";
 import { PainterModule, ThemeManager } from "@maidraw/lib/painter";
 import { MaimaiUtil } from "../../lib/util";
 import { Database } from "../../lib/database";
+import _ from "lodash";
 
 export class Best50Painter extends MaimaiPainter<typeof Best50Painter.Theme> {
     public static readonly Theme = ThemeManager.BaseTheme.extend({
@@ -152,14 +153,14 @@ export class Best50Painter extends MaimaiPainter<typeof Best50Painter.Theme> {
                             if (scores.length < length) return 0;
                             return (
                                 scores
-                                    .slice(0, length)
                                     .map((v) =>
                                         MaimaiUtil.calculateRating(
                                             v.chart.level,
                                             v.achievement
                                         )
                                     )
-                                    .sort((a, b) => a - b)[0] || 0
+                                    .sort((a, b) => a - b)
+                                    .slice(0, length)[0] || 0
                             );
                         };
                         function getRatingAvg(
@@ -175,52 +176,50 @@ export class Best50Painter extends MaimaiPainter<typeof Best50Painter.Theme> {
                         }
                         const getRatingTargetLevel = (
                             rating: number,
-                            target: EAchievementTypes
+                            achievement: number
                         ) => {
-                            if (target == EAchievementTypes.D) {
-                                return 0;
+                            for (let level = 0; level <= 150; ++level) {
+                                const calculateRating =
+                                    MaimaiUtil.calculateRating(
+                                        level / 10,
+                                        achievement
+                                    );
+                                if (
+                                    Math.trunc(calculateRating) >
+                                    Math.trunc(rating)
+                                ) {
+                                    return level / 10;
+                                }
                             }
-                            const naiveLevel =
-                                rating /
-                                (RATING_CONSTANTS[target] *
-                                    RANK_BORDERS[target]);
-                            return Math.ceil(naiveLevel * 10) / 10;
+                            return null;
                         };
                         function getMilestone(
                             scores: IScore[],
                             length: number
                         ) {
                             const base = getRatingBase(scores, length);
-                            let sssTarget, ssspTarget;
-                            const sssLevel = getRatingTargetLevel(
-                                base,
-                                EAchievementTypes.SSS
-                            );
-                            const ssspLevel = getRatingTargetLevel(
-                                base,
-                                EAchievementTypes.SSSP
-                            );
-                            if (sssLevel > 0 && sssLevel < 15) {
-                                sssTarget = sssLevel;
+                            const targets = [];
+                            for (const score of [
+                                100, 100.1, 100.2, 100.3, 100.4, 100.5,
+                            ]) {
+                                const level = getRatingTargetLevel(base, score);
+                                if (level) {
+                                    targets.push({
+                                        level,
+                                        score,
+                                    });
+                                }
                             }
-                            if (ssspLevel > 0 && ssspLevel < 15) {
-                                ssspTarget = ssspLevel;
-                            }
-                            if (sssTarget && ssspTarget)
-                                return `Next rating boost: lv. ${Util.ceilWithPercision(
-                                    ssspTarget,
-                                    1
-                                )} SSS+/${Util.ceilWithPercision(sssTarget, 1)} SSS`;
-                            else if (sssTarget)
-                                return `Next rating boost: lv. ${Util.ceilWithPercision(
-                                    sssTarget,
-                                    1
-                                )} SSS`;
-                            else if (ssspTarget)
-                                return `Next rating boost: lv. ${Util.ceilWithPercision(
-                                    ssspTarget,
-                                    1
-                                )} SSS+`;
+                            if (targets.length > 0)
+                                return `Next rating boost: ${_.uniqWith(
+                                    targets.sort((a, b) => a.level - b.level),
+                                    (a, b) => a.level == b.level
+                                )
+                                    .map(
+                                        (v) =>
+                                            `lv. ${Util.ceilWithPercision(v.level, 1)} ${v.score >= 100.5 ? "SSS+" : `SSS ${Util.truncate(v.score, 1)}%`}`
+                                    )
+                                    .join("/")}`;
                             else return "Good job!";
                         }
                         await PainterModule.Text.draw(ctx, element, {
