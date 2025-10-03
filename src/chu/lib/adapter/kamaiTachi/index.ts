@@ -1,4 +1,4 @@
-import ScoreTrackerAdapter from "..";
+import { ScoreTrackerAdapter } from "..";
 import { Database } from "../../database";
 import { ChunithmUtil } from "../../util";
 

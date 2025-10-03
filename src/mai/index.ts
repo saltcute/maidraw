@@ -6,6 +6,7 @@ import * as chart from "./painter/chart";
 import * as bests from "./painter/best50";
 import * as level50 from "./painter/level50";
 
+import * as adapter from "./lib/adapter";
 import * as lxns from "./lib/adapter/lxns";
 import * as maishift from "./lib/adapter/maishift";
 import * as divingFish from "./lib/adapter/divingFish";
@@ -50,6 +51,7 @@ export namespace Maimai {
 
     export import Database = database.Database;
 
+    export import ScoreTrackerAdapter = adapter.ScoreTrackerAdapter;
     export namespace Adapters {
         export import LXNS = lxns.LXNS;
         export import KamaiTachi = kamaiTachi.KamaiTachi;

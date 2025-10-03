@@ -4,7 +4,7 @@ import { z } from "zod/v4";
 import { Canvas } from "canvas";
 
 import { EDifficulty, IScore } from "../../type";
-import ScoreTrackerAdapter from "../../lib/adapter";
+import { ScoreTrackerAdapter } from "../../lib/adapter";
 
 import { Util } from "@maidraw/lib/util";
 import { ChunithmPainter, ChunithmPainterModule } from "..";

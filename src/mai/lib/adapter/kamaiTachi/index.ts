@@ -1,6 +1,6 @@
 import _ from "lodash";
 
-import ScoreTrackerAdapter from "..";
+import { ScoreTrackerAdapter } from "..";
 import { MaimaiUtil } from "../../util";
 
 import {

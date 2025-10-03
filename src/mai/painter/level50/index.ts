@@ -2,7 +2,7 @@ import upath from "upath";
 import { Canvas } from "canvas";
 
 import { IScore } from "../../type";
-import ScoreTrackerAdapter from "../../lib/adapter";
+import { ScoreTrackerAdapter } from "../../lib/adapter";
 import { Best50Painter } from "../best50";
 import { MaimaiPainterModule, MaimaiPainter } from "..";
 

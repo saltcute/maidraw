@@ -5,7 +5,7 @@ import {
     EDifficulty,
     IScore,
 } from "@maidraw/geki/type";
-import ScoreTrackerAdapter from "..";
+import { ScoreTrackerAdapter } from "..";
 import { Util } from "@maidraw/lib/util";
 import { OngekiUtil } from "../../util";
 import { Database } from "../../database";

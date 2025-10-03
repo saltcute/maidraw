@@ -5,7 +5,7 @@ import { z } from "zod/v4";
 import { Canvas, CanvasRenderingContext2D } from "canvas";
 
 import { Database } from "../lib/database";
-import ScoreTrackerAdapter from "../lib/adapter";
+import { ScoreTrackerAdapter } from "../lib/adapter";
 import {
     EAchievementTypes,
     EBellTypes,

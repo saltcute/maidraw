@@ -1,6 +1,6 @@
 import * as Cheerio from "cheerio";
 
-import ScoreTrackerAdapter from "..";
+import { ScoreTrackerAdapter } from "..";
 
 import {
     IScore,

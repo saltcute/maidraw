@@ -6,7 +6,7 @@ import {
     IChart,
     IScore,
 } from "@maidraw/mai/type";
-import ScoreTrackerAdapter from "..";
+import { ScoreTrackerAdapter } from "..";
 import { Database } from "@maidraw/mai/lib/database";
 
 export namespace DivingFish {

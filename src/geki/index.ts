@@ -5,6 +5,7 @@ import * as chart from "./painter/chart";
 
 import * as database from "./lib/database";
 
+import * as adapter from "./lib/adapter";
 import * as kamaiTachi from "./lib/adapter/kamaiTachi";
 
 export class Geki {
@@ -43,11 +44,13 @@ export class Geki {
 export namespace Geki {
     export import Database = database.Database;
 
+    export import ScoreTrackerAdapter = adapter.ScoreTrackerAdapter;
+    export namespace Adapters {
+        export import KamaiTachi = kamaiTachi.KamaiTachi;
+    }
+
     export namespace Painters {
         export import Best50 = bests.Best50Painter;
         export import Chart = chart.ChartPainter;
-    }
-    export namespace Adapters {
-        export import KamaiTachi = kamaiTachi.KamaiTachi;
     }
 }

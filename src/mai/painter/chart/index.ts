@@ -5,7 +5,7 @@ import { Canvas } from "canvas";
 
 import { Database } from "../../lib/database";
 import { EDifficulty, IScore } from "../../type";
-import ScoreTrackerAdapter from "../../lib/adapter";
+import { ScoreTrackerAdapter } from "../../lib/adapter";
 import { MaimaiPainter, MaimaiPainterModule } from "..";
 
 import { Util } from "@maidraw/lib/util";

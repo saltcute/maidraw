@@ -4,7 +4,7 @@ import axios, { AxiosInstance } from "axios";
 
 import { Cache } from "memory-cache";
 
-export default abstract class ScoreTrackerAdapter {
+export abstract class ScoreTrackerAdapter {
     private static _cache = new Cache();
     protected get cache() {
         return ScoreTrackerAdapter._cache;

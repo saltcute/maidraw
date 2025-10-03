@@ -1,4 +1,4 @@
-import ScoreTrackerAdapter from "..";
+import { ScoreTrackerAdapter } from "..";
 
 import {
     EAchievementTypes,

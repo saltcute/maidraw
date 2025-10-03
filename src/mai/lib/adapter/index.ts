@@ -3,7 +3,7 @@ import { Maimai } from "@maidraw/mai";
 import axios, { AxiosInstance } from "axios";
 import { IScore } from "../../type";
 
-export default abstract class ScoreTrackerAdapter {
+export abstract class ScoreTrackerAdapter {
     private static _cache = new Cache();
     protected get cache() {
         return ScoreTrackerAdapter._cache;

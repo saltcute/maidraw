@@ -3,7 +3,7 @@ import { z } from "zod/v4";
 import { Canvas } from "canvas";
 import { IScore } from "@maidraw/geki/type";
 
-import ScoreTrackerAdapter from "../../lib/adapter";
+import { ScoreTrackerAdapter } from "../../lib/adapter";
 import { OngekiPainter, OngekiPainterModule } from "..";
 
 import { Util } from "@maidraw/lib/util";

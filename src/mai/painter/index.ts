@@ -11,7 +11,7 @@ import {
     ESyncTypes,
     IScore,
 } from "../type";
-import ScoreTrackerAdapter from "../lib/adapter";
+import { ScoreTrackerAdapter } from "../lib/adapter";
 
 import { Util } from "@maidraw/lib/util";
 import { Painter, Theme, ThemeManager } from "@maidraw/lib/painter";

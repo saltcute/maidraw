@@ -2,7 +2,7 @@ import upath from "upath";
 import { z } from "zod/v4";
 import { Canvas } from "canvas";
 
-import ScoreTrackerAdapter from "../../lib/adapter";
+import { ScoreTrackerAdapter } from "../../lib/adapter";
 import { MaimaiPainterModule, MaimaiPainter } from "..";
 
 import {

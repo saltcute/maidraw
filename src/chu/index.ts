@@ -5,6 +5,7 @@ import * as database from "./lib/database";
 import * as chart from "./painter/chart";
 import * as bests from "./painter/best50";
 
+import * as adapter from "./lib/adapter";
 import * as lxns from "./lib/adapter/lxns";
 import * as kamaiTachi from "./lib/adapter/kamaiTachi";
 
@@ -44,6 +45,7 @@ export class Chuni {
 export namespace Chuni {
     export import Database = database.Database;
 
+    export import ScoreTrackerAdapter = adapter.ScoreTrackerAdapter;
     export namespace Adapters {
         export import KamaiTachi = kamaiTachi.KamaiTachi;
         export import LXNS = lxns.LXNS;
