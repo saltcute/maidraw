@@ -8,6 +8,8 @@ import * as database from "./lib/database";
 import * as adapter from "./lib/adapter";
 import * as kamaiTachi from "./lib/adapter/kamaiTachi";
 
+import * as types from "./type";
+
 export class Geki {
     public static logger = new Bunyan({
         name: "maidraw.geki",
@@ -42,6 +44,8 @@ export class Geki {
 }
 
 export namespace Geki {
+    export import Types = types;
+
     export import Database = database.Database;
 
     export import ScoreTrackerAdapter = adapter.ScoreTrackerAdapter;

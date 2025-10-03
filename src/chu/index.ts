@@ -9,6 +9,8 @@ import * as adapter from "./lib/adapter";
 import * as lxns from "./lib/adapter/lxns";
 import * as kamaiTachi from "./lib/adapter/kamaiTachi";
 
+import * as types from "./type";
+
 export class Chuni {
     public static logger = new Bunyan({
         name: "maidraw.chuni",
@@ -43,6 +45,8 @@ export class Chuni {
 }
 
 export namespace Chuni {
+    export import Types = types;
+
     export import Database = database.Database;
 
     export import ScoreTrackerAdapter = adapter.ScoreTrackerAdapter;
