@@ -480,7 +480,11 @@ export namespace MaimaiPainterModule {
                             // const DEAD_COLOUR = "#F54932";
                             // const NEUTRAL_COLOUR = "#c2c2c2";
 
-                            return Color.hsv(87.59 * status, 76.32, 89.41);
+                            return Color.hsv(
+                                87.59 * (1 - status),
+                                76.32,
+                                89.41
+                            );
                         }
                         ctx.fillStyle = getStatusColor(scale).hexa();
                         ctx.roundRect(
