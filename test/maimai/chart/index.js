@@ -7,6 +7,7 @@ const upath = require("upath");
     const lxns = new MaiDraw.Maimai.Adapters.LXNS({
         auth: "",
     });
+    const maishift = new MaiDraw.Maimai.Adapters.Maishift();
     const painter = new MaiDraw.Maimai.Painters.Chart();
     MaiDraw.Maimai.Database.setLocalDatabasePath("../maimai-songs-database");
 
@@ -15,7 +16,17 @@ const upath = require("upath");
     for (let theme of themes) {
         for (const region of ["DX", "EX", "CN"]) {
             let result = await painter.drawWithScoreSource(
-                kamai,
+                (() => {
+                    switch (process.env.ADAPTER.toLowerCase()) {
+                        case "lxns":
+                            return lxns;
+                        case "maishift":
+                            return maishift;
+                        case "kamai":
+                        default:
+                            return kamai;
+                    }
+                })(),
                 {
                     username: process.env.NAME,
                     chartId: process.env.CHART ?? 11451,
