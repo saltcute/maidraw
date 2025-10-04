@@ -68,9 +68,21 @@ export class Database {
         }
         return null;
     }
-    public static async getAllSongs() {
+    private static readonly allSongs: {
+        songs: Database.IChart[];
+        expire: number;
+    } = {
+        songs: [],
+        expire: 0,
+    };
+    public static async getAllSongs(): Promise<Database.IChart[]> {
+        if (Date.now() < this.allSongs.expire) return this.allSongs.songs;
         const cached = await this.cache.get("all-ongeki-songs");
-        if (cached) return cached as Database.IChart[];
+        if (Array.isArray(cached)) {
+            this.allSongs.songs = cached;
+            this.allSongs.expire = Date.now() + 24 * 60 * 60 * 1000;
+            return cached;
+        }
         const localFolderPath = upath.join(
             this.localDatabasePath,
             "assets",
@@ -89,6 +101,8 @@ export class Database {
             }
         }
         await this.cache.put("all-ongeki-songs", songs, 1000 * 60 * 60 * 2);
+        this.allSongs.songs = songs;
+        this.allSongs.expire = Date.now() + 24 * 60 * 60 * 1000;
         return songs;
     }
     public static async findLocalChartWithNameAndLevel(
