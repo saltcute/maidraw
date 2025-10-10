@@ -10,38 +10,10 @@ import * as lxns from "./lib/adapter/lxns";
 import * as kamaiTachi from "./lib/adapter/kamaiTachi";
 
 import * as types from "./type";
+import { Logger } from "@maidraw/lib/logger";
 
 export class Chuni {
-    public static logger = new Bunyan({
-        name: "maidraw.chuni",
-        streams: [
-            {
-                stream: process.stdout,
-                level: (() => {
-                    switch (process.env.LOG_LEVEL) {
-                        case "trace":
-                            return Bunyan.TRACE;
-                        case "debug":
-                            return Bunyan.DEBUG;
-                        case "info":
-                            return Bunyan.INFO;
-                        case "warn":
-                            return Bunyan.WARN;
-                        case "error":
-                            return Bunyan.ERROR;
-                        case "fatal":
-                            return Bunyan.FATAL;
-                        default:
-                            return Bunyan.INFO;
-                    }
-                })(),
-            },
-            {
-                stream: process.stderr,
-                level: Bunyan.ERROR,
-            },
-        ],
-    });
+    public static logger = new Logger(["maidraw", "chuni"]);
 }
 
 export namespace Chuni {
@@ -49,7 +21,7 @@ export namespace Chuni {
 
     export import Database = database.Database;
 
-    export import ScoreTrackerAdapter = adapter.ScoreTrackerAdapter;
+    export import ChunithmScoreAdapter = adapter.ChunithmScoreAdapter;
     export namespace Adapters {
         export import KamaiTachi = kamaiTachi.KamaiTachi;
         export import LXNS = lxns.LXNS;

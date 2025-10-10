@@ -2,15 +2,21 @@ import upath from "upath";
 import { z } from "zod/v4";
 import { Canvas } from "canvas";
 
-import { ScoreTrackerAdapter } from "../../lib/adapter";
 import { ChunithmPainter, ChunithmPainterModule } from "..";
 
 import { Util } from "@maidraw/lib/util";
 import { IScore } from "@maidraw/chu/type";
 import { PainterModule, ThemeManager } from "@maidraw/lib/painter";
 import { Database } from "@maidraw/chu/lib/database";
+import { ChunithmScoreAdapter } from "@maidraw/chu/lib/adapter";
 
-export class Best50Painter extends ChunithmPainter<typeof Best50Painter.Theme> {
+export class Best50Painter extends ChunithmPainter<
+    typeof Best50Painter.Theme,
+    {
+        "no-theme": null;
+        "invalid-type": { type: string };
+    }
+> {
     public static readonly Theme = ThemeManager.BaseTheme.extend({
         elements: z.array(
             z.discriminatedUnion("type", [
@@ -56,7 +62,7 @@ export class Best50Painter extends ChunithmPainter<typeof Best50Painter.Theme> {
             type?: "new" | "recents";
             version?: "chunithm" | "crystal" | "new" | "verse";
         }
-    ): Promise<Buffer | null> {
+    ) {
         let currentTheme = this.theme.get(this.theme.defaultTheme);
         if (options?.theme) {
             const theme = this.theme.get(options.theme);
@@ -197,11 +203,23 @@ export class Best50Painter extends ChunithmPainter<typeof Best50Painter.Theme> {
                     }
                 }
             }
-            return canvas.toBuffer();
-        } else return null;
+            const res = {
+                status: "success",
+                message: "Image drawn successfully.",
+                data: canvas.toBuffer(),
+            } as const;
+            return res;
+        } else {
+            const res = {
+                status: "no-theme",
+                message: "Cannot find any valid theme to use for drawing.",
+                data: null,
+            } as const;
+            return res;
+        }
     }
-    public async drawWithScoreSource(
-        source: ScoreTrackerAdapter,
+    public async drawWithScoreSource<T extends ChunithmScoreAdapter>(
+        source: T,
         variables: { username: string },
         options: {
             scale?: number;
@@ -216,40 +234,44 @@ export class Best50Painter extends ChunithmPainter<typeof Best50Painter.Theme> {
             variables.username,
             options.type
         );
-        if (!profile) return null;
+        if (!(profile.status == "success")) return profile;
         let newScores: IScore[],
             oldScores: IScore[],
             bestScores: IScore[] | undefined;
         if (options.type == "new") {
             const score = await source.getPlayerBest50(variables.username);
-            if (!score) return null;
-            newScores = score.new;
-            oldScores = score.old;
-            bestScores = score.best;
+            if (!(score.status == "success")) return score;
+            newScores = score.data.new;
+            oldScores = score.data.old;
+            bestScores = score.data.best;
         } else if (options.type == "recents") {
             const score = await source.getPlayerRecent40(variables.username);
-            if (!score) return null;
-            newScores = score.recent;
-            oldScores = score.best;
-            bestScores = score.best;
-        } else return null;
+            if (!(score.status == "success")) return score;
+            newScores = score.data.recent;
+            oldScores = score.data.best;
+            bestScores = score.data.best;
+        } else {
+            const res = {
+                status: "invalid-type",
+                message: `${options.type} is not a valid type.` as string,
+                data: { type: options.type as string },
+            } as const;
+            return res;
+        }
+        const pfp = await source.getPlayerProfilePicture(variables.username);
+        if (pfp.status == "success") {
+            options.profilePicture = pfp.data;
+        }
         return this.draw(
             {
-                username: profile.name,
-                rating: profile.rating,
+                username: profile.data.name,
+                rating: profile.data.rating,
                 newScores,
                 oldScores,
             },
             {
                 ...options,
-                profilePicture:
-                    options?.profilePicture === null
-                        ? undefined
-                        : options?.profilePicture ||
-                          (await source.getPlayerProfilePicture(
-                              variables.username
-                          )) ||
-                          undefined,
+                profilePicture: options?.profilePicture ?? undefined,
                 bestScores,
             }
         );

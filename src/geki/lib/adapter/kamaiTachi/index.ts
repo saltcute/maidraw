@@ -5,12 +5,33 @@ import {
     EDifficulty,
     IScore,
 } from "@maidraw/geki/type";
-import { ScoreTrackerAdapter } from "..";
+import { OngekiScoreAdapter } from "..";
 import { Util } from "@maidraw/lib/util";
 import { OngekiUtil } from "../../util";
 import { Database } from "../../database";
 
-export class KamaiTachi extends ScoreTrackerAdapter {
+type IBest55ResponseData = {
+    "invalid-user": {
+        username: string;
+    };
+};
+type IBest60ResponseData = IBest55ResponseData & {};
+type IProfileResponseData = IBest55ResponseData & {
+    "invalid-type": {
+        type: string;
+    };
+};
+type IProfilePictureResponseData = IBest55ResponseData & {};
+type IScoreResponseData = IBest55ResponseData & {};
+type IResponseData = {
+    best55: IBest55ResponseData;
+    best60: IBest60ResponseData;
+    profile: IProfileResponseData;
+    profilePicture: IProfilePictureResponseData;
+    score: IScoreResponseData;
+};
+
+export class KamaiTachi extends OngekiScoreAdapter<IResponseData> {
     private readonly CURRENT_VERSION: KamaiTachi.EGameVersions;
     constructor({
         baseURL = "https://kamai.tachi.ac/",
@@ -25,14 +46,33 @@ export class KamaiTachi extends ScoreTrackerAdapter {
 
     async getPlayerScore(username: string, chartId: number) {
         const rawPBs = await this.getPlayerPB(username);
-        if (!rawPBs?.body)
-            return {
-                basic: null,
-                advanced: null,
-                expert: null,
-                master: null,
-                lunatic: null,
-            };
+        if (!rawPBs) {
+            const res = {
+                status: "unknown",
+                message: "An unknown error occurred.",
+                data: null,
+            } as const;
+            return res;
+        }
+        if (!rawPBs.success) {
+            if (rawPBs.description.includes("does not exist")) {
+                const res = {
+                    status: "invalid-user",
+                    message:
+                        rawPBs.description ||
+                        `${username} is not a valid user.`,
+                    data: { username },
+                } as const;
+                return res;
+            } else {
+                const res = {
+                    status: "unknown",
+                    message: "An unknown error occurred: " + rawPBs.description,
+                    data: null,
+                } as const;
+                return res;
+            }
+        }
         const pbs: {
             chart: KamaiTachi.IChart;
             song: KamaiTachi.ISong;
@@ -73,27 +113,36 @@ export class KamaiTachi extends ScoreTrackerAdapter {
                 difficultyCompare(v.chart, "Lunatic") &&
                 v.chart.data.inGameID == chartId
         );
-        return {
-            basic: basic
-                ? this.toMaiDrawScore(basic.pb, basic.chart, basic.song)
-                : null,
-            advanced: advanced
-                ? this.toMaiDrawScore(
-                      advanced.pb,
-                      advanced.chart,
-                      advanced.song
-                  )
-                : null,
-            expert: expert
-                ? this.toMaiDrawScore(expert.pb, expert.chart, expert.song)
-                : null,
-            master: master
-                ? this.toMaiDrawScore(master.pb, master.chart, master.song)
-                : null,
-            lunatic: lunatic
-                ? this.toMaiDrawScore(lunatic.pb, lunatic.chart, lunatic.song)
-                : null,
-        };
+        const res = {
+            status: "success",
+            message: "",
+            data: {
+                basic: basic
+                    ? this.toMaiDrawScore(basic.pb, basic.chart, basic.song)
+                    : null,
+                advanced: advanced
+                    ? this.toMaiDrawScore(
+                          advanced.pb,
+                          advanced.chart,
+                          advanced.song
+                      )
+                    : null,
+                expert: expert
+                    ? this.toMaiDrawScore(expert.pb, expert.chart, expert.song)
+                    : null,
+                master: master
+                    ? this.toMaiDrawScore(master.pb, master.chart, master.song)
+                    : null,
+                lunatic: lunatic
+                    ? this.toMaiDrawScore(
+                          lunatic.pb,
+                          lunatic.chart,
+                          lunatic.song
+                      )
+                    : null,
+            },
+        } as const;
+        return res;
     }
     getPlatinumScore(score: KamaiTachi.IScore | KamaiTachi.IPb) {
         const ASSUMED_PLAT_SCORE_RATE = 0;
@@ -285,11 +334,37 @@ export class KamaiTachi extends ScoreTrackerAdapter {
         };
     }
     async getPlayerBest60(
-        userId: string,
+        username: string,
         currentVersion = this.CURRENT_VERSION
     ) {
-        const rawPBs = await this.getPlayerPB(userId);
-        if (!rawPBs?.body) return null;
+        const rawPBs = await this.getPlayerPB(username);
+        if (!rawPBs) {
+            const res = {
+                status: "unknown",
+                message: "An unknown error occurred.",
+                data: null,
+            } as const;
+            return res;
+        }
+        if (!rawPBs.success) {
+            if (rawPBs.description.includes("does not exist")) {
+                const res = {
+                    status: "invalid-user",
+                    message:
+                        rawPBs.description ||
+                        `${username} is not a valid user.`,
+                    data: { username },
+                } as const;
+                return res;
+            } else {
+                const res = {
+                    status: "unknown",
+                    message: "An unknown error occurred: " + rawPBs.description,
+                    data: null,
+                } as const;
+                return res;
+            }
+        }
         const pbs: {
             chart: KamaiTachi.IChart;
             song: KamaiTachi.ISong;
@@ -321,35 +396,95 @@ export class KamaiTachi extends ScoreTrackerAdapter {
                     v.chart.data.displayVersion
                 ) >= 0
         );
-        return {
-            new: newScores
-                .map((v) => this.toMaiDrawScore(v.pb, v.chart, v.song))
-                .sort((a, b) => b.rating - a.rating || b.score - a.score)
-                .slice(0, 10),
-            old: oldScores
-                .map((v) => this.toMaiDrawScore(v.pb, v.chart, v.song))
-                .sort((a, b) => b.rating - a.rating || b.score - a.score)
-                .slice(0, 50),
-            plat: bestScores
-                .map((v) => this.toMaiDrawScore(v.pb, v.chart, v.song))
-                .sort(
-                    (a, b) => b.starRating - a.starRating || b.score - a.score
-                )
-                .filter((v) => v.starRating > 0)
-                .slice(0, 50),
-            best: bestScores
-                .map((v) => this.toMaiDrawScore(v.pb, v.chart, v.song))
-                .sort((a, b) => b.rating - a.rating || b.score - a.score)
-                .slice(0, 60),
-        };
+        const res = {
+            status: "success",
+            message: "",
+            data: {
+                new: newScores
+                    .map((v) => this.toMaiDrawScore(v.pb, v.chart, v.song))
+                    .sort((a, b) => b.rating - a.rating || b.score - a.score)
+                    .slice(0, 10),
+                old: oldScores
+                    .map((v) => this.toMaiDrawScore(v.pb, v.chart, v.song))
+                    .sort((a, b) => b.rating - a.rating || b.score - a.score)
+                    .slice(0, 50),
+                plat: bestScores
+                    .map((v) => this.toMaiDrawScore(v.pb, v.chart, v.song))
+                    .sort(
+                        (a, b) =>
+                            b.starRating - a.starRating || b.score - a.score
+                    )
+                    .filter((v) => v.starRating > 0)
+                    .slice(0, 50),
+                best: bestScores
+                    .map((v) => this.toMaiDrawScore(v.pb, v.chart, v.song))
+                    .sort((a, b) => b.rating - a.rating || b.score - a.score)
+                    .slice(0, 60),
+            },
+        } as const;
+        return res;
     }
     async getPlayerBest55(
-        userId: string,
+        username: string,
         currentVersion = this.CURRENT_VERSION
     ) {
-        const rawPBs = await this.getPlayerPB(userId);
-        const rawRecents = await this.getPlayerRecentScores(userId);
-        if (!rawPBs?.body || !rawRecents?.body) return null;
+        const rawPBs = await this.getPlayerPB(username);
+        if (!rawPBs) {
+            const res = {
+                status: "unknown",
+                message: "An unknown error occurred.",
+                data: null,
+            } as const;
+            return res;
+        }
+        if (!rawPBs.success) {
+            if (rawPBs.description.includes("does not exist")) {
+                const res = {
+                    status: "invalid-user",
+                    message:
+                        rawPBs.description ||
+                        `${username} is not a valid user.`,
+                    data: { username },
+                } as const;
+                return res;
+            } else {
+                const res = {
+                    status: "unknown",
+                    message: "An unknown error occurred: " + rawPBs.description,
+                    data: null,
+                } as const;
+                return res;
+            }
+        }
+        const rawRecents = await this.getPlayerRecentScores(username);
+        if (!rawRecents) {
+            const res = {
+                status: "unknown",
+                message: "An unknown error occurred.",
+                data: null,
+            } as const;
+            return res;
+        }
+        if (!rawRecents.success) {
+            if (rawRecents.description.includes("does not exist")) {
+                const res = {
+                    status: "invalid-user",
+                    message:
+                        rawRecents.description ||
+                        `${username} is not a valid user.`,
+                    data: { username },
+                } as const;
+                return res;
+            } else {
+                const res = {
+                    status: "unknown",
+                    message:
+                        "An unknown error occurred: " + rawRecents.description,
+                    data: null,
+                } as const;
+                return res;
+            }
+        }
         const pbs: {
             chart: KamaiTachi.IChart;
             song: KamaiTachi.ISong;
@@ -458,73 +593,126 @@ export class KamaiTachi extends ScoreTrackerAdapter {
                 .slice(0, 10)
                 .map((v) => v.score);
         }
-        return {
-            recent: ratingGuardSimulation(
-                recentScores
-                    .reverse()
-                    .map((v) =>
-                        this.toMaiDrawScore(
-                            v.scores,
-                            v.chart,
-                            v.song,
-                            "classic"
+        const res = {
+            status: "success",
+            message: "",
+            data: {
+                recent: ratingGuardSimulation(
+                    recentScores
+                        .reverse()
+                        .map((v) =>
+                            this.toMaiDrawScore(
+                                v.scores,
+                                v.chart,
+                                v.song,
+                                "classic"
+                            )
                         )
+                        .filter(
+                            (v) => v.chart.difficulty != EDifficulty.LUNATIC
+                        )
+                ),
+                new: newScores
+                    .map((v) =>
+                        this.toMaiDrawScore(v.pb, v.chart, v.song, "classic")
                     )
-                    .filter((v) => v.chart.difficulty != EDifficulty.LUNATIC)
-            ),
-            new: newScores
-                .map((v) =>
-                    this.toMaiDrawScore(v.pb, v.chart, v.song, "classic")
-                )
-                .sort((a, b) => b.rating - a.rating || b.score - a.score)
-                .slice(0, 15),
-            old: oldScores
-                .map((v) =>
-                    this.toMaiDrawScore(v.pb, v.chart, v.song, "classic")
-                )
-                .sort((a, b) => b.rating - a.rating || b.score - a.score)
-                .slice(0, 30),
-            best: pbs
-                .map((v) =>
-                    this.toMaiDrawScore(v.pb, v.chart, v.song, "classic")
-                )
-                .sort((a, b) => b.rating - a.rating || b.score - a.score)
-                .slice(0, 45),
-        };
+                    .sort((a, b) => b.rating - a.rating || b.score - a.score)
+                    .slice(0, 15),
+                old: oldScores
+                    .map((v) =>
+                        this.toMaiDrawScore(v.pb, v.chart, v.song, "classic")
+                    )
+                    .sort((a, b) => b.rating - a.rating || b.score - a.score)
+                    .slice(0, 30),
+                best: pbs
+                    .map((v) =>
+                        this.toMaiDrawScore(v.pb, v.chart, v.song, "classic")
+                    )
+                    .sort((a, b) => b.rating - a.rating || b.score - a.score)
+                    .slice(0, 45),
+            },
+        } as const;
+        return res;
     }
     async getPlayerInfo(userId: string, type: "refresh" | "classic") {
         const profile = await this.getPlayerProfileRaw(userId);
+        if (!profile) {
+            const res = {
+                status: "unknown",
+                message: "An unknown error occurred.",
+                data: null,
+            } as const;
+            return res;
+        }
+        if (!profile.success) {
+            if (profile.description.includes("does not exist")) {
+                const res = {
+                    status: "invalid-user",
+                    message:
+                        profile.description || `${userId} is not a valid user.`,
+                    data: { username: userId },
+                } as const;
+                return res;
+            } else {
+                const res = {
+                    status: "unknown",
+                    message:
+                        "An unknown error occurred: " + profile.description,
+                    data: null,
+                } as const;
+                return res;
+            }
+        }
         if (type == "refresh") {
             const scores = await this.getPlayerBest60(userId);
-            if (!profile?.body || !scores) return null;
-            const newRating = scores.new
+            if (!(scores.status == "success")) return scores;
+            const newRating = scores.data.new
                 .map((v) => Util.truncateNumber(v.rating / 5, 3))
                 .reduce((sum, v) => sum + v, 0);
-            const oldRating = scores.old
+            const oldRating = scores.data.old
                 .map((v) => v.rating)
                 .reduce((sum, v) => sum + v, 0);
-            const platRating = scores.plat
+            const platRating = scores.data.plat
                 .map((v) => v.starRating)
                 .reduce((sum, v) => sum + v, 0);
-            return {
-                name: profile?.body.username,
-                rating:
-                    Util.truncateNumber(newRating / 10, 3) +
-                    Util.truncateNumber(oldRating / 50, 3) +
-                    Util.truncateNumber(platRating / 50, 3),
-            };
+            const res = {
+                status: "success",
+                message: "",
+                data: {
+                    name: profile?.body.username,
+                    rating:
+                        Util.truncateNumber(newRating / 10, 3) +
+                        Util.truncateNumber(oldRating / 50, 3) +
+                        Util.truncateNumber(platRating / 50, 3),
+                },
+            } as const;
+            return res;
         } else if (type == "classic") {
             const scores = await this.getPlayerBest55(userId);
-            if (!profile?.body || !scores) return null;
+            if (!(scores.status == "success")) return scores;
             let rating = 0;
-            [...scores.recent, ...scores.new, ...scores.old].forEach(
-                (v) => (rating += v.rating)
-            );
-            return {
-                name: profile?.body.username,
-                rating: Util.truncateNumber(rating / 55, 2),
-            };
-        } else return null;
+            [
+                ...scores.data.recent,
+                ...scores.data.new,
+                ...scores.data.old,
+            ].forEach((v) => (rating += v.rating));
+            const res = {
+                status: "success",
+                message: "",
+                data: {
+                    name: profile?.body.username,
+                    rating: Util.truncateNumber(rating / 55, 2),
+                },
+            } as const;
+            return res;
+        } else {
+            const res = {
+                status: "invalid-type",
+                message: `${type} is not a valid type.` as string,
+                data: { type: type as string },
+            } as const;
+            return res;
+        }
     }
     private async getPlayerProfileRaw(userId: string) {
         return this.get<
@@ -536,14 +724,54 @@ export class KamaiTachi extends ScoreTrackerAdapter {
         >(`/api/v1/users/${userId}`);
     }
     async getPlayerProfilePicture(userId: string) {
-        return (
+        const pfp =
             (await this.get<Buffer>(
                 `/api/v1/users/${userId}/pfp`,
                 undefined,
                 2 * 60 * 60 * 1000,
                 { responseType: "arraybuffer" }
-            )) || null
-        );
+            )) || null;
+        if (!pfp) {
+            const res = {
+                status: "unknown",
+                message: "An unknown error occurred.",
+                data: null,
+            } as const;
+            return res;
+        }
+        function isFailureResponse(
+            payload: any
+        ): payload is KamaiTachi.IFailureResponse {
+            return (
+                typeof payload.success === "boolean" &&
+                payload.success === false &&
+                typeof payload.description === "string"
+            );
+        }
+        if (isFailureResponse(pfp)) {
+            if (pfp.description.includes("does not exist")) {
+                const res = {
+                    status: "invalid-user",
+                    message:
+                        pfp.description || `${userId} is not a valid user.`,
+                    data: { username: userId },
+                } as const;
+                return res;
+            } else {
+                const res = {
+                    status: "unknown",
+                    message: "An unknown error occurred: " + pfp.description,
+                    data: null,
+                } as const;
+                return res;
+            }
+        }
+        const res = {
+            status: "success",
+            message: "",
+            data: pfp,
+        } as const;
+        return res;
     }
     public ongeki() {
         return new KamaiTachi({
@@ -603,11 +831,20 @@ export class KamaiTachi extends ScoreTrackerAdapter {
 }
 
 export namespace KamaiTachi {
-    export interface IResponse<T> {
+    interface IBaseResponse {
         success: boolean;
+        description: string;
+    }
+    export interface ISuccessResponse<T> extends IBaseResponse {
+        success: true;
         description: string;
         body: T;
     }
+    export interface IFailureResponse extends IBaseResponse {
+        success: false;
+        description: string;
+    }
+    export type IResponse<T> = ISuccessResponse<T> | IFailureResponse;
     export interface IChart {
         chartID: string;
         data: {

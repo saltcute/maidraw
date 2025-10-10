@@ -5,13 +5,19 @@ import { Canvas } from "canvas";
 
 import { Database } from "../../lib/database";
 import { EDifficulty, IScore } from "../../type";
-import { ScoreTrackerAdapter } from "../../lib/adapter";
+import { MaimaiScoreAdapter } from "../../lib/adapter";
 import { MaimaiPainter, MaimaiPainterModule } from "..";
 
 import { Util } from "@maidraw/lib/util";
 import { PainterModule, ThemeManager } from "@maidraw/lib/painter";
 
-export class ChartPainter extends MaimaiPainter<typeof ChartPainter.Theme> {
+export class ChartPainter extends MaimaiPainter<
+    typeof ChartPainter.Theme,
+    {
+        "no-theme": null;
+        "invalid-chart": { chartId: number };
+    }
+> {
     public static readonly Theme = ThemeManager.BaseTheme.extend({
         elements: z.array(
             z.discriminatedUnion("type", [
@@ -55,7 +61,7 @@ export class ChartPainter extends MaimaiPainter<typeof ChartPainter.Theme> {
             profilePicture?: Buffer;
             region?: "DX" | "EX" | "CN";
         }
-    ): Promise<Buffer | null> {
+    ) {
         let currentTheme = this.theme.get(this.theme.defaultTheme);
         if (options?.theme) {
             const theme = this.theme.get(options.theme);
@@ -67,7 +73,14 @@ export class ChartPainter extends MaimaiPainter<typeof ChartPainter.Theme> {
         for (let i = EDifficulty.BASIC; i <= EDifficulty.UTAGE; ++i) {
             charts.push(Database.getLocalChart(variables.chartId, i));
         }
-        if (!charts.length) return null;
+        if (!charts.length) {
+            const res = {
+                status: "invalid-chart",
+                message: `${variables.chartId} is not a valid chart.`,
+                data: { chartId: variables.chartId },
+            } as const;
+            return res;
+        }
         if (currentTheme) {
             await Database.cacheJackets([variables.chartId]);
             const canvas = new Canvas(
@@ -138,11 +151,23 @@ export class ChartPainter extends MaimaiPainter<typeof ChartPainter.Theme> {
                     }
                 }
             }
-            return canvas.toBuffer();
-        } else return null;
+            const res = {
+                status: "success",
+                message: "Image drawn successfully.",
+                data: canvas.toBuffer(),
+            } as const;
+            return res;
+        } else {
+            const res = {
+                status: "no-theme",
+                message: "Cannot find any valid theme to use for drawing.",
+                data: null,
+            } as const;
+            return res;
+        }
     }
     public async drawWithScoreSource(
-        source: ScoreTrackerAdapter,
+        source: MaimaiScoreAdapter,
         variables: {
             username: string;
             chartId: number;
@@ -155,35 +180,33 @@ export class ChartPainter extends MaimaiPainter<typeof ChartPainter.Theme> {
         }
     ) {
         const profile = await source.getPlayerInfo(variables.username);
+        if (!(profile.status == "success")) return profile;
         const score = await source.getPlayerScore(
             variables.username,
             variables.chartId
         );
-        if (!profile || !score) return null;
+        if (!(score.status == "success")) return score;
+        const pfp = await source.getPlayerProfilePicture(variables.username);
+        if (pfp.status == "success") {
+            options.profilePicture = pfp.data;
+        }
         return this.draw(
             {
-                username: profile.name,
-                rating: profile.rating,
+                username: profile.data.name,
+                rating: profile.data.rating,
                 chartId: variables.chartId,
                 scores: [
-                    score.basic,
-                    score.advanced,
-                    score.expert,
-                    score.master,
-                    score.remaster,
-                    score.utage,
+                    score.data.basic,
+                    score.data.advanced,
+                    score.data.expert,
+                    score.data.master,
+                    score.data.remaster,
+                    score.data.utage,
                 ],
             },
             {
                 ...options,
-                profilePicture:
-                    options?.profilePicture === null
-                        ? undefined
-                        : options?.profilePicture ||
-                          (await source.getPlayerProfilePicture(
-                              variables.username
-                          )) ||
-                          undefined,
+                profilePicture: options?.profilePicture ?? undefined,
             }
         );
     }

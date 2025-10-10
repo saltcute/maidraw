@@ -2,22 +2,22 @@ import upath from "upath";
 import { z } from "zod/v4";
 import { Canvas } from "canvas";
 
-import { ScoreTrackerAdapter } from "../../lib/adapter";
 import { MaimaiPainterModule, MaimaiPainter } from "..";
 
-import {
-    EAchievementTypes,
-    IScore,
-    RANK_BORDERS,
-    RATING_CONSTANTS,
-} from "@maidraw/mai/type";
+import { IScore } from "@maidraw/mai/type";
 import { Util } from "@maidraw/lib/util";
 import { PainterModule, ThemeManager } from "@maidraw/lib/painter";
 import { MaimaiUtil } from "../../lib/util";
 import { Database } from "../../lib/database";
 import _ from "lodash";
+import { MaimaiScoreAdapter } from "@maidraw/mai/lib/adapter";
 
-export class Best50Painter extends MaimaiPainter<typeof Best50Painter.Theme> {
+export class Best50Painter extends MaimaiPainter<
+    typeof Best50Painter.Theme,
+    {
+        "no-theme": null;
+    }
+> {
     public static readonly Theme = ThemeManager.BaseTheme.extend({
         elements: z.array(
             z.discriminatedUnion("type", [
@@ -56,7 +56,7 @@ export class Best50Painter extends MaimaiPainter<typeof Best50Painter.Theme> {
             oldScores: IScore[];
         },
         options?: { scale?: number; theme?: string; profilePicture?: Buffer }
-    ): Promise<Buffer | null> {
+    ) {
         let currentTheme = this.theme.get(this.theme.defaultTheme);
         if (options?.theme) {
             const theme = this.theme.get(options.theme);
@@ -248,38 +248,48 @@ export class Best50Painter extends MaimaiPainter<typeof Best50Painter.Theme> {
                     }
                 }
             }
-            return canvas.toBuffer();
-        } else return null;
+            const res = {
+                status: "success",
+                message: "Image drawn successfully.",
+                data: canvas.toBuffer(),
+            } as const;
+            return res;
+        } else {
+            const res = {
+                status: "no-theme",
+                message: "Cannot find any valid theme to use for drawing.",
+                data: null,
+            } as const;
+            return res;
+        }
     }
     public async drawWithScoreSource(
-        source: ScoreTrackerAdapter,
+        source: MaimaiScoreAdapter,
         variables: { username: string },
-        options?: {
+        options: {
             scale?: number;
             theme?: string;
             profilePicture?: Buffer | null;
         }
     ) {
         const profile = await source.getPlayerInfo(variables.username);
+        if (!(profile.status == "success")) return profile;
         const score = await source.getPlayerBest50(variables.username);
-        if (!profile || !score) return null;
+        if (!(score.status == "success")) return score;
+        const pfp = await source.getPlayerProfilePicture(variables.username);
+        if (pfp.status == "success") {
+            options.profilePicture = pfp.data;
+        }
         return this.draw(
             {
-                username: profile.name,
-                rating: profile.rating,
-                newScores: score.new,
-                oldScores: score.old,
+                username: profile.data.name,
+                rating: profile.data.rating,
+                newScores: score.data.new,
+                oldScores: score.data.old,
             },
             {
                 ...options,
-                profilePicture:
-                    options?.profilePicture === null
-                        ? undefined
-                        : options?.profilePicture ||
-                          (await source.getPlayerProfilePicture(
-                              variables.username
-                          )) ||
-                          undefined,
+                profilePicture: options?.profilePicture ?? undefined,
             }
         );
     }

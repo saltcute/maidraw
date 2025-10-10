@@ -1,115 +1,85 @@
-import { Cache } from "@maidraw/lib/cache";
-import { Maimai } from "@maidraw/mai";
-import axios, { AxiosInstance } from "axios";
+import Util from "@maidraw/lib/util";
 import { IScore } from "../../type";
+import { BaseScoreAdapter } from "@maidraw/lib/adapter";
 
-export abstract class ScoreTrackerAdapter {
-    private static _cache = new Cache();
-    protected get cache() {
-        return ScoreTrackerAdapter._cache;
-    }
-    protected axios: AxiosInstance;
-    constructor({ baseURL }: { baseURL?: string } = {}) {
-        this.axios = axios.create({ baseURL });
-    }
-    private readonly MAX_LOG_LENGTH = 1000;
-    protected async get<T>(
-        endpoint: string,
-        data?: any,
-        /**
-         * Cache TTL in milliseconds. Defaults to 30 minutes.
-         */
-        cacheTTL: number = 30 * 60 * 1000,
-        options: axios.AxiosRequestConfig = {}
-    ): Promise<T | undefined> {
-        const cacheKey = `${this.axios.defaults.baseURL}${endpoint}${
-            data
-                ? `-${JSON.stringify(data).substring(0, this.MAX_LOG_LENGTH)}`
-                : ""
-        }`;
-        if (cacheTTL > 0) {
-            const cacheContent = await this.cache.get(cacheKey);
-            if (cacheContent) {
-                Maimai.logger.trace(
-                    `GET ${endpoint}${
-                        data
-                            ? ` ${JSON.stringify(data).substring(
-                                  0,
-                                  this.MAX_LOG_LENGTH
-                              )}`
-                            : ""
-                    }, cache HIT`
-                );
-                return cacheContent as T;
-            }
-        }
-        const beginTimestamp = Date.now();
-        const res = await this.axios
-            .get(endpoint, { params: data, ...options })
-            .then(async (r) => {
-                if (cacheTTL > 0) {
-                    await this.cache.put(cacheKey, r.data, cacheTTL);
-                }
-                return r.data;
-            })
-            .catch((e) => {
-                return e.response?.data || e;
-            });
-        const timeDifference = Date.now() - beginTimestamp;
-        Maimai.logger.trace(
-            `GET ${endpoint}${
-                data
-                    ? ` ${JSON.stringify(data).substring(
-                          0,
-                          this.MAX_LOG_LENGTH
-                      )}`
-                    : ""
-            }, cache MISS, took ${timeDifference}ms`
-        );
-        return res;
-    }
-    protected async post<T>(
-        endpoint: string,
-        data?: any
-    ): Promise<T | undefined> {
-        const beginTimestamp = Date.now();
-        const res = await this.axios
-            .post(endpoint, data)
-            .then((r) => r.data)
-            .catch((e) => e.response?.data);
-        const timeDifference = Date.now() - beginTimestamp;
-        Maimai.logger.trace(
-            `POST ${endpoint}${
-                data
-                    ? ` ${JSON.stringify(data).substring(
-                          0,
-                          this.MAX_LOG_LENGTH
-                      )}`
-                    : ""
-            }, took ${timeDifference}ms`
-        );
-        return res;
-    }
-    abstract getPlayerBest50(username: string): Promise<{
+type IBaseResponseData = {
+    unknown: null;
+};
+
+type IBest50ResponseData = IBaseResponseData & {
+    success: {
         new: IScore[];
         old: IScore[];
-    } | null>;
-    abstract getPlayerInfo(username: string): Promise<{
+    };
+};
+type IProfileResponseData = IBaseResponseData & {
+    success: {
         name: string;
         rating: number;
-    } | null>;
-    abstract getPlayerProfilePicture(username: string): Promise<Buffer | null>;
-    abstract getPlayerScore(
-        username: string,
-        chartId: number
-    ): Promise<{
+    };
+};
+type IProfilePictureResponseData = IBaseResponseData & {
+    success: Buffer;
+};
+type IScoreResponseData = IBaseResponseData & {
+    success: {
         basic: IScore | null;
         advanced: IScore | null;
         expert: IScore | null;
         master: IScore | null;
         remaster: IScore | null;
         utage: IScore | null;
-    }>;
+    };
+};
+type ILevel50ResponseData = IBaseResponseData & {
+    success: IScore[];
+};
+
+type IResponseData = {
+    best50: IBest50ResponseData;
+    profile: IProfileResponseData;
+    profilePicture: IProfilePictureResponseData;
+    score: IScoreResponseData;
+    level50: ILevel50ResponseData;
+};
+
+export abstract class MaimaiScoreAdapter<
+    IExtraReturnTypes extends Partial<
+        Record<keyof IResponseData, Record<string, unknown>>
+    > = {},
+> extends BaseScoreAdapter {
+    abstract getPlayerBest50(
+        username: string
+    ): Promise<
+        Util.ResponseOf<
+            Util.MergeExtraTypes<IResponseData, IExtraReturnTypes>["best50"]
+        >
+    >;
+    abstract getPlayerInfo(
+        username: string
+    ): Promise<
+        Util.ResponseOf<
+            Util.MergeExtraTypes<IResponseData, IExtraReturnTypes>["profile"]
+        >
+    >;
+    abstract getPlayerProfilePicture(
+        username: string
+    ): Promise<
+        Util.ResponseOf<
+            Util.MergeExtraTypes<
+                IResponseData,
+                IExtraReturnTypes
+            >["profilePicture"]
+        >
+    >;
+    abstract getPlayerScore(
+        username: string,
+        chartId: number
+    ): Promise<
+        Util.ResponseOf<
+            Util.MergeExtraTypes<IResponseData, IExtraReturnTypes>["score"]
+        >
+    >;
     abstract getPlayerLevel50(
         username: string,
         level: number,
@@ -117,5 +87,9 @@ export abstract class ScoreTrackerAdapter {
         options?: {
             percise: boolean;
         }
-    ): Promise<IScore[] | null>;
+    ): Promise<
+        Util.ResponseOf<
+            Util.MergeExtraTypes<IResponseData, IExtraReturnTypes>["level50"]
+        >
+    >;
 }

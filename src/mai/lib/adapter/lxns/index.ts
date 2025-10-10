@@ -1,4 +1,4 @@
-import { ScoreTrackerAdapter } from "..";
+import { MaimaiScoreAdapter } from "..";
 
 import {
     IScore,
@@ -10,7 +10,30 @@ import {
 } from "@maidraw/mai/type";
 import { Database } from "@maidraw/mai/lib/database";
 
-export class LXNS extends ScoreTrackerAdapter {
+type IBest50ResponseData = {
+    "invalid-user": {
+        username: string;
+    };
+};
+type IProfileResponseData = IBest50ResponseData & {};
+type IProfilePictureResponseData = IBest50ResponseData & {
+    "download-failure": {
+        username: string;
+    };
+};
+type IScoreResponseData = IBest50ResponseData & {};
+type ILevel50ResponseData = {
+    "not-supported": null;
+};
+type IResponseData = {
+    best50: IBest50ResponseData;
+    profile: IProfileResponseData;
+    profilePicture: IProfilePictureResponseData;
+    score: IScoreResponseData;
+    level50: ILevel50ResponseData;
+};
+
+export class LXNS extends MaimaiScoreAdapter<IResponseData> {
     constructor({
         auth,
         baseURL = "https://maimai.lxns.net/api/v0/maimai",
@@ -18,7 +41,7 @@ export class LXNS extends ScoreTrackerAdapter {
         auth: string;
         baseURL?: string;
     }) {
-        super({ baseURL });
+        super({ baseURL, name: ["maidraw", "adapter", "lxns"] });
         this.axios.defaults.headers.common["Authorization"] = auth;
     }
     private async getChartList(targets: LXNS.IScore[]) {
@@ -60,32 +83,76 @@ export class LXNS extends ScoreTrackerAdapter {
     }
     async getPlayerBest50(username: string) {
         const b50 = await this.getPlayerRawBest50(username);
-        if (!b50?.data) return null;
+        if (b50 === undefined) {
+            const res = {
+                status: "unknown",
+                message: "An unknown error occurred.",
+                data: null,
+            } as const;
+            return res;
+        }
+        if (b50.success === false) {
+            const res = {
+                status: "invalid-user",
+                message:
+                    b50.message ||
+                    `Cannot find the profile of user ${username}.`,
+                data: { username },
+            } as const;
+            return res;
+        }
         const chartList = await this.getChartList([
             ...b50.data.dx,
             ...b50.data.standard,
         ]);
-        return {
-            new: this.toMaiDrawScore(b50.data.dx, chartList),
-            old: this.toMaiDrawScore(b50.data.standard, chartList),
-        };
+        const res = {
+            status: "success",
+            message: "",
+            data: {
+                new: this.toMaiDrawScore(b50.data.dx, chartList),
+                old: this.toMaiDrawScore(b50.data.standard, chartList),
+            },
+        } as const;
+        return res;
     }
     async getPlayerInfo(username: string) {
         const profile = await this.getPlayerRawProfile(username);
-        if (!profile?.data) return null;
-        return {
-            name: profile.data.name,
-            rating: profile.data.rating,
-        };
+        if (profile === undefined) {
+            const res = {
+                status: "unknown",
+                message: "An unknown error occurred.",
+                data: null,
+            } as const;
+            return res;
+        }
+        if (profile.success === false) {
+            const res = {
+                status: "invalid-user",
+                message:
+                    profile.message ||
+                    `Cannot find the profile of user ${username}.`,
+                data: { username },
+            } as const;
+            return res;
+        }
+        const res = {
+            status: "success",
+            message: "",
+            data: {
+                name: profile.data.name,
+                rating: profile.data.rating,
+            },
+        } as const;
+        return res;
     }
-    async getPlayerRawBest50(friendCode: string) {
+    private async getPlayerRawBest50(friendCode: string) {
         return await this.get<LXNS.IAPIResponse<LXNS.IBest50Response>>(
             `/player/${friendCode}/bests`,
             undefined,
             60 * 1000
         );
     }
-    async getPlayerRawProfile(friendCode: string) {
+    private async getPlayerRawProfile(friendCode: string) {
         return await this.get<LXNS.IAPIResponse<LXNS.IPlayer>>(
             `/player/${friendCode}`
         );
@@ -250,10 +317,27 @@ export class LXNS extends ScoreTrackerAdapter {
             })
             .filter((v) => v !== null);
     }
-    async getPlayerProfilePicture(username: string): Promise<Buffer | null> {
-        const player = await this.getPlayerRawProfile(username);
-        if (!player?.data) return null;
-        const iconInfo = player.data.icon;
+    async getPlayerProfilePicture(username: string) {
+        const profile = await this.getPlayerRawProfile(username);
+        if (profile === undefined) {
+            const res = {
+                status: "unknown",
+                message: "An unknown error occurred.",
+                data: null,
+            } as const;
+            return res;
+        }
+        if (profile.success === false) {
+            const res = {
+                status: "invalid-user",
+                message:
+                    profile.message ||
+                    `Cannot find the profile of user ${username}.`,
+                data: { username },
+            } as const;
+            return res;
+        }
+        const iconInfo = profile.data.icon;
         const iconImage = await this.get<Buffer>(
             `/maimai/icon/${iconInfo.id}.png`,
             undefined,
@@ -263,8 +347,20 @@ export class LXNS extends ScoreTrackerAdapter {
                 responseType: "arraybuffer",
             }
         );
-        if (!iconImage) return null;
-        return iconImage;
+        if (!iconImage) {
+            const res = {
+                status: "download-failure",
+                message: `Failed to download the profile picture of user ${username}.`,
+                data: { username },
+            } as const;
+            return res;
+        }
+        const res = {
+            status: "success",
+            message: "",
+            data: iconImage,
+        } as const;
+        return res;
     }
     async getPlayerScore(username: string, chartId: number) {
         const NUL = {
@@ -280,52 +376,83 @@ export class LXNS extends ScoreTrackerAdapter {
             if (chartId >= 10000) return LXNS.ESongTypes.DX;
             return LXNS.ESongTypes.STANDARD;
         })();
-        const res = await this.get<LXNS.IAPIResponse<LXNS.IScore[]>>(
+        const score = await this.get<LXNS.IAPIResponse<LXNS.IScore[]>>(
             `/player/${username}/bests`,
             {
                 song_id: chartId % 10000,
                 song_type: SONG_TYPE,
             }
         );
-        if (!res?.data) return NUL;
-        const chartList = await this.getChartList(res.data);
-        const scores = this.toMaiDrawScore(res?.data, chartList);
-        switch (SONG_TYPE) {
-            case LXNS.ESongTypes.STANDARD:
-            case LXNS.ESongTypes.DX: {
-                return {
-                    ...NUL,
-                    basic:
-                        scores.find(
-                            (v) => v.chart.difficulty == EDifficulty.BASIC
-                        ) || null,
-                    advanced:
-                        scores.find(
-                            (v) => v.chart.difficulty == EDifficulty.ADVANCED
-                        ) || null,
-                    expert:
-                        scores.find(
-                            (v) => v.chart.difficulty == EDifficulty.EXPERT
-                        ) || null,
-                    master:
-                        scores.find(
-                            (v) => v.chart.difficulty == EDifficulty.MASTER
-                        ) || null,
-                    remaster:
-                        scores.find(
-                            (v) => v.chart.difficulty == EDifficulty.REMASTER
-                        ) || null,
-                };
-            }
-            case LXNS.ESongTypes.UTAGE: {
-                return {
-                    ...NUL,
-                    utage: scores.shift() || null,
-                };
-            }
-            default:
-                return NUL;
+        if (score === undefined) {
+            const res = {
+                status: "unknown",
+                message: "An unknown error occurred.",
+                data: null,
+            } as const;
+            return res;
         }
+        if (score.success === false) {
+            const res = {
+                status: "invalid-user",
+                message:
+                    score.message ||
+                    `Cannot find the profile of user ${username}.`,
+                data: { username },
+            } as const;
+            return res;
+        }
+        const chartList = await this.getChartList(score.data);
+        const scores = this.toMaiDrawScore(score.data, chartList);
+        const res = {
+            status: "success",
+            message: "",
+            data: (() => {
+                switch (SONG_TYPE) {
+                    case LXNS.ESongTypes.STANDARD:
+                    case LXNS.ESongTypes.DX: {
+                        return {
+                            ...NUL,
+                            basic:
+                                scores.find(
+                                    (v) =>
+                                        v.chart.difficulty == EDifficulty.BASIC
+                                ) || null,
+                            advanced:
+                                scores.find(
+                                    (v) =>
+                                        v.chart.difficulty ==
+                                        EDifficulty.ADVANCED
+                                ) || null,
+                            expert:
+                                scores.find(
+                                    (v) =>
+                                        v.chart.difficulty == EDifficulty.EXPERT
+                                ) || null,
+                            master:
+                                scores.find(
+                                    (v) =>
+                                        v.chart.difficulty == EDifficulty.MASTER
+                                ) || null,
+                            remaster:
+                                scores.find(
+                                    (v) =>
+                                        v.chart.difficulty ==
+                                        EDifficulty.REMASTER
+                                ) || null,
+                        };
+                    }
+                    case LXNS.ESongTypes.UTAGE: {
+                        return {
+                            ...NUL,
+                            utage: scores.shift() || null,
+                        };
+                    }
+                    default:
+                        return NUL;
+                }
+            })(),
+        } as const;
+        return res;
     }
     async getPlayerLevel50(
         username: string,
@@ -333,7 +460,12 @@ export class LXNS extends ScoreTrackerAdapter {
         page: number,
         options: { percise: boolean }
     ) {
-        return null;
+        const res = {
+            status: "not-supported",
+            message: "getPlayerLevel50 is not supported on LXNS.",
+            data: null,
+        } as const;
+        return res;
     }
 }
 
@@ -523,10 +655,20 @@ export namespace LXNS {
         versions: IVersion[];
     }
 
-    export interface IAPIResponse<T extends any> {
+    export interface IBaseAPIResponse {
         success: boolean;
         code: number;
         message: string;
+    }
+    export interface ISuccessAPIResponse<T extends any>
+        extends IBaseAPIResponse {
+        success: boolean;
         data: T;
     }
+    export interface IFailureAPIResponse extends IBaseAPIResponse {
+        success: false;
+    }
+    export type IAPIResponse<T extends any> =
+        | ISuccessAPIResponse<T>
+        | IFailureAPIResponse;
 }

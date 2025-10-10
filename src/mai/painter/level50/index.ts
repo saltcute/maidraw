@@ -2,7 +2,7 @@ import upath from "upath";
 import { Canvas } from "canvas";
 
 import { IScore } from "../../type";
-import { ScoreTrackerAdapter } from "../../lib/adapter";
+import { MaimaiScoreAdapter } from "../../lib/adapter";
 import { Best50Painter } from "../best50";
 import { MaimaiPainterModule, MaimaiPainter } from "..";
 
@@ -10,7 +10,12 @@ import { Util } from "@maidraw/lib/util";
 import { PainterModule } from "@maidraw/lib/painter";
 import { Database } from "../../lib/database";
 
-export class Level50Painter extends MaimaiPainter<typeof Best50Painter.Theme> {
+export class Level50Painter extends MaimaiPainter<
+    typeof Best50Painter.Theme,
+    {
+        "no-theme": null;
+    }
+> {
     private static readonly DEFAULT_THEME = "jp-circle-landscape";
     public constructor() {
         super({
@@ -38,7 +43,7 @@ export class Level50Painter extends MaimaiPainter<typeof Best50Painter.Theme> {
             page: number;
         },
         options?: { scale?: number; theme?: string; profilePicture?: Buffer }
-    ): Promise<Buffer | null> {
+    ) {
         const newScores = variables.scores.slice(0, 15);
         const oldScores = variables.scores.slice(15, 50);
 
@@ -151,43 +156,53 @@ export class Level50Painter extends MaimaiPainter<typeof Best50Painter.Theme> {
                     }
                 }
             }
-            return canvas.toBuffer();
-        } else return null;
+            const res = {
+                status: "success",
+                message: "Image drawn successfully.",
+                data: canvas.toBuffer(),
+            } as const;
+            return res;
+        } else {
+            const res = {
+                status: "no-theme",
+                message: "Cannot find any valid theme to use for drawing.",
+                data: null,
+            } as const;
+            return res;
+        }
     }
     async drawWithScoreSource(
-        source: ScoreTrackerAdapter,
+        source: MaimaiScoreAdapter,
         variables: { username: string; level: number; page: number },
-        options?: {
+        options: {
             scale?: number;
             theme?: string;
             profilePicture?: Buffer | null;
         }
     ) {
         const profile = await source.getPlayerInfo(variables.username);
+        if (!(profile.status == "success")) return profile;
         const score = await source.getPlayerLevel50(
             variables.username,
             variables.level,
             variables.page
         );
-        if (!profile || !score) return null;
+        if (!(score.status == "success")) return score;
+        const pfp = await source.getPlayerProfilePicture(variables.username);
+        if (pfp.status == "success") {
+            options.profilePicture = pfp.data;
+        }
         return this.draw(
             {
-                username: profile.name,
-                rating: profile.rating,
-                scores: score,
+                username: profile.data.name,
+                rating: profile.data.rating,
+                scores: score.data,
                 level: variables.level,
                 page: variables.page,
             },
             {
                 ...options,
-                profilePicture:
-                    options?.profilePicture === null
-                        ? undefined
-                        : options?.profilePicture ||
-                          (await source.getPlayerProfilePicture(
-                              variables.username
-                          )) ||
-                          undefined,
+                profilePicture: options?.profilePicture ?? undefined,
             }
         );
     }

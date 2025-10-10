@@ -6,83 +6,27 @@ import {
     IChart,
     IScore,
 } from "@maidraw/mai/type";
-import { ScoreTrackerAdapter } from "..";
+import { MaimaiScoreAdapter } from "..";
 import { Database } from "@maidraw/mai/lib/database";
 
-export namespace DivingFish {
-    export interface IPlayResult {
-        achievements: number;
-        ds: number;
-        dxScore: number;
-        fc: "" | "fc" | "fcp" | "ap" | "app";
-        fs: "" | "sync" | "fs" | "fsp" | "fsd" | "fsdp";
-        level: string;
-        level_index: number;
-        level_label: string;
-        ra: number;
-        rate:
-            | "d"
-            | "c"
-            | "b"
-            | "bb"
-            | "bbb"
-            | "a"
-            | "aa"
-            | "aaa"
-            | "s"
-            | "sp"
-            | "ss"
-            | "ssp"
-            | "sss"
-            | "sssp";
-        song_id: number;
-        title: string;
-        type: "SD" | "DX";
-    }
-    export interface IBest50Response {
-        additional_rating: 0;
-        records: IPlayResult[];
-        nickname: string;
-        plate: string;
-        rating: number;
+type IBest50ResponseData = {
+    "invalid-user": {
         username: string;
-    }
-    export type ISongListResponse = ISongData[];
-    export interface ISongData {
-        basic_info: {
-            title: string;
-            artist: string;
-            genre: string;
-            from: string;
-            is_new: boolean;
-            bpm: number;
-            release_date: string;
-        };
-        charts: {
-            charter: string;
-            /**
-             * Number of each type of notes.
-             *
-             * From 0 to 4, each number represents the number of Tap, Hold, Slide, Touch and Break notes.
-             */
-            notes: [number, number, number, number, number];
-        }[];
-        cids: number[];
-        /**
-         * Internal level of each level of the song.
-         */
-        ds: number[];
-        id: string;
-        /**
-         * Level catergory of each level of the song.
-         */
-        level: string[];
-        title: string;
-        type: "SD" | "DX";
-    }
-}
+    };
+};
+type IProfileResponseData = IBest50ResponseData & {};
+type IProfilePictureResponseData = { "not-supported": null };
+type IScoreResponseData = { "not-supported": null };
+type ILevel50ResponseData = { "not-supported": null };
+type IResponseData = {
+    best50: IBest50ResponseData;
+    profile: IProfileResponseData;
+    profilePicture: IProfilePictureResponseData;
+    score: IScoreResponseData;
+    level50: ILevel50ResponseData;
+};
 
-export class DivingFish extends ScoreTrackerAdapter {
+export class DivingFish extends MaimaiScoreAdapter<IResponseData> {
     constructor({
         auth,
         baseURL = "https://www.diving-fish.com/api/maimaidxprober/",
@@ -90,13 +34,20 @@ export class DivingFish extends ScoreTrackerAdapter {
         auth: string;
         baseURL?: string;
     }) {
-        super({ baseURL });
+        super({ baseURL, name: ["maidraw", "adapter", "diving-fish"] });
         this.axios.defaults.headers.common["Developer-Token"] = auth;
     }
     async getPlayerBest50(username: string) {
         const pbs = await this.getPlayerRawBest50(username);
         if (!pbs?.records) {
-            return null;
+            const res = {
+                status: "invalid-user",
+                message: `Cannot find the profile of user ${username}.`,
+                data: {
+                    username,
+                },
+            } as const;
+            return res;
         }
         let chartList: IChart[] = [];
         if (Database.hasLocalDatabase()) {
@@ -128,10 +79,15 @@ export class DivingFish extends ScoreTrackerAdapter {
             async (v) =>
                 !(await this.getSong(v.song_id.toString()))?.basic_info.is_new
         );
-        return {
-            new: this.toMaiDrawScore(newScores, chartList),
-            old: this.toMaiDrawScore(oldScores, chartList),
-        };
+        const res = {
+            status: "success",
+            message: "",
+            data: {
+                new: this.toMaiDrawScore(newScores, chartList),
+                old: this.toMaiDrawScore(oldScores, chartList),
+            },
+        } as const;
+        return res;
     }
 
     async getMaiDrawChartList(): Promise<IChart[]> {
@@ -151,12 +107,24 @@ export class DivingFish extends ScoreTrackerAdapter {
     async getPlayerInfo(username: string) {
         const b50 = await this.getPlayerRawBest50(username);
         if (!b50) {
-            return null;
+            const res = {
+                status: "invalid-user",
+                message: `Cannot find the profile of user ${username}.`,
+                data: {
+                    username,
+                },
+            } as const;
+            return res;
         } else {
-            return {
-                name: b50.nickname,
-                rating: b50.rating,
-            };
+            const res = {
+                status: "success",
+                message: "",
+                data: {
+                    name: b50.nickname,
+                    rating: b50.rating,
+                },
+            } as const;
+            return res;
         }
     }
     async getPlayerRawBest50(username: string) {
@@ -283,18 +251,21 @@ export class DivingFish extends ScoreTrackerAdapter {
             };
         });
     }
-    async getPlayerProfilePicture(username: string): Promise<Buffer | null> {
-        return null;
+    async getPlayerProfilePicture(username: string) {
+        const res = {
+            status: "not-supported",
+            message: "getPlayerProfilePicture is not supported on Diving-Fish.",
+            data: null,
+        } as const;
+        return res;
     }
     async getPlayerScore(username: string, chartId: number) {
-        return {
-            basic: null,
-            advanced: null,
-            expert: null,
-            master: null,
-            remaster: null,
-            utage: null,
-        };
+        const res = {
+            status: "not-supported",
+            message: "getPlayerScore is not supported on Diving-Fish.",
+            data: null,
+        } as const;
+        return res;
     }
     async getPlayerLevel50(
         username: string,
@@ -302,6 +273,84 @@ export class DivingFish extends ScoreTrackerAdapter {
         page: number,
         options: { percise: boolean }
     ) {
-        return null;
+        const res = {
+            status: "not-supported",
+            message: "getPlayerLevel50 is not supported on Diving-Fish.",
+            data: null,
+        } as const;
+        return res;
+    }
+}
+
+export namespace DivingFish {
+    export interface IPlayResult {
+        achievements: number;
+        ds: number;
+        dxScore: number;
+        fc: "" | "fc" | "fcp" | "ap" | "app";
+        fs: "" | "sync" | "fs" | "fsp" | "fsd" | "fsdp";
+        level: string;
+        level_index: number;
+        level_label: string;
+        ra: number;
+        rate:
+            | "d"
+            | "c"
+            | "b"
+            | "bb"
+            | "bbb"
+            | "a"
+            | "aa"
+            | "aaa"
+            | "s"
+            | "sp"
+            | "ss"
+            | "ssp"
+            | "sss"
+            | "sssp";
+        song_id: number;
+        title: string;
+        type: "SD" | "DX";
+    }
+    export interface IBest50Response {
+        additional_rating: 0;
+        records: IPlayResult[];
+        nickname: string;
+        plate: string;
+        rating: number;
+        username: string;
+    }
+    export type ISongListResponse = ISongData[];
+    export interface ISongData {
+        basic_info: {
+            title: string;
+            artist: string;
+            genre: string;
+            from: string;
+            is_new: boolean;
+            bpm: number;
+            release_date: string;
+        };
+        charts: {
+            charter: string;
+            /**
+             * Number of each type of notes.
+             *
+             * From 0 to 4, each number represents the number of Tap, Hold, Slide, Touch and Break notes.
+             */
+            notes: [number, number, number, number, number];
+        }[];
+        cids: number[];
+        /**
+         * Internal level of each level of the song.
+         */
+        ds: number[];
+        id: string;
+        /**
+         * Level catergory of each level of the song.
+         */
+        level: string[];
+        title: string;
+        type: "SD" | "DX";
     }
 }

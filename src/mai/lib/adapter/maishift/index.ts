@@ -1,6 +1,6 @@
 import * as Cheerio from "cheerio";
 
-import { ScoreTrackerAdapter } from "..";
+import { MaimaiScoreAdapter } from "..";
 
 import {
     IScore,
@@ -11,10 +11,34 @@ import {
 } from "@maidraw/mai/type";
 import { Database } from "@maidraw/mai/lib/database";
 
-export class Maishift extends ScoreTrackerAdapter {
+type IBest50ResponseData = {
+    "invalid-user": {
+        username: string;
+    };
+};
+type IProfileResponseData = IBest50ResponseData & {};
+type IProfilePictureResponseData = IBest50ResponseData & {
+    "download-failure": {
+        username: string;
+    };
+};
+type IScoreResponseData = IBest50ResponseData & {};
+type ILevel50ResponseData = {
+    "not-supported": null;
+};
+type IResponseData = {
+    best50: IBest50ResponseData;
+    profile: IProfileResponseData;
+    profilePicture: IProfilePictureResponseData;
+    score: IScoreResponseData;
+    level50: ILevel50ResponseData;
+};
+
+export class Maishift extends MaimaiScoreAdapter<IResponseData> {
     constructor() {
         super({
             baseURL: "https://maimai.shiftpsh.com",
+            name: ["maidraw", "adapter", "maishift"],
         });
     }
     private readonly CURRENT_MINOR = 55;
@@ -130,43 +154,84 @@ export class Maishift extends ScoreTrackerAdapter {
         return { newScores, oldScores };
     }
     async getPlayerInfo(username: string) {
-        const res = await this.profileScraper(username);
-        if (!res) return null;
-        return {
-            name: res.name,
-            rating: res.rating,
-        };
+        const profile = await this.profileScraper(username);
+        if (!profile) {
+            const res = {
+                status: "invalid-user",
+                message: `Cannot find the profile of user ${username}.`,
+                data: { username },
+            } as const;
+            return res;
+        }
+        const res = {
+            status: "success",
+            message: "",
+            data: {
+                name: profile.name,
+                rating: profile.rating,
+            },
+        } as const;
+        return res;
     }
     async getPlayerProfilePicture(username: string) {
-        const res = await this.profileScraper(username);
-        if (!res?.avatarUrl) return null;
+        const profile = await this.profileScraper(username);
+        if (!profile?.avatarUrl) {
+            const res = {
+                status: "invalid-user",
+                message: `Cannot find the profile of user ${username}.`,
+                data: { username },
+            } as const;
+            return res;
+        }
         const buffer = await this.get<Buffer>(
-            res.avatarUrl,
+            profile.avatarUrl,
             undefined,
             2 * 60 * 60 * 1000,
             {
                 responseType: "arraybuffer",
             }
         );
-        if (!(buffer instanceof Buffer)) return null;
-        return buffer;
-    }
-    async getPlayerBest50(
-        username: string
-    ): Promise<{ new: IScore[]; old: IScore[] } | null> {
-        const res = await this.best50Scraper(username);
-        if (!res) return null;
-        const scores: IScore[] = [];
-        const oldScores: IScore[] = [];
-        for (const score of res.newScores) {
-            const converted = await this.toMaiDrawScore(score);
-            if (converted) scores.push(converted);
+        if (!(buffer instanceof Buffer)) {
+            const res = {
+                status: "download-failure",
+                message: `Failed to download the profile picture of user ${username}.`,
+                data: { username },
+            } as const;
+            return res;
         }
-        for (const score of res.oldScores) {
+        const res = {
+            status: "success",
+            message: "",
+            data: buffer,
+        } as const;
+        return res;
+    }
+    async getPlayerBest50(username: string) {
+        const rawScores = await this.best50Scraper(username);
+        if (!rawScores) {
+            const res = {
+                status: "invalid-user",
+                message: `Cannot find the profile of user ${username}.`,
+                data: { username },
+            } as const;
+            return res;
+        }
+        const newScores: IScore[] = [];
+        const oldScores: IScore[] = [];
+        for (const score of rawScores.newScores) {
+            const converted = await this.toMaiDrawScore(score);
+            if (converted) newScores.push(converted);
+        }
+        for (const score of rawScores.oldScores) {
             const converted = await this.toMaiDrawScore(score);
             if (converted) oldScores.push(converted);
         }
-        return { new: scores, old: oldScores };
+        const res = {
+            status: "success",
+            message: "",
+            data: { new: newScores, old: oldScores },
+        } as const;
+        return res;
     }
     private async scoreScraper(
         username: string,
@@ -222,7 +287,7 @@ export class Maishift extends ScoreTrackerAdapter {
     }
 
     async getPlayerScore(username: string, chartId: number) {
-        const res: {
+        const base: {
             basic: IScore | null;
             advanced: IScore | null;
             expert: IScore | null;
@@ -248,10 +313,16 @@ export class Maishift extends ScoreTrackerAdapter {
                 difficulty
             );
             if (score) {
-                res[EDifficulty[difficulty].toLowerCase() as keyof typeof res] =
-                    await this.toMaiDrawScore(score);
+                base[
+                    EDifficulty[difficulty].toLowerCase() as keyof typeof base
+                ] = await this.toMaiDrawScore(score);
             }
         }
+        const res = {
+            status: "success",
+            message: "",
+            data: base,
+        } as const;
         return res;
     }
     async toMaiDrawScore(score: {
@@ -352,6 +423,11 @@ export class Maishift extends ScoreTrackerAdapter {
         page: number,
         options: { percise: boolean }
     ) {
-        return null;
+        const res = {
+            status: "not-supported",
+            message: "getPlayerLevel50 is not supported on Maishift.",
+            data: null,
+        } as const;
+        return res;
     }
 }

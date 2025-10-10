@@ -409,6 +409,18 @@ export namespace Util {
             );
     }
 
+    export type ResponseOf<M extends Record<string, unknown>> = {
+        [K in keyof M]: { status: K; message: string; data: M[K] };
+    }[keyof M];
+
+    export type MergeExtraTypes<
+        Base extends Record<string, Record<string, unknown>>,
+        Extra extends Partial<Record<keyof Base, Record<string, unknown>>>,
+    > = {
+        [K in keyof Base]: Base[K] &
+            (Extra[K] extends Record<string, unknown> ? Extra[K] : {});
+    };
+
     export namespace z {
         export function color() {
             return zod.string().refine((str) => {

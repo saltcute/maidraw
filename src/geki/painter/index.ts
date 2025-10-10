@@ -5,7 +5,7 @@ import { z } from "zod/v4";
 import { Canvas, CanvasRenderingContext2D } from "canvas";
 
 import { Database } from "../lib/database";
-import { ScoreTrackerAdapter } from "../lib/adapter";
+import { OngekiScoreAdapter } from "../lib/adapter";
 import {
     EAchievementTypes,
     EBellTypes,
@@ -20,7 +20,8 @@ import { OngekiUtil } from "../lib/util";
 
 export abstract class OngekiPainter<
     Schema extends typeof ThemeManager.BaseObject,
-> extends Painter<ScoreTrackerAdapter, Schema> {
+    IExtraReturnTypes extends Record<string, unknown> = {},
+> extends Painter<OngekiScoreAdapter, Schema, IExtraReturnTypes> {
     public constructor({
         theme: { schema, searchPaths, defaultTheme },
     }: {

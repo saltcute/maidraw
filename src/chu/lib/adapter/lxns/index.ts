@@ -1,4 +1,4 @@
-import { ScoreTrackerAdapter } from "..";
+import { ChunithmScoreAdapter } from "..";
 
 import {
     EAchievementTypes,
@@ -9,7 +9,32 @@ import {
 } from "@maidraw/chu/type";
 import { Database } from "../../database";
 
-export class LXNS extends ScoreTrackerAdapter {
+type IBest50ResponseData = {
+    "invalid-user": {
+        username: string;
+    };
+};
+type IRecent40ResponseData = {
+    "not-supported": null;
+};
+type IProfileResponseData = IBest50ResponseData & {
+    "invalid-type": {
+        type: string;
+    };
+};
+type IProfilePictureResponseData = {
+    "not-supported": null;
+};
+type IScoreResponseData = IBest50ResponseData & {};
+type IResponseData = {
+    recent40: IRecent40ResponseData;
+    best50: IBest50ResponseData;
+    profile: IProfileResponseData;
+    profilePicture: IProfilePictureResponseData;
+    score: IScoreResponseData;
+};
+
+export class LXNS extends ChunithmScoreAdapter<IResponseData> {
     constructor({
         auth,
         baseURL = "https://maimai.lxns.net/api/v0/chunithm",
@@ -95,15 +120,27 @@ export class LXNS extends ScoreTrackerAdapter {
     }
     async getPlayerBest50(friendCode: string) {
         const b50 = await this.getPlayerRawBest50(friendCode);
-        if (!b50?.data) return null;
+        if (b50 === undefined) {
+            const res = {
+                status: "unknown",
+                message: "An unknown error occurred.",
+                data: null,
+            } as const;
+            return res;
+        }
         const chartList = await this.getChartList([
             ...b50.data.new_bests,
             ...b50.data.bests,
         ]);
-        return {
-            new: this.toMaiDrawScore(b50.data.new_bests, chartList),
-            old: this.toMaiDrawScore(b50.data.bests, chartList),
-        };
+        const res = {
+            status: "success",
+            message: "",
+            data: {
+                new: this.toMaiDrawScore(b50.data.new_bests, chartList),
+                old: this.toMaiDrawScore(b50.data.bests, chartList),
+            },
+        } as const;
+        return res;
     }
     async getSongList(): Promise<LXNS.ISongListResponse> {
         const cached = (await this.cache.get(
@@ -136,21 +173,39 @@ export class LXNS extends ScoreTrackerAdapter {
     }
     async getPlayerRecent40(friendCode: string) {
         return {
-            recent: [],
-            best: [],
-        };
+            status: "not-supported",
+            message: "getPlayerRecent40 is not supported on LXNS CHUNITHM.",
+            data: null,
+        } as const;
     }
     async getPlayerInfo(friendCode: string, type: "new" | "recents") {
         if (type == "new") {
             const profile = await this.getPlayerRawProfile(friendCode);
-            if (!profile?.data) return null;
-            return {
-                name: profile.data.name,
-                rating: profile.data.rating,
-            };
-        } else if (type == "recents") {
-            return null;
-        } else return null;
+            if (profile === undefined) {
+                const res = {
+                    status: "unknown",
+                    message: "An unknown error occurred.",
+                    data: null,
+                } as const;
+                return res;
+            }
+            const res = {
+                status: "success",
+                message: "",
+                data: {
+                    name: profile.data.name,
+                    rating: profile.data.rating,
+                },
+            } as const;
+            return res;
+        } else {
+            const res = {
+                status: "invalid-type",
+                message: `${type} is not a valid type.` as string,
+                data: { type: type as string },
+            } as const;
+            return res;
+        }
     }
     async getPlayerRawProfile(friendCode: string) {
         return await this.get<LXNS.IAPIResponse<LXNS.IPlayer>>(
@@ -158,7 +213,12 @@ export class LXNS extends ScoreTrackerAdapter {
         );
     }
     async getPlayerProfilePicture(friendCode: string) {
-        return null;
+        return {
+            status: "not-supported",
+            message:
+                "getPlayerProfilePicture is not supported on LXNS CHUNITHM.",
+            data: null,
+        } as const;
     }
     private async getChartList(targets: LXNS.IScore[]) {
         let chartList: IChart[];
@@ -215,34 +275,50 @@ export class LXNS extends ScoreTrackerAdapter {
             ultima: null,
             worldsEnd: null,
         };
-        const res = await this.get<LXNS.IAPIResponse<LXNS.IScore[]>>(
+        const score = await this.get<LXNS.IAPIResponse<LXNS.IScore[]>>(
             `/player/${username}/bests`,
             {
                 song_id: chartId,
             }
         );
-        if (!res?.data) return NUL;
-        const chartList = await this.getChartList(res.data);
-        const scores = this.toMaiDrawScore(res?.data, chartList);
-        return {
-            ...NUL,
-            basic:
-                scores.find((v) => v.chart.difficulty == EDifficulty.BASIC) ||
-                null,
-            advanced:
-                scores.find(
-                    (v) => v.chart.difficulty == EDifficulty.ADVANCED
-                ) || null,
-            expert:
-                scores.find((v) => v.chart.difficulty == EDifficulty.EXPERT) ||
-                null,
-            master:
-                scores.find((v) => v.chart.difficulty == EDifficulty.MASTER) ||
-                null,
-            ultima:
-                scores.find((v) => v.chart.difficulty == EDifficulty.ULTIMA) ||
-                null,
-        };
+        if (score === undefined) {
+            const res = {
+                status: "unknown",
+                message: "An unknown error occurred.",
+                data: null,
+            } as const;
+            return res;
+        }
+        const chartList = await this.getChartList(score.data);
+        const scores = this.toMaiDrawScore(score?.data, chartList);
+        const res = {
+            status: "success",
+            message: "",
+            data: {
+                ...NUL,
+                basic:
+                    scores.find(
+                        (v) => v.chart.difficulty == EDifficulty.BASIC
+                    ) || null,
+                advanced:
+                    scores.find(
+                        (v) => v.chart.difficulty == EDifficulty.ADVANCED
+                    ) || null,
+                expert:
+                    scores.find(
+                        (v) => v.chart.difficulty == EDifficulty.EXPERT
+                    ) || null,
+                master:
+                    scores.find(
+                        (v) => v.chart.difficulty == EDifficulty.MASTER
+                    ) || null,
+                ultima:
+                    scores.find(
+                        (v) => v.chart.difficulty == EDifficulty.ULTIMA
+                    ) || null,
+            },
+        } as const;
+        return res;
     }
 }
 

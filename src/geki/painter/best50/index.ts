@@ -3,14 +3,20 @@ import { z } from "zod/v4";
 import { Canvas } from "canvas";
 import { IScore } from "@maidraw/geki/type";
 
-import { ScoreTrackerAdapter } from "../../lib/adapter";
+import { OngekiScoreAdapter } from "../../lib/adapter";
 import { OngekiPainter, OngekiPainterModule } from "..";
 
 import { Util } from "@maidraw/lib/util";
 import { PainterModule, ThemeManager } from "@maidraw/lib/painter";
 import { Database } from "@maidraw/geki/lib/database";
 
-export class Best50Painter extends OngekiPainter<typeof Best50Painter.Theme> {
+export class Best50Painter extends OngekiPainter<
+    typeof Best50Painter.Theme,
+    {
+        "no-theme": null;
+        "invalid-type": { type: string };
+    }
+> {
     public static readonly Theme = ThemeManager.BaseTheme.extend({
         elements: z.array(
             z.discriminatedUnion("type", [
@@ -56,7 +62,7 @@ export class Best50Painter extends OngekiPainter<typeof Best50Painter.Theme> {
             bestScores?: IScore[];
             type?: "refresh" | "classic";
         }
-    ): Promise<Buffer | null> {
+    ) {
         let currentTheme = this.theme.get(this.theme.defaultTheme);
         if (options?.theme) {
             const theme = this.theme.get(options.theme);
@@ -228,11 +234,23 @@ export class Best50Painter extends OngekiPainter<typeof Best50Painter.Theme> {
                     }
                 }
             }
-            return canvas.toBuffer();
-        } else return null;
+            const res = {
+                status: "success",
+                message: "Image drawn successfully.",
+                data: canvas.toBuffer(),
+            } as const;
+            return res;
+        } else {
+            const res = {
+                status: "no-theme",
+                message: "Cannot find any valid theme to use for drawing.",
+                data: null,
+            } as const;
+            return res;
+        }
     }
     public async drawWithScoreSource(
-        source: ScoreTrackerAdapter,
+        source: OngekiScoreAdapter,
         variable: { username: string },
         options: {
             scale?: number;
@@ -246,44 +264,48 @@ export class Best50Painter extends OngekiPainter<typeof Best50Painter.Theme> {
             variable.username,
             options.type
         );
-        if (!profile) return null;
+        if (!(profile.status == "success")) return profile;
         let newScores: IScore[],
             oldScores: IScore[],
             recentOrPlatinumScores: IScore[],
             bestScores: IScore[] | undefined;
         if (options.type == "refresh") {
             const score = await source.getPlayerBest60(variable.username);
-            if (!score) return null;
-            newScores = score.new;
-            oldScores = score.old;
-            recentOrPlatinumScores = score.plat;
-            bestScores = score.best;
+            if (!(score.status == "success")) return score;
+            newScores = score.data.new;
+            oldScores = score.data.old;
+            recentOrPlatinumScores = score.data.plat;
+            bestScores = score.data.best;
         } else if (options.type == "classic") {
             const score = await source.getPlayerBest55(variable.username);
-            if (!score) return null;
-            recentOrPlatinumScores = score.recent;
-            newScores = score.new;
-            oldScores = score.old;
-            bestScores = score.best;
-        } else return null;
+            if (!(score.status == "success")) return score;
+            recentOrPlatinumScores = score.data.recent;
+            newScores = score.data.new;
+            oldScores = score.data.old;
+            bestScores = score.data.best;
+        } else {
+            const res = {
+                status: "invalid-type",
+                message: `${options.type} is not a valid type.` as string,
+                data: { type: options.type as string },
+            } as const;
+            return res;
+        }
+        const pfp = await source.getPlayerProfilePicture(variable.username);
+        if (pfp.status == "success") {
+            options.profilePicture = pfp.data;
+        }
         return this.draw(
             {
-                username: profile.name,
-                rating: profile.rating,
+                username: profile.data.name,
+                rating: profile.data.rating,
                 newScores,
                 oldScores,
                 recentOrPlatinumScores,
             },
             {
                 ...options,
-                profilePicture:
-                    options?.profilePicture === null
-                        ? undefined
-                        : options?.profilePicture ||
-                          (await source.getPlayerProfilePicture(
-                              variable.username
-                          )) ||
-                          undefined,
+                profilePicture: options?.profilePicture ?? undefined,
                 bestScores,
             }
         );
