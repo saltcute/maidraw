@@ -21,23 +21,28 @@ const upath = require("upath");
             type: theme.endsWith("-refresh") ? "refresh" : "classic",
             theme,
         };
+        const drawTimer = process.hrtime.bigint();
         const result = await painter.drawWithScoreSource(
             source,
             { username: process.env.NAME },
             options
         );
-        if (result instanceof Buffer) {
+        const drawDuration =
+            (process.hrtime.bigint() - drawTimer) / BigInt(1e6);
+        console.log(`${theme} draw time: ${drawDuration}ms`);
+
+        if (result.status == "success") {
             fs.writeFileSync(
                 upath.join(__dirname, `${theme}.webp`),
-                await sharp(result)
+                await sharp(result.data)
                     .webp({
-                        quality: 60,
+                        quality: 100,
                     })
                     .toBuffer()
             );
             console.log(`${theme} passed.`);
         } else {
-            console.log(`${theme} failed!`);
+            console.log(`${theme} failed: ${result.message}`);
         }
     }
     process.exit(0);

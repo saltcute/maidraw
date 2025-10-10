@@ -3,57 +3,44 @@ const upath = require("upath");
 
 (async () => {
     const { MaiDraw } = require("../../../dist");
-    const kamai = new MaiDraw.Maimai.Best50.KamaiTachi();
-    MaiDraw.Maimai.Chart.Database.setLocalDatabasePath(
-        "../maimai-songs-database"
-    );
+    const kamai = new MaiDraw.Maimai.Adapters.KamaiTachi();
+    const painter = MaiDraw.Maimai.Painters.Level50;
+    MaiDraw.Maimai.Database.setLocalDatabasePath("../maimai-songs-database");
 
     const fs = require("fs");
 
-    const themes = [
-        // "salt-2026-landscape",
-        // "jp-finale-landscape",
-        // "jp-finale-portrait",
-        // "jp-prismplus-landscape",
-        // "jp-prismplus-portrait",
-        // "jp-prism-landscape",
-        "jp-prism-portrait",
-        // "jp-buddiesplus-landscape",
-        // "jp-buddiesplus-portrait",
-        // "cn-2024-portrait",
-        // "cn-2024-landscape",
-        // "jp-buddies-landscape",
-        // "jp-buddies-portrait",
-    ];
+    const themes = ["jp-prism-portrait"];
     const levels = [13.5, 13.7, 14];
     for (const theme of themes) {
         for (const level of levels) {
             for (const page of [1, 2]) {
-                const result = await MaiDraw.Maimai.Level50.drawWithScoreSource(
+                const result = await painter.drawWithScoreSource(
                     kamai,
-                    "",
+                    process.env.NAME,
                     level,
                     page,
                     {
-                        scale: 0.5,
+                        scale: process.env.SCALE ?? 1,
                         theme,
                     }
                 );
-                if (result) {
+                if (result.status == "success") {
                     fs.writeFileSync(
                         upath.join(
                             __dirname,
                             `${theme}-lv${level}-p${page}.webp`
                         ),
-                        await sharp(result)
+                        await sharp(result.data)
                             .webp({
-                                quality: 60,
+                                quality: 100,
                             })
                             .toBuffer()
                     );
-                    console.log(`${theme} passed.`);
+                    console.log(`${theme}-lv${level}-p${page} passed.`);
                 } else {
-                    console.log(`${theme} failed!`);
+                    console.log(
+                        `${theme}-lv${level}-p${page} failed: ${result.message}`
+                    );
                 }
             }
         }

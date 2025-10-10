@@ -32,18 +32,18 @@ const upath = require("upath");
             }
         );
 
-        if (result) {
+        if (result.status == "success") {
             fs.writeFileSync(
                 upath.join(__dirname, `${theme}.webp`),
-                await sharp(result)
+                await sharp(result.data)
                     .webp({
-                        quality: 60,
+                        quality: 100,
                     })
                     .toBuffer()
             );
             console.log(`${theme} passed.`);
         } else {
-            console.log(`${theme} failed!`);
+            console.log(`${theme} failed: ${result.message}`);
         }
     }
     process.exit(0);

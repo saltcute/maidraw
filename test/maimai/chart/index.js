@@ -5,7 +5,7 @@ const upath = require("upath");
     const { MaiDraw } = require("../../../dist");
     const kamai = new MaiDraw.Maimai.Adapters.KamaiTachi();
     const lxns = new MaiDraw.Maimai.Adapters.LXNS({
-        auth: "",
+        auth: process.env.AUTH,
     });
     const maishift = new MaiDraw.Maimai.Adapters.Maishift();
     const painter = new MaiDraw.Maimai.Painters.Chart();
@@ -37,18 +37,18 @@ const upath = require("upath");
                     region,
                 }
             );
-            if (result) {
+            if (result.status == "success") {
                 fs.writeFileSync(
                     upath.join(__dirname, `${theme}-${region}.webp`),
-                    await sharp(result)
+                    await sharp(result.data)
                         .webp({
-                            quality: 60,
+                            quality: 100,
                         })
                         .toBuffer()
                 );
-                console.log(`${theme} passed.`);
+                console.log(`${theme}-${region} passed.`);
             } else {
-                console.log(`${theme} failed!`);
+                console.log(`${theme}-${region} failed: ${result.message}`);
             }
         }
     }

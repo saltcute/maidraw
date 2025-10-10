@@ -3,7 +3,7 @@ const upath = require("upath");
 (async () => {
     const { MaiDraw } = require("../../../../dist");
     const lxns = new MaiDraw.Chuni.Adapters.LXNS({
-        auth: process.env.LXNS_AUTH,
+        auth: process.env.AUTH,
     });
     const painter = new MaiDraw.Chuni.Painters.Best50();
     MaiDraw.Chuni.Database.setLocalDatabasePath("../maimai-songs-database");
@@ -21,18 +21,18 @@ const upath = require("upath");
             { username: process.env.NAME },
             options
         );
-        if (result instanceof Buffer) {
+        if (result.status == "success") {
             fs.writeFileSync(
                 upath.join(__dirname, `${theme}.webp`),
-                await sharp(result)
+                await sharp(result.data)
                     .webp({
-                        quality: 60,
+                        quality: 100,
                     })
                     .toBuffer()
             );
             console.log(`${theme} passed.`);
         } else {
-            console.log(`${theme} failed!`);
+            console.log(`${theme} failed: ${result.message}`);
         }
     }
     process.exit(0);
