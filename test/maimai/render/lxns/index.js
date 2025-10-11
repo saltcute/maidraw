@@ -20,7 +20,9 @@ const upath = require("upath");
     for (let theme of themes) {
         const result = await painter.drawWithScoreSource(
             lxns,
-            process.env.NAME,
+            {
+                username: process.env.NAME,
+            },
             {
                 theme,
                 scale: process.env.SCALE ?? 1,
