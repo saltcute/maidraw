@@ -4,9 +4,16 @@ import axios from "axios";
 import { Cache } from "@maidraw/lib/cache";
 import { Chuni } from "..";
 import { EDifficulty } from "../type";
+import { Logger } from "@maidraw/lib/logger";
 // import { EDifficulty, IChart } from "@maidraw/type";
 
 export class Database {
+    private static readonly logger = new Logger([
+        "maidraw",
+        "chuni",
+        "database",
+    ]);
+
     private static localDatabasePath: string = "";
 
     public static setLocalDatabasePath(path: string) {
@@ -29,10 +36,10 @@ export class Database {
         const cacheKey = `chuni-jacket-${id}`;
         const cached = await this.cache.get(cacheKey);
         if (cached instanceof Buffer) {
-            Chuni.logger.trace(`GET Jacket-${id}, cache HIT`);
+            this.logger.trace(`GET Jacket-${id}, cache HIT`);
             return cached;
         } else {
-            Chuni.logger.trace(`GET Jacket-${id}, cache MISS`);
+            this.logger.trace(`GET Jacket-${id}, cache MISS`);
             const jacket = await this.downloadJacket(id);
             if (jacket) this.cache.put(cacheKey, jacket, 1000 * 60 * 60);
             return jacket;
@@ -48,7 +55,7 @@ export class Database {
             `${id.toString().padStart(4, "0")}.png`
         );
         if (fs.existsSync(localFilePath)) {
-            Chuni.logger.trace(`GET Jacket-${id}, database HIT`);
+            this.logger.trace(`GET Jacket-${id}, database HIT`);
             return fs.readFileSync(localFilePath);
         }
         const beginTimestamp = Date.now();
@@ -59,7 +66,7 @@ export class Database {
             .then((res) => res.data)
             .catch((e) => null);
         const timeDifference = Date.now() - beginTimestamp;
-        Chuni.logger.trace(
+        this.logger.trace(
             `GET Jacket-${id}, database MISS, took ${timeDifference}ms`
         );
         return res;

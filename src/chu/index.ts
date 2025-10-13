@@ -10,11 +10,6 @@ import * as lxns from "./lib/adapter/lxns";
 import * as kamaiTachi from "./lib/adapter/kamaiTachi";
 
 import * as types from "./type";
-import { Logger } from "@maidraw/lib/logger";
-
-export class Chuni {
-    public static logger = new Logger(["maidraw", "chuni"]);
-}
 
 export namespace Chuni {
     export import Types = types;

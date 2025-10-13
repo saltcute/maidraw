@@ -13,11 +13,7 @@ import * as divingFish from "./lib/adapter/divingFish";
 import * as kamaiTachi from "./lib/adapter/kamaiTachi";
 
 import * as types from "./type";
-import { Logger } from "@maidraw/lib/logger";
 
-export class Maimai {
-    public static logger = new Logger(["maidraw", "maimai"]);
-}
 export namespace Maimai {
     export import Types = types;
 

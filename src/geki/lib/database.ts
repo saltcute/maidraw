@@ -3,8 +3,15 @@ import upath from "upath";
 import { Cache } from "@maidraw/lib/cache";
 import { Geki } from "..";
 import { EDifficulty } from "../type";
+import { Logger } from "@maidraw/lib/logger";
 
 export class Database {
+    private static readonly logger = new Logger([
+        "maidraw",
+        "geki",
+        "database",
+    ]);
+
     private static localDatabasePath: string = "";
 
     public static setLocalDatabasePath(path: string) {
@@ -27,10 +34,10 @@ export class Database {
         const cacheKey = `geki-jacket-${id}`;
         const cached = await this.cache.get(cacheKey);
         if (cached instanceof Buffer) {
-            Geki.logger.trace(`GET Jacket-${id}, cache HIT`);
+            this.logger.trace(`GET Jacket-${id}, cache HIT`);
             return cached;
         } else {
-            Geki.logger.trace(`GET Jacket-${id}, cache MISS`);
+            this.logger.trace(`GET Jacket-${id}, cache MISS`);
             const jacket = await this.downloadJacket(id);
             if (jacket) this.cache.put(cacheKey, jacket, 1000 * 60 * 60);
             return jacket;
@@ -46,7 +53,7 @@ export class Database {
             `${id.toString().padStart(4, "0")}.png`
         );
         if (fs.existsSync(localFilePath)) {
-            Geki.logger.trace(`GET Jacket-${id}, database HIT`);
+            this.logger.trace(`GET Jacket-${id}, database HIT`);
             return fs.readFileSync(localFilePath);
         }
         return null;
@@ -134,10 +141,10 @@ export class Database {
         const cacheKey = `geki-card-${id}`;
         const cached = await this.cache.get(cacheKey);
         if (cached instanceof Buffer) {
-            Geki.logger.trace(`GET Card-${id}-image, cache HIT`);
+            this.logger.trace(`GET Card-${id}-image, cache HIT`);
             return cached;
         } else {
-            Geki.logger.trace(`GET Card-${id}-image, cache MISS`);
+            this.logger.trace(`GET Card-${id}-image, cache MISS`);
             const localFilePath = upath.join(
                 this.localDatabasePath,
                 "assets",
@@ -147,7 +154,7 @@ export class Database {
                 `${id.toString().padStart(6, "0")}.png`
             );
             if (fs.existsSync(localFilePath)) {
-                Geki.logger.trace(`GET Card-${id}-image, database HIT`);
+                this.logger.trace(`GET Card-${id}-image, database HIT`);
                 const card = fs.readFileSync(localFilePath);
                 if (card) this.cache.put(cacheKey, card, 5 * 60 * 60);
                 return card;

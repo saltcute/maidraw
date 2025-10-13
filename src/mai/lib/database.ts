@@ -4,8 +4,15 @@ import axios from "axios";
 import { Cache } from "@maidraw/lib/cache";
 import { EDifficulty } from "@maidraw/mai/type";
 import { Maimai } from "..";
+import { Logger } from "@maidraw/lib/logger";
 
 export class Database {
+    private static readonly logger = new Logger([
+        "maidraw",
+        "maimai",
+        "database",
+    ]);
+
     private static localDatabasePath: string = "";
 
     public static setLocalDatabasePath(path: string) {
@@ -35,12 +42,12 @@ export class Database {
         const cacheKey = `maimai-jacket-${id}${variant ? `-${variant}` : ""}`;
         const cached = await this.cache.get(cacheKey);
         if (cached instanceof Buffer) {
-            Maimai.logger.trace(
+            this.logger.trace(
                 `GET Jacket-${id}${variant ? `-${variant}` : ""}, cache HIT`
             );
             return cached;
         } else {
-            Maimai.logger.trace(
+            this.logger.trace(
                 `GET Jacket-${id}${variant ? `-${variant}` : ""}, cache MISS`
             );
             const jacket = await this.downloadJacket(id, variant);
@@ -65,9 +72,7 @@ export class Database {
                 `${id.toString().padStart(6, "0")}-${variant}.png`
             );
             if (fs.existsSync(localFilePath)) {
-                Maimai.logger.trace(
-                    `GET Jacket-${id}-${variant}, database HIT`
-                );
+                this.logger.trace(`GET Jacket-${id}-${variant}, database HIT`);
                 return fs.readFileSync(localFilePath);
             }
         }
@@ -79,7 +84,7 @@ export class Database {
             `${id.toString().padStart(6, "0")}.png`
         );
         if (fs.existsSync(localFilePath)) {
-            Maimai.logger.trace(`GET Jacket-${id}, database HIT`);
+            this.logger.trace(`GET Jacket-${id}, database HIT`);
             return fs.readFileSync(localFilePath);
         }
         if (!variant) {
@@ -91,7 +96,7 @@ export class Database {
                 .then((res) => res.data)
                 .catch((e) => null);
             const timeDifference = Date.now() - beginTimestamp;
-            Maimai.logger.trace(
+            this.logger.trace(
                 `GET Jacket-${id}, database MISS, took ${timeDifference}ms`
             );
             return res;

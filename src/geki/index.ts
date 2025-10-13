@@ -9,11 +9,6 @@ import * as adapter from "./lib/adapter";
 import * as kamaiTachi from "./lib/adapter/kamaiTachi";
 
 import * as types from "./type";
-import { Logger } from "@maidraw/lib/logger";
-
-export class Geki {
-    public static logger = new Logger(["maidraw", "geki"]);
-}
 
 export namespace Geki {
     export import Types = types;
