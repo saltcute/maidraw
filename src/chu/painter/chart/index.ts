@@ -11,13 +11,7 @@ import { ChunithmPainter, ChunithmPainterModule } from "..";
 import { PainterModule, ThemeManager } from "@maidraw/lib/painter";
 import { Database } from "../../lib/database";
 
-export class ChartPainter extends ChunithmPainter<
-    typeof ChartPainter.Theme,
-    {
-        "no-theme": null;
-        "invalid-chart": { chartId: number };
-    }
-> {
+export class ChartPainter extends ChunithmPainter<typeof ChartPainter.Theme> {
     public static readonly Theme = ThemeManager.BaseTheme.extend({
         elements: z.array(
             z.discriminatedUnion("type", [

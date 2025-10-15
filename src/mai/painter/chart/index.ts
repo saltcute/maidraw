@@ -11,13 +11,7 @@ import { MaimaiPainter, MaimaiPainterModule } from "..";
 import { Util } from "@maidraw/lib/util";
 import { PainterModule, ThemeManager } from "@maidraw/lib/painter";
 
-export class ChartPainter extends MaimaiPainter<
-    typeof ChartPainter.Theme,
-    {
-        "no-theme": null;
-        "invalid-chart": { chartId: number };
-    }
-> {
+export class ChartPainter extends MaimaiPainter<typeof ChartPainter.Theme> {
     public static readonly Theme = ThemeManager.BaseTheme.extend({
         elements: z.array(
             z.discriminatedUnion("type", [

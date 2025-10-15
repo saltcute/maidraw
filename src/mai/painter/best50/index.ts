@@ -12,12 +12,7 @@ import { Database } from "../../lib/database";
 import _ from "lodash";
 import { MaimaiScoreAdapter } from "@maidraw/mai/lib/adapter";
 
-export class Best50Painter extends MaimaiPainter<
-    typeof Best50Painter.Theme,
-    {
-        "no-theme": null;
-    }
-> {
+export class Best50Painter extends MaimaiPainter<typeof Best50Painter.Theme> {
     public static readonly Theme = ThemeManager.BaseTheme.extend({
         elements: z.array(
             z.discriminatedUnion("type", [

@@ -8,19 +8,15 @@ import { CanvasRenderingContext2D, registerFont } from "canvas";
 
 import { Util } from "./util";
 
-type ResponseOf<M extends Record<string, unknown>> = {
-    [K in keyof M]: { status: K; message: string; data: M[K] };
-}[keyof M];
-
-type IResponseData = {
-    success: Buffer;
-    unknown?: null;
-};
+interface IResponse {
+    status: string;
+    message: string;
+    data: any;
+}
 
 export abstract class Painter<
     Adapter,
     Schema extends typeof ThemeManager.BaseObject,
-    IExtraReturnTypes extends Record<string, unknown> = {},
 > {
     protected readonly theme: ThemeManager<Schema>;
     protected static get assetsPath() {
@@ -93,12 +89,12 @@ export abstract class Painter<
     public abstract draw(
         variables: Record<string, any>,
         options: { scale?: number } | Record<string, any>
-    ): Promise<ResponseOf<IResponseData & IExtraReturnTypes>>;
+    ): Promise<IResponse>;
     public abstract drawWithScoreSource(
         source: Adapter,
         variables: Record<string, any>,
         options: { scale?: number } | Record<string, any>
-    ): Promise<ResponseOf<IResponseData & IExtraReturnTypes>>;
+    ): Promise<IResponse>;
 }
 
 export class Theme<T> {

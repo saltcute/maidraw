@@ -10,13 +10,7 @@ import { Util } from "@maidraw/lib/util";
 import { PainterModule, ThemeManager } from "@maidraw/lib/painter";
 import { Database } from "@maidraw/geki/lib/database";
 
-export class Best50Painter extends OngekiPainter<
-    typeof Best50Painter.Theme,
-    {
-        "no-theme": null;
-        "invalid-type": { type: string };
-    }
-> {
+export class Best50Painter extends OngekiPainter<typeof Best50Painter.Theme> {
     public static readonly Theme = ThemeManager.BaseTheme.extend({
         elements: z.array(
             z.discriminatedUnion("type", [

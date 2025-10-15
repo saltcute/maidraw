@@ -11,13 +11,7 @@ import { OngekiPainter, OngekiPainterModule } from "..";
 import { PainterModule, ThemeManager } from "@maidraw/lib/painter";
 import { Database } from "../../lib/database";
 
-export class ChartPainter extends OngekiPainter<
-    typeof ChartPainter.Theme,
-    {
-        "no-theme": null;
-        "invalid-chart": { chartId: number };
-    }
-> {
+export class ChartPainter extends OngekiPainter<typeof ChartPainter.Theme> {
     public static readonly Theme = ThemeManager.BaseTheme.extend({
         elements: z.array(
             z.discriminatedUnion("type", [

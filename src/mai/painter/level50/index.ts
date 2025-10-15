@@ -10,12 +10,7 @@ import { Util } from "@maidraw/lib/util";
 import { PainterModule } from "@maidraw/lib/painter";
 import { Database } from "../../lib/database";
 
-export class Level50Painter extends MaimaiPainter<
-    typeof Best50Painter.Theme,
-    {
-        "no-theme": null;
-    }
-> {
+export class Level50Painter extends MaimaiPainter<typeof Best50Painter.Theme> {
     private static readonly DEFAULT_THEME = "jp-circle-landscape";
     public constructor() {
         super({

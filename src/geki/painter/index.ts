@@ -20,8 +20,7 @@ import { OngekiUtil } from "../lib/util";
 
 export abstract class OngekiPainter<
     Schema extends typeof ThemeManager.BaseObject,
-    IExtraReturnTypes extends Record<string, unknown> = {},
-> extends Painter<OngekiScoreAdapter, Schema, IExtraReturnTypes> {
+> extends Painter<OngekiScoreAdapter, Schema> {
     public constructor({
         theme: { schema, searchPaths, defaultTheme },
     }: {

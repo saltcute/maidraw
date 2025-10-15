@@ -10,13 +10,7 @@ import { PainterModule, ThemeManager } from "@maidraw/lib/painter";
 import { Database } from "@maidraw/chu/lib/database";
 import { ChunithmScoreAdapter } from "@maidraw/chu/lib/adapter";
 
-export class Best50Painter extends ChunithmPainter<
-    typeof Best50Painter.Theme,
-    {
-        "no-theme": null;
-        "invalid-type": { type: string };
-    }
-> {
+export class Best50Painter extends ChunithmPainter<typeof Best50Painter.Theme> {
     public static readonly Theme = ThemeManager.BaseTheme.extend({
         elements: z.array(
             z.discriminatedUnion("type", [

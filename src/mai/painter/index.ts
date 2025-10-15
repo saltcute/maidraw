@@ -20,8 +20,7 @@ import { MaimaiUtil } from "../lib/util";
 
 export abstract class MaimaiPainter<
     Schema extends typeof ThemeManager.BaseObject,
-    IExtraReturnTypes extends Record<string, unknown> = {},
-> extends Painter<MaimaiScoreAdapter, Schema, IExtraReturnTypes> {
+> extends Painter<MaimaiScoreAdapter, Schema> {
     public constructor({
         theme: { schema, searchPaths, defaultTheme },
     }: {

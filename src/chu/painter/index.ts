@@ -14,8 +14,7 @@ import { Painter, Theme, ThemeManager } from "@maidraw/lib/painter";
 
 export abstract class ChunithmPainter<
     Schema extends typeof ThemeManager.BaseObject,
-    IExtraReturnTypes extends Record<string, unknown> = {},
-> extends Painter<ChunithmScoreAdapter, Schema, IExtraReturnTypes> {
+> extends Painter<ChunithmScoreAdapter, Schema> {
     public constructor({
         theme: { schema, searchPaths, defaultTheme },
     }: {
