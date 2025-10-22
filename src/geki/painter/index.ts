@@ -1104,7 +1104,8 @@ export namespace OngekiPainterModule {
                 element: z.infer<typeof schema>,
                 chartId: number,
                 scores: (IScore | null)[],
-                region: "JPN" = "JPN"
+                region: "JPN" = "JPN",
+                type: "refresh" | "classic" = "refresh"
             ) {
                 /* Begin Background Draw */
                 ctx.roundRect(
@@ -1172,7 +1173,8 @@ export namespace OngekiPainterModule {
                                     cardHeight,
                                     true,
                                     region,
-                                    scores[i]
+                                    scores[i],
+                                    type
                                 );
                         } else {
                             await drawChartGridCard(
@@ -1203,7 +1205,8 @@ export namespace OngekiPainterModule {
                 height: number,
                 isShort: boolean,
                 targetRegion: "JPN" = "JPN",
-                score?: IScore | null
+                score?: IScore | null,
+                type: "refresh" | "classic" = "refresh"
             ) {
                 let curColor = "#FFFFFF";
                 switch (chart.difficulty) {
@@ -1303,7 +1306,7 @@ export namespace OngekiPainterModule {
                                     .find((v) => v.type == "existence")?.data
                                     .level || 0,
                                 1
-                            )}${score ? `　↑${Util.truncate(score.rating, 1)}` : ""}`,
+                            )}${score ? `　↑${Util.truncate(score.rating, type == "classic" ? 2 : 3)}` : ""}`,
                             x + element.bubble.margin * 2 + difficultyTextWidth,
                             y +
                                 element.bubble.margin +

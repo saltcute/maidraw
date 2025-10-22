@@ -105,7 +105,8 @@ export class ChartPainter extends OngekiPainter<typeof ChartPainter.Theme> {
                             element,
                             variables.chartId,
                             variables.scores,
-                            options?.region
+                            options?.region,
+                            variables.type
                         );
                         break;
                     }
