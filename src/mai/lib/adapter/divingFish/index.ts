@@ -8,6 +8,7 @@ import {
 } from "@maidraw/mai/type";
 import { MaimaiScoreAdapter } from "..";
 import { Database } from "@maidraw/mai/lib/database";
+import { BaseScoreAdapter } from "@maidraw/lib/adapter";
 
 type IBest50ResponseData = {
     "invalid-user": {
@@ -26,7 +27,10 @@ type IResponseData = {
     level50: ILevel50ResponseData;
 };
 
-export class DivingFish extends MaimaiScoreAdapter<IResponseData> {
+export class DivingFish
+    extends BaseScoreAdapter
+    implements MaimaiScoreAdapter<IResponseData>
+{
     constructor({
         auth,
         baseURL = "https://www.diving-fish.com/api/maimaidxprober/",

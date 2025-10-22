@@ -11,6 +11,7 @@ import {
     EAchievementTypes,
 } from "@maidraw/mai/type";
 import { Database } from "@maidraw/mai/lib/database";
+import { BaseScoreAdapter } from "@maidraw/lib/adapter";
 
 type IBest50ResponseData = {
     "invalid-user": {
@@ -29,7 +30,10 @@ type IResponseData = {
     level50: ILevel50ResponseData;
 };
 
-export class KamaiTachi extends MaimaiScoreAdapter<IResponseData> {
+export class KamaiTachi
+    extends BaseScoreAdapter
+    implements MaimaiScoreAdapter<IResponseData>
+{
     private currentVersion: KamaiTachi.GameVersions;
     private currentRegion: "DX" | "EX" | "CN";
     constructor({

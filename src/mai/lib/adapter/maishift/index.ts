@@ -10,6 +10,7 @@ import {
     EDifficulty,
 } from "@maidraw/mai/type";
 import { Database } from "@maidraw/mai/lib/database";
+import { BaseScoreAdapter } from "@maidraw/lib/adapter";
 
 type IBest50ResponseData = {
     "invalid-user": {
@@ -34,7 +35,10 @@ type IResponseData = {
     level50: ILevel50ResponseData;
 };
 
-export class Maishift extends MaimaiScoreAdapter<IResponseData> {
+export class Maishift
+    extends BaseScoreAdapter
+    implements MaimaiScoreAdapter<IResponseData>
+{
     constructor() {
         super({
             baseURL: "https://maimai.shiftpsh.com",

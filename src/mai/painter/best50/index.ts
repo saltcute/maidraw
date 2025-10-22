@@ -258,8 +258,8 @@ export class Best50Painter extends MaimaiPainter<typeof Best50Painter.Theme> {
             return res;
         }
     }
-    public async drawWithScoreSource(
-        source: MaimaiScoreAdapter,
+    public async drawWithScoreSource<T extends MaimaiScoreAdapter<any>>(
+        source: T,
         variables: { username: string },
         options: {
             scale?: number;

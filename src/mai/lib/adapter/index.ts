@@ -1,6 +1,5 @@
 import Util from "@maidraw/lib/util";
 import { IScore } from "../../type";
-import { BaseScoreAdapter } from "@maidraw/lib/adapter";
 
 type IBaseResponseData = {
     unknown: null;
@@ -43,26 +42,26 @@ type IResponseData = {
     level50: ILevel50ResponseData;
 };
 
-export abstract class MaimaiScoreAdapter<
+export interface MaimaiScoreAdapter<
     IExtraReturnTypes extends Partial<
         Record<keyof IResponseData, Record<string, unknown>>
     > = {},
-> extends BaseScoreAdapter {
-    abstract getPlayerBest50(
+> {
+    getPlayerBest50(
         username: string
     ): Promise<
         Util.ResponseOf<
             Util.MergeExtraTypes<IResponseData, IExtraReturnTypes>["best50"]
         >
     >;
-    abstract getPlayerInfo(
+    getPlayerInfo(
         username: string
     ): Promise<
         Util.ResponseOf<
             Util.MergeExtraTypes<IResponseData, IExtraReturnTypes>["profile"]
         >
     >;
-    abstract getPlayerProfilePicture(
+    getPlayerProfilePicture(
         username: string
     ): Promise<
         Util.ResponseOf<
@@ -72,7 +71,7 @@ export abstract class MaimaiScoreAdapter<
             >["profilePicture"]
         >
     >;
-    abstract getPlayerScore(
+    getPlayerScore(
         username: string,
         chartId: number
     ): Promise<
@@ -80,7 +79,7 @@ export abstract class MaimaiScoreAdapter<
             Util.MergeExtraTypes<IResponseData, IExtraReturnTypes>["score"]
         >
     >;
-    abstract getPlayerLevel50(
+    getPlayerLevel50(
         username: string,
         level: number,
         page: number,

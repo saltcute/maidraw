@@ -9,6 +9,7 @@ import {
     EAchievementTypes,
 } from "@maidraw/mai/type";
 import { Database } from "@maidraw/mai/lib/database";
+import { BaseScoreAdapter } from "@maidraw/lib/adapter";
 
 type IBest50ResponseData = {
     "invalid-user": {
@@ -33,7 +34,10 @@ type IResponseData = {
     level50: ILevel50ResponseData;
 };
 
-export class LXNS extends MaimaiScoreAdapter<IResponseData> {
+export class LXNS
+    extends BaseScoreAdapter
+    implements MaimaiScoreAdapter<IResponseData>
+{
     constructor({
         auth,
         baseURL = "https://maimai.lxns.net/api/v0/maimai",

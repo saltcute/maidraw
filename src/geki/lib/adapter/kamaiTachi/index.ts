@@ -700,7 +700,7 @@ export class KamaiTachi extends OngekiScoreAdapter<IResponseData> {
                 status: "success",
                 message: "",
                 data: {
-                    name: profile?.body.username,
+                    name: profile.body.username,
                     rating: Util.truncateNumber(rating / 55, 2),
                 },
             } as const;
