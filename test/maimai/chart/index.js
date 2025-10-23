@@ -17,7 +17,7 @@ const upath = require("upath");
         for (const region of ["DX", "EX", "CN"]) {
             let result = await painter.drawWithScoreSource(
                 (() => {
-                    switch (process.env.ADAPTER.toLowerCase()) {
+                    switch (process.env.ADAPTER?.toLowerCase()) {
                         case "lxns":
                             return lxns;
                         case "maishift":
