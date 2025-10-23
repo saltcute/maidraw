@@ -1882,152 +1882,195 @@ export namespace MaimaiPainterModule {
                                                 actualEvents.length)) /
                                     2;
                             }
-                            for (
-                                let i = 0,
-                                    curx =
-                                        x +
-                                        positionAdjustment +
-                                        height * 2 +
-                                        element.bubble.margin * (5 / 2) +
-                                        noteCountLength,
-                                    cury =
-                                        y +
-                                        element.bubble.margin * (3 / 2) +
-                                        versionImageHeight;
-                                i < actualEvents.length;
-                                ++i
-                            ) {
-                                const event = actualEvents[i];
-                                if (!event) continue;
-                                let logoRegion: "OLD" | "DX" | "EX" | "CN" =
-                                    event.version.gameVersion.isDX
-                                        ? targetRegion
-                                        : "OLD";
-                                if (logoRegion == "EX") {
-                                    if (
-                                        !(
-                                            10 <=
-                                                event.version.gameVersion
-                                                    .minor &&
-                                            event.version.gameVersion.minor < 20
-                                        )
-                                    ) {
-                                        logoRegion = "DX";
-                                    }
-                                }
-                                const rawVersion = findVersion(
-                                    event.version.gameVersion.minor,
-                                    event.version.gameVersion.isDX,
-                                    logoRegion == "CN"
-                                );
-                                if (rawVersion != null) {
-                                    const versionImage = theme.getFile(
-                                        element.sprites.versions[logoRegion][
-                                            rawVersion
-                                        ]
-                                    );
-                                    try {
-                                        if (!versionImage)
-                                            throw "No versionImage";
-                                        sharp(versionImage);
-                                        const versionImg =
-                                            await Util.loadImage(versionImage);
-                                        ctx.drawImage(
-                                            versionImg,
-                                            curx,
-                                            cury,
-                                            versionImageWidth,
-                                            versionImageHeight
-                                        );
-                                    } catch {
-                                        const str = `${event.version.gameVersion.isDX ? "DX " : ""}${event.version.gameVersion.major}.${event.version.gameVersion.minor}`;
-                                        const measurement = Util.measureText(
-                                            ctx,
-                                            str,
-                                            noteCountTextSize * 1.2,
-                                            Infinity
-                                        );
-                                        Util.drawText(
-                                            ctx,
-                                            str,
-                                            curx + versionImageWidth / 2,
-                                            cury +
-                                                versionImageHeight / 2 -
-                                                (measurement.actualBoundingBoxDescent -
-                                                    measurement.actualBoundingBoxAscent) /
-                                                    2,
-                                            noteCountTextSize * 1.2,
-                                            height * 0.806 * 0.04,
-                                            {
-                                                textAlign: "center",
-                                                mainColor: "white",
-                                                borderColor: new Color(curColor)
-                                                    .darken(0.3)
-                                                    .hexa(),
-                                            }
-                                        );
-                                    }
-
-                                    if (event.type == "existence") {
-                                        let symbol = "";
-                                        if (i != 0) {
-                                            const lastEvent =
-                                                actualEvents[i - 1];
-                                            if (lastEvent.type == "existence") {
-                                                if (
-                                                    lastEvent.data.level <
-                                                    event.data.level
-                                                )
-                                                    symbol = "↑";
-                                                else if (
-                                                    lastEvent.data.level >
-                                                    event.data.level
-                                                )
-                                                    symbol = "↓";
-                                                else if (
-                                                    lastEvent.data.level ==
-                                                    event.data.level
-                                                )
-                                                    symbol = "→";
-                                            }
+                            if (actualEvents.length <= 0) {
+                                Util.drawText(
+                                    ctx,
+                                    `This chart is not playable in ${(() => {
+                                        switch (targetRegion) {
+                                            case "EX":
+                                                return "maimai DX International ver";
+                                            case "CN":
+                                                return "舞萌DX";
+                                            case "DX":
+                                            default:
+                                                return "maimai でっらくす";
                                         }
-                                        Util.drawText(
-                                            ctx,
-                                            `${symbol}${Util.truncate(event.data.level, 1)}`,
-                                            curx + versionImageWidth / 2,
-                                            cury +
-                                                versionImageHeight +
-                                                noteCountTextSize,
-                                            noteCountTextSize,
-                                            height * 0.806 * 0.04,
-                                            {
-                                                textAlign: "center",
-                                                mainColor: "white",
-                                                borderColor: new Color(curColor)
-                                                    .darken(0.3)
-                                                    .hexa(),
-                                            }
-                                        );
-                                    } else if (event.type == "removal") {
-                                        Util.drawText(
-                                            ctx,
-                                            `❌`,
-                                            curx + versionImageWidth / 2,
-                                            cury +
-                                                versionImageHeight +
-                                                noteCountTextSize,
-                                            noteCountTextSize,
-                                            height * 0.806 * 0.04,
-                                            {
-                                                textAlign: "center",
-                                                mainColor: "white",
-                                                borderColor: new Color(curColor)
-                                                    .darken(0.3)
-                                                    .hexa(),
-                                            }
-                                        );
+                                    })()}.\nIt may have been scheduled to release in a future version.`,
+                                    x +
+                                        element.bubble.margin * (7 / 2) +
+                                        height * 2 +
+                                        noteCountLength,
+                                    y + element.bubble.margin + height / 2,
+                                    noteCountTextSize * 1.3,
+                                    height * 0.806 * 0.04,
+                                    {
+                                        mainColor: "white",
+                                        borderColor: new Color(curColor)
+                                            .darken(0.3)
+                                            .hexa(),
                                     }
-                                    curx += versionImageWidth + addGap;
+                                );
+                            } else {
+                                for (
+                                    let i = 0,
+                                        curx =
+                                            x +
+                                            positionAdjustment +
+                                            height * 2 +
+                                            element.bubble.margin * (5 / 2) +
+                                            noteCountLength,
+                                        cury =
+                                            y +
+                                            element.bubble.margin * (3 / 2) +
+                                            versionImageHeight;
+                                    i < actualEvents.length;
+                                    ++i
+                                ) {
+                                    const event = actualEvents[i];
+                                    if (!event) continue;
+                                    let logoRegion: "OLD" | "DX" | "EX" | "CN" =
+                                        event.version.gameVersion.isDX
+                                            ? targetRegion
+                                            : "OLD";
+                                    if (logoRegion == "EX") {
+                                        if (
+                                            !(
+                                                10 <=
+                                                    event.version.gameVersion
+                                                        .minor &&
+                                                event.version.gameVersion
+                                                    .minor < 20
+                                            )
+                                        ) {
+                                            logoRegion = "DX";
+                                        }
+                                    }
+                                    const rawVersion = findVersion(
+                                        event.version.gameVersion.minor,
+                                        event.version.gameVersion.isDX,
+                                        logoRegion == "CN"
+                                    );
+                                    if (rawVersion != null) {
+                                        const versionImage = theme.getFile(
+                                            element.sprites.versions[
+                                                logoRegion
+                                            ][rawVersion]
+                                        );
+                                        try {
+                                            if (!versionImage)
+                                                throw "No versionImage";
+                                            sharp(versionImage);
+                                            const versionImg =
+                                                await Util.loadImage(
+                                                    versionImage
+                                                );
+                                            ctx.drawImage(
+                                                versionImg,
+                                                curx,
+                                                cury,
+                                                versionImageWidth,
+                                                versionImageHeight
+                                            );
+                                        } catch {
+                                            const str = `${event.version.gameVersion.isDX ? "DX " : ""}${event.version.gameVersion.major}.${event.version.gameVersion.minor}`;
+                                            const measurement =
+                                                Util.measureText(
+                                                    ctx,
+                                                    str,
+                                                    noteCountTextSize * 1.2,
+                                                    Infinity
+                                                );
+                                            Util.drawText(
+                                                ctx,
+                                                str,
+                                                curx + versionImageWidth / 2,
+                                                cury +
+                                                    versionImageHeight / 2 -
+                                                    (measurement.actualBoundingBoxDescent -
+                                                        measurement.actualBoundingBoxAscent) /
+                                                        2,
+                                                noteCountTextSize * 1.2,
+                                                height * 0.806 * 0.04,
+                                                {
+                                                    textAlign: "center",
+                                                    mainColor: "white",
+                                                    borderColor: new Color(
+                                                        curColor
+                                                    )
+                                                        .darken(0.3)
+                                                        .hexa(),
+                                                }
+                                            );
+                                        }
+
+                                        if (event.type == "existence") {
+                                            let symbol = "";
+                                            if (i != 0) {
+                                                const lastEvent =
+                                                    actualEvents[i - 1];
+                                                if (
+                                                    lastEvent.type ==
+                                                    "existence"
+                                                ) {
+                                                    if (
+                                                        lastEvent.data.level <
+                                                        event.data.level
+                                                    )
+                                                        symbol = "↑";
+                                                    else if (
+                                                        lastEvent.data.level >
+                                                        event.data.level
+                                                    )
+                                                        symbol = "↓";
+                                                    else if (
+                                                        lastEvent.data.level ==
+                                                        event.data.level
+                                                    )
+                                                        symbol = "→";
+                                                }
+                                            }
+                                            Util.drawText(
+                                                ctx,
+                                                `${symbol}${Util.truncate(event.data.level, 1)}`,
+                                                curx + versionImageWidth / 2,
+                                                cury +
+                                                    versionImageHeight +
+                                                    noteCountTextSize,
+                                                noteCountTextSize,
+                                                height * 0.806 * 0.04,
+                                                {
+                                                    textAlign: "center",
+                                                    mainColor: "white",
+                                                    borderColor: new Color(
+                                                        curColor
+                                                    )
+                                                        .darken(0.3)
+                                                        .hexa(),
+                                                }
+                                            );
+                                        } else if (event.type == "removal") {
+                                            Util.drawText(
+                                                ctx,
+                                                `❌`,
+                                                curx + versionImageWidth / 2,
+                                                cury +
+                                                    versionImageHeight +
+                                                    noteCountTextSize,
+                                                noteCountTextSize,
+                                                height * 0.806 * 0.04,
+                                                {
+                                                    textAlign: "center",
+                                                    mainColor: "white",
+                                                    borderColor: new Color(
+                                                        curColor
+                                                    )
+                                                        .darken(0.3)
+                                                        .hexa(),
+                                                }
+                                            );
+                                        }
+                                        curx += versionImageWidth + addGap;
+                                    }
                                 }
                             }
                         }
