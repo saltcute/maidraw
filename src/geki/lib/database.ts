@@ -222,6 +222,7 @@ export namespace Database {
                 flick: number;
                 bell: number;
             };
+            maxPlatinumScore: number;
             boss: {
                 card: {
                     id: number;
@@ -234,7 +235,11 @@ export namespace Database {
                 };
                 level: number;
             };
-            maxPlatinumScore: number;
+            isLunatic: boolean;
+            reMaster?: {
+                standard: number;
+                real: number;
+            };
         };
         /**
          * Events that happened to the chart in versions.

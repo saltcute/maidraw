@@ -68,10 +68,14 @@ export class KamaiTachi extends ScoreTrackerAdapter {
                 difficultyCompare(v.chart, "Master") &&
                 v.chart.data.inGameID == chartId
         );
+        const lunaticLocalChart = Database.getLocalChart(
+            chartId,
+            EDifficulty.LUNATIC
+        );
         const lunatic = pbs.find(
             (v) =>
                 difficultyCompare(v.chart, "Lunatic") &&
-                v.chart.data.inGameID == chartId
+                v.chart.data.inGameID == lunaticLocalChart?.meta.reMaster?.real
         );
         return {
             basic: basic
