@@ -1177,7 +1177,7 @@ export namespace ChunithmPainterModule {
                                     .find((v) => v.type == "existence")?.data
                                     .level || 0,
                                 1
-                            )}${score ? `　+${Util.truncate(score.rating, 1)}` : ""}`,
+                            )}${score ? `　+${Util.truncate(score.rating, 2)}` : ""}`,
                             x + element.bubble.margin * 2 + difficultyTextWidth,
                             y +
                                 element.bubble.margin +
