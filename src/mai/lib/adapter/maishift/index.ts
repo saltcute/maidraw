@@ -320,7 +320,7 @@ export class Maishift extends ScoreTrackerAdapter {
                     case "SS":
                         return EAchievementTypes.SS;
                     case "S+":
-                        return EAchievementTypes.S;
+                        return EAchievementTypes.SP;
                     case "S":
                         return EAchievementTypes.S;
                     case "AAA":
