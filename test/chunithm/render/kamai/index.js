@@ -20,16 +20,51 @@ const upath = require("upath");
         "jp-luminous-landscape-recents",
         "jp-luminous-landscape-new",
     ];
-    const source = kamai.luminous();
     for (let theme of themes) {
         const result = await painter.drawWithScoreSource(
-            source,
+            (() => {
+                switch (theme) {
+                    case "jp-xverse-landscape-recents":
+                    case "jp-xverse-landscape-new":
+                        return kamai.xverse();
+                    case "jp-verse-landscape-recents":
+                    case "jp-verse-landscape-new":
+                        return kamai.verse();
+                    case "jp-luminousplus-landscape-recents":
+                    case "jp-luminousplus-landscape-new":
+                    default:
+                        return kamai.luminousPlus();
+                    case "jp-luminous-landscape-recents":
+                    case "jp-luminous-landscape-new":
+                        return kamai.luminous();
+                    case "jp-paradiselost-landscape-recents":
+                    case "jp-paradiselost-landscape-new":
+                        return kamai.paradiseLost();
+                }
+            })(),
             { username: process.env.NAME },
             {
                 scale: process.env.SCALE ?? 1,
                 type: theme.endsWith("-new") ? "new" : "recents",
                 theme,
-                // version: "crystal",
+                version: (() => {
+                    switch (theme) {
+                        case "jp-xverse-landscape-recents":
+                        case "jp-xverse-landscape-new":
+                        case "jp-verse-landscape-recents":
+                        case "jp-verse-landscape-new":
+                        default:
+                            return "verse";
+                        case "jp-luminousplus-landscape-recents":
+                        case "jp-luminousplus-landscape-new":
+                        case "jp-luminous-landscape-recents":
+                        case "jp-luminous-landscape-new":
+                            return "new";
+                        case "jp-paradiselost-landscape-recents":
+                        case "jp-paradiselost-landscape-new":
+                            return "crystal";
+                    }
+                })(),
             }
         );
         if (result instanceof Buffer) {
