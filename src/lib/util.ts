@@ -17,16 +17,24 @@ export class Util {
     /**
      * Pretty much ignores percision loss.
      */
-    static truncate(payload: number, percision: number): string {
-        const str = payload.toString();
+    static truncate(
+        payload: number,
+        percision: number,
+        roundingPosition: number = 10
+    ): string {
+        const str = payload.toFixed(roundingPosition);
         let [int, dec] = str.split(".");
         if (!int) int = "";
         if (!dec) dec = "";
         if (percision <= 0) return int;
         return `${int}.${dec.substring(0, percision).padEnd(percision, "0")}`;
     }
-    static truncateNumber(payload: number, percision: number): number {
-        return parseFloat(this.truncate(payload, percision));
+    static truncateNumber(
+        payload: number,
+        percision: number,
+        roundingPosition: number = 10
+    ): number {
+        return parseFloat(this.truncate(payload, percision, roundingPosition));
     }
     /**
      * Dirty implementation, pretty much ignores percision loss.
