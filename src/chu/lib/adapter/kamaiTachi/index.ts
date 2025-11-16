@@ -218,7 +218,64 @@ export class KamaiTachi extends ScoreTrackerAdapter {
                                 KamaiTachi.EGameVersions.CHUNITHM_PARADISE_LOST
                         );
                     } else return v.version.name === this.CURRENT_VERSION;
-                })?.data.level ?? chart.levelNum;
+                })?.data.level ??
+            (() => {
+                switch (chart.data.inGameID) {
+                    case 351: // ぶぉん！ぶぉん！らいど・おん！
+                    case 154: // SAVIOR OF SONG
+                    case 350: // FEEL×ALIVE
+                    case 410: // MY LIBERATION
+                    case 652: // L.L.L.
+                    case 235: // ファッとして桃源郷
+                    case 454: // ガチャガチャきゅ～と・ふぃぎゅ@メイト
+                    case 215: // Falling Roses
+                    case 546: // Last Proof
+                    case 581: // Los! Los! Los!
+                    case 582: // Uncontrollable
+                    case 609: // あ・え・い・う・え・お・あお!!
+                    case 580: // 楔
+                    case 651: // Clattanoia
+                    case 728: // Don't say "lazy"`
+                    case 356: // クローバー♣かくめーしょん
+                    case 420: // Now Loading!!!!
+                    case 620: // メニメニマニマニ
+                    case 78: // crossing field
+                    case 206: // Signs Of Love (“Never More” ver.)
+                    case 243: // シュガーソングとビターステップ
+                    case 124: // 夏影
+                    case 34: // 亡國覚醒カタルシス
+                    case 650: // Futuristic Player
+                    case 646: // 理燃-コトワリ-
+                    case 726: // Sparkling Daydream
+                    case 296: // かくしん的☆めたまるふぉ～ぜっ!
+                    case 509: // Vitalization
+                    case 495: // 不安定な神様
+                    case 611: // SEVENTH HAVEN
+                    case 591: // ガヴリールドロップキック
+                    case 624: // 灼熱スイッチ
+                    case 725: // キミとボクのミライ
+                    case 9: // 情熱大陸
+                    case 353: // Star☆Glitter
+                    case 537: // ハレ晴レユカイ
+                    case 640: // POP TEAM EPIC
+                        if (chart.levelNum >= 13.7) {
+                            return chart.levelNum - 1;
+                        } else if (chart.levelNum >= 13.5) {
+                            return 12.6;
+                        } else if (chart.levelNum >= 13.2) {
+                            return 12.5;
+                        } else if (chart.levelNum >= 13) {
+                            return 12.4;
+                        } else if (chart.levelNum >= 12.7) {
+                            return 12.3;
+                        } else if (chart.levelNum >= 12.5) {
+                            return 12.2;
+                        } else if (chart.levelNum >= 12.2) {
+                            return 12.1;
+                        } else return chart.levelNum;
+                }
+                return chart.levelNum;
+            })();
         return {
             chart: (() => {
                 return {
