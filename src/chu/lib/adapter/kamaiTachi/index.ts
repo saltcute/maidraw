@@ -323,11 +323,37 @@ export class KamaiTachi extends ScoreTrackerAdapter {
         }
         return null;
     }
+    private isChartInVersionStrict(
+        kchart: KamaiTachi.IChart,
+        version: KamaiTachi.EGameVersions
+    ): boolean {
+        if (!Database.hasLocalDatabase()) return false;
+        const diff = this.getDatabaseDifficulty(kchart);
+        const chart = Database.getLocalChart(kchart.data.inGameID, diff);
+        if (chart) {
+            return chart.events.find(
+                (v) =>
+                    v.type == "existence" &&
+                    (version === KamaiTachi.EGameVersions.CHUNITHM_PARADISE ||
+                    version === KamaiTachi.EGameVersions.CHUNITHM_PARADISE_LOST
+                        ? this.getKamaiVersion(v.version.name) ===
+                          (KamaiTachi.EGameVersions.CHUNITHM_PARADISE ||
+                              KamaiTachi.EGameVersions.CHUNITHM_PARADISE_LOST)
+                        : this.getKamaiVersion(v.version.name) == version)
+            )
+                ? true
+                : false;
+        }
+        return false;
+    }
     async getPlayerBest50(
         userId: string,
         currentVersion = this.CURRENT_VERSION,
-        omnimix = true
+        omnimix?: boolean
     ) {
+        if (omnimix === undefined) {
+            omnimix = this.getShouldOmnimix(currentVersion);
+        }
         const rawPBs = await this.getPlayerPB(userId);
         if (!rawPBs?.body) return null;
         const pbs: {
@@ -354,10 +380,7 @@ export class KamaiTachi extends ScoreTrackerAdapter {
             return (
                 KamaiTachi.compareGameVersions(currentVersion, version) > 0 &&
                 (omnimix ||
-                    !(
-                        v.chart.versions[0].includes("-omni") &&
-                        v.chart.versions[1].includes("-omni")
-                    ))
+                    this.isChartInVersionStrict(v.chart, currentVersion))
             );
         });
 
@@ -391,8 +414,11 @@ export class KamaiTachi extends ScoreTrackerAdapter {
     async getPlayerRecent40(
         userId: string,
         currentVersion = this.CURRENT_VERSION,
-        omnimix = true
+        omnimix?: boolean
     ) {
+        if (omnimix === undefined) {
+            omnimix = this.getShouldOmnimix(currentVersion);
+        }
         const rawPBs = await this.getPlayerPB(userId);
         const rawRecents = await this.getPlayerRecentScores(userId);
         if (!rawPBs?.body || !rawRecents?.body) return null;
@@ -431,10 +457,7 @@ export class KamaiTachi extends ScoreTrackerAdapter {
             return (
                 KamaiTachi.compareGameVersions(currentVersion, version) >= 0 &&
                 (omnimix ||
-                    !(
-                        v.chart.versions[0].includes("-omni") &&
-                        v.chart.versions[1].includes("-omni")
-                    ))
+                    this.isChartInVersionStrict(v.chart, currentVersion))
             );
         });
         const recentScores = recents.filter((v) => {
@@ -446,10 +469,7 @@ export class KamaiTachi extends ScoreTrackerAdapter {
             return (
                 KamaiTachi.compareGameVersions(currentVersion, version) >= 0 &&
                 (omnimix ||
-                    !(
-                        v.chart.versions[0].includes("-omni") &&
-                        v.chart.versions[1].includes("-omni")
-                    ))
+                    this.isChartInVersionStrict(v.chart, currentVersion))
             );
         });
         function ratingGuardSimulation(scores: IScore[]) {
@@ -555,6 +575,36 @@ export class KamaiTachi extends ScoreTrackerAdapter {
             };
         } else return null;
     }
+    private getShouldOmnimix(version: KamaiTachi.EGameVersions) {
+        switch (version) {
+            case KamaiTachi.EGameVersions.CHUNITHM_XVERSE:
+            case KamaiTachi.EGameVersions.CHUNITHM_LUMINOUS_PLUS:
+            case KamaiTachi.EGameVersions.CHUNITHM_LUMINOUS:
+            case KamaiTachi.EGameVersions.CHUNITHM_SUN_PLUS:
+            case KamaiTachi.EGameVersions.CHUNITHM_SUN:
+            case KamaiTachi.EGameVersions.CHUNITHM_NEW_PLUS:
+            case KamaiTachi.EGameVersions.CHUNITHM_NEW:
+            case KamaiTachi.EGameVersions.CHUNITHM_SUPERSTAR_PLUS:
+            case KamaiTachi.EGameVersions.CHUNITHM_PARADISE:
+            case KamaiTachi.EGameVersions.CHUNITHM_SUPERSTAR:
+            case KamaiTachi.EGameVersions.CHUNITHM_CRYSTAL_PLUS:
+            case KamaiTachi.EGameVersions.CHUNITHM_CRYSTAL:
+            case KamaiTachi.EGameVersions.CHUNITHM_AMAZON_PLUS:
+            case KamaiTachi.EGameVersions.CHUNITHM_AMAZON:
+            case KamaiTachi.EGameVersions.CHUNITHM_STAR_PLUS:
+            case KamaiTachi.EGameVersions.CHUNITHM_STAR:
+            case KamaiTachi.EGameVersions.CHUNITHM_AIR_PLUS:
+            case KamaiTachi.EGameVersions.CHUNITHM_AIR:
+            case KamaiTachi.EGameVersions.CHUNITHM_PLUS:
+            case KamaiTachi.EGameVersions.CHUNITHM:
+            default:
+                return true;
+            case KamaiTachi.EGameVersions.CHUNITHM_VERSE:
+            case KamaiTachi.EGameVersions.CHUNITHM_PARADISE_LOST:
+                return false;
+        }
+    }
+
     private async getPlayerProfileRaw(userId: string) {
         return this.get<
             KamaiTachi.IResponse<{
