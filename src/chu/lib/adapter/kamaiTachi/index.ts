@@ -406,11 +406,8 @@ export class KamaiTachi extends ScoreTrackerAdapter {
     async getPlayerBest50(
         userId: string,
         currentVersion = this.CURRENT_VERSION,
-        omnimix?: boolean
+        omnimix = false
     ) {
-        if (omnimix === undefined) {
-            omnimix = this.getShouldOmnimix(currentVersion);
-        }
         const rawPBs = await this.getPlayerPB(userId);
         if (!rawPBs?.body) return null;
         const pbs: {
@@ -471,11 +468,8 @@ export class KamaiTachi extends ScoreTrackerAdapter {
     async getPlayerRecent40(
         userId: string,
         currentVersion = this.CURRENT_VERSION,
-        omnimix?: boolean
+        omnimix = false
     ) {
-        if (omnimix === undefined) {
-            omnimix = this.getShouldOmnimix(currentVersion);
-        }
         const rawPBs = await this.getPlayerPB(userId);
         const rawRecents = await this.getPlayerRecentScores(userId);
         if (!rawPBs?.body || !rawRecents?.body) return null;
@@ -631,35 +625,6 @@ export class KamaiTachi extends ScoreTrackerAdapter {
                 rating: rating / 40,
             };
         } else return null;
-    }
-    private getShouldOmnimix(version: KamaiTachi.EGameVersions) {
-        switch (version) {
-            case KamaiTachi.EGameVersions.CHUNITHM_XVERSE:
-            case KamaiTachi.EGameVersions.CHUNITHM_LUMINOUS_PLUS:
-            case KamaiTachi.EGameVersions.CHUNITHM_LUMINOUS:
-            case KamaiTachi.EGameVersions.CHUNITHM_SUN_PLUS:
-            case KamaiTachi.EGameVersions.CHUNITHM_SUN:
-            case KamaiTachi.EGameVersions.CHUNITHM_NEW_PLUS:
-            case KamaiTachi.EGameVersions.CHUNITHM_NEW:
-            case KamaiTachi.EGameVersions.CHUNITHM_SUPERSTAR_PLUS:
-            case KamaiTachi.EGameVersions.CHUNITHM_PARADISE:
-            case KamaiTachi.EGameVersions.CHUNITHM_SUPERSTAR:
-            case KamaiTachi.EGameVersions.CHUNITHM_CRYSTAL_PLUS:
-            case KamaiTachi.EGameVersions.CHUNITHM_CRYSTAL:
-            case KamaiTachi.EGameVersions.CHUNITHM_AMAZON_PLUS:
-            case KamaiTachi.EGameVersions.CHUNITHM_AMAZON:
-            case KamaiTachi.EGameVersions.CHUNITHM_STAR_PLUS:
-            case KamaiTachi.EGameVersions.CHUNITHM_STAR:
-            case KamaiTachi.EGameVersions.CHUNITHM_AIR_PLUS:
-            case KamaiTachi.EGameVersions.CHUNITHM_AIR:
-            case KamaiTachi.EGameVersions.CHUNITHM_PLUS:
-            case KamaiTachi.EGameVersions.CHUNITHM:
-            default:
-                return true;
-            case KamaiTachi.EGameVersions.CHUNITHM_VERSE:
-            case KamaiTachi.EGameVersions.CHUNITHM_PARADISE_LOST:
-                return false;
-        }
     }
 
     private async getPlayerProfileRaw(userId: string) {
