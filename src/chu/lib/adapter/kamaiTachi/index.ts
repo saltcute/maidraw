@@ -188,6 +188,8 @@ export class KamaiTachi extends ScoreTrackerAdapter {
                 return KamaiTachi.EGameVersions.CHUNITHM_LUMINOUS_PLUS;
             case "CHUNITHM VERSE":
                 return KamaiTachi.EGameVersions.CHUNITHM_VERSE;
+            case "CHUNITHM X-VERSE":
+                return KamaiTachi.EGameVersions.CHUNITHM_XVERSE;
             default:
                 return null;
         }
@@ -204,21 +206,17 @@ export class KamaiTachi extends ScoreTrackerAdapter {
         const internalLevel =
             localChart?.events
                 .filter((v) => v.type === "existence")
-                .find((v) => {
-                    if (
-                        this.CURRENT_VERSION ===
-                            KamaiTachi.EGameVersions.CHUNITHM_PARADISE ||
-                        this.CURRENT_VERSION ===
-                            KamaiTachi.EGameVersions.CHUNITHM_PARADISE_LOST
-                    ) {
-                        return (
-                            v.version.name ===
-                                KamaiTachi.EGameVersions.CHUNITHM_PARADISE ||
-                            v.version.name ===
-                                KamaiTachi.EGameVersions.CHUNITHM_PARADISE_LOST
-                        );
-                    } else return v.version.name === this.CURRENT_VERSION;
-                })?.data.level ??
+                .map((v) => {
+                    return {
+                        sort: KamaiTachi.compareGameVersions(
+                            this.getKamaiVersion(v.version.name),
+                            this.CURRENT_VERSION
+                        ),
+                        data: v,
+                    };
+                })
+                .filter((v) => v.sort <= 0)
+                .sort((a, b) => b.sort - a.sort)[0]?.data.data.level ??
             (() => {
                 switch (chart.data.inGameID) {
                     case 351: // ぶぉん！ぶぉん！らいど・おん！
@@ -388,16 +386,24 @@ export class KamaiTachi extends ScoreTrackerAdapter {
         const diff = this.getDatabaseDifficulty(kchart);
         const chart = Database.getLocalChart(kchart.data.inGameID, diff);
         if (chart) {
-            return chart.events.find(
-                (v) =>
-                    v.type == "existence" &&
-                    (version === KamaiTachi.EGameVersions.CHUNITHM_PARADISE ||
-                    version === KamaiTachi.EGameVersions.CHUNITHM_PARADISE_LOST
-                        ? this.getKamaiVersion(v.version.name) ===
-                          (KamaiTachi.EGameVersions.CHUNITHM_PARADISE ||
-                              KamaiTachi.EGameVersions.CHUNITHM_PARADISE_LOST)
-                        : this.getKamaiVersion(v.version.name) == version)
-            )
+            return chart.events
+                .filter((v) => v.type == "existence")
+                .find((v) => {
+                    if (
+                        version == KamaiTachi.EGameVersions.CHUNITHM_PARADISE ||
+                        version ==
+                            KamaiTachi.EGameVersions.CHUNITHM_PARADISE_LOST
+                    ) {
+                        return (
+                            this.getKamaiVersion(v.version.name) ==
+                                KamaiTachi.EGameVersions.CHUNITHM_PARADISE ||
+                            this.getKamaiVersion(v.version.name) ==
+                                KamaiTachi.EGameVersions.CHUNITHM_PARADISE_LOST
+                        );
+                    } else {
+                        return this.getKamaiVersion(v.version.name) == version;
+                    }
+                })
                 ? true
                 : false;
         }
@@ -936,11 +942,12 @@ export namespace KamaiTachi {
      * @returns positive if a is newer, negative if b is newer, 0 if they are the same.
      */
     export function compareGameVersions(
-        a: EGameVersions,
-        b: EGameVersions
+        a: EGameVersions | null,
+        b: EGameVersions | null
     ): number {
-        if (!GameVersions.includes(a)) return -1;
-        if (!GameVersions.includes(b)) return 1;
+        if (!a && !b) return 0;
+        if (!a || !GameVersions.includes(a)) return -Infinity;
+        if (!b || !GameVersions.includes(b)) return Infinity;
         if (a == b) return 0;
         return GameVersions.indexOf(b) - GameVersions.indexOf(a);
     }
