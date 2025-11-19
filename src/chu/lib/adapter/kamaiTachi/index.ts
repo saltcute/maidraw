@@ -406,7 +406,7 @@ export class KamaiTachi extends ScoreTrackerAdapter {
     async getPlayerBest50(
         userId: string,
         currentVersion = this.CURRENT_VERSION,
-        omnimix = false
+        omnimix = true
     ) {
         const rawPBs = await this.getPlayerPB(userId);
         if (!rawPBs?.body) return null;
@@ -468,7 +468,7 @@ export class KamaiTachi extends ScoreTrackerAdapter {
     async getPlayerRecent40(
         userId: string,
         currentVersion = this.CURRENT_VERSION,
-        omnimix = false
+        omnimix = true
     ) {
         const rawPBs = await this.getPlayerPB(userId);
         const rawRecents = await this.getPlayerRecentScores(userId);
