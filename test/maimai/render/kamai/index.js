@@ -33,7 +33,7 @@ const upath = require("upath");
         let result = null;
         if (type === "full") {
             result = await painter.drawWithScoreSource(
-                kamai.versions().prism(),
+                kamai.versions().prismPlus(),
                 { username: process.env.NAME },
                 {
                     scale: process.env.SCALE ?? 1,
