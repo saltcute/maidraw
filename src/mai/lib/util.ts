@@ -2,6 +2,7 @@ import _ from "lodash";
 
 import { EAchievementTypes } from "../type";
 import { Database } from "./database";
+import Util from "@maidraw/lib/util";
 
 export namespace MaimaiUtil {
     export class Version {
@@ -253,10 +254,11 @@ export namespace MaimaiUtil {
                 break;
             }
         }
-        return (
+        return Util.truncateNumber(
             (Math.min(achievement, 100.5) / 100) *
-            ratingConstant *
-            internalLevel
+                ratingConstant *
+                internalLevel,
+            0
         );
     }
 }
