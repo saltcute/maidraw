@@ -352,8 +352,10 @@ export class KamaiTachi extends ScoreTrackerAdapter {
         const profile = await this.getPlayerProfileRaw(userId);
         const scores = await this.getPlayerBest50(userId, options);
         if (!profile?.body || !scores) return null;
-        let dxRating = 0;
-        [...scores.new, ...scores.old].forEach((v) => (dxRating += v.dxRating));
+        const dxRating = [...scores.new, ...scores.old]
+            .map((v) => v.dxRating)
+            .reduce((sum, v) => (sum += v));
+
         return {
             name: profile?.body.username,
             rating: dxRating,
