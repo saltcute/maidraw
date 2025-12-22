@@ -5,7 +5,7 @@ import { Canvas } from "canvas";
 
 import { Database } from "../../lib/database";
 import { EDifficulty, IScore } from "../../type";
-import { ScoreTrackerAdapter } from "../../lib/adapter";
+import { MaimaiScoreAdapter } from "../../lib/adapter";
 import { MaimaiPainter, MaimaiPainterModule } from "..";
 
 import { Util } from "@maidraw/lib/util";
@@ -142,7 +142,7 @@ export class ChartPainter extends MaimaiPainter<typeof ChartPainter.Theme> {
         } else return null;
     }
     public async drawWithScoreSource(
-        source: ScoreTrackerAdapter,
+        source: MaimaiScoreAdapter,
         variables: {
             username: string;
             chartId: number;

@@ -4,7 +4,7 @@ import { z } from "zod/v4";
 import { Canvas } from "canvas";
 
 import { EDifficulty, IScore } from "../../type";
-import { ScoreTrackerAdapter } from "../../lib/adapter";
+import { OngekiScoreAdapter } from "../../lib/adapter";
 
 import { Util } from "@maidraw/lib/util";
 import { OngekiPainter, OngekiPainterModule } from "..";
@@ -154,7 +154,7 @@ export class ChartPainter extends OngekiPainter<typeof ChartPainter.Theme> {
         } else return null;
     }
     public async drawWithScoreSource(
-        source: ScoreTrackerAdapter,
+        source: OngekiScoreAdapter,
         variables: {
             username: string;
             chartId: number;

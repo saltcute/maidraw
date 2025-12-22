@@ -4,7 +4,7 @@ import { z } from "zod/v4";
 import { Canvas } from "canvas";
 
 import { EDifficulty, IScore } from "../../type";
-import { ScoreTrackerAdapter } from "../../lib/adapter";
+import { ChunithmScoreAdapter } from "../../lib/adapter";
 
 import { Util } from "@maidraw/lib/util";
 import { ChunithmPainter, ChunithmPainterModule } from "..";
@@ -151,7 +151,7 @@ export class ChartPainter extends ChunithmPainter<typeof ChartPainter.Theme> {
         } else return null;
     }
     public async drawWithScoreSource(
-        source: ScoreTrackerAdapter,
+        source: ChunithmScoreAdapter,
         variables: {
             username: string;
             chartId: number;

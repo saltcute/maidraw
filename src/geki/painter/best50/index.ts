@@ -3,7 +3,7 @@ import { z } from "zod/v4";
 import { Canvas } from "canvas";
 import { IScore } from "@maidraw/geki/type";
 
-import { ScoreTrackerAdapter } from "../../lib/adapter";
+import { OngekiScoreAdapter } from "../../lib/adapter";
 import { OngekiPainter, OngekiPainterModule } from "..";
 
 import { Util } from "@maidraw/lib/util";
@@ -232,7 +232,7 @@ export class Best50Painter extends OngekiPainter<typeof Best50Painter.Theme> {
         } else return null;
     }
     public async drawWithScoreSource(
-        source: ScoreTrackerAdapter,
+        source: OngekiScoreAdapter,
         variable: { username: string },
         options: {
             scale?: number;

@@ -5,12 +5,13 @@ import {
     EDifficulty,
     IScore,
 } from "@maidraw/geki/type";
-import { ScoreTrackerAdapter } from "..";
 import { Util } from "@maidraw/lib/util";
 import { OngekiUtil } from "../../util";
 import { Database } from "../../database";
+import { OngekiScoreAdapter } from "..";
+import { BaseScoreAdapter } from "@maidraw/lib/adapter";
 
-export class KamaiTachi extends ScoreTrackerAdapter {
+export class KamaiTachi extends BaseScoreAdapter implements OngekiScoreAdapter {
     private readonly CURRENT_VERSION: KamaiTachi.EGameVersions;
     constructor({
         baseURL = "https://kamai.tachi.ac/",

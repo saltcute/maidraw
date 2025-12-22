@@ -6,7 +6,7 @@ import { Canvas, CanvasRenderingContext2D } from "canvas";
 
 import { Database } from "../lib/database";
 import { ChunithmUtil } from "../lib/util";
-import { ScoreTrackerAdapter } from "../lib/adapter";
+import { ChunithmScoreAdapter } from "../lib/adapter";
 import { EAchievementTypes, EComboTypes, EDifficulty, IScore } from "../type";
 
 import { Util } from "@maidraw/lib/util";
@@ -14,7 +14,7 @@ import { Painter, Theme, ThemeManager } from "@maidraw/lib/painter";
 
 export abstract class ChunithmPainter<
     Schema extends typeof ThemeManager.BaseObject,
-> extends Painter<ScoreTrackerAdapter, Schema> {
+> extends Painter<ChunithmScoreAdapter, Schema> {
     public constructor({
         theme: { schema, searchPaths, defaultTheme },
     }: {

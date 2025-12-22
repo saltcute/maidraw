@@ -2,7 +2,7 @@ import upath from "upath";
 import { z } from "zod/v4";
 import { Canvas } from "canvas";
 
-import { ScoreTrackerAdapter } from "../../lib/adapter";
+import { ChunithmScoreAdapter } from "../../lib/adapter";
 import { ChunithmPainter, ChunithmPainterModule } from "..";
 
 import { Util } from "@maidraw/lib/util";
@@ -201,7 +201,7 @@ export class Best50Painter extends ChunithmPainter<typeof Best50Painter.Theme> {
         } else return null;
     }
     public async drawWithScoreSource(
-        source: ScoreTrackerAdapter,
+        source: ChunithmScoreAdapter,
         variables: { username: string },
         options: {
             scale?: number;

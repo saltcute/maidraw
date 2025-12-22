@@ -51,7 +51,7 @@ export namespace Maimai {
 
     export import Database = database.Database;
 
-    export import ScoreTrackerAdapter = adapter.ScoreTrackerAdapter;
+    export import MaimaiScoreAdapter = adapter.MaimaiScoreAdapter;
     export namespace Adapters {
         export import LXNS = lxns.LXNS;
         export import KamaiTachi = kamaiTachi.KamaiTachi;

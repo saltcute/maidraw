@@ -1,4 +1,5 @@
-import { ScoreTrackerAdapter } from "..";
+import { BaseScoreAdapter } from "@maidraw/lib/adapter";
+import { ChunithmScoreAdapter } from "..";
 import { Database } from "../../database";
 import { ChunithmUtil } from "../../util";
 
@@ -9,7 +10,10 @@ import {
     IScore,
 } from "@maidraw/chu/type";
 
-export class KamaiTachi extends ScoreTrackerAdapter {
+export class KamaiTachi
+    extends BaseScoreAdapter
+    implements ChunithmScoreAdapter
+{
     private readonly CURRENT_VERSION: KamaiTachi.EGameVersions;
     constructor({
         baseURL = "https://kamai.tachi.ac/",

@@ -6,8 +6,9 @@ import {
     IChart,
     IScore,
 } from "@maidraw/mai/type";
-import { ScoreTrackerAdapter } from "..";
 import { Database } from "@maidraw/mai/lib/database";
+import { BaseScoreAdapter } from "@maidraw/lib/adapter";
+import { MaimaiScoreAdapter } from "..";
 
 export namespace DivingFish {
     export interface IPlayResult {
@@ -82,7 +83,7 @@ export namespace DivingFish {
     }
 }
 
-export class DivingFish extends ScoreTrackerAdapter {
+export class DivingFish extends BaseScoreAdapter implements MaimaiScoreAdapter {
     constructor({
         auth,
         baseURL = "https://www.diving-fish.com/api/maimaidxprober/",

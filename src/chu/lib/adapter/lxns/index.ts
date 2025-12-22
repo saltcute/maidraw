@@ -1,5 +1,3 @@
-import { ScoreTrackerAdapter } from "..";
-
 import {
     EAchievementTypes,
     EComboTypes,
@@ -8,8 +6,10 @@ import {
     IScore,
 } from "@maidraw/chu/type";
 import { Database } from "../../database";
+import { BaseScoreAdapter } from "@maidraw/lib/adapter";
+import { ChunithmScoreAdapter } from "..";
 
-export class LXNS extends ScoreTrackerAdapter {
+export class LXNS extends BaseScoreAdapter implements ChunithmScoreAdapter {
     constructor({
         auth,
         baseURL = "https://maimai.lxns.net/api/v0/chunithm",

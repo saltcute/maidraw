@@ -1,4 +1,4 @@
-import { ScoreTrackerAdapter } from "..";
+import { MaimaiScoreAdapter } from "..";
 
 import {
     IScore,
@@ -9,8 +9,9 @@ import {
     EAchievementTypes,
 } from "@maidraw/mai/type";
 import { Database } from "@maidraw/mai/lib/database";
+import { BaseScoreAdapter } from "@maidraw/lib/adapter";
 
-export class LXNS extends ScoreTrackerAdapter {
+export class LXNS extends BaseScoreAdapter implements MaimaiScoreAdapter {
     constructor({
         auth,
         baseURL = "https://maimai.lxns.net/api/v0/maimai",

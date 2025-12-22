@@ -11,7 +11,7 @@ import {
     ESyncTypes,
     IScore,
 } from "../type";
-import { ScoreTrackerAdapter } from "../lib/adapter";
+import { MaimaiScoreAdapter } from "../lib/adapter";
 
 import { Util } from "@maidraw/lib/util";
 import { Painter, Theme, ThemeManager } from "@maidraw/lib/painter";
@@ -20,7 +20,7 @@ import { MaimaiUtil } from "../lib/util";
 
 export abstract class MaimaiPainter<
     Schema extends typeof ThemeManager.BaseObject,
-> extends Painter<ScoreTrackerAdapter, Schema> {
+> extends Painter<MaimaiScoreAdapter, Schema> {
     public constructor({
         theme: { schema, searchPaths, defaultTheme },
     }: {

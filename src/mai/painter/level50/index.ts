@@ -2,7 +2,7 @@ import upath from "upath";
 import { Canvas } from "canvas";
 
 import { IScore } from "../../type";
-import { ScoreTrackerAdapter } from "../../lib/adapter";
+import { MaimaiScoreAdapter } from "../../lib/adapter";
 import { Best50Painter } from "../best50";
 import { MaimaiPainterModule, MaimaiPainter } from "..";
 
@@ -155,7 +155,7 @@ export class Level50Painter extends MaimaiPainter<typeof Best50Painter.Theme> {
         } else return null;
     }
     async drawWithScoreSource(
-        source: ScoreTrackerAdapter,
+        source: MaimaiScoreAdapter,
         variables: { username: string; level: number; page: number },
         options?: {
             scale?: number;

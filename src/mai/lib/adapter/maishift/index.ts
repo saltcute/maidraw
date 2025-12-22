@@ -1,7 +1,5 @@
 import * as Cheerio from "cheerio";
 
-import { ScoreTrackerAdapter } from "..";
-
 import {
     IScore,
     ESyncTypes,
@@ -10,8 +8,11 @@ import {
     EDifficulty,
 } from "@maidraw/mai/type";
 import { Database } from "@maidraw/mai/lib/database";
+import { BaseScoreAdapter } from "@maidraw/lib/adapter";
 
-export class Maishift extends ScoreTrackerAdapter {
+import { MaimaiScoreAdapter } from "..";
+
+export class Maishift extends BaseScoreAdapter implements MaimaiScoreAdapter {
     constructor() {
         super({
             baseURL: "https://maimai.shiftpsh.com",

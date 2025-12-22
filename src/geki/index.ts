@@ -48,7 +48,7 @@ export namespace Geki {
 
     export import Database = database.Database;
 
-    export import ScoreTrackerAdapter = adapter.ScoreTrackerAdapter;
+    export import OngekiScoreAdapter = adapter.OngekiScoreAdapter;
     export namespace Adapters {
         export import KamaiTachi = kamaiTachi.KamaiTachi;
     }

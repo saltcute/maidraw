@@ -1,6 +1,6 @@
 import _ from "lodash";
 
-import { ScoreTrackerAdapter } from "..";
+import { MaimaiScoreAdapter } from "..";
 import { MaimaiUtil } from "../../util";
 
 import {
@@ -11,8 +11,9 @@ import {
     EAchievementTypes,
 } from "@maidraw/mai/type";
 import { Database } from "@maidraw/mai/lib/database";
+import { BaseScoreAdapter } from "@maidraw/lib/adapter";
 
-export class KamaiTachi extends ScoreTrackerAdapter {
+export class KamaiTachi extends BaseScoreAdapter implements MaimaiScoreAdapter {
     private currentVersion: KamaiTachi.GameVersions;
     private currentRegion: "DX" | "EX" | "CN";
     constructor({

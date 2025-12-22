@@ -2,7 +2,7 @@ import upath from "upath";
 import { z } from "zod/v4";
 import { Canvas } from "canvas";
 
-import { ScoreTrackerAdapter } from "../../lib/adapter";
+import { MaimaiScoreAdapter } from "../../lib/adapter";
 import { MaimaiPainterModule, MaimaiPainter } from "..";
 
 import {
@@ -252,7 +252,7 @@ export class Best50Painter extends MaimaiPainter<typeof Best50Painter.Theme> {
         } else return null;
     }
     public async drawWithScoreSource(
-        source: ScoreTrackerAdapter,
+        source: MaimaiScoreAdapter,
         variables: { username: string },
         options?: {
             scale?: number;
