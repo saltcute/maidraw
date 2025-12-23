@@ -58,7 +58,7 @@ export class Maishift extends BaseScoreAdapter implements MaimaiScoreAdapter {
         );
         if (!HTML) return null;
         const $ = Cheerio.load(HTML.replace(/<style.*?>.*?<\/style>/g, ""));
-        const profileElement = $("> div", $("body > div")[0])[2];
+        const profileElement = $("> div", $("body > div")[1])[1];
         const name = $($("> div > span", $("> div", profileElement))[0]).text();
         const avatarUrl = $("> img", profileElement).attr("src");
         const title = $($("> div", $("> div", profileElement))[0]).text();
@@ -69,7 +69,10 @@ export class Maishift extends BaseScoreAdapter implements MaimaiScoreAdapter {
         return { name, avatarUrl, title, rating };
     }
     private getScoresFromDOM($: Cheerio.CheerioAPI, length: number) {
-        const DOM = $("body > div > div").slice(15, 15 + length);
+        const DOM = $("> div", $("> div", $("body > div")[2])[2]).slice(
+            0,
+            length
+        );
         const scores = [];
         for (const score of DOM) {
             const level = parseFloat(
