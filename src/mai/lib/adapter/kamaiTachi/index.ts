@@ -324,18 +324,24 @@ export class KamaiTachi extends BaseScoreAdapter implements MaimaiScoreAdapter {
         return {
             new: newScores
                 .map((v) => this.toMaiDrawScore(v.pb, v.chart, v.song))
-                .sort((a, b) =>
-                    b.dxRating - a.dxRating
-                        ? b.dxRating - a.dxRating
-                        : b.achievement - a.achievement
+                .sort(
+                    (a, b) =>
+                        b.dxRating - a.dxRating || b.achievement - a.achievement
+                )
+                .sort(
+                    (a, b) =>
+                        b.dxRating - a.dxRating || b.chart.level - a.chart.level
                 )
                 .slice(0, 15),
             old: oldScores
                 .map((v) => this.toMaiDrawScore(v.pb, v.chart, v.song))
-                .sort((a, b) =>
-                    b.dxRating - a.dxRating
-                        ? b.dxRating - a.dxRating
-                        : b.achievement - a.achievement
+                .sort(
+                    (a, b) =>
+                        b.dxRating - a.dxRating || b.achievement - a.achievement
+                )
+                .sort(
+                    (a, b) =>
+                        b.dxRating - a.dxRating || b.chart.level - a.chart.level
                 )
                 .slice(0, 35),
         };
