@@ -297,6 +297,12 @@ export namespace PainterModule {
             borderColor: Util.z.color().optional(),
             font: z.string().optional(),
         });
+        const builtinVariables: Record<string, string> = {
+            date: (() => {
+                const date = new Date();
+                return `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, "0")}-${date.getDate().toString().padStart(2, "0")}`;
+            })(),
+        };
         export async function draw(
             ctx: CanvasRenderingContext2D,
             element: z.infer<typeof schema>,
@@ -305,6 +311,10 @@ export namespace PainterModule {
              */
             variables: Record<string, string> = {}
         ) {
+            variables = {
+                ...builtinVariables,
+                ...variables,
+            };
             ctx.font = `${element.size}px ${element.font || `"standard-font-title-latin", "standard-font-title-jp"`}`;
             const filledContent = stringFormat(element.content, variables);
 
