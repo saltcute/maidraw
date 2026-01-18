@@ -1,21 +1,17 @@
+import _ from "lodash";
 import upath from "upath";
 import { z } from "zod/v4";
 import { Canvas } from "canvas";
 
-import { MaimaiScoreAdapter } from "../../lib/adapter";
-import { MaimaiPainterModule, MaimaiPainter } from "..";
-
-import {
-    EAchievementTypes,
-    IScore,
-    RANK_BORDERS,
-    RATING_CONSTANTS,
-} from "@maidraw/mai/type";
+import { IScore } from "@maidraw/mai/type";
 import { Util } from "@maidraw/lib/util";
 import { PainterModule, ThemeManager } from "@maidraw/lib/painter";
+
 import { MaimaiUtil } from "../../lib/util";
 import { Database } from "../../lib/database";
-import _ from "lodash";
+import { MaimaiScoreAdapter } from "../../lib/adapter";
+
+import { MaimaiPainterModule, MaimaiPainter } from "..";
 
 export class Best50Painter extends MaimaiPainter<typeof Best50Painter.Theme> {
     public static readonly Theme = ThemeManager.BaseTheme.extend({
