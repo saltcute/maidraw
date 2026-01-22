@@ -63,14 +63,29 @@ export class KamaiTachi extends BaseScoreAdapter implements MaimaiScoreAdapter {
             chart.data.inGameID,
             this.getDatabaseDifficulty(chart)
         );
-        const internalLevel = localChart
-            ? localChart.events
+        const DXLevel = localChart?.events
                   .filter((v) => v.type === "existence")
-                  .find(
-                      (v) =>
-                          v.version.name ==
-                          this.currentVersion[this.currentRegion]
-                  )?.data.level
+            .find((v) => v.version.name == this.currentVersion["DX"])
+            ?.data.level;
+        const EXLevel = localChart?.events
+            .filter((v) => v.type === "existence")
+            .find((v) => v.version.name == this.currentVersion["EX"])
+            ?.data.level;
+        const CNLevel = localChart?.events
+            .filter((v) => v.type === "existence")
+            .find((v) => v.version.name == this.currentVersion["CN"])
+            ?.data.level;
+        const internalLevel = localChart
+            ? (() => {
+                  switch (this.currentRegion) {
+                      case "DX":
+                          return DXLevel ?? EXLevel ?? CNLevel;
+                      case "EX":
+                          return EXLevel ?? DXLevel ?? CNLevel;
+                      case "CN":
+                          return CNLevel ?? DXLevel ?? EXLevel;
+                  }
+              })()
             : undefined;
         return {
             chart: (() => {
