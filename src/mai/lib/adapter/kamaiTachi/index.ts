@@ -64,7 +64,7 @@ export class KamaiTachi extends BaseScoreAdapter implements MaimaiScoreAdapter {
             this.getDatabaseDifficulty(chart)
         );
         const DXLevel = localChart?.events
-                  .filter((v) => v.type === "existence")
+            .filter((v) => v.type === "existence")
             .find((v) => v.version.name == this.currentVersion["DX"])
             ?.data.level;
         const EXLevel = localChart?.events
@@ -182,11 +182,17 @@ export class KamaiTachi extends BaseScoreAdapter implements MaimaiScoreAdapter {
                   )
                 : score.calculatedData.rate,
             dxScore: (() => {
-                return (
-                    (score.scoreData.judgements.pcrit || 0) * 3 +
-                    (score.scoreData.judgements.perfect || 0) * 2 +
-                    (score.scoreData.judgements.great || 0)
-                );
+                if (
+                    score.scoreData.judgements.pcrit &&
+                    score.scoreData.judgements.perfect &&
+                    score.scoreData.judgements.great
+                )
+                    return (
+                        score.scoreData.judgements.pcrit * 3 +
+                        score.scoreData.judgements.perfect * 2 +
+                        score.scoreData.judgements.great
+                    );
+                else return -1;
             })(),
 
             optionalData: {
