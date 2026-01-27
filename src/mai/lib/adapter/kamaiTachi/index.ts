@@ -287,9 +287,16 @@ export class KamaiTachi extends BaseScoreAdapter implements MaimaiScoreAdapter {
                 pb: KamaiTachi.IPb;
             }[] = [];
         newScores = pbs.filter((v) => {
+            const localChart = Database.getLocalChart(
+                v.chart.data.inGameID,
+                this.getDatabaseDifficulty(v.chart)
+            );
             const diff = KamaiTachi.compareGameVersions(
                 this.currentVersion,
-                KamaiTachi.getGameVersion(v.chart.data.displayVersion)
+                KamaiTachi.getGameVersion(
+                    localChart?.addVersion[this.currentRegion]?.name ??
+                        v.chart.data.displayVersion
+                )
             );
             if (
                 KamaiTachi.compareGameVersions(
@@ -303,9 +310,16 @@ export class KamaiTachi extends BaseScoreAdapter implements MaimaiScoreAdapter {
             }
         });
         oldScores = pbs.filter((v) => {
+            const localChart = Database.getLocalChart(
+                v.chart.data.inGameID,
+                this.getDatabaseDifficulty(v.chart)
+            );
             const diff = KamaiTachi.compareGameVersions(
                 this.currentVersion,
-                KamaiTachi.getGameVersion(v.chart.data.displayVersion)
+                KamaiTachi.getGameVersion(
+                    localChart?.addVersion[this.currentRegion]?.name ??
+                        v.chart.data.displayVersion
+                )
             );
             if (
                 KamaiTachi.compareGameVersions(
