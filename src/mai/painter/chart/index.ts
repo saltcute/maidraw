@@ -75,7 +75,7 @@ export class ChartPainter extends MaimaiPainter<typeof ChartPainter.Theme> {
         if (!charts.length)
             return {
                 err: new MissingChartError(
-                    "maimai.painter.chart",
+                    "maidraw.maimai.painter.chart",
                     variables.chartId
                 ),
             };
@@ -150,7 +150,7 @@ export class ChartPainter extends MaimaiPainter<typeof ChartPainter.Theme> {
                 }
             }
             return { data: canvas.toBuffer() };
-        } else return { err: new MissingThemeError("maimai.painter.chart") };
+        } else return { err: new MissingThemeError("maidraw.maimai.painter.chart") };
     }
     public async drawWithScoreSource(
         source: MaimaiScoreAdapter,
