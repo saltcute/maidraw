@@ -9,6 +9,7 @@ import {
 import { Database } from "@maidraw/mai/lib/database";
 import { BaseScoreAdapter } from "@maidraw/lib/adapter";
 import { MaimaiScoreAdapter } from "..";
+import { FailedToFetchError, UnsupportedMethodError } from "@maidraw/lib/type";
 
 export namespace DivingFish {
     export interface IPlayResult {
@@ -97,7 +98,13 @@ export class DivingFish extends BaseScoreAdapter implements MaimaiScoreAdapter {
     async getPlayerBest50(username: string) {
         const pbs = await this.getPlayerRawBest50(username);
         if (!pbs?.records) {
-            return null;
+            return {
+                err: new FailedToFetchError(
+                    "maidraw.maimai.adapter.divingfish",
+                    "best 50 scores",
+                    "Unknown error."
+                ),
+            };
         }
         let chartList: IChart[] = [];
         if (Database.hasLocalDatabase()) {
@@ -130,8 +137,10 @@ export class DivingFish extends BaseScoreAdapter implements MaimaiScoreAdapter {
                 !(await this.getSong(v.song_id.toString()))?.basic_info.is_new
         );
         return {
-            new: this.toMaiDrawScore(newScores, chartList),
-            old: this.toMaiDrawScore(oldScores, chartList),
+            data: {
+                new: this.toMaiDrawScore(newScores, chartList),
+                old: this.toMaiDrawScore(oldScores, chartList),
+            },
         };
     }
 
@@ -152,11 +161,19 @@ export class DivingFish extends BaseScoreAdapter implements MaimaiScoreAdapter {
     async getPlayerInfo(username: string) {
         const b50 = await this.getPlayerRawBest50(username);
         if (!b50) {
-            return null;
+            return {
+                err: new FailedToFetchError(
+                    "maidraw.maimai.adapter.divingfish",
+                    "player profile",
+                    "Unknown error."
+                ),
+            };
         } else {
             return {
-                name: b50.nickname,
-                rating: b50.rating,
+                data: {
+                    name: b50.nickname,
+                    rating: b50.rating,
+                },
             };
         }
     }
@@ -284,17 +301,20 @@ export class DivingFish extends BaseScoreAdapter implements MaimaiScoreAdapter {
             };
         });
     }
-    async getPlayerProfilePicture(username: string): Promise<Buffer | null> {
-        return null;
+    async getPlayerProfilePicture(username: string) {
+        return {
+            err: new UnsupportedMethodError(
+                "maidraw.maimai.adapter.divingfish",
+                "getPlayerProfilePicture"
+            ),
+        };
     }
     async getPlayerScore(username: string, chartId: number) {
         return {
-            basic: null,
-            advanced: null,
-            expert: null,
-            master: null,
-            remaster: null,
-            utage: null,
+            err: new UnsupportedMethodError(
+                "maidraw.maimai.adapter.divingfish",
+                "getPlayerScore"
+            ),
         };
     }
     async getPlayerLevel50(
@@ -303,6 +323,11 @@ export class DivingFish extends BaseScoreAdapter implements MaimaiScoreAdapter {
         page: number,
         options: { percise: boolean }
     ) {
-        return null;
+        return {
+            err: new UnsupportedMethodError(
+                "maidraw.maimai.adapter.divingfish",
+                "getPlayerLevel50"
+            ),
+        };
     }
 }

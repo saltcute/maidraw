@@ -9,6 +9,7 @@ import {
     EDifficulty,
     IScore,
 } from "@maidraw/chu/type";
+import { FailedToFetchError, IllegalArgumentError } from "@maidraw/lib/type";
 
 export class KamaiTachi
     extends BaseScoreAdapter
@@ -27,15 +28,15 @@ export class KamaiTachi
     }
     async getPlayerScore(username: string, chartId: number) {
         const rawPBs = await this.getPlayerPB(username);
-        if (!rawPBs?.body)
+        if (!rawPBs?.success) {
             return {
-                basic: null,
-                advanced: null,
-                expert: null,
-                master: null,
-                ultima: null,
-                worldsEnd: null,
+                err: new FailedToFetchError(
+                    "maidraw.chunithm.adapter.kamaitachi",
+                    "personal best scores",
+                    `${rawPBs?.description ?? "An unknown error has occured."}`
+                ),
             };
+        }
         const pbs: {
             chart: KamaiTachi.IChart;
             song: KamaiTachi.ISong;
@@ -82,32 +83,34 @@ export class KamaiTachi
                 v.chart.data.inGameID == chartId
         );
         return {
-            basic: basic
-                ? this.toMaiDrawScore(basic.pb, basic.chart, basic.song)
-                : null,
-            advanced: advanced
-                ? this.toMaiDrawScore(
-                      advanced.pb,
-                      advanced.chart,
-                      advanced.song
-                  )
-                : null,
-            expert: expert
-                ? this.toMaiDrawScore(expert.pb, expert.chart, expert.song)
-                : null,
-            master: master
-                ? this.toMaiDrawScore(master.pb, master.chart, master.song)
-                : null,
-            ultima: ultima
-                ? this.toMaiDrawScore(ultima.pb, ultima.chart, ultima.song)
-                : null,
-            worldsEnd: worldsEnd
-                ? this.toMaiDrawScore(
-                      worldsEnd.pb,
-                      worldsEnd.chart,
-                      worldsEnd.song
-                  )
-                : null,
+            data: {
+                basic: basic
+                    ? this.toMaiDrawScore(basic.pb, basic.chart, basic.song)
+                    : null,
+                advanced: advanced
+                    ? this.toMaiDrawScore(
+                          advanced.pb,
+                          advanced.chart,
+                          advanced.song
+                      )
+                    : null,
+                expert: expert
+                    ? this.toMaiDrawScore(expert.pb, expert.chart, expert.song)
+                    : null,
+                master: master
+                    ? this.toMaiDrawScore(master.pb, master.chart, master.song)
+                    : null,
+                ultima: ultima
+                    ? this.toMaiDrawScore(ultima.pb, ultima.chart, ultima.song)
+                    : null,
+                worldsEnd: worldsEnd
+                    ? this.toMaiDrawScore(
+                          worldsEnd.pb,
+                          worldsEnd.chart,
+                          worldsEnd.song
+                      )
+                    : null,
+            },
         };
     }
 
@@ -419,7 +422,15 @@ export class KamaiTachi
         omnimix = true
     ) {
         const rawPBs = await this.getPlayerPB(userId);
-        if (!rawPBs?.body) return null;
+        if (!rawPBs?.success) {
+            return {
+                err: new FailedToFetchError(
+                    "maidraw.chunithm.adapter.kamaitachi",
+                    "personal best scores",
+                    `${rawPBs?.description ?? "An unknown error has occured."}`
+                ),
+            };
+        }
         const pbs: {
             chart: KamaiTachi.IChart;
             song: KamaiTachi.ISong;
@@ -449,30 +460,32 @@ export class KamaiTachi
         });
 
         return {
-            new: newScores
-                .map((v) => this.toMaiDrawScore(v.pb, v.chart, v.song))
-                .sort((a, b) =>
-                    b.rating - a.rating
-                        ? b.rating - a.rating
-                        : b.score - a.score
-                )
-                .slice(0, 20),
-            old: oldScores
-                .map((v) => this.toMaiDrawScore(v.pb, v.chart, v.song))
-                .sort((a, b) =>
-                    b.rating - a.rating
-                        ? b.rating - a.rating
-                        : b.score - a.score
-                )
-                .slice(0, 30),
-            best: pbs
-                .map((v) => this.toMaiDrawScore(v.pb, v.chart, v.song))
-                .sort((a, b) =>
-                    b.rating - a.rating
-                        ? b.rating - a.rating
-                        : b.score - a.score
-                )
-                .slice(0, 50),
+            data: {
+                new: newScores
+                    .map((v) => this.toMaiDrawScore(v.pb, v.chart, v.song))
+                    .sort((a, b) =>
+                        b.rating - a.rating
+                            ? b.rating - a.rating
+                            : b.score - a.score
+                    )
+                    .slice(0, 20),
+                old: oldScores
+                    .map((v) => this.toMaiDrawScore(v.pb, v.chart, v.song))
+                    .sort((a, b) =>
+                        b.rating - a.rating
+                            ? b.rating - a.rating
+                            : b.score - a.score
+                    )
+                    .slice(0, 30),
+                best: pbs
+                    .map((v) => this.toMaiDrawScore(v.pb, v.chart, v.song))
+                    .sort((a, b) =>
+                        b.rating - a.rating
+                            ? b.rating - a.rating
+                            : b.score - a.score
+                    )
+                    .slice(0, 50),
+            },
         };
     }
     async getPlayerRecent40(
@@ -481,8 +494,25 @@ export class KamaiTachi
         omnimix = true
     ) {
         const rawPBs = await this.getPlayerPB(userId);
+        if (!rawPBs?.success) {
+            return {
+                err: new FailedToFetchError(
+                    "maidraw.chunithm.adapter.kamaitachi",
+                    "personal best scores",
+                    `${rawPBs?.description ?? "An unknown error has occured."}`
+                ),
+            };
+        }
         const rawRecents = await this.getPlayerRecentScores(userId);
-        if (!rawPBs?.body || !rawRecents?.body) return null;
+        if (!rawRecents?.success) {
+            return {
+                err: new FailedToFetchError(
+                    "maidraw.chunithm.adapter.kamaitachi",
+                    "recent scores",
+                    `${rawRecents?.description ?? "An unknown error has occured."}`
+                ),
+            };
+        }
         const pbs: {
             chart: KamaiTachi.IChart;
             song: KamaiTachi.ISong;
@@ -598,43 +628,72 @@ export class KamaiTachi
         }
 
         return {
-            recent: ratingGuardSimulation(
-                recentScores
-                    .reverse()
-                    .map((v) => this.toMaiDrawScore(v.scores, v.chart, v.song))
-            ),
-            best: bestScores
-                .map((v) => this.toMaiDrawScore(v.pb, v.chart, v.song))
-                .sort((a, b) => b.rating - a.rating || b.score - a.score)
-                .slice(0, 50),
+            data: {
+                recent: ratingGuardSimulation(
+                    recentScores
+                        .reverse()
+                        .map((v) =>
+                            this.toMaiDrawScore(v.scores, v.chart, v.song)
+                        )
+                ),
+                best: bestScores
+                    .map((v) => this.toMaiDrawScore(v.pb, v.chart, v.song))
+                    .sort((a, b) => b.rating - a.rating || b.score - a.score)
+                    .slice(0, 50),
+            },
         };
     }
     async getPlayerInfo(userId: string, type: "new" | "recents") {
         const profile = await this.getPlayerProfileRaw(userId);
+        if (!profile?.success) {
+            return {
+                err: new FailedToFetchError(
+                    "maidraw.chunith,.adapter.kamaitachi",
+                    "player profile",
+                    `${profile?.description ?? "An unknown error has occured."}`
+                ),
+            };
+        }
         if (type == "new") {
-            const scores = await this.getPlayerBest50(userId);
-            if (!profile?.body || !scores) return null;
+            const { data: scores, err: serr } =
+                await this.getPlayerBest50(userId);
+            if (serr) {
+                return { err: serr };
+            }
             let rating = 0;
             [...scores.new.slice(0, 20), ...scores.old.slice(0, 30)].forEach(
                 (v) => (rating += v.rating)
             );
             return {
-                name: profile?.body.username,
-                rating: rating / 50,
+                data: {
+                    name: profile?.body.username,
+                    rating: rating / 50,
+                },
             };
         } else if (type == "recents") {
-            const scores = await this.getPlayerRecent40(userId);
-            if (!profile?.body || !scores) return null;
+            const { data: scores, err: serr } =
+                await this.getPlayerRecent40(userId);
+            if (serr) {
+                return { err: serr };
+            }
             let rating = 0;
             [
                 ...scores.recent.slice(0, 10),
                 ...scores.best.slice(0, 30),
             ].forEach((v) => (rating += v.rating));
             return {
-                name: profile?.body.username,
-                rating: rating / 40,
+                data: {
+                    name: profile?.body.username,
+                    rating: rating / 40,
+                },
             };
-        } else return null;
+        } else
+            return {
+                err: new IllegalArgumentError(
+                    "maidraw.chunithm.adapter.kamaitachi",
+                    `Type can only be "recents" or "new". Found ${type}.`
+                ),
+            };
     }
 
     private async getPlayerProfileRaw(userId: string) {
@@ -647,14 +706,22 @@ export class KamaiTachi
         >(`/api/v1/users/${userId}`);
     }
     async getPlayerProfilePicture(userId: string) {
-        return (
-            (await this.get<Buffer>(
-                `/api/v1/users/${userId}/pfp`,
-                undefined,
-                2 * 60 * 60 * 1000,
-                { responseType: "arraybuffer" }
-            )) || null
+        const pfp = await this.get<Buffer>(
+            `/api/v1/users/${userId}/pfp`,
+            undefined,
+            2 * 60 * 60 * 1000,
+            { responseType: "arraybuffer" }
         );
+        if (!pfp) {
+            return {
+                err: new FailedToFetchError(
+                    "maidraw.ongeki.adapter.kamaitachi",
+                    "profile picture",
+                    "An unknown error has occured."
+                ),
+            };
+        }
+        return { data: pfp };
     }
     public chunithm() {
         return new KamaiTachi({
@@ -769,11 +836,16 @@ export class KamaiTachi
 }
 
 export namespace KamaiTachi {
-    export interface IResponse<T> {
-        success: boolean;
+    export interface ISuccessResponse<T> {
+        success: true;
         description: string;
         body: T;
     }
+    export interface IErrorResponse {
+        success: false;
+        description: string;
+    }
+    export type IResponse<T> = ISuccessResponse<T> | IErrorResponse;
     export interface IChart {
         chartID: string;
         data: {

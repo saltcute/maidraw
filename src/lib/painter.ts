@@ -4,7 +4,7 @@ import Color from "color";
 import { z } from "zod/v4";
 import { globSync } from "glob";
 import stringFormat from "string-template";
-import { CanvasRenderingContext2D, registerFont } from "canvas";
+import { CanvasRenderingContext2D, Image, registerFont } from "canvas";
 
 import { Util } from "./util";
 
@@ -83,12 +83,12 @@ export abstract class Painter<
     public abstract draw(
         variables: Record<string, any>,
         options: { scale?: number } | Record<string, any>
-    ): Promise<Buffer | null>;
+    ): Promise<DataOrError<Buffer>>;
     public abstract drawWithScoreSource(
         source: Adapter,
         variables: Record<string, any>,
         options: { scale?: number } | Record<string, any>
-    ): Promise<Buffer | null>;
+    ): Promise<DataOrError<Buffer>>;
 }
 
 export class Theme<T> {
@@ -192,6 +192,7 @@ export class ThemeManager<Schema extends typeof ThemeManager.BaseObject> {
 }
 
 import LineBreaker from "linebreak";
+import { DataOrError } from "./type";
 
 export namespace PainterModule {
     export namespace Image {

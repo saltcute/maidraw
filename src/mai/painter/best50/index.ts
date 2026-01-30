@@ -12,6 +12,7 @@ import { Database } from "../../lib/database";
 import { MaimaiScoreAdapter } from "../../lib/adapter";
 
 import { MaimaiPainterModule, MaimaiPainter } from "..";
+import { DataOrError, MissingThemeError } from "@maidraw/lib/type";
 
 export class Best50Painter extends MaimaiPainter<typeof Best50Painter.Theme> {
     public static readonly Theme = ThemeManager.BaseTheme.extend({
@@ -52,7 +53,7 @@ export class Best50Painter extends MaimaiPainter<typeof Best50Painter.Theme> {
             oldScores: IScore[];
         },
         options?: { scale?: number; theme?: string; profilePicture?: Buffer }
-    ): Promise<Buffer | null> {
+    ): Promise<DataOrError<Buffer>> {
         let currentTheme = this.theme.get(this.theme.defaultTheme);
         if (options?.theme) {
             const theme = this.theme.get(options.theme);
@@ -244,8 +245,8 @@ export class Best50Painter extends MaimaiPainter<typeof Best50Painter.Theme> {
                     }
                 }
             }
-            return canvas.toBuffer();
-        } else return null;
+            return { data: canvas.toBuffer() };
+        } else return { err: new MissingThemeError("maimai.painter.best50") };
     }
     public async drawWithScoreSource(
         source: MaimaiScoreAdapter,
@@ -256,9 +257,14 @@ export class Best50Painter extends MaimaiPainter<typeof Best50Painter.Theme> {
             profilePicture?: Buffer | null;
         }
     ) {
-        const profile = await source.getPlayerInfo(variables.username);
-        const score = await source.getPlayerBest50(variables.username);
-        if (!profile || !score) return null;
+        const { data: profile, err: perr } = await source.getPlayerInfo(
+            variables.username
+        );
+        if (perr) return { err: perr };
+        const { data: score, err: serr } = await source.getPlayerBest50(
+            variables.username
+        );
+        if (serr) return { err: serr };
         return this.draw(
             {
                 username: profile.name,
@@ -268,14 +274,15 @@ export class Best50Painter extends MaimaiPainter<typeof Best50Painter.Theme> {
             },
             {
                 ...options,
-                profilePicture:
-                    options?.profilePicture === null
-                        ? undefined
-                        : options?.profilePicture ||
-                          (await source.getPlayerProfilePicture(
-                              variables.username
-                          )) ||
-                          undefined,
+                profilePicture: await (async () => {
+                    if (options?.profilePicture) return options?.profilePicture;
+                    const { data: pfp, err: pfperr } =
+                        await source.getPlayerProfilePicture(
+                            variables.username
+                        );
+                    if (pfperr) return undefined;
+                    return pfp;
+                })(),
             }
         );
     }

@@ -9,6 +9,7 @@ import { OngekiPainter, OngekiPainterModule } from "..";
 import { Util } from "@maidraw/lib/util";
 import { PainterModule, ThemeManager } from "@maidraw/lib/painter";
 import { Database } from "@maidraw/geki/lib/database";
+import { IllegalArgumentError, MissingThemeError } from "@maidraw/lib/type";
 
 export class Best50Painter extends OngekiPainter<typeof Best50Painter.Theme> {
     public static readonly Theme = ThemeManager.BaseTheme.extend({
@@ -56,7 +57,7 @@ export class Best50Painter extends OngekiPainter<typeof Best50Painter.Theme> {
             bestScores?: IScore[];
             type?: "refresh" | "classic";
         }
-    ): Promise<Buffer | null> {
+    ) {
         let currentTheme = this.theme.get(this.theme.defaultTheme);
         if (options?.theme) {
             const theme = this.theme.get(options.theme);
@@ -228,8 +229,11 @@ export class Best50Painter extends OngekiPainter<typeof Best50Painter.Theme> {
                     }
                 }
             }
-            return canvas.toBuffer();
-        } else return null;
+            return { data: canvas.toBuffer() };
+        } else
+            return {
+                err: new MissingThemeError("maidraw.ongeki.painter.best50"),
+            };
     }
     public async drawWithScoreSource(
         source: OngekiScoreAdapter,
@@ -242,30 +246,40 @@ export class Best50Painter extends OngekiPainter<typeof Best50Painter.Theme> {
         }
     ) {
         if (!options.type) options.type = "refresh";
-        const profile = await source.getPlayerInfo(
+        const { data: profile, err: perr } = await source.getPlayerInfo(
             variable.username,
             options.type
         );
-        if (!profile) return null;
+        if (perr) return { err: perr };
         let newScores: IScore[],
             oldScores: IScore[],
             recentOrPlatinumScores: IScore[],
             bestScores: IScore[] | undefined;
         if (options.type == "refresh") {
-            const score = await source.getPlayerBest60(variable.username);
-            if (!score) return null;
+            const { data: score, err: serr } = await source.getPlayerBest60(
+                variable.username
+            );
+            if (serr) return { err: serr };
             newScores = score.new;
             oldScores = score.old;
             recentOrPlatinumScores = score.plat;
             bestScores = score.best;
         } else if (options.type == "classic") {
-            const score = await source.getPlayerBest55(variable.username);
-            if (!score) return null;
+            const { data: score, err: serr } = await source.getPlayerBest55(
+                variable.username
+            );
+            if (serr) return { err: serr };
             recentOrPlatinumScores = score.recent;
             newScores = score.new;
             oldScores = score.old;
             bestScores = score.best;
-        } else return null;
+        } else
+            return {
+                err: new IllegalArgumentError(
+                    "maidraw.ongeki.painter.best50",
+                    `Type can only be "refresh" or "classic". Found ${options.type}.`
+                ),
+            };
         return this.draw(
             {
                 username: profile.name,
@@ -276,14 +290,13 @@ export class Best50Painter extends OngekiPainter<typeof Best50Painter.Theme> {
             },
             {
                 ...options,
-                profilePicture:
-                    options?.profilePicture === null
-                        ? undefined
-                        : options?.profilePicture ||
-                          (await source.getPlayerProfilePicture(
-                              variable.username
-                          )) ||
-                          undefined,
+                profilePicture: await (async () => {
+                    if (options?.profilePicture) return options?.profilePicture;
+                    const { data: pfp, err: pfperr } =
+                        await source.getPlayerProfilePicture(variable.username);
+                    if (pfperr) return undefined;
+                    return pfp;
+                })(),
                 bestScores,
             }
         );

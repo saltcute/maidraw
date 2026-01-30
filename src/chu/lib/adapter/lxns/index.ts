@@ -8,6 +8,11 @@ import {
 import { Database } from "../../database";
 import { BaseScoreAdapter } from "@maidraw/lib/adapter";
 import { ChunithmScoreAdapter } from "..";
+import {
+    FailedToFetchError,
+    IllegalArgumentError,
+    UnsupportedMethodError,
+} from "@maidraw/lib/type";
 
 export class LXNS extends BaseScoreAdapter implements ChunithmScoreAdapter {
     constructor({
@@ -95,14 +100,24 @@ export class LXNS extends BaseScoreAdapter implements ChunithmScoreAdapter {
     }
     async getPlayerBest50(friendCode: string) {
         const b50 = await this.getPlayerRawBest50(friendCode);
-        if (!b50?.data) return null;
+        if (!b50?.success) {
+            return {
+                err: new FailedToFetchError(
+                    "maidraw.chunithm.adapter.lxns",
+                    "best 50 scores",
+                    `${b50?.message && b50.code ? `${b50.code} ${b50.message}` : "An unknown error has occured"}.`
+                ),
+            };
+        }
         const chartList = await this.getChartList([
             ...b50.data.new_bests,
             ...b50.data.bests,
         ]);
         return {
-            new: this.toMaiDrawScore(b50.data.new_bests, chartList),
-            old: this.toMaiDrawScore(b50.data.bests, chartList),
+            data: {
+                new: this.toMaiDrawScore(b50.data.new_bests, chartList),
+                old: this.toMaiDrawScore(b50.data.bests, chartList),
+            },
         };
     }
     async getSongList(): Promise<LXNS.ISongListResponse> {
@@ -136,21 +151,37 @@ export class LXNS extends BaseScoreAdapter implements ChunithmScoreAdapter {
     }
     async getPlayerRecent40(friendCode: string) {
         return {
-            recent: [],
-            best: [],
+            err: new UnsupportedMethodError(
+                "maidraw.chunithm.adapter.lxns",
+                "getPlayerRecent40"
+            ),
         };
     }
     async getPlayerInfo(friendCode: string, type: "new" | "recents") {
         if (type == "new") {
             const profile = await this.getPlayerRawProfile(friendCode);
-            if (!profile?.data) return null;
+            if (!profile?.success) {
+                return {
+                    err: new FailedToFetchError(
+                        "maidraw.maimai.adapter.lxns",
+                        "player profile",
+                        `${profile?.message && profile.code ? `${profile.code} ${profile.message}` : "An unknown error has occured"}.`
+                    ),
+                };
+            }
             return {
-                name: profile.data.name,
-                rating: profile.data.rating,
+                data: {
+                    name: profile.data.name,
+                    rating: profile.data.rating,
+                },
             };
-        } else if (type == "recents") {
-            return null;
-        } else return null;
+        } else
+            return {
+                err: new IllegalArgumentError(
+                    "maidraw.chunithm.adapter.lxns",
+                    `Type can only be "new". Found ${type}.`
+                ),
+            };
     }
     async getPlayerRawProfile(friendCode: string) {
         return await this.get<LXNS.IAPIResponse<LXNS.IPlayer>>(
@@ -158,7 +189,12 @@ export class LXNS extends BaseScoreAdapter implements ChunithmScoreAdapter {
         );
     }
     async getPlayerProfilePicture(friendCode: string) {
-        return null;
+        return {
+            err: new UnsupportedMethodError(
+                "maidraw.chunithm.adapter.lxns",
+                "getPlayerProfilePicture"
+            ),
+        };
     }
     private async getChartList(targets: LXNS.IScore[]) {
         let chartList: IChart[];
@@ -207,41 +243,48 @@ export class LXNS extends BaseScoreAdapter implements ChunithmScoreAdapter {
         return chartList;
     }
     async getPlayerScore(username: string, chartId: number) {
-        const NUL = {
-            basic: null,
-            advanced: null,
-            expert: null,
-            master: null,
-            ultima: null,
-            worldsEnd: null,
-        };
         const res = await this.get<LXNS.IAPIResponse<LXNS.IScore[]>>(
             `/player/${username}/bests`,
             {
                 song_id: chartId,
             }
         );
-        if (!res?.data) return NUL;
+
+        if (!res?.success) {
+            return {
+                err: new FailedToFetchError(
+                    "maidraw.chunithm.adapter.lxns",
+                    "personal best scores",
+                    `${res?.message ?? "An unknown error has occured"}.`
+                ),
+            };
+        }
         const chartList = await this.getChartList(res.data);
         const scores = this.toMaiDrawScore(res?.data, chartList);
         return {
-            ...NUL,
-            basic:
-                scores.find((v) => v.chart.difficulty == EDifficulty.BASIC) ||
-                null,
-            advanced:
-                scores.find(
-                    (v) => v.chart.difficulty == EDifficulty.ADVANCED
-                ) || null,
-            expert:
-                scores.find((v) => v.chart.difficulty == EDifficulty.EXPERT) ||
-                null,
-            master:
-                scores.find((v) => v.chart.difficulty == EDifficulty.MASTER) ||
-                null,
-            ultima:
-                scores.find((v) => v.chart.difficulty == EDifficulty.ULTIMA) ||
-                null,
+            data: {
+                basic:
+                    scores.find(
+                        (v) => v.chart.difficulty == EDifficulty.BASIC
+                    ) || null,
+                advanced:
+                    scores.find(
+                        (v) => v.chart.difficulty == EDifficulty.ADVANCED
+                    ) || null,
+                expert:
+                    scores.find(
+                        (v) => v.chart.difficulty == EDifficulty.EXPERT
+                    ) || null,
+                master:
+                    scores.find(
+                        (v) => v.chart.difficulty == EDifficulty.MASTER
+                    ) || null,
+                ultima:
+                    scores.find(
+                        (v) => v.chart.difficulty == EDifficulty.ULTIMA
+                    ) || null,
+                worldsEnd: null,
+            },
         };
     }
 }
@@ -421,10 +464,16 @@ export namespace LXNS {
         versions: IVersion[];
     }
 
-    export interface IAPIResponse<T extends any> {
-        success: boolean;
+    export interface IAPIErrorResponse {
+        success: false;
+        code: number;
+        message: string;
+    }
+    export interface IAPISuccessResponse<T> {
+        success: true;
         code: number;
         message: string;
         data: T;
     }
+    export type IAPIResponse<T> = IAPIErrorResponse | IAPISuccessResponse<T>;
 }

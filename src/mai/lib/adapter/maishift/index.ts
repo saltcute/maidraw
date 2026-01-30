@@ -11,6 +11,7 @@ import { Database } from "@maidraw/mai/lib/database";
 import { BaseScoreAdapter } from "@maidraw/lib/adapter";
 
 import { MaimaiScoreAdapter } from "..";
+import { FailedToFetchError, UnsupportedMethodError } from "@maidraw/lib/type";
 
 export class Maishift extends BaseScoreAdapter implements MaimaiScoreAdapter {
     constructor() {
@@ -18,10 +19,11 @@ export class Maishift extends BaseScoreAdapter implements MaimaiScoreAdapter {
             baseURL: "https://maimai.shiftpsh.com",
         });
     }
-    private readonly CURRENT_MINOR = 55;
-    private readonly CURRENT_ACCUMULATE_VER = 24;
+    private readonly CURRENT_MINOR = 60;
+    private readonly CURRENT_ACCUMULATE_VER = 25;
     private minorToAccumulateVer(minor: number, isDX: boolean) {
         if (isDX) {
+            if (minor >= 60) return 25;
             if (minor >= 55) return 24;
             if (minor >= 50) return 23;
             if (minor >= 45) return 22;
@@ -111,12 +113,32 @@ export class Maishift extends BaseScoreAdapter implements MaimaiScoreAdapter {
     }
     private async best50Scraper(username: string) {
         const scoresHTML = await this.get<string>(
-            `/profile/${username}/records?&version=${this.CURRENT_ACCUMULATE_VER}&sort=rating&order=desc`,
+            `/profile/${username}/records?&version=${(() => {
+                if (this.CURRENT_ACCUMULATE_VER >= 25) {
+                    return `${this.CURRENT_ACCUMULATE_VER},${this.CURRENT_ACCUMULATE_VER - 1}`;
+                } else {
+                    return `${this.CURRENT_ACCUMULATE_VER}`;
+                }
+            })()})&sort=rating&order=desc`,
             undefined,
             1 * 60 * 1000
         );
         const oldScoresHTML = await this.get<string>(
-            `/profile/${username}/records?&version=${encodeURI(Array.from(Array(this.CURRENT_ACCUMULATE_VER).keys()).join(","))}&sort=rating&order=desc`,
+            `/profile/${username}/records?&version=${(() => {
+                if (this.CURRENT_ACCUMULATE_VER >= 25) {
+                    return encodeURI(
+                        Array.from(
+                            Array(this.CURRENT_ACCUMULATE_VER - 1).keys()
+                        ).join(",")
+                    );
+                } else {
+                    return encodeURI(
+                        Array.from(
+                            Array(this.CURRENT_ACCUMULATE_VER).keys()
+                        ).join(",")
+                    );
+                }
+            })()}&sort=rating&order=desc`,
             undefined,
             1 * 60 * 1000
         );
@@ -135,15 +157,33 @@ export class Maishift extends BaseScoreAdapter implements MaimaiScoreAdapter {
     }
     async getPlayerInfo(username: string) {
         const res = await this.profileScraper(username);
-        if (!res) return null;
+        if (!res) {
+            return {
+                err: new FailedToFetchError(
+                    "maidraw.maimai.adapter.maishift",
+                    "player profile",
+                    "An unknown error has occured."
+                ),
+            };
+        }
         return {
-            name: res.name,
-            rating: res.rating,
+            data: {
+                name: res.name,
+                rating: res.rating,
+            },
         };
     }
     async getPlayerProfilePicture(username: string) {
         const res = await this.profileScraper(username);
-        if (!res?.avatarUrl) return null;
+        if (!res?.avatarUrl) {
+            return {
+                err: new FailedToFetchError(
+                    "maidraw.maimai.adapter.maishift",
+                    "player profile",
+                    "An unknown error has occured."
+                ),
+            };
+        }
         const buffer = await this.get<Buffer>(
             res.avatarUrl,
             undefined,
@@ -152,14 +192,27 @@ export class Maishift extends BaseScoreAdapter implements MaimaiScoreAdapter {
                 responseType: "arraybuffer",
             }
         );
-        if (!(buffer instanceof Buffer)) return null;
-        return buffer;
+        if (!(buffer instanceof Buffer)) {
+            return {
+                err: new FailedToFetchError(
+                    "maidraw.maimai.adapter.maishift",
+                    "player profile picture",
+                    "An unknown error has occured."
+                ),
+            };
+        }
+        return { data: buffer };
     }
-    async getPlayerBest50(
-        username: string
-    ): Promise<{ new: IScore[]; old: IScore[] } | null> {
+    async getPlayerBest50(username: string) {
         const res = await this.best50Scraper(username);
-        if (!res) return null;
+        if (!res)
+            return {
+                err: new FailedToFetchError(
+                    "maidraw.maimai.adapter.maishift",
+                    "best 50 scores",
+                    "An unknown error has occured."
+                ),
+            };
         const scores: IScore[] = [];
         const oldScores: IScore[] = [];
         for (const score of res.newScores) {
@@ -170,7 +223,7 @@ export class Maishift extends BaseScoreAdapter implements MaimaiScoreAdapter {
             const converted = await this.toMaiDrawScore(score);
             if (converted) oldScores.push(converted);
         }
-        return { new: scores, old: oldScores };
+        return { data: { new: scores, old: oldScores } };
     }
     private async scoreScraper(
         username: string,
@@ -256,7 +309,7 @@ export class Maishift extends BaseScoreAdapter implements MaimaiScoreAdapter {
                     await this.toMaiDrawScore(score);
             }
         }
-        return res;
+        return { data: res };
     }
     async toMaiDrawScore(score: {
         rank: string;
@@ -356,6 +409,11 @@ export class Maishift extends BaseScoreAdapter implements MaimaiScoreAdapter {
         page: number,
         options: { percise: boolean }
     ) {
-        return null;
+        return {
+            err: new UnsupportedMethodError(
+                "maidraw.maimai.adapter.maishift",
+                "getPlayerLevel50"
+            ),
+        };
     }
 }

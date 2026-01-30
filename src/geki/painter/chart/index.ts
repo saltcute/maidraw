@@ -10,6 +10,7 @@ import { Util } from "@maidraw/lib/util";
 import { OngekiPainter, OngekiPainterModule } from "..";
 import { PainterModule, ThemeManager } from "@maidraw/lib/painter";
 import { Database } from "../../lib/database";
+import { MissingChartError, MissingThemeError } from "@maidraw/lib/type";
 
 export class ChartPainter extends OngekiPainter<typeof ChartPainter.Theme> {
     public static readonly Theme = ThemeManager.BaseTheme.extend({
@@ -58,7 +59,7 @@ export class ChartPainter extends OngekiPainter<typeof ChartPainter.Theme> {
             profilePicture?: Buffer;
             region?: "JPN";
         } = {}
-    ): Promise<Buffer | null> {
+    ) {
         let currentTheme = this.theme.get(this.theme.defaultTheme);
         if (options?.theme) {
             const theme = this.theme.get(options.theme);
@@ -70,7 +71,13 @@ export class ChartPainter extends OngekiPainter<typeof ChartPainter.Theme> {
         for (let i = EDifficulty.BASIC; i <= EDifficulty.LUNATIC; ++i) {
             charts.push(Database.getLocalChart(variables.chartId, i));
         }
-        if (!charts.length) return null;
+        if (!charts.length)
+            return {
+                err: new MissingChartError(
+                    "maidraw.ongeki.painter.chart",
+                    variables.chartId
+                ),
+            };
         if (currentTheme) {
             await Database.cacheJackets([variables.chartId]);
             const canvas = new Canvas(
@@ -150,8 +157,11 @@ export class ChartPainter extends OngekiPainter<typeof ChartPainter.Theme> {
                     }
                 }
             }
-            return canvas.toBuffer();
-        } else return null;
+            return { data: canvas.toBuffer() };
+        } else
+            return {
+                err: new MissingThemeError("maidraw.ongeki.painter.chart"),
+            };
     }
     public async drawWithScoreSource(
         source: OngekiScoreAdapter,
@@ -167,15 +177,16 @@ export class ChartPainter extends OngekiPainter<typeof ChartPainter.Theme> {
             region?: "JPN";
         } = {}
     ) {
-        const profile = await source.getPlayerInfo(
+        const { data: profile, err: perr } = await source.getPlayerInfo(
             variables.username,
             variables.type
         );
-        const score = await source.getPlayerScore(
+        if (perr) return { err: perr };
+        const { data: score, err: serr } = await source.getPlayerScore(
             variables.username,
             variables.chartId
         );
-        if (!profile || !score) return null;
+        if (serr) return { err: serr };
         return this.draw(
             {
                 username: profile.name,
@@ -192,14 +203,15 @@ export class ChartPainter extends OngekiPainter<typeof ChartPainter.Theme> {
             },
             {
                 ...options,
-                profilePicture:
-                    options?.profilePicture === null
-                        ? undefined
-                        : options?.profilePicture ||
-                          (await source.getPlayerProfilePicture(
-                              variables.username
-                          )) ||
-                          undefined,
+                profilePicture: await (async () => {
+                    if (options?.profilePicture) return options?.profilePicture;
+                    const { data: pfp, err: pfperr } =
+                        await source.getPlayerProfilePicture(
+                            variables.username
+                        );
+                    if (pfperr) return undefined;
+                    return pfp;
+                })(),
             }
         );
     }

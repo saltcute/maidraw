@@ -9,6 +9,7 @@ import { Util } from "@maidraw/lib/util";
 import { IScore } from "@maidraw/chu/type";
 import { PainterModule, ThemeManager } from "@maidraw/lib/painter";
 import { Database } from "@maidraw/chu/lib/database";
+import { IllegalArgumentError, MissingThemeError } from "@maidraw/lib/type";
 
 export class Best50Painter extends ChunithmPainter<typeof Best50Painter.Theme> {
     public static readonly Theme = ThemeManager.BaseTheme.extend({
@@ -56,7 +57,7 @@ export class Best50Painter extends ChunithmPainter<typeof Best50Painter.Theme> {
             type?: "new" | "recents";
             version?: "chunithm" | "crystal" | "new" | "verse";
         }
-    ): Promise<Buffer | null> {
+    ) {
         let currentTheme = this.theme.get(this.theme.defaultTheme);
         if (options?.theme) {
             const theme = this.theme.get(options.theme);
@@ -197,8 +198,12 @@ export class Best50Painter extends ChunithmPainter<typeof Best50Painter.Theme> {
                     }
                 }
             }
-            return canvas.toBuffer();
-        } else return null;
+            return { data: canvas.toBuffer() };
+        } else {
+            return {
+                err: new MissingThemeError("maidraw.chunithm.painter.best50"),
+            };
+        }
     }
     public async drawWithScoreSource(
         source: ChunithmScoreAdapter,
@@ -212,27 +217,37 @@ export class Best50Painter extends ChunithmPainter<typeof Best50Painter.Theme> {
         }
     ) {
         if (!options.type) options.type = "new";
-        const profile = await source.getPlayerInfo(
+        const { data: profile, err: perr } = await source.getPlayerInfo(
             variables.username,
             options.type
         );
-        if (!profile) return null;
+        if (perr) return { err: perr };
         let newScores: IScore[],
             oldScores: IScore[],
             bestScores: IScore[] | undefined;
         if (options.type == "new") {
-            const score = await source.getPlayerBest50(variables.username);
-            if (!score) return null;
+            const { data: score, err: serr } = await source.getPlayerBest50(
+                variables.username
+            );
+            if (serr) return { err: serr };
             newScores = score.new;
             oldScores = score.old;
             bestScores = score.best;
         } else if (options.type == "recents") {
-            const score = await source.getPlayerRecent40(variables.username);
-            if (!score) return null;
+            const { data: score, err: serr } = await source.getPlayerRecent40(
+                variables.username
+            );
+            if (serr) return { err: serr };
             newScores = score.recent;
             oldScores = score.best;
             bestScores = score.best;
-        } else return null;
+        } else
+            return {
+                err: new IllegalArgumentError(
+                    "maidraw.chunithm.painter.best50",
+                    `Type can only be "recents" or "new". Found ${options.type}.`
+                ),
+            };
         return this.draw(
             {
                 username: profile.name,
@@ -242,14 +257,15 @@ export class Best50Painter extends ChunithmPainter<typeof Best50Painter.Theme> {
             },
             {
                 ...options,
-                profilePicture:
-                    options?.profilePicture === null
-                        ? undefined
-                        : options?.profilePicture ||
-                          (await source.getPlayerProfilePicture(
-                              variables.username
-                          )) ||
-                          undefined,
+                profilePicture: await (async () => {
+                    if (options?.profilePicture) return options?.profilePicture;
+                    const { data: pfp, err: pfperr } =
+                        await source.getPlayerProfilePicture(
+                            variables.username
+                        );
+                    if (pfperr) return undefined;
+                    return pfp;
+                })(),
                 bestScores,
             }
         );

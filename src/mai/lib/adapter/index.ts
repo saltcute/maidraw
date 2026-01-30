@@ -1,26 +1,33 @@
+import { DataOrError } from "@maidraw/lib/type";
 import { IScore } from "../../type";
 
 export interface MaimaiScoreAdapter {
-    getPlayerBest50(username: string): Promise<{
-        new: IScore[];
-        old: IScore[];
-    } | null>;
-    getPlayerInfo(username: string): Promise<{
-        name: string;
-        rating: number;
-    } | null>;
-    getPlayerProfilePicture(username: string): Promise<Buffer | null>;
+    getPlayerBest50(username: string): Promise<
+        DataOrError<{
+            new: IScore[];
+            old: IScore[];
+        }>
+    >;
+    getPlayerInfo(username: string): Promise<
+        DataOrError<{
+            name: string;
+            rating: number;
+        }>
+    >;
+    getPlayerProfilePicture(username: string): Promise<DataOrError<Buffer>>;
     getPlayerScore(
         username: string,
         chartId: number
-    ): Promise<{
-        basic: IScore | null;
-        advanced: IScore | null;
-        expert: IScore | null;
-        master: IScore | null;
-        remaster: IScore | null;
-        utage: IScore | null;
-    }>;
+    ): Promise<
+        DataOrError<{
+            basic: IScore | null;
+            advanced: IScore | null;
+            expert: IScore | null;
+            master: IScore | null;
+            remaster: IScore | null;
+            utage: IScore | null;
+        }>
+    >;
     getPlayerLevel50(
         username: string,
         level: number,
@@ -28,5 +35,5 @@ export interface MaimaiScoreAdapter {
         options?: {
             percise: boolean;
         }
-    ): Promise<IScore[] | null>;
+    ): Promise<DataOrError<IScore[]>>;
 }

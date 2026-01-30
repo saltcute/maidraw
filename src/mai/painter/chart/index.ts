@@ -10,6 +10,11 @@ import { MaimaiPainter, MaimaiPainterModule } from "..";
 
 import { Util } from "@maidraw/lib/util";
 import { PainterModule, ThemeManager } from "@maidraw/lib/painter";
+import {
+    DataOrError,
+    MissingChartError,
+    MissingThemeError,
+} from "@maidraw/lib/type";
 
 export class ChartPainter extends MaimaiPainter<typeof ChartPainter.Theme> {
     public static readonly Theme = ThemeManager.BaseTheme.extend({
@@ -55,7 +60,7 @@ export class ChartPainter extends MaimaiPainter<typeof ChartPainter.Theme> {
             profilePicture?: Buffer;
             region?: "DX" | "EX" | "CN";
         }
-    ): Promise<Buffer | null> {
+    ): Promise<DataOrError<Buffer>> {
         let currentTheme = this.theme.get(this.theme.defaultTheme);
         if (options?.theme) {
             const theme = this.theme.get(options.theme);
@@ -67,7 +72,13 @@ export class ChartPainter extends MaimaiPainter<typeof ChartPainter.Theme> {
         for (let i = EDifficulty.BASIC; i <= EDifficulty.UTAGE; ++i) {
             charts.push(Database.getLocalChart(variables.chartId, i));
         }
-        if (!charts.length) return null;
+        if (!charts.length)
+            return {
+                err: new MissingChartError(
+                    "maimai.painter.chart",
+                    variables.chartId
+                ),
+            };
         if (currentTheme) {
             await Database.cacheJackets([variables.chartId]);
             const canvas = new Canvas(
@@ -138,8 +149,8 @@ export class ChartPainter extends MaimaiPainter<typeof ChartPainter.Theme> {
                     }
                 }
             }
-            return canvas.toBuffer();
-        } else return null;
+            return { data: canvas.toBuffer() };
+        } else return { err: new MissingThemeError("maimai.painter.chart") };
     }
     public async drawWithScoreSource(
         source: MaimaiScoreAdapter,
@@ -154,12 +165,15 @@ export class ChartPainter extends MaimaiPainter<typeof ChartPainter.Theme> {
             region?: "DX" | "EX" | "CN";
         }
     ) {
-        const profile = await source.getPlayerInfo(variables.username);
-        const score = await source.getPlayerScore(
+        const { data: profile, err: perr } = await source.getPlayerInfo(
+            variables.username
+        );
+        if (perr) return { err: perr };
+        const { data: score, err: serr } = await source.getPlayerScore(
             variables.username,
             variables.chartId
         );
-        if (!profile || !score) return null;
+        if (serr) return { err: serr };
         return this.draw(
             {
                 username: profile.name,
@@ -176,14 +190,15 @@ export class ChartPainter extends MaimaiPainter<typeof ChartPainter.Theme> {
             },
             {
                 ...options,
-                profilePicture:
-                    options?.profilePicture === null
-                        ? undefined
-                        : options?.profilePicture ||
-                          (await source.getPlayerProfilePicture(
-                              variables.username
-                          )) ||
-                          undefined,
+                profilePicture: await (async () => {
+                    if (options?.profilePicture) return options?.profilePicture;
+                    const { data: pfp, err: pfperr } =
+                        await source.getPlayerProfilePicture(
+                            variables.username
+                        );
+                    if (pfperr) return undefined;
+                    return pfp;
+                })(),
             }
         );
     }

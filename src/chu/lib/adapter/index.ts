@@ -1,32 +1,41 @@
 import { IScore } from "@maidraw/chu/type";
+import { DataOrError } from "@maidraw/lib/type";
 
 export interface ChunithmScoreAdapter {
-    getPlayerRecent40(username: string): Promise<{
-        recent: IScore[];
-        best: IScore[];
-    } | null>;
-    getPlayerBest50(username: string): Promise<{
-        new: IScore[];
-        old: IScore[];
-        best?: IScore[];
-    } | null>;
+    getPlayerRecent40(username: string): Promise<
+        DataOrError<{
+            recent: IScore[];
+            best: IScore[];
+        }>
+    >;
+    getPlayerBest50(username: string): Promise<
+        DataOrError<{
+            new: IScore[];
+            old: IScore[];
+            best?: IScore[];
+        }>
+    >;
     getPlayerInfo(
         username: string,
         type: "new" | "recents"
-    ): Promise<{
-        name: string;
-        rating: number;
-    } | null>;
-    getPlayerProfilePicture(username: string): Promise<Buffer | null>;
+    ): Promise<
+        DataOrError<{
+            name: string;
+            rating: number;
+        }>
+    >;
+    getPlayerProfilePicture(username: string): Promise<DataOrError<Buffer>>;
     getPlayerScore(
         username: string,
         chartId: number
-    ): Promise<{
-        basic: IScore | null;
-        advanced: IScore | null;
-        expert: IScore | null;
-        master: IScore | null;
-        ultima: IScore | null;
-        worldsEnd: IScore | null;
-    }>;
+    ): Promise<
+        DataOrError<{
+            basic: IScore | null;
+            advanced: IScore | null;
+            expert: IScore | null;
+            master: IScore | null;
+            ultima: IScore | null;
+            worldsEnd: IScore | null;
+        }>
+    >;
 }

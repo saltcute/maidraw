@@ -10,6 +10,7 @@ import { OngekiUtil } from "../../util";
 import { Database } from "../../database";
 import { OngekiScoreAdapter } from "..";
 import { BaseScoreAdapter } from "@maidraw/lib/adapter";
+import { FailedToFetchError, IllegalArgumentError } from "@maidraw/lib/type";
 
 export class KamaiTachi extends BaseScoreAdapter implements OngekiScoreAdapter {
     private readonly CURRENT_VERSION: KamaiTachi.EGameVersions;
@@ -26,14 +27,15 @@ export class KamaiTachi extends BaseScoreAdapter implements OngekiScoreAdapter {
 
     async getPlayerScore(username: string, chartId: number) {
         const rawPBs = await this.getPlayerPB(username);
-        if (!rawPBs?.body)
+        if (!rawPBs?.success) {
             return {
-                basic: null,
-                advanced: null,
-                expert: null,
-                master: null,
-                lunatic: null,
+                err: new FailedToFetchError(
+                    "maidraw.ongeki.adapter.kamaitachi",
+                    "personal best scores",
+                    `${rawPBs?.description ?? "An unknown error has occured."}`
+                ),
             };
+        }
         const pbs: {
             chart: KamaiTachi.IChart;
             song: KamaiTachi.ISong;
@@ -79,25 +81,31 @@ export class KamaiTachi extends BaseScoreAdapter implements OngekiScoreAdapter {
                 v.chart.data.inGameID == lunaticLocalChart?.meta.reMaster?.real
         );
         return {
-            basic: basic
-                ? this.toMaiDrawScore(basic.pb, basic.chart, basic.song)
-                : null,
-            advanced: advanced
-                ? this.toMaiDrawScore(
-                      advanced.pb,
-                      advanced.chart,
-                      advanced.song
-                  )
-                : null,
-            expert: expert
-                ? this.toMaiDrawScore(expert.pb, expert.chart, expert.song)
-                : null,
-            master: master
-                ? this.toMaiDrawScore(master.pb, master.chart, master.song)
-                : null,
-            lunatic: lunatic
-                ? this.toMaiDrawScore(lunatic.pb, lunatic.chart, lunatic.song)
-                : null,
+            data: {
+                basic: basic
+                    ? this.toMaiDrawScore(basic.pb, basic.chart, basic.song)
+                    : null,
+                advanced: advanced
+                    ? this.toMaiDrawScore(
+                          advanced.pb,
+                          advanced.chart,
+                          advanced.song
+                      )
+                    : null,
+                expert: expert
+                    ? this.toMaiDrawScore(expert.pb, expert.chart, expert.song)
+                    : null,
+                master: master
+                    ? this.toMaiDrawScore(master.pb, master.chart, master.song)
+                    : null,
+                lunatic: lunatic
+                    ? this.toMaiDrawScore(
+                          lunatic.pb,
+                          lunatic.chart,
+                          lunatic.song
+                      )
+                    : null,
+            },
         };
     }
     getPlatinumScore(score: KamaiTachi.IScore | KamaiTachi.IPb) {
@@ -294,7 +302,15 @@ export class KamaiTachi extends BaseScoreAdapter implements OngekiScoreAdapter {
         currentVersion = this.CURRENT_VERSION
     ) {
         const rawPBs = await this.getPlayerPB(userId);
-        if (!rawPBs?.body) return null;
+        if (!rawPBs?.success) {
+            return {
+                err: new FailedToFetchError(
+                    "maidraw.ongeki.adapter.kamaitachi",
+                    "personal best scores",
+                    `${rawPBs?.description ?? "An unknown error has occured."}`
+                ),
+            };
+        }
         const pbs: {
             chart: KamaiTachi.IChart;
             song: KamaiTachi.ISong;
@@ -327,25 +343,28 @@ export class KamaiTachi extends BaseScoreAdapter implements OngekiScoreAdapter {
                 ) >= 0
         );
         return {
-            new: newScores
-                .map((v) => this.toMaiDrawScore(v.pb, v.chart, v.song))
-                .sort((a, b) => b.rating - a.rating || b.score - a.score)
-                .slice(0, 10),
-            old: oldScores
-                .map((v) => this.toMaiDrawScore(v.pb, v.chart, v.song))
-                .sort((a, b) => b.rating - a.rating || b.score - a.score)
-                .slice(0, 50),
-            plat: bestScores
-                .map((v) => this.toMaiDrawScore(v.pb, v.chart, v.song))
-                .sort(
-                    (a, b) => b.starRating - a.starRating || b.score - a.score
-                )
-                .filter((v) => v.starRating > 0)
-                .slice(0, 50),
-            best: bestScores
-                .map((v) => this.toMaiDrawScore(v.pb, v.chart, v.song))
-                .sort((a, b) => b.rating - a.rating || b.score - a.score)
-                .slice(0, 60),
+            data: {
+                new: newScores
+                    .map((v) => this.toMaiDrawScore(v.pb, v.chart, v.song))
+                    .sort((a, b) => b.rating - a.rating || b.score - a.score)
+                    .slice(0, 10),
+                old: oldScores
+                    .map((v) => this.toMaiDrawScore(v.pb, v.chart, v.song))
+                    .sort((a, b) => b.rating - a.rating || b.score - a.score)
+                    .slice(0, 50),
+                plat: bestScores
+                    .map((v) => this.toMaiDrawScore(v.pb, v.chart, v.song))
+                    .sort(
+                        (a, b) =>
+                            b.starRating - a.starRating || b.score - a.score
+                    )
+                    .filter((v) => v.starRating > 0)
+                    .slice(0, 50),
+                best: bestScores
+                    .map((v) => this.toMaiDrawScore(v.pb, v.chart, v.song))
+                    .sort((a, b) => b.rating - a.rating || b.score - a.score)
+                    .slice(0, 60),
+            },
         };
     }
     async getPlayerBest55(
@@ -353,8 +372,25 @@ export class KamaiTachi extends BaseScoreAdapter implements OngekiScoreAdapter {
         currentVersion = this.CURRENT_VERSION
     ) {
         const rawPBs = await this.getPlayerPB(userId);
+        if (!rawPBs?.success) {
+            return {
+                err: new FailedToFetchError(
+                    "maidraw.ongeki.adapter.kamaitachi",
+                    "personal best scores",
+                    `${rawPBs?.description ?? "An unknown error has occured."}`
+                ),
+            };
+        }
         const rawRecents = await this.getPlayerRecentScores(userId);
-        if (!rawPBs?.body || !rawRecents?.body) return null;
+        if (!rawRecents?.success) {
+            return {
+                err: new FailedToFetchError(
+                    "maidraw.ongeki.adapter.kamaitachi",
+                    "recent scores",
+                    `${rawRecents?.description ?? "An unknown error has occured."}`
+                ),
+            };
+        }
         const pbs: {
             chart: KamaiTachi.IChart;
             song: KamaiTachi.ISong;
@@ -464,44 +500,60 @@ export class KamaiTachi extends BaseScoreAdapter implements OngekiScoreAdapter {
                 .map((v) => v.score);
         }
         return {
-            recent: ratingGuardSimulation(
-                recentScores
-                    .reverse()
-                    .map((v) =>
-                        this.toMaiDrawScore(
-                            v.scores,
-                            v.chart,
-                            v.song,
-                            "classic"
+            data: {
+                recent: ratingGuardSimulation(
+                    recentScores
+                        .reverse()
+                        .map((v) =>
+                            this.toMaiDrawScore(
+                                v.scores,
+                                v.chart,
+                                v.song,
+                                "classic"
+                            )
                         )
+                        .filter(
+                            (v) => v.chart.difficulty != EDifficulty.LUNATIC
+                        )
+                ),
+                new: newScores
+                    .map((v) =>
+                        this.toMaiDrawScore(v.pb, v.chart, v.song, "classic")
                     )
-                    .filter((v) => v.chart.difficulty != EDifficulty.LUNATIC)
-            ),
-            new: newScores
-                .map((v) =>
-                    this.toMaiDrawScore(v.pb, v.chart, v.song, "classic")
-                )
-                .sort((a, b) => b.rating - a.rating || b.score - a.score)
-                .slice(0, 15),
-            old: oldScores
-                .map((v) =>
-                    this.toMaiDrawScore(v.pb, v.chart, v.song, "classic")
-                )
-                .sort((a, b) => b.rating - a.rating || b.score - a.score)
-                .slice(0, 30),
-            best: pbs
-                .map((v) =>
-                    this.toMaiDrawScore(v.pb, v.chart, v.song, "classic")
-                )
-                .sort((a, b) => b.rating - a.rating || b.score - a.score)
-                .slice(0, 45),
+                    .sort((a, b) => b.rating - a.rating || b.score - a.score)
+                    .slice(0, 15),
+                old: oldScores
+                    .map((v) =>
+                        this.toMaiDrawScore(v.pb, v.chart, v.song, "classic")
+                    )
+                    .sort((a, b) => b.rating - a.rating || b.score - a.score)
+                    .slice(0, 30),
+                best: pbs
+                    .map((v) =>
+                        this.toMaiDrawScore(v.pb, v.chart, v.song, "classic")
+                    )
+                    .sort((a, b) => b.rating - a.rating || b.score - a.score)
+                    .slice(0, 45),
+            },
         };
     }
     async getPlayerInfo(userId: string, type: "refresh" | "classic") {
         const profile = await this.getPlayerProfileRaw(userId);
+        if (!profile?.success) {
+            return {
+                err: new FailedToFetchError(
+                    "maidraw.ongeki.adapter.kamaitachi",
+                    "player profile",
+                    `${profile?.description ?? "An unknown error has occured."}`
+                ),
+            };
+        }
         if (type == "refresh") {
-            const scores = await this.getPlayerBest60(userId);
-            if (!profile?.body || !scores) return null;
+            const { data: scores, err: serr } =
+                await this.getPlayerBest60(userId);
+            if (serr) {
+                return { err: serr };
+            }
             const newRating = scores.new
                 .map((v) => Util.truncateNumber(v.rating / 5, 3))
                 .reduce((sum, v) => sum + v, 0);
@@ -512,24 +564,37 @@ export class KamaiTachi extends BaseScoreAdapter implements OngekiScoreAdapter {
                 .map((v) => v.starRating)
                 .reduce((sum, v) => sum + v, 0);
             return {
-                name: profile?.body.username,
-                rating:
-                    Util.truncateNumber(newRating / 10, 3) +
-                    Util.truncateNumber(oldRating / 50, 3) +
-                    Util.truncateNumber(platRating / 50, 3),
+                data: {
+                    name: profile?.body.username,
+                    rating:
+                        Util.truncateNumber(newRating / 10, 3) +
+                        Util.truncateNumber(oldRating / 50, 3) +
+                        Util.truncateNumber(platRating / 50, 3),
+                },
             };
         } else if (type == "classic") {
-            const scores = await this.getPlayerBest55(userId);
-            if (!profile?.body || !scores) return null;
+            const { data: scores, err: serr } =
+                await this.getPlayerBest55(userId);
+            if (serr) {
+                return { err: serr };
+            }
             let rating = 0;
             [...scores.recent, ...scores.new, ...scores.old].forEach(
                 (v) => (rating += v.rating)
             );
             return {
-                name: profile?.body.username,
-                rating: Util.truncateNumber(rating / 55, 2),
+                data: {
+                    name: profile?.body.username,
+                    rating: Util.truncateNumber(rating / 55, 2),
+                },
             };
-        } else return null;
+        } else
+            return {
+                err: new IllegalArgumentError(
+                    "maidraw.ongeki.adapter.kamaitachi",
+                    `Type can only be "refresh" or "classic". Found ${type}.`
+                ),
+            };
     }
     private async getPlayerProfileRaw(userId: string) {
         return this.get<
@@ -541,14 +606,22 @@ export class KamaiTachi extends BaseScoreAdapter implements OngekiScoreAdapter {
         >(`/api/v1/users/${userId}`);
     }
     async getPlayerProfilePicture(userId: string) {
-        return (
-            (await this.get<Buffer>(
-                `/api/v1/users/${userId}/pfp`,
-                undefined,
-                2 * 60 * 60 * 1000,
-                { responseType: "arraybuffer" }
-            )) || null
+        const pfp = await this.get<Buffer>(
+            `/api/v1/users/${userId}/pfp`,
+            undefined,
+            2 * 60 * 60 * 1000,
+            { responseType: "arraybuffer" }
         );
+        if (!pfp) {
+            return {
+                err: new FailedToFetchError(
+                    "maidraw.ongeki.adapter.kamaitachi",
+                    "profile picture",
+                    "An unknown error has occured."
+                ),
+            };
+        }
+        return { data: pfp };
     }
     public ongeki() {
         return new KamaiTachi({
@@ -608,11 +681,16 @@ export class KamaiTachi extends BaseScoreAdapter implements OngekiScoreAdapter {
 }
 
 export namespace KamaiTachi {
-    export interface IResponse<T> {
-        success: boolean;
+    export interface ISuccessResponse<T> {
+        success: true;
         description: string;
         body: T;
     }
+    export interface IErrorResponse {
+        success: false;
+        description: string;
+    }
+    export type IResponse<T> = ISuccessResponse<T> | IErrorResponse;
     export interface IChart {
         chartID: string;
         data: {

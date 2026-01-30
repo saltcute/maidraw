@@ -10,6 +10,11 @@ import {
 } from "@maidraw/mai/type";
 import { Database } from "@maidraw/mai/lib/database";
 import { BaseScoreAdapter } from "@maidraw/lib/adapter";
+import {
+    FailedToFetchError,
+    IllegalArgumentError,
+    UnsupportedMethodError,
+} from "@maidraw/lib/type";
 
 export class LXNS extends BaseScoreAdapter implements MaimaiScoreAdapter {
     constructor({
@@ -61,22 +66,42 @@ export class LXNS extends BaseScoreAdapter implements MaimaiScoreAdapter {
     }
     async getPlayerBest50(username: string) {
         const b50 = await this.getPlayerRawBest50(username);
-        if (!b50?.data) return null;
+        if (!b50?.success) {
+            return {
+                err: new FailedToFetchError(
+                    "maidraw.maimai.adapter.lxns",
+                    "best 50 scores",
+                    `${b50?.message && b50.code ? `${b50.code} ${b50.message}` : "An unknown error has occured"}.`
+                ),
+            };
+        }
         const chartList = await this.getChartList([
             ...b50.data.dx,
             ...b50.data.standard,
         ]);
         return {
-            new: this.toMaiDrawScore(b50.data.dx, chartList),
-            old: this.toMaiDrawScore(b50.data.standard, chartList),
+            data: {
+                new: this.toMaiDrawScore(b50.data.dx, chartList),
+                old: this.toMaiDrawScore(b50.data.standard, chartList),
+            },
         };
     }
     async getPlayerInfo(username: string) {
         const profile = await this.getPlayerRawProfile(username);
-        if (!profile?.data) return null;
+        if (!profile?.success) {
+            return {
+                err: new FailedToFetchError(
+                    "maidraw.maimai.adapter.lxns",
+                    "player profile",
+                    `${profile?.message && profile.code ? `${profile.code} ${profile.message}` : "An unknown error has occured"}.`
+                ),
+            };
+        }
         return {
-            name: profile.data.name,
-            rating: profile.data.rating,
+            data: {
+                name: profile.data.name,
+                rating: profile.data.rating,
+            },
         };
     }
     async getPlayerRawBest50(friendCode: string) {
@@ -251,9 +276,17 @@ export class LXNS extends BaseScoreAdapter implements MaimaiScoreAdapter {
             })
             .filter((v) => v !== null);
     }
-    async getPlayerProfilePicture(username: string): Promise<Buffer | null> {
+    async getPlayerProfilePicture(username: string) {
         const player = await this.getPlayerRawProfile(username);
-        if (!player?.data) return null;
+        if (!player?.success) {
+            return {
+                err: new FailedToFetchError(
+                    "maidraw.maimai.adapter.lxns",
+                    "player profile",
+                    `${player?.message && player.code ? `${player.code} ${player.message}` : "An unknown error has occured"}.`
+                ),
+            };
+        }
         const iconInfo = player.data.icon;
         const iconImage = await this.get<Buffer>(
             `/maimai/icon/${iconInfo.id}.png`,
@@ -264,8 +297,16 @@ export class LXNS extends BaseScoreAdapter implements MaimaiScoreAdapter {
                 responseType: "arraybuffer",
             }
         );
-        if (!iconImage) return null;
-        return iconImage;
+        if (!iconImage) {
+            return {
+                err: new FailedToFetchError(
+                    "maidraw.maimai.adapter.lxns",
+                    "player profile picture",
+                    "An unknown error has occured."
+                ),
+            };
+        }
+        return { data: iconImage };
     }
     async getPlayerScore(username: string, chartId: number) {
         const NUL = {
@@ -288,44 +329,63 @@ export class LXNS extends BaseScoreAdapter implements MaimaiScoreAdapter {
                 song_type: SONG_TYPE,
             }
         );
-        if (!res?.data) return NUL;
+        if (!res?.success) {
+            return {
+                err: new FailedToFetchError(
+                    "maidraw.maimai.adapter.lxns",
+                    "personal best scores",
+                    `${res?.message && res.code ? `${res.code} ${res.message}` : "An unknown error has occured"}.`
+                ),
+            };
+        }
         const chartList = await this.getChartList(res.data);
         const scores = this.toMaiDrawScore(res?.data, chartList);
         switch (SONG_TYPE) {
             case LXNS.ESongTypes.STANDARD:
             case LXNS.ESongTypes.DX: {
                 return {
-                    ...NUL,
-                    basic:
-                        scores.find(
-                            (v) => v.chart.difficulty == EDifficulty.BASIC
-                        ) || null,
-                    advanced:
-                        scores.find(
-                            (v) => v.chart.difficulty == EDifficulty.ADVANCED
-                        ) || null,
-                    expert:
-                        scores.find(
-                            (v) => v.chart.difficulty == EDifficulty.EXPERT
-                        ) || null,
-                    master:
-                        scores.find(
-                            (v) => v.chart.difficulty == EDifficulty.MASTER
-                        ) || null,
-                    remaster:
-                        scores.find(
-                            (v) => v.chart.difficulty == EDifficulty.REMASTER
-                        ) || null,
+                    data: {
+                        ...NUL,
+                        basic:
+                            scores.find(
+                                (v) => v.chart.difficulty == EDifficulty.BASIC
+                            ) || null,
+                        advanced:
+                            scores.find(
+                                (v) =>
+                                    v.chart.difficulty == EDifficulty.ADVANCED
+                            ) || null,
+                        expert:
+                            scores.find(
+                                (v) => v.chart.difficulty == EDifficulty.EXPERT
+                            ) || null,
+                        master:
+                            scores.find(
+                                (v) => v.chart.difficulty == EDifficulty.MASTER
+                            ) || null,
+                        remaster:
+                            scores.find(
+                                (v) =>
+                                    v.chart.difficulty == EDifficulty.REMASTER
+                            ) || null,
+                    },
                 };
             }
             case LXNS.ESongTypes.UTAGE: {
                 return {
-                    ...NUL,
-                    utage: scores.shift() || null,
+                    data: {
+                        ...NUL,
+                        utage: scores.shift() || null,
+                    },
                 };
             }
             default:
-                return NUL;
+                return {
+                    err: new IllegalArgumentError(
+                        "maidraw.maimai.adapter.lxns",
+                        `Song type can only be "standard", "dx" or "utage". Found "${SONG_TYPE}".`
+                    ),
+                };
         }
     }
     async getPlayerLevel50(
@@ -334,7 +394,12 @@ export class LXNS extends BaseScoreAdapter implements MaimaiScoreAdapter {
         page: number,
         options: { percise: boolean }
     ) {
-        return null;
+        return {
+            err: new UnsupportedMethodError(
+                "maidraw.maimai.adapter.lxns",
+                "getPlayerLevel50"
+            ),
+        };
     }
 }
 
@@ -524,10 +589,16 @@ export namespace LXNS {
         versions: IVersion[];
     }
 
-    export interface IAPIResponse<T extends any> {
-        success: boolean;
+    export interface IAPIErrorResponse {
+        success: false;
+        code: number;
+        message: string;
+    }
+    export interface IAPISuccessResponse<T> {
+        success: true;
         code: number;
         message: string;
         data: T;
     }
+    export type IAPIResponse<T> = IAPIErrorResponse | IAPISuccessResponse<T>;
 }
