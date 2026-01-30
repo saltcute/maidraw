@@ -14,7 +14,7 @@ const upath = require("upath");
     const themes = ["jp-xverse", "jp-verse"];
     for (let theme of themes) {
         for (const region of ["JPN"]) {
-            let result = await painter.drawWithScoreSource(
+            const { data: result, err } = await painter.drawWithScoreSource(
                 kamai,
                 {
                     username: process.env.NAME,
@@ -27,7 +27,11 @@ const upath = require("upath");
                     region,
                 }
             );
-            if (result) {
+
+            if (err) {
+                console.log(`${theme} failed!`);
+                console.log(err);
+            } else {
                 fs.writeFileSync(
                     upath.join(__dirname, `${theme}-${region}.webp`),
                     await sharp(result)
@@ -37,8 +41,6 @@ const upath = require("upath");
                         .toBuffer()
                 );
                 console.log(`${theme} passed.`);
-            } else {
-                console.log(`${theme} failed!`);
             }
         }
     }

@@ -16,12 +16,15 @@ const upath = require("upath");
             type: "new",
             theme,
         };
-        const result = await painter.drawWithScoreSource(
+        const { data: result, err } = await painter.drawWithScoreSource(
             lxns,
             { username: process.env.NAME },
             options
         );
-        if (result instanceof Buffer) {
+        if (err) {
+            console.log(`${theme} failed!`);
+            console.log(err);
+        } else {
             fs.writeFileSync(
                 upath.join(__dirname, `${theme}.webp`),
                 await sharp(result)
@@ -31,8 +34,6 @@ const upath = require("upath");
                     .toBuffer()
             );
             console.log(`${theme} passed.`);
-        } else {
-            console.log(`${theme} failed!`);
         }
     }
     process.exit(0);

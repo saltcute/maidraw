@@ -21,7 +21,7 @@ const upath = require("upath");
         "jp-luminous-landscape-new",
     ];
     for (let theme of themes) {
-        const result = await painter.drawWithScoreSource(
+        const { data: result, err } = await painter.drawWithScoreSource(
             (() => {
                 switch (theme) {
                     case "jp-xverse-landscape-recents":
@@ -67,7 +67,11 @@ const upath = require("upath");
                 })(),
             }
         );
-        if (result instanceof Buffer) {
+
+        if (err) {
+            console.log(`${theme} failed!`);
+            console.log(err);
+        } else {
             fs.writeFileSync(
                 upath.join(__dirname, `${theme}.webp`),
                 await sharp(result)
@@ -77,8 +81,6 @@ const upath = require("upath");
                     .toBuffer()
             );
             console.log(`${theme} passed.`);
-        } else {
-            console.log(`${theme} failed!`);
         }
     }
     process.exit(0);

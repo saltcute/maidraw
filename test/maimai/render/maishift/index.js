@@ -19,9 +19,9 @@ const upath = require("upath");
 
     const fs = require("fs");
 
-    const themes = ["jp-prismplus-landscape"];
+    const themes = ["jp-circle-landscape"];
     for (let theme of themes) {
-        let result = await painter.drawWithScoreSource(
+        const { data: result, err } = await painter.drawWithScoreSource(
             maishift,
             {
                 username: process.env.NAME,
@@ -31,8 +31,10 @@ const upath = require("upath");
                 theme,
             }
         );
-
-        if (result) {
+        if (err) {
+            console.log(`${theme} failed!`);
+            console.log(err);
+        } else {
             fs.writeFileSync(
                 upath.join(__dirname, `${theme}.webp`),
                 await sharp(result)
@@ -42,8 +44,6 @@ const upath = require("upath");
                     .toBuffer()
             );
             console.log(`${theme} passed.`);
-        } else {
-            console.log(`${theme} failed!`);
         }
     }
     process.exit(0);

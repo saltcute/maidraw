@@ -21,12 +21,26 @@ const upath = require("upath");
             type: theme.endsWith("-refresh") ? "refresh" : "classic",
             theme,
         };
-        const result = await painter.drawWithScoreSource(
-            source,
+        const { data: result, err } = await painter.drawWithScoreSource(
+            (() => {
+                switch (theme) {
+                    case "jp-brightmemory-landscape-classic":
+                    case "jp-brightmemory-landscape-refresh":
+                        return kamai.brightMemoryAct3();
+                    case "jp-refresh-landscape-classic":
+                    case "jp-refresh-landscape-refresh":
+                    default:
+                        return kamai.refresh();
+                }
+            })(),
             { username: process.env.NAME },
             options
         );
-        if (result instanceof Buffer) {
+
+        if (err) {
+            console.log(`${theme} failed!`);
+            console.log(err);
+        } else {
             fs.writeFileSync(
                 upath.join(__dirname, `${theme}.webp`),
                 await sharp(result)
@@ -36,8 +50,6 @@ const upath = require("upath");
                     .toBuffer()
             );
             console.log(`${theme} passed.`);
-        } else {
-            console.log(`${theme} failed!`);
         }
     }
     process.exit(0);
