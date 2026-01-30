@@ -12,7 +12,7 @@ import {
 } from "@maidraw/mai/type";
 import { Database } from "@maidraw/mai/lib/database";
 import { BaseScoreAdapter } from "@maidraw/lib/adapter";
-import { FailedToFetchError } from "@maidraw/lib/type";
+import { FailedToFetchError } from "@maidraw/lib/error";
 
 export class KamaiTachi extends BaseScoreAdapter implements MaimaiScoreAdapter {
     private currentVersion: KamaiTachi.GameVersions;

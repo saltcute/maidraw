@@ -9,7 +9,7 @@ import {
     EDifficulty,
     IScore,
 } from "@maidraw/chu/type";
-import { FailedToFetchError, IllegalArgumentError } from "@maidraw/lib/type";
+import { FailedToFetchError, IllegalArgumentError } from "@maidraw/lib/error";
 
 export class KamaiTachi
     extends BaseScoreAdapter

@@ -192,7 +192,7 @@ export class ThemeManager<Schema extends typeof ThemeManager.BaseObject> {
 }
 
 import LineBreaker from "linebreak";
-import { DataOrError } from "./type";
+import { DataOrError } from "./error";
 
 export namespace PainterModule {
     export namespace Image {

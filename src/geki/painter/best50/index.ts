@@ -9,7 +9,7 @@ import { OngekiPainter, OngekiPainterModule } from "..";
 import { Util } from "@maidraw/lib/util";
 import { PainterModule, ThemeManager } from "@maidraw/lib/painter";
 import { Database } from "@maidraw/geki/lib/database";
-import { IllegalArgumentError, MissingThemeError } from "@maidraw/lib/type";
+import { IllegalArgumentError, MissingThemeError } from "@maidraw/lib/error";
 
 export class Best50Painter extends OngekiPainter<typeof Best50Painter.Theme> {
     public static readonly Theme = ThemeManager.BaseTheme.extend({

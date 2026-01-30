@@ -14,7 +14,7 @@ import {
     FailedToFetchError,
     IllegalArgumentError,
     UnsupportedMethodError,
-} from "@maidraw/lib/type";
+} from "@maidraw/lib/error";
 
 export class LXNS extends BaseScoreAdapter implements MaimaiScoreAdapter {
     constructor({

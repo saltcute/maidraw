@@ -12,7 +12,7 @@ import { Database } from "../../lib/database";
 import { MaimaiScoreAdapter } from "../../lib/adapter";
 
 import { MaimaiPainterModule, MaimaiPainter } from "..";
-import { DataOrError, MissingThemeError } from "@maidraw/lib/type";
+import { DataOrError, MissingThemeError } from "@maidraw/lib/error";
 
 export class Best50Painter extends MaimaiPainter<typeof Best50Painter.Theme> {
     public static readonly Theme = ThemeManager.BaseTheme.extend({

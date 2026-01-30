@@ -1,5 +1,5 @@
 import { IScore } from "@maidraw/geki/type";
-import { DataOrError } from "@maidraw/lib/type";
+import { DataOrError } from "@maidraw/lib/error";
 
 export interface OngekiScoreAdapter {
     getPlayerBest55(username: string): Promise<

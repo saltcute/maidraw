@@ -14,7 +14,7 @@ import {
     DataOrError,
     MissingChartError,
     MissingThemeError,
-} from "@maidraw/lib/type";
+} from "@maidraw/lib/error";
 
 export class ChartPainter extends MaimaiPainter<typeof ChartPainter.Theme> {
     public static readonly Theme = ThemeManager.BaseTheme.extend({

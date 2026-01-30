@@ -11,7 +11,7 @@ import { Database } from "@maidraw/mai/lib/database";
 import { BaseScoreAdapter } from "@maidraw/lib/adapter";
 
 import { MaimaiScoreAdapter } from "..";
-import { FailedToFetchError, UnsupportedMethodError } from "@maidraw/lib/type";
+import { FailedToFetchError, UnsupportedMethodError } from "@maidraw/lib/error";
 
 export class Maishift extends BaseScoreAdapter implements MaimaiScoreAdapter {
     constructor() {

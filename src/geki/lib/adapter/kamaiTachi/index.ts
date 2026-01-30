@@ -10,7 +10,7 @@ import { OngekiUtil } from "../../util";
 import { Database } from "../../database";
 import { OngekiScoreAdapter } from "..";
 import { BaseScoreAdapter } from "@maidraw/lib/adapter";
-import { FailedToFetchError, IllegalArgumentError } from "@maidraw/lib/type";
+import { FailedToFetchError, IllegalArgumentError } from "@maidraw/lib/error";
 
 export class KamaiTachi extends BaseScoreAdapter implements OngekiScoreAdapter {
     private readonly CURRENT_VERSION: KamaiTachi.EGameVersions;

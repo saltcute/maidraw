@@ -1,5 +1,5 @@
 import { IScore } from "@maidraw/chu/type";
-import { DataOrError } from "@maidraw/lib/type";
+import { DataOrError } from "@maidraw/lib/error";
 
 export interface ChunithmScoreAdapter {
     getPlayerRecent40(username: string): Promise<

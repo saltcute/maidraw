@@ -9,7 +9,7 @@ import { Util } from "@maidraw/lib/util";
 import { IScore } from "@maidraw/chu/type";
 import { PainterModule, ThemeManager } from "@maidraw/lib/painter";
 import { Database } from "@maidraw/chu/lib/database";
-import { IllegalArgumentError, MissingThemeError } from "@maidraw/lib/type";
+import { IllegalArgumentError, MissingThemeError } from "@maidraw/lib/error";
 
 export class Best50Painter extends ChunithmPainter<typeof Best50Painter.Theme> {
     public static readonly Theme = ThemeManager.BaseTheme.extend({

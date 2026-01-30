@@ -1,4 +1,4 @@
-import { DataOrError } from "@maidraw/lib/type";
+import { DataOrError } from "@maidraw/lib/error";
 import { IScore } from "../../type";
 
 export interface MaimaiScoreAdapter {

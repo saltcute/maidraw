@@ -10,7 +10,7 @@ import { Util } from "@maidraw/lib/util";
 import { ChunithmPainter, ChunithmPainterModule } from "..";
 import { PainterModule, ThemeManager } from "@maidraw/lib/painter";
 import { Database } from "../../lib/database";
-import { MissingChartError, MissingThemeError } from "@maidraw/lib/type";
+import { MissingChartError, MissingThemeError } from "@maidraw/lib/error";
 
 export class ChartPainter extends ChunithmPainter<typeof ChartPainter.Theme> {
     public static readonly Theme = ThemeManager.BaseTheme.extend({
