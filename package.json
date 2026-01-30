@@ -1,6 +1,6 @@
 {
     "name": "maidraw",
-    "version": "0.11.25",
+    "version": "0.12.1",
     "description": "A simple library to draw geki/chu/mai images",
     "main": "dist/index.js",
     "scripts": {
