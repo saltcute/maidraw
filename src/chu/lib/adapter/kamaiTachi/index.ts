@@ -10,6 +10,7 @@ import {
     IScore,
 } from "@maidraw/chu/type";
 import { FailedToFetchError, IllegalArgumentError } from "@maidraw/lib/error";
+import Util from "@maidraw/lib/util";
 
 export class KamaiTachi
     extends BaseScoreAdapter
@@ -33,7 +34,11 @@ export class KamaiTachi
                 err: new FailedToFetchError(
                     "maidraw.chunithm.adapter.kamaitachi",
                     "personal best scores",
-                    `${rawPBs?.description ?? "An unknown error has occured."}`
+                    Util.sanitizeKamaitachiErrorMessage(
+                        `${rawPBs?.description ?? "An unknown error has occured."}`,
+                        username
+                    ),
+                    { username }
                 ),
             };
         }
@@ -427,7 +432,11 @@ export class KamaiTachi
                 err: new FailedToFetchError(
                     "maidraw.chunithm.adapter.kamaitachi",
                     "personal best scores",
-                    `${rawPBs?.description ?? "An unknown error has occured."}`
+                    Util.sanitizeKamaitachiErrorMessage(
+                        `${rawPBs?.description ?? "An unknown error has occured."}`,
+                        userId
+                    ),
+                    { username: userId }
                 ),
             };
         }
@@ -499,7 +508,11 @@ export class KamaiTachi
                 err: new FailedToFetchError(
                     "maidraw.chunithm.adapter.kamaitachi",
                     "personal best scores",
-                    `${rawPBs?.description ?? "An unknown error has occured."}`
+                    Util.sanitizeKamaitachiErrorMessage(
+                        `${rawPBs?.description ?? "An unknown error has occured."}`,
+                        userId
+                    ),
+                    { username: userId }
                 ),
             };
         }
@@ -509,7 +522,11 @@ export class KamaiTachi
                 err: new FailedToFetchError(
                     "maidraw.chunithm.adapter.kamaitachi",
                     "recent scores",
-                    `${rawRecents?.description ?? "An unknown error has occured."}`
+                    Util.sanitizeKamaitachiErrorMessage(
+                        `${rawRecents?.description ?? "An unknown error has occured."}`,
+                        userId
+                    ),
+                    { username: userId }
                 ),
             };
         }
@@ -648,9 +665,13 @@ export class KamaiTachi
         if (!profile?.success) {
             return {
                 err: new FailedToFetchError(
-                    "maidraw.chunith,.adapter.kamaitachi",
+                    "maidraw.chunithm.adapter.kamaitachi",
                     "player profile",
-                    `${profile?.description ?? "An unknown error has occured."}`
+                    Util.sanitizeKamaitachiErrorMessage(
+                        `${profile?.description ?? "An unknown error has occured."}`,
+                        userId
+                    ),
+                    { username: userId }
                 ),
             };
         }
@@ -691,7 +712,8 @@ export class KamaiTachi
             return {
                 err: new IllegalArgumentError(
                     "maidraw.chunithm.adapter.kamaitachi",
-                    `Type can only be "recents" or "new". Found ${type}.`
+                    `Type can only be "recents" or "new".`,
+                    { type }
                 ),
             };
     }

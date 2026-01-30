@@ -58,11 +58,12 @@ export class FailedToFetchError extends BaseError {
 }
 
 export class IllegalArgumentError extends BaseError {
-    public constructor(namespace: string, detail: string) {
+    public constructor(namespace: string, detail: string, data?: any) {
         super(
             namespace,
             "illegal-argument",
-            `An argument specified is illegal. ${detail}`
+            `An argument specified is illegal. ${detail}`,
+            data
         );
     }
 }

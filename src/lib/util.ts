@@ -367,6 +367,10 @@ export class Util {
             ],
         });
     }
+
+    static sanitizeKamaitachiErrorMessage(msg: string, payload: string) {
+        return msg.replaceAll(payload, "");
+    }
 }
 export namespace Util {
     export class HalfFullWidthConvert {

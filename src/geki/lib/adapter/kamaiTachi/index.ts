@@ -32,7 +32,11 @@ export class KamaiTachi extends BaseScoreAdapter implements OngekiScoreAdapter {
                 err: new FailedToFetchError(
                     "maidraw.ongeki.adapter.kamaitachi",
                     "personal best scores",
-                    `${rawPBs?.description ?? "An unknown error has occured."}`
+                    Util.sanitizeKamaitachiErrorMessage(
+                        `${rawPBs?.description ?? "An unknown error has occured."}`,
+                        username
+                    ),
+                    { username }
                 ),
             };
         }
@@ -307,7 +311,11 @@ export class KamaiTachi extends BaseScoreAdapter implements OngekiScoreAdapter {
                 err: new FailedToFetchError(
                     "maidraw.ongeki.adapter.kamaitachi",
                     "personal best scores",
-                    `${rawPBs?.description ?? "An unknown error has occured."}`
+                    Util.sanitizeKamaitachiErrorMessage(
+                        `${rawPBs?.description ?? "An unknown error has occured."}`,
+                        userId
+                    ),
+                    { userId }
                 ),
             };
         }
@@ -377,7 +385,11 @@ export class KamaiTachi extends BaseScoreAdapter implements OngekiScoreAdapter {
                 err: new FailedToFetchError(
                     "maidraw.ongeki.adapter.kamaitachi",
                     "personal best scores",
-                    `${rawPBs?.description ?? "An unknown error has occured."}`
+                    Util.sanitizeKamaitachiErrorMessage(
+                        `${rawPBs?.description ?? "An unknown error has occured."}`,
+                        userId
+                    ),
+                    { userId }
                 ),
             };
         }
@@ -387,7 +399,11 @@ export class KamaiTachi extends BaseScoreAdapter implements OngekiScoreAdapter {
                 err: new FailedToFetchError(
                     "maidraw.ongeki.adapter.kamaitachi",
                     "recent scores",
-                    `${rawRecents?.description ?? "An unknown error has occured."}`
+                    Util.sanitizeKamaitachiErrorMessage(
+                        `${rawRecents?.description ?? "An unknown error has occured."}`,
+                        userId
+                    ),
+                    { userId }
                 ),
             };
         }
@@ -544,7 +560,11 @@ export class KamaiTachi extends BaseScoreAdapter implements OngekiScoreAdapter {
                 err: new FailedToFetchError(
                     "maidraw.ongeki.adapter.kamaitachi",
                     "player profile",
-                    `${profile?.description ?? "An unknown error has occured."}`
+                    Util.sanitizeKamaitachiErrorMessage(
+                        `${profile?.description ?? "An unknown error has occured."}`,
+                        userId
+                    ),
+                    { userId }
                 ),
             };
         }
@@ -592,7 +612,7 @@ export class KamaiTachi extends BaseScoreAdapter implements OngekiScoreAdapter {
             return {
                 err: new IllegalArgumentError(
                     "maidraw.ongeki.adapter.kamaitachi",
-                    `Type can only be "refresh" or "classic". Found ${type}.`
+                    `Type can only be "refresh" or "classic".`
                 ),
             };
     }

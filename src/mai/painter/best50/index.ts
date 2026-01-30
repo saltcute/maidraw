@@ -246,7 +246,10 @@ export class Best50Painter extends MaimaiPainter<typeof Best50Painter.Theme> {
                 }
             }
             return { data: canvas.toBuffer() };
-        } else return { err: new MissingThemeError("maidraw.maimai.painter.best50") };
+        } else
+            return {
+                err: new MissingThemeError("maidraw.maimai.painter.best50"),
+            };
     }
     public async drawWithScoreSource(
         source: MaimaiScoreAdapter,
