@@ -683,7 +683,8 @@ export namespace OngekiPainterModule {
                     }
                     /** End Jacket Draw*/
 
-                    /** Begin Jacket Gradient Mask Draw*/ {
+                    /** Begin Jacket Gradient Mask Draw*/
+                    if (!(element.region == "recent" && type == "refresh")) {
                         ctx.fillStyle = jacketMaskGrad;
                         ctx.fillRect(
                             x + jacketSize / 2,
@@ -691,17 +692,19 @@ export namespace OngekiPainterModule {
                             (jacketSize * 3) / 4,
                             jacketSize
                         );
-                    } /** End Jacket Gradient Mask Draw*/
+                    }
+                    /** End Jacket Gradient Mask Draw*/
 
-                    /** Begin Title Draw */ {
+                    /** Begin Title Draw */
+                    const titleTextSize =
+                        element.scoreBubble.height * 0.806 * 0.144;
+                    if (!(element.region == "recent" && type == "refresh")) {
                         Util.drawText(
                             ctx,
                             score.chart.name,
                             x + (jacketSize * 7) / 8,
-                            y +
-                                element.scoreBubble.margin +
-                                element.scoreBubble.height * 0.806 * 0.144,
-                            element.scoreBubble.height * 0.806 * 0.144,
+                            y + element.scoreBubble.margin + titleTextSize,
+                            titleTextSize,
                             element.scoreBubble.height * 0.806 * 0.04,
                             {
                                 maxWidth:
@@ -713,9 +716,28 @@ export namespace OngekiPainterModule {
                                 borderColor: jacketMaskGradDark,
                             }
                         );
-                    } /** End Title Draw */
+                    } else {
+                        // Util.drawText(
+                        //     ctx,
+                        //     score.chart.name,
+                        //     x + element.scoreBubble.width / 2,
+                        //     y + element.scoreBubble.margin + titleTextSize,
+                        //     titleTextSize,
+                        //     element.scoreBubble.height * 0.806 * 0.04,
+                        //     {
+                        //         maxWidth:
+                        //             element.scoreBubble.width -
+                        //             element.scoreBubble.margin * 2,
+                        //         textAlign: "center",
+                        //         mainColor: "white",
+                        //         borderColor: curColor,
+                        //     }
+                        // );
+                    }
+                    /** End Title Draw */
 
-                    /** Begin Separation Line Draw */ {
+                    /** Begin Separation Line Draw */
+                    if (!(element.region == "recent" && type == "refresh")) {
                         ctx.beginPath();
                         ctx.roundRect(
                             x + (jacketSize * 13) / 16,
@@ -732,33 +754,38 @@ export namespace OngekiPainterModule {
                         );
                         ctx.fillStyle = jacketMaskGradDark;
                         ctx.fill();
-                    } /** End Separation Line Draw */
+                    }
+                    /** End Separation Line Draw */
 
                     /** Begin Achievement Rate Draw */
-                    Util.drawText(
-                        ctx,
-                        Util.truncate(score.score, 0),
-                        x -
-                            element.scoreBubble.margin -
-                            element.scoreBubble.height * 0.806 * 0.02 +
-                            element.scoreBubble.width,
-                        y +
-                            element.scoreBubble.margin +
-                            element.scoreBubble.height *
-                                0.806 *
-                                (0.144 + 0.144 + 0.208 - 0.04),
-                        element.scoreBubble.height * 0.806 * 0.208,
-                        element.scoreBubble.height * 0.806 * 0.04,
-                        {
-                            textAlign: "right",
-                            mainColor: "white",
-                            borderColor: new Color(curColor).darken(0.3).hexa(),
-                        }
-                    );
+                    if (!(element.region == "recent" && type == "refresh")) {
+                        Util.drawText(
+                            ctx,
+                            Util.truncate(score.score, 0),
+                            x -
+                                element.scoreBubble.margin -
+                                element.scoreBubble.height * 0.806 * 0.02 +
+                                element.scoreBubble.width,
+                            y +
+                                element.scoreBubble.margin +
+                                element.scoreBubble.height *
+                                    0.806 *
+                                    (0.144 + 0.144 + 0.208 - 0.04),
+                            element.scoreBubble.height * 0.806 * 0.208,
+                            element.scoreBubble.height * 0.806 * 0.04,
+                            {
+                                textAlign: "right",
+                                mainColor: "white",
+                                borderColor: new Color(curColor)
+                                    .darken(0.3)
+                                    .hexa(),
+                            }
+                        );
+                    }
                     /** End Achievement Rate Draw */
 
                     /** Begin Achievement Rank Draw */
-                    {
+                    if (!(element.region == "recent" && type == "refresh")) {
                         let rankImg: Buffer;
                         switch (score.rank) {
                             case EAchievementTypes.D:
@@ -835,7 +862,7 @@ export namespace OngekiPainterModule {
                     /** End Achievement Rank Draw */
 
                     /** Begin Milestone Draw */
-                    {
+                    if (!(element.region == "recent" && type == "refresh")) {
                         let comboImg: Buffer;
                         switch (score.combo) {
                             case EComboTypes.NONE:
@@ -941,16 +968,66 @@ export namespace OngekiPainterModule {
                             comboWidth,
                             comboWidth * (84 / 290)
                         );
+                    } else {
+                        const achievements: string[] = [];
+
+                        switch (score.combo) {
+                            case EComboTypes.FULL_COMBO:
+                                achievements.push("FC");
+                                break;
+                            case EComboTypes.ALL_BREAK:
+                                achievements.push("AB");
+                                break;
+                            case EComboTypes.ALL_BREAK_PLUS:
+                                achievements.push("AB+");
+                                break;
+                            case EComboTypes.NONE:
+                            default:
+                                break;
+                        }
+                        switch (score.bell) {
+                            case EBellTypes.FULL_BELL:
+                                achievements.push("FB");
+                                break;
+                            case EBellTypes.NONE:
+                            default:
+                                break;
+                        }
+                        Util.drawText(
+                            ctx,
+                            achievements.join(" "),
+                            x +
+                                element.scoreBubble.width -
+                                element.scoreBubble.margin,
+                            y + jacketSize - element.scoreBubble.margin * 1.5,
+                            element.scoreBubble.height * 0.806 * 0.128,
+                            element.scoreBubble.height * 0.806 * 0.04,
+                            {
+                                textAlign: "right",
+                                mainColor: "white",
+                                borderColor: new Color(curColor)
+                                    .darken(0.3)
+                                    .hexa(),
+                            }
+                        );
                     }
                     /** End Milestone Draw */
 
                     /** Begin Bests Index Draw */
                     {
+                        const marginX =
+                            element.region === "recent" && type === "refresh"
+                                ? element.scoreBubble.margin
+                                : element.scoreBubble.margin * 2;
+                        const marginY =
+                            element.region === "recent" && type === "refresh"
+                                ? element.scoreBubble.margin * 1.5
+                                : element.scoreBubble.margin * 2;
                         Util.drawText(
                             ctx,
                             `#${index + 1}`,
-                            x + element.scoreBubble.margin * 2,
-                            y + jacketSize - element.scoreBubble.margin * 2,
+                            x + marginX,
+                            y + jacketSize - marginY,
                             element.scoreBubble.height * 0.806 * 0.128,
                             element.scoreBubble.height * 0.806 * 0.04,
                             {
@@ -970,16 +1047,29 @@ export namespace OngekiPainterModule {
 
                 /** Begin Difficulty & Rating Draw */
                 {
-                    let content = "";
-                    if (element.region === "recent" && type === "refresh") {
-                        content = `★${OngekiUtil.getStar(score.platinumScore / score.chart.maxPlatinumScore)}  +${Util.truncate(score.starRating, 3)}`;
-                    } else {
-                        content = `${Util.truncate(score.chart.level, 1)}  ↑${Util.truncate(score.rating, type === "refresh" ? 3 : 2)}`;
-                    }
+                    const leftContent =
+                        element.region === "recent" && type === "refresh"
+                            ? `★${OngekiUtil.getStar(score.platinumScore / score.chart.maxPlatinumScore)}`
+                            : `${Util.truncate(score.chart.level, 1)}  ↑${Util.truncate(score.rating, type === "refresh" ? 3 : 2)}`;
+                    const rightContent = (() => {
+                        if (element.region === "recent" && type === "refresh") {
+                            return `+${Util.truncate(score.starRating, 3)}`;
+                        }
+                        if (
+                            score.platinumScore &&
+                            score.chart.maxPlatinumScore
+                        ) {
+                            return `${score.platinumScore}/${score.chart.maxPlatinumScore}`;
+                        }
+                    })();
+                    const margin =
+                        element.region === "recent" && type === "refresh"
+                            ? element.scoreBubble.margin * 1.5
+                            : element.scoreBubble.margin * 2;
                     Util.drawText(
                         ctx,
-                        content,
-                        x + element.scoreBubble.margin * 2,
+                        leftContent,
+                        x + margin,
                         y +
                             element.scoreBubble.height *
                                 (0.806 + (1 - 0.806) / 2),
@@ -991,14 +1081,11 @@ export namespace OngekiPainterModule {
                             borderColor: new Color(curColor).darken(0.3).hexa(),
                         }
                     );
-
-                    if (score.platinumScore && score.chart.maxPlatinumScore)
+                    if (rightContent) {
                         Util.drawText(
                             ctx,
-                            `${score.platinumScore}/${score.chart.maxPlatinumScore}`,
-                            x +
-                                element.scoreBubble.width -
-                                element.scoreBubble.margin * 2,
+                            rightContent,
+                            x + element.scoreBubble.width - margin,
                             y +
                                 element.scoreBubble.height *
                                     (0.806 + (1 - 0.806) / 2),
@@ -1012,6 +1099,7 @@ export namespace OngekiPainterModule {
                                     .hexa(),
                             }
                         );
+                    }
                 }
                 /** End Difficulty & Rating Draw */
 
