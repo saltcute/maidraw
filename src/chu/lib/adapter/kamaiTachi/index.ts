@@ -461,6 +461,14 @@ export class KamaiTachi
                 (diff == EDifficulty.ULTIMA
                     ? this.getDatabaseVersion(v.chart)
                     : null) ?? v.song.data.displayVersion;
+            if (diff == EDifficulty.ULTIMA) {
+                return (
+                    KamaiTachi.compareGameVersions(currentVersion, version) >=
+                        0 &&
+                    (omnimix ||
+                        this.isChartInVersionStrict(v.chart, currentVersion))
+                );
+            }
             return (
                 KamaiTachi.compareGameVersions(currentVersion, version) > 0 &&
                 (omnimix ||
