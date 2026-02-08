@@ -714,25 +714,30 @@ export namespace OngekiPainterModule {
                                 textAlign: "left",
                                 mainColor: "white",
                                 borderColor: jacketMaskGradDark,
+                                widthConstraintType: "shrink-cut",
+                                shrinkMinFontSize: titleTextSize * 0.85,
                             }
                         );
                     } else {
-                        // Util.drawText(
-                        //     ctx,
-                        //     score.chart.name,
-                        //     x + element.scoreBubble.width / 2,
-                        //     y + element.scoreBubble.margin + titleTextSize,
-                        //     titleTextSize,
-                        //     element.scoreBubble.height * 0.806 * 0.04,
-                        //     {
-                        //         maxWidth:
-                        //             element.scoreBubble.width -
-                        //             element.scoreBubble.margin * 2,
-                        //         textAlign: "center",
-                        //         mainColor: "white",
-                        //         borderColor: curColor,
-                        //     }
-                        // );
+                        Util.drawText(
+                            ctx,
+                            score.chart.name,
+                            x + element.scoreBubble.width / 2,
+                            y + element.scoreBubble.margin + titleTextSize,
+                            titleTextSize,
+                            element.scoreBubble.height * 0.806 * 0.04,
+                            {
+                                maxWidth:
+                                    element.scoreBubble.width -
+                                    element.scoreBubble.margin * 2,
+                                textAlign: "center",
+                                mainColor: "white",
+                                borderColor: curColor,
+                                widthConstraintType: "shrink-cut",
+                                shrinkAnchor: "center",
+                                shrinkMinFontSize: titleTextSize * 0.7,
+                            }
+                        );
                     }
                     /** End Title Draw */
 

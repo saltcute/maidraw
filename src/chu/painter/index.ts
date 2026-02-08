@@ -578,14 +578,14 @@ export namespace ChunithmPainterModule {
                     } /** End Jacket Gradient Mask Draw*/
 
                     /** Begin Title Draw */ {
+                        const titleFontSize =
+                            element.scoreBubble.height * 0.806 * 0.144;
                         Util.drawText(
                             ctx,
                             score.chart.name,
                             x + (jacketSize * 7) / 8,
-                            y +
-                                element.scoreBubble.margin +
-                                element.scoreBubble.height * 0.806 * 0.144,
-                            element.scoreBubble.height * 0.806 * 0.144,
+                            y + element.scoreBubble.margin + titleFontSize,
+                            titleFontSize,
                             element.scoreBubble.height * 0.806 * 0.04,
                             {
                                 maxWidth:
@@ -595,6 +595,8 @@ export namespace ChunithmPainterModule {
                                 textAlign: "left",
                                 mainColor: "white",
                                 borderColor: jacketMaskGradDark,
+                                widthConstraintType: "shrink-cut",
+                                shrinkMinFontSize: titleFontSize * 0.85,
                             }
                         );
                     } /** End Title Draw */
