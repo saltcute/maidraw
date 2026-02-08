@@ -189,7 +189,7 @@
             "y": 2157,
             "borderColor": "#b89f82",
             "align": "left",
-            "content": "PLATINUM bonus"
+            "content": "PLATINUM bonus: +{recentOrPlatinumScoreAvg}"
         },
         {
             "type": "hitokoto",

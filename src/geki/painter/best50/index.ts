@@ -181,13 +181,16 @@ export class Best50Painter extends OngekiPainter<typeof Best50Painter.Theme> {
                         }
                         function getRatingAvg(
                             scores: IScore[],
-                            length: number
+                            length: number,
+                            type: "score" | "star" = "score"
                         ) {
                             if (scores.length <= 0) return 0;
                             return (
                                 scores
                                     .slice(0, length)
-                                    .map((v) => v.rating)
+                                    .map((v) =>
+                                        type == "star" ? v.starRating : v.rating
+                                    )
                                     .reduce((sum, v) => sum + v, 0) / length
                             );
                         }
@@ -220,7 +223,8 @@ export class Best50Painter extends OngekiPainter<typeof Best50Painter.Theme> {
                             recentOrPlatinumScoreAvg: Util.truncate(
                                 getRatingAvg(
                                     variables.recentOrPlatinumScores,
-                                    options.type == "refresh" ? 50 : 10
+                                    options.type == "refresh" ? 50 : 10,
+                                    options.type == "refresh" ? "star" : "score"
                                 ),
                                 options.type == "refresh" ? 3 : 2
                             ),
