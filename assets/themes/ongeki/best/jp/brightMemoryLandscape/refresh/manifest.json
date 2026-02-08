@@ -2,12 +2,12 @@
     "displayName": "オンゲキ bright MEMORY, landscape",
     "name": "jp-brightmemory-landscape-refresh",
     "width": 2000,
-    "height": 3238,
+    "height": 3208,
     "elements": [
         {
             "type": "image",
             "x": 1000,
-            "y": 1619,
+            "y": 1604,
             "width": 2000,
             "anchor": "cc",
             "path": "../../../common/brightmemory/background.webp"
