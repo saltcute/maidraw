@@ -157,6 +157,7 @@ export class Util {
             lineBreakSuffix = "...",
             widthConstraintType = "cut",
             shrinkAnchor = "bottom",
+            shrinkMinFontSize = 4,
         }: {
             maxWidth?: number;
             textAlign?: "left" | "center" | "right";
@@ -164,15 +165,18 @@ export class Util {
             borderColor?: string | CanvasGradient | CanvasPattern;
             font?: string;
             lineBreakSuffix?: string;
-            widthConstraintType?: "cut" | "shrink";
+            widthConstraintType?: "shrink-cut" | "cut" | "shrink" | "none";
             shrinkAnchor?: "top" | "center" | "bottom";
+            shrinkMinFontSize?: number;
         }
     ) {
         ctx.font = `${fontSize}px ${font}`;
-        if (widthConstraintType == "cut")
-            str = this.findMaxFitString(ctx, str, maxWidth, lineBreakSuffix);
-        if (widthConstraintType == "shrink") {
-            for (let fs = fontSize; fs >= 4; fs--) {
+        if (
+            widthConstraintType == "shrink" ||
+            widthConstraintType == "shrink-cut"
+        ) {
+            let fs = fontSize;
+            for (; fs >= shrinkMinFontSize; fs--) {
                 const measurement = this.measureText(
                     ctx,
                     str,
@@ -180,31 +184,33 @@ export class Util {
                     Infinity,
                     font
                 );
-                if (measurement.width <= maxWidth) {
-                    const originalMesurement = this.measureText(
-                        ctx,
-                        str,
-                        fontSize,
-                        Infinity,
-                        font
-                    );
-                    const originalHeight =
-                        originalMesurement.actualBoundingBoxAscent +
-                        originalMesurement.actualBoundingBoxDescent;
-                    const newHeight =
-                        measurement.actualBoundingBoxAscent +
-                        measurement.actualBoundingBoxDescent;
-                    if (shrinkAnchor == "top") {
-                        y -= originalHeight;
-                        y += newHeight;
-                    } else if (shrinkAnchor == "center") {
-                        y -= (originalHeight - newHeight) / 2;
-                    }
-                    fontSize = fs;
-                    break;
-                }
+                if (measurement.width <= maxWidth) break;
             }
+            const measurement = this.measureText(ctx, str, fs, Infinity, font);
+            const originalMesurement = this.measureText(
+                ctx,
+                str,
+                fontSize,
+                Infinity,
+                font
+            );
+            const originalHeight =
+                originalMesurement.actualBoundingBoxAscent +
+                originalMesurement.actualBoundingBoxDescent;
+            const newHeight =
+                measurement.actualBoundingBoxAscent +
+                measurement.actualBoundingBoxDescent;
+            if (shrinkAnchor == "top") {
+                y -= originalHeight;
+                y += newHeight;
+            } else if (shrinkAnchor == "center") {
+                y -= (originalHeight - newHeight) / 2;
+            }
+            fontSize = fs;
         }
+        ctx.font = `${fontSize}px ${font}`;
+        if (widthConstraintType == "cut" || widthConstraintType == "shrink-cut")
+            str = this.findMaxFitString(ctx, str, maxWidth, lineBreakSuffix);
         if (linewidth > 0) {
             ctx.strokeStyle = borderColor;
             ctx.lineWidth = linewidth;
@@ -214,7 +220,6 @@ export class Util {
             ctx.strokeText(str, x, y);
         }
         ctx.fillStyle = mainColor;
-        ctx.font = `${fontSize}px ${font}`;
         ctx.textAlign = textAlign;
         ctx.fillText(str, x, y);
         if (linewidth > 0) {
