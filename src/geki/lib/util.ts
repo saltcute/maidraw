@@ -226,17 +226,19 @@ export namespace OngekiUtil {
     export function getStar(starRatio: number) {
         if (starRatio < 0 || starRatio > 1) return 0;
         if (starRatio >= 0.98) return 5;
-        else if (starRatio >= 0.97) return 4;
-        else if (starRatio >= 0.96) return 3;
-        else if (starRatio >= 0.95) return 2;
-        else if (starRatio >= 0.94) return 1;
-        else return 0;
+        if (starRatio >= 0.97) return 4;
+        if (starRatio >= 0.96) return 3;
+        if (starRatio >= 0.95) return 2;
+        if (starRatio >= 0.94) return 1;
+        return 0;
     }
 
     export function calculateReFreshStarRating(
         internalLevel: number,
         starCount: number
     ) {
+        if (starCount < 0) starCount = 0;
+        if (starCount > 5) starCount = 5;
         return Math.floor(starCount * internalLevel * internalLevel) / 1000;
     }
 
