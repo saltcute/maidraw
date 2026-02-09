@@ -973,66 +973,20 @@ export namespace OngekiPainterModule {
                             comboWidth,
                             comboWidth * (84 / 290)
                         );
-                    } else {
-                        const achievements: string[] = [];
-
-                        switch (score.combo) {
-                            case EComboTypes.FULL_COMBO:
-                                achievements.push("FC");
-                                break;
-                            case EComboTypes.ALL_BREAK:
-                                achievements.push("AB");
-                                break;
-                            case EComboTypes.ALL_BREAK_PLUS:
-                                achievements.push("AB+");
-                                break;
-                            case EComboTypes.NONE:
-                            default:
-                                break;
-                        }
-                        switch (score.bell) {
-                            case EBellTypes.FULL_BELL:
-                                achievements.push("FB");
-                                break;
-                            case EBellTypes.NONE:
-                            default:
-                                break;
-                        }
-                        Util.drawText(
-                            ctx,
-                            achievements.join(" "),
-                            x +
-                                element.scoreBubble.width -
-                                element.scoreBubble.margin,
-                            y + jacketSize - element.scoreBubble.margin * 1.5,
-                            element.scoreBubble.height * 0.806 * 0.128,
-                            element.scoreBubble.height * 0.806 * 0.04,
-                            {
-                                textAlign: "right",
-                                mainColor: "white",
-                                borderColor: new Color(curColor)
-                                    .darken(0.3)
-                                    .hexa(),
-                            }
-                        );
                     }
                     /** End Milestone Draw */
 
                     /** Begin Bests Index Draw */
                     {
-                        const marginX =
-                            element.region === "recent" && type === "refresh"
-                                ? element.scoreBubble.margin
-                                : element.scoreBubble.margin * 2;
-                        const marginY =
+                        const margin =
                             element.region === "recent" && type === "refresh"
                                 ? element.scoreBubble.margin * 1.5
                                 : element.scoreBubble.margin * 2;
                         Util.drawText(
                             ctx,
                             `#${index + 1}`,
-                            x + marginX,
-                            y + jacketSize - marginY,
+                            x + margin,
+                            y + jacketSize - margin,
                             element.scoreBubble.height * 0.806 * 0.128,
                             element.scoreBubble.height * 0.806 * 0.04,
                             {
@@ -1043,6 +997,62 @@ export namespace OngekiPainterModule {
                                     .hexa(),
                             }
                         );
+
+                        if (element.region === "recent" && type === "refresh") {
+                            const platRatio =
+                                score.platinumScore /
+                                score.chart.maxPlatinumScore;
+                            const content = `★${OngekiUtil.getStar(platRatio)}`;
+                            const fontSize =
+                                element.scoreBubble.height * 0.806 * 0.128;
+                            const mesaure = Util.measureText(
+                                ctx,
+                                content,
+                                fontSize,
+                                Infinity
+                            );
+                            const width =
+                                mesaure.actualBoundingBoxLeft +
+                                mesaure.actualBoundingBoxRight;
+                            const height =
+                                mesaure.actualBoundingBoxAscent +
+                                mesaure.actualBoundingBoxDescent;
+                            const star6Grad = ctx.createLinearGradient(
+                                x + element.scoreBubble.width - margin - width,
+                                y + jacketSize - margin - height / 2,
+                                x + element.scoreBubble.width - margin,
+                                y + jacketSize - margin - height / 2
+                            );
+                            [
+                                "#e81416",
+                                "#ffa500",
+                                "#faeb36",
+                                "#79c314",
+                                "#487de7",
+                                "#4b369d",
+                                "#70369d",
+                            ].forEach((v, i, arr) => {
+                                star6Grad.addColorStop(i / (arr.length - 1), v);
+                            });
+                            Util.drawText(
+                                ctx,
+                                content,
+                                x + element.scoreBubble.width - margin,
+                                y + jacketSize - margin,
+                                fontSize,
+                                element.scoreBubble.height * 0.806 * 0.04,
+                                {
+                                    textAlign: "right",
+                                    mainColor: "white",
+                                    borderColor:
+                                        platRatio >= 0.99
+                                            ? star6Grad
+                                            : new Color(curColor)
+                                                  .darken(0.3)
+                                                  .hexa(),
+                                }
+                            );
+                        }
                     }
                     /** End Bests Index Draw */
 
@@ -1054,7 +1064,7 @@ export namespace OngekiPainterModule {
                 {
                     const leftContent =
                         element.region === "recent" && type === "refresh"
-                            ? `★${OngekiUtil.getStar(score.platinumScore / score.chart.maxPlatinumScore)}`
+                            ? `${Util.truncate(score.chart.level, 1)}`
                             : `${Util.truncate(score.chart.level, 1)}  ↑${Util.truncate(score.rating, type === "refresh" ? 3 : 2)}`;
                     const rightContent = (() => {
                         if (element.region === "recent" && type === "refresh") {
