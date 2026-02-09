@@ -465,6 +465,7 @@ export class KamaiTachi
                 return (
                     KamaiTachi.compareGameVersions(currentVersion, version) >=
                         0 &&
+                    v.song.data.displayVersion != currentVersion &&
                     (omnimix ||
                         this.isChartInVersionStrict(v.chart, currentVersion))
                 );
