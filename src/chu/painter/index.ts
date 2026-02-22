@@ -415,6 +415,7 @@ export namespace ChunithmPainterModule {
                         ultima: Util.z.color(),
                         worldsEnd: Util.z.color(),
                     }),
+                    strictScoreCount: z.boolean().default(true),
                 }),
                 sprites: z.object({
                     achievement: z.object({
@@ -880,6 +881,43 @@ export namespace ChunithmPainterModule {
 
                 ctx.restore();
                 /** End Card Draw */
+            }
+            export async function drawOutline(
+                ctx: CanvasRenderingContext2D,
+                theme: Theme<any>,
+                element: z.infer<typeof schema>,
+                index: number,
+                x: number,
+                y: number
+            ) {
+                ctx.save();
+
+                ctx.beginPath();
+                ctx.roundRect(
+                    x,
+                    y,
+                    element.scoreBubble.width,
+                    element.scoreBubble.height,
+                    (element.scoreBubble.height * 0.806) / 7
+                );
+
+                const BASE_COLOR = new Color("#757575");
+                const CIRCUMFERENCE =
+                    (element.scoreBubble.height + element.scoreBubble.width) *
+                    2;
+                ctx.fillStyle = BASE_COLOR.lighten(0.4).alpha(0.5).hexa();
+                ctx.fill();
+
+                ctx.strokeStyle = BASE_COLOR.darken(0.3).hexa();
+                ctx.setLineDash([
+                    CIRCUMFERENCE / 64,
+                    (CIRCUMFERENCE / 64) * 0.7,
+                ]);
+                ctx.lineWidth = element.scoreBubble.margin / 4;
+                ctx.stroke();
+                ctx.setLineDash([]);
+
+                ctx.restore();
             }
         }
     }

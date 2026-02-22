@@ -135,6 +135,17 @@ export class Best50Painter extends ChunithmPainter<typeof Best50Painter.Theme> {
                                         y,
                                         version
                                     );
+                                } else if (
+                                    element.scoreBubble.strictScoreCount
+                                ) {
+                                    await ChunithmPainterModule.Best50.ScoreGrid.drawOutline(
+                                        ctx,
+                                        currentTheme,
+                                        element,
+                                        index,
+                                        x,
+                                        y
+                                    );
                                 }
                             }
                         }

@@ -126,6 +126,19 @@ export class Best50Painter extends MaimaiPainter<typeof Best50Painter.Theme> {
                                             scale: curScore.optionalData?.scale,
                                         }
                                     );
+                                } else if (
+                                    element.scoreBubble.strictScoreCount
+                                ) {
+                                    await MaimaiPainterModule.Best50.ScoreGrid.drawOutline(
+                                        ctx,
+                                        currentTheme,
+                                        element,
+                                        {
+                                            x,
+                                            y,
+                                            index,
+                                        }
+                                    );
                                 }
                             }
                         }
