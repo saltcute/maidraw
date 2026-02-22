@@ -415,7 +415,7 @@ export namespace ChunithmPainterModule {
                         ultima: Util.z.color(),
                         worldsEnd: Util.z.color(),
                     }),
-                    strictScoreCount: z.boolean().default(true),
+                    strictScoreCount: z.number().default(0),
                 }),
                 sprites: z.object({
                     achievement: z.object({

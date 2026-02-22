@@ -127,7 +127,9 @@ export class Best50Painter extends MaimaiPainter<typeof Best50Painter.Theme> {
                                         }
                                     );
                                 } else if (
-                                    element.scoreBubble.strictScoreCount
+                                    element.scoreBubble.strictScoreCount ===
+                                        0 ||
+                                    index < element.scoreBubble.strictScoreCount
                                 ) {
                                     await MaimaiPainterModule.Best50.ScoreGrid.drawOutline(
                                         ctx,

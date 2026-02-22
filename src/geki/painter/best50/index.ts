@@ -136,7 +136,9 @@ export class Best50Painter extends OngekiPainter<typeof Best50Painter.Theme> {
                                         options.type
                                     );
                                 } else if (
-                                    element.scoreBubble.strictScoreCount
+                                    element.scoreBubble.strictScoreCount ===
+                                        0 ||
+                                    index < element.scoreBubble.strictScoreCount
                                 ) {
                                     await OngekiPainterModule.Best50.ScoreGrid.drawOutline(
                                         ctx,

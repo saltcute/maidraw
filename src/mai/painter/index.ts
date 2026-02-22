@@ -346,7 +346,7 @@ export namespace MaimaiPainterModule {
                         remaster: Util.z.color(),
                         utage: Util.z.color(),
                     }),
-                    strictScoreCount: z.boolean().default(true),
+                    strictScoreCount: z.number().default(0),
                 }),
                 sprites: z.object({
                     achievement: z.object({

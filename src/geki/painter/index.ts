@@ -535,7 +535,7 @@ export namespace OngekiPainterModule {
                         master: Util.z.color(),
                         lunatic: Util.z.color(),
                     }),
-                    strictScoreCount: z.boolean().default(true),
+                    strictScoreCount: z.number().default(0),
                 }),
                 sprites: z.object({
                     achievement: z.object({
