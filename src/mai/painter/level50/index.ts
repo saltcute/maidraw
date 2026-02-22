@@ -117,6 +117,21 @@ export class Level50Painter extends MaimaiPainter<typeof Best50Painter.Theme> {
                                                     : index),
                                         }
                                     );
+                                } else if (
+                                    element.scoreBubble.strictScoreCount ===
+                                        0 ||
+                                    index < element.scoreBubble.strictScoreCount
+                                ) {
+                                    await MaimaiPainterModule.Best50.ScoreGrid.drawOutline(
+                                        ctx,
+                                        currentTheme,
+                                        element,
+                                        {
+                                            x,
+                                            y,
+                                            index,
+                                        }
+                                    );
                                 }
                             }
                         }
