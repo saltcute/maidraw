@@ -20,8 +20,7 @@ export class Maishift extends BaseScoreAdapter implements MaimaiScoreAdapter {
         });
     }
     private readonly CURRENT_MINOR = 60;
-    private readonly CURRENT_ACCUMULATE_VER = 25;
-    private minorToAccumulateVer(minor: number, isDX: boolean) {
+    private minorToAccumulateVer(minor: number, isDX: boolean = true) {
         if (isDX) {
             if (minor >= 60) return 25;
             if (minor >= 55) return 24;
@@ -114,27 +113,32 @@ export class Maishift extends BaseScoreAdapter implements MaimaiScoreAdapter {
     private async best50Scraper(username: string) {
         const scoresHTML = await this.get<string>(
             `/profile/${username}/records?&version=${(() => {
-                if (this.CURRENT_ACCUMULATE_VER >= 25) {
-                    return `${this.CURRENT_ACCUMULATE_VER},${this.CURRENT_ACCUMULATE_VER - 1}`;
+                if (this.minorToAccumulateVer(this.CURRENT_MINOR) >= 25) {
+                    return `${this.minorToAccumulateVer(this.CURRENT_MINOR)},${this.minorToAccumulateVer(this.CURRENT_MINOR) - 1}`;
                 } else {
-                    return `${this.CURRENT_ACCUMULATE_VER}`;
+                    return `${this.minorToAccumulateVer(this.CURRENT_MINOR)}`;
                 }
-            })()})&sort=rating&order=desc`,
+            })()}&sort=rating&order=desc`,
             undefined,
             1 * 60 * 1000
         );
         const oldScoresHTML = await this.get<string>(
             `/profile/${username}/records?&version=${(() => {
-                if (this.CURRENT_ACCUMULATE_VER >= 25) {
+                if (this.minorToAccumulateVer(this.CURRENT_MINOR) >= 25) {
                     return encodeURI(
                         Array.from(
-                            Array(this.CURRENT_ACCUMULATE_VER - 1).keys()
+                            Array(
+                                this.minorToAccumulateVer(this.CURRENT_MINOR) -
+                                    1
+                            ).keys()
                         ).join(",")
                     );
                 } else {
                     return encodeURI(
                         Array.from(
-                            Array(this.CURRENT_ACCUMULATE_VER).keys()
+                            Array(
+                                this.minorToAccumulateVer(this.CURRENT_MINOR)
+                            ).keys()
                         ).join(",")
                     );
                 }
@@ -326,7 +330,10 @@ export class Maishift extends BaseScoreAdapter implements MaimaiScoreAdapter {
             score.level,
             score.isDX
         );
-        if (!chart) return null;
+        if (!chart) {
+            console.log(score.name);
+            return null;
+        }
         return {
             chart: {
                 id: chart.id,
