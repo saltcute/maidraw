@@ -121,7 +121,8 @@
                     "expert": "#FF4A5A",
                     "master": "#A04FDA",
                     "lunatic": "#591C28"
-                }
+                },
+                "strictScoreCount": 50
             },
             "sprites": {
                 "achievement": {
