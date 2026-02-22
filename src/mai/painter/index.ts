@@ -929,27 +929,31 @@ export namespace MaimaiPainterModule {
             ) {
                 ctx.save();
 
+                const ROUND_CORNOR_RADIUS =
+                    (element.scoreBubble.height * 0.806) / 7;
                 ctx.beginPath();
                 ctx.roundRect(
                     x,
                     y,
                     element.scoreBubble.width,
                     element.scoreBubble.height,
-                    (element.scoreBubble.height * 0.806) / 7
+                    ROUND_CORNOR_RADIUS
                 );
 
-                const BASE_COLOR = new Color("#757575");
+                const BASE_COLOR = new Color("#949494");
                 const CIRCUMFERENCE =
-                    (element.scoreBubble.height + element.scoreBubble.width) *
-                    2;
-                ctx.fillStyle = BASE_COLOR.lighten(0.4).alpha(0.5).hexa();
+                    (element.scoreBubble.width +
+                        element.scoreBubble.height -
+                        ROUND_CORNOR_RADIUS * 4) *
+                        2 +
+                    ROUND_CORNOR_RADIUS * 2 * Math.PI;
+                const DASH_LENGTH =
+                    CIRCUMFERENCE / Math.round(CIRCUMFERENCE / 25);
+                ctx.fillStyle = BASE_COLOR.lighten(0.3).alpha(0.5).hexa();
                 ctx.fill();
 
-                ctx.strokeStyle = BASE_COLOR.darken(0.3).hexa();
-                ctx.setLineDash([
-                    CIRCUMFERENCE / 64,
-                    (CIRCUMFERENCE / 64) * 0.7,
-                ]);
+                ctx.strokeStyle = BASE_COLOR.hexa();
+                ctx.setLineDash([DASH_LENGTH * 0.56, DASH_LENGTH * 0.44]);
                 ctx.lineWidth = element.scoreBubble.margin / 4;
                 ctx.stroke();
                 ctx.setLineDash([]);
