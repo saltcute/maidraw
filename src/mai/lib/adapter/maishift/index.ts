@@ -112,7 +112,7 @@ export class Maishift extends BaseScoreAdapter implements MaimaiScoreAdapter {
     }
     private async best50Scraper(username: string) {
         const scoresHTML = await this.get<string>(
-            `/profile/${username}/records?&version=${(() => {
+            `/profile/${username}/records?&v=${(() => {
                 if (this.minorToAccumulateVer(this.CURRENT_MINOR) >= 25) {
                     return `${this.minorToAccumulateVer(this.CURRENT_MINOR)},${this.minorToAccumulateVer(this.CURRENT_MINOR) - 1}`;
                 } else {
@@ -123,7 +123,7 @@ export class Maishift extends BaseScoreAdapter implements MaimaiScoreAdapter {
             1 * 60 * 1000
         );
         const oldScoresHTML = await this.get<string>(
-            `/profile/${username}/records?&version=${(() => {
+            `/profile/${username}/records?&v=${(() => {
                 if (this.minorToAccumulateVer(this.CURRENT_MINOR) >= 25) {
                     return encodeURI(
                         Array.from(
