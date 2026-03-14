@@ -3,7 +3,7 @@ import upath from "upath";
 import { z } from "zod/v4";
 import { Canvas } from "canvas";
 
-import { IScore } from "@maidraw/mai/type";
+import { EComboTypes, IScore } from "@maidraw/mai/type";
 import { Util } from "@maidraw/lib/util";
 import { PainterModule, ThemeManager } from "@maidraw/lib/painter";
 
@@ -168,7 +168,9 @@ export class Best50Painter extends MaimaiPainter<typeof Best50Painter.Theme> {
                                     .map((v) =>
                                         MaimaiUtil.calculateRating(
                                             v.chart.level,
-                                            v.achievement
+                                            v.achievement,
+                                            EComboTypes.NONE,
+                                            "dx"
                                         )
                                     )
                                     .sort((a, b) => a - b)
@@ -194,7 +196,9 @@ export class Best50Painter extends MaimaiPainter<typeof Best50Painter.Theme> {
                                 const calculateRating =
                                     MaimaiUtil.calculateRating(
                                         level / 10,
-                                        achievement
+                                        achievement,
+                                        EComboTypes.NONE,
+                                        "dx"
                                     );
                                 if (
                                     Math.trunc(calculateRating) >

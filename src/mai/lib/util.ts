@@ -1,6 +1,6 @@
 import _ from "lodash";
 
-import { EAchievementTypes } from "../type";
+import { EAchievementTypes, EComboTypes } from "../type";
 import { Database } from "./database";
 import Util from "@maidraw/lib/util";
 
@@ -181,7 +181,9 @@ export namespace MaimaiUtil {
      */
     export function calculateRating(
         internalLevel: number,
-        achievement: number
+        achievement: number,
+        combo: EComboTypes,
+        version: "dx" | "circle"
     ): number {
         let ratingConstant = 0;
         switch (true) {
@@ -254,11 +256,20 @@ export namespace MaimaiUtil {
                 break;
             }
         }
-        return Util.truncateNumber(
+        let rating = Util.truncateNumber(
             (Math.min(achievement, 100.5) / 100) *
                 ratingConstant *
                 internalLevel,
             0
         );
+        if (
+            version === "circle" &&
+            [EComboTypes.ALL_PERFECT, EComboTypes.ALL_PERFECT_PLUS].includes(
+                combo
+            )
+        ) {
+            rating += 1;
+        }
+        return rating;
     }
 }

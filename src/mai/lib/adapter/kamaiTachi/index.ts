@@ -89,6 +89,20 @@ export class KamaiTachi extends BaseScoreAdapter implements MaimaiScoreAdapter {
                   }
               })()
             : undefined;
+        const combo = (() => {
+            switch (score.scoreData.lamp) {
+                case "FULL COMBO":
+                    return EComboTypes.FULL_COMBO;
+                case "FULL COMBO+":
+                    return EComboTypes.FULL_COMBO_PLUS;
+                case "ALL PERFECT":
+                    return EComboTypes.ALL_PERFECT;
+                case "ALL PERFECT+":
+                    return EComboTypes.ALL_PERFECT_PLUS;
+                default:
+                    return EComboTypes.NONE;
+            }
+        })();
         return {
             chart: (() => {
                 return {
@@ -128,20 +142,7 @@ export class KamaiTachi extends BaseScoreAdapter implements MaimaiScoreAdapter {
                         })(),
                 };
             })(),
-            combo: (() => {
-                switch (score.scoreData.lamp) {
-                    case "FULL COMBO":
-                        return EComboTypes.FULL_COMBO;
-                    case "FULL COMBO+":
-                        return EComboTypes.FULL_COMBO_PLUS;
-                    case "ALL PERFECT":
-                        return EComboTypes.ALL_PERFECT;
-                    case "ALL PERFECT+":
-                        return EComboTypes.ALL_PERFECT_PLUS;
-                    default:
-                        return EComboTypes.NONE;
-                }
-            })(),
+            combo,
             sync: ESyncTypes.NONE,
             achievement: score.scoreData.percent,
             achievementRank: (() => {
@@ -180,7 +181,14 @@ export class KamaiTachi extends BaseScoreAdapter implements MaimaiScoreAdapter {
             dxRating: internalLevel
                 ? MaimaiUtil.calculateRating(
                       internalLevel,
-                      score.scoreData.percent
+                      score.scoreData.percent,
+                      combo,
+                      KamaiTachi.compareGameVersions(
+                          this.currentVersion,
+                          KamaiTachi.GameVersions.CIRCLE
+                      ) >= 0
+                          ? "circle"
+                          : "dx"
                   )
                 : score.calculatedData.rate,
             dxScore: (() => {
