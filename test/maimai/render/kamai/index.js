@@ -10,11 +10,12 @@ const upath = require("upath");
     const fs = require("fs");
 
     const themes = [
+        "salt-2026-landscape",
+        "salt-2026-portrait",
         "jp-circle-landscape",
         "jp-circle-portrait",
         "cn-2025-landscape",
         "cn-2025-portrait",
-        "salt-2026-landscape",
         "jp-finale-landscape",
         "jp-finale-portrait",
         "jp-prismplus-landscape",
