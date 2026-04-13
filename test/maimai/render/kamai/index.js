@@ -10,6 +10,8 @@ const upath = require("upath");
     const fs = require("fs");
 
     const themes = [
+        "jp-circleplus-landscape",
+        "jp-circleplus-portrait",
         "salt-2026-landscape",
         "salt-2026-portrait",
         "jp-circle-landscape",
@@ -34,6 +36,9 @@ const upath = require("upath");
         const { data: result, err } = await painter.drawWithScoreSource(
             (() => {
                 switch (theme) {
+                    case "jp-circleplus-landscape":
+                    case "jp-circleplus-portrait":
+                        return kamai.versions().circleplus();
                     case "jp-circle-landscape":
                     case "jp-circle-portrait":
                         return kamai.versions().circle();
