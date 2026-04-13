@@ -792,7 +792,7 @@ export class KamaiTachiBuilder {
             region,
         });
     }
-    public circleplus(region?: "DX" | "EX") {
+    public circlePlus(region?: "DX" | "EX") {
         return new KamaiTachi({
             version: KamaiTachi.GameVersions.CIRCLE_PLUS,
             region,
