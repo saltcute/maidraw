@@ -792,6 +792,12 @@ export class KamaiTachiBuilder {
             region,
         });
     }
+    public circleplus(region?: "DX" | "EX") {
+        return new KamaiTachi({
+            version: KamaiTachi.GameVersions.CIRCLE_PLUS,
+            region,
+        });
+    }
     public CN() {
         return {
             DX() {
@@ -963,6 +969,12 @@ export namespace KamaiTachi {
     }
 
     export const GameVersions = {
+        CIRCLE_PLUS: {
+            kamai: "maimaiでらっくす CiRCLE PLUS",
+            DX: "maimai でらっくす CiRCLE PLUS",
+            EX: "maimai DX CiRCLE PLUS",
+            CN: "",
+        },
         CIRCLE: {
             kamai: "maimaiでらっくす CiRCLE",
             DX: "maimai でらっくす CiRCLE",
@@ -1152,6 +1164,7 @@ export namespace KamaiTachi {
         GameVersions.PRISM,
         GameVersions.PRISM_PLUS,
         GameVersions.CIRCLE,
+        GameVersions.CIRCLE_PLUS,
     ] as const;
 
     export function getGameVersion(payload: string): AllGameVersions | null {
