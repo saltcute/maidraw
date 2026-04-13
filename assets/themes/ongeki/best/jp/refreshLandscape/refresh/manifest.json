@@ -208,6 +208,25 @@
             ]
         },
         {
+            "type": "image",
+            "x": 1970,
+            "y": -60,
+            "height": 430,
+            "anchor": "rt",
+            "path": "../../../common/refresh/logo.webp"
+        },
+        {
+            "type": "text",
+            "size": 24,
+            "x": 210,
+            "y": 282,
+            "color": "black",
+            "lineWidth": 0,
+            "borderColor": "rgba(255, 255, 255, 0)",
+            "align": "left",
+            "content": "{naiveRatingAverage}"
+        },
+        {
             "type": "profile",
             "x": 0,
             "y": 0,
@@ -247,25 +266,6 @@
                     "icon": "../../../common/versionless/icon.webp"
                 }
             }
-        },
-        {
-            "type": "image",
-            "x": 1970,
-            "y": -60,
-            "height": 430,
-            "anchor": "rt",
-            "path": "../../../common/refresh/logo.webp"
-        },
-        {
-            "type": "text",
-            "size": 24,
-            "x": 210,
-            "y": 282,
-            "color": "black",
-            "lineWidth": 0,
-            "borderColor": "rgba(255, 255, 255, 0)",
-            "align": "left",
-            "content": "{naiveRatingAverage}"
         }
     ]
 }

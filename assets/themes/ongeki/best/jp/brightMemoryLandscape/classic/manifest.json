@@ -196,47 +196,6 @@
             }
         },
         {
-            "type": "profile",
-            "x": 0,
-            "y": 0,
-            "sprites": {
-                "rating": {
-                    "numberMap": {
-                        "blue": "../../../common/versionless/rating/numberMap/blue.webp",
-                        "green": "../../../common/versionless/rating/numberMap/green.webp",
-                        "orange": "../../../common/versionless/rating/numberMap/orange.webp",
-                        "red": "../../../common/versionless/rating/numberMap/red.webp",
-                        "purple": "../../../common/versionless/rating/numberMap/purple.webp",
-                        "bronze": "../../../common/versionless/rating/numberMap/bronze.webp",
-                        "silver": "../../../common/versionless/rating/numberMap/silver.webp",
-                        "gold": "../../../common/versionless/rating/numberMap/gold.webp",
-                        "platinum": "../../../common/versionless/rating/numberMap/platinum.webp",
-                        "rainbow": "../../../common/versionless/rating/numberMap/rainbow.webp",
-                        "rainbow2": "../../../common/versionless/rating/numberMap/rainbow2.webp",
-                        "rainbow3": "../../../common/versionless/rating/numberMap/rainbow3.webp"
-                    },
-                    "headerText": {
-                        "blue": "../../../common/versionless/rating/headerText/blue.webp",
-                        "green": "../../../common/versionless/rating/headerText/green.webp",
-                        "orange": "../../../common/versionless/rating/headerText/orange.webp",
-                        "red": "../../../common/versionless/rating/headerText/red.webp",
-                        "purple": "../../../common/versionless/rating/headerText/purple.webp",
-                        "bronze": "../../../common/versionless/rating/headerText/bronze.webp",
-                        "silver": "../../../common/versionless/rating/headerText/silver.webp",
-                        "gold": "../../../common/versionless/rating/headerText/gold.webp",
-                        "platinum": "../../../common/versionless/rating/headerText/platinum.webp",
-                        "rainbow": "../../../common/versionless/rating/headerText/rainbow.webp",
-                        "rainbow2": "../../../common/versionless/rating/headerText/rainbow2.webp",
-                        "rainbow3": "../../../common/versionless/rating/headerText/rainbow3.webp"
-                    }
-                },
-                "profile": {
-                    "userplate": "../../../common/versionless/userplateIchigeki.webp",
-                    "icon": "../../../common/versionless/icon.webp"
-                }
-            }
-        },
-        {
             "type": "image",
             "x": 1694,
             "y": -80,
@@ -313,6 +272,47 @@
                 "../../../../../../hitokoto/general.json",
                 "../../../../../../hitokoto/support/ongeki.json"
             ]
+        },
+        {
+            "type": "profile",
+            "x": 0,
+            "y": 0,
+            "sprites": {
+                "rating": {
+                    "numberMap": {
+                        "blue": "../../../common/versionless/rating/numberMap/blue.webp",
+                        "green": "../../../common/versionless/rating/numberMap/green.webp",
+                        "orange": "../../../common/versionless/rating/numberMap/orange.webp",
+                        "red": "../../../common/versionless/rating/numberMap/red.webp",
+                        "purple": "../../../common/versionless/rating/numberMap/purple.webp",
+                        "bronze": "../../../common/versionless/rating/numberMap/bronze.webp",
+                        "silver": "../../../common/versionless/rating/numberMap/silver.webp",
+                        "gold": "../../../common/versionless/rating/numberMap/gold.webp",
+                        "platinum": "../../../common/versionless/rating/numberMap/platinum.webp",
+                        "rainbow": "../../../common/versionless/rating/numberMap/rainbow.webp",
+                        "rainbow2": "../../../common/versionless/rating/numberMap/rainbow2.webp",
+                        "rainbow3": "../../../common/versionless/rating/numberMap/rainbow3.webp"
+                    },
+                    "headerText": {
+                        "blue": "../../../common/versionless/rating/headerText/blue.webp",
+                        "green": "../../../common/versionless/rating/headerText/green.webp",
+                        "orange": "../../../common/versionless/rating/headerText/orange.webp",
+                        "red": "../../../common/versionless/rating/headerText/red.webp",
+                        "purple": "../../../common/versionless/rating/headerText/purple.webp",
+                        "bronze": "../../../common/versionless/rating/headerText/bronze.webp",
+                        "silver": "../../../common/versionless/rating/headerText/silver.webp",
+                        "gold": "../../../common/versionless/rating/headerText/gold.webp",
+                        "platinum": "../../../common/versionless/rating/headerText/platinum.webp",
+                        "rainbow": "../../../common/versionless/rating/headerText/rainbow.webp",
+                        "rainbow2": "../../../common/versionless/rating/headerText/rainbow2.webp",
+                        "rainbow3": "../../../common/versionless/rating/headerText/rainbow3.webp"
+                    }
+                },
+                "profile": {
+                    "userplate": "../../../common/versionless/userplateIchigeki.webp",
+                    "icon": "../../../common/versionless/icon.webp"
+                }
+            }
         }
     ]
 }
