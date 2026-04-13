@@ -16,7 +16,7 @@ import { FailedToFetchError, UnsupportedMethodError } from "@maidraw/lib/error";
 export class Maishift extends BaseScoreAdapter implements MaimaiScoreAdapter {
     constructor() {
         super({
-            baseURL: "https://maimai.shiftpsh.com",
+            baseURL: "https://maimai.shiftpsh.com/en",
         });
     }
     private readonly CURRENT_MINOR = 60;
@@ -57,7 +57,24 @@ export class Maishift extends BaseScoreAdapter implements MaimaiScoreAdapter {
             undefined,
             1 * 60 * 1000
         );
-        if (!HTML) return null;
+        if (!HTML) {
+            return {
+                err: new FailedToFetchError(
+                    "maidraw.maimai.adapter.maishift",
+                    "player profile",
+                    "An unknown error has occured."
+                ),
+            };
+        }
+        if (this.isPagePrivate(HTML)) {
+            return {
+                err: new FailedToFetchError(
+                    "maidraw.maimai.adapter.maishift",
+                    "player profile",
+                    "The user does not have any score or their profile is private."
+                ),
+            };
+        }
         const $ = Cheerio.load(HTML.replace(/<style.*?>.*?<\/style>/g, ""));
         const profileElement = $("> div", $("body > div")[2])[1];
         const name = $($("> div > span", $("> div", profileElement))[0]).text();
@@ -66,8 +83,16 @@ export class Maishift extends BaseScoreAdapter implements MaimaiScoreAdapter {
         const rating = parseInt(
             $($("> div > div", $("> div", profileElement))[1]).text()
         );
-        if (!name || isNaN(rating)) return null;
-        return { name, avatarUrl, title, rating };
+        if (!name || !avatarUrl || isNaN(rating)) {
+            return {
+                err: new FailedToFetchError(
+                    "maidraw.maimai.adapter.maishift",
+                    "player profile",
+                    "Failed to parse player profile."
+                ),
+            };
+        }
+        return { data: { name, avatarUrl, title, rating } };
     }
     private getScoresFromDOM($: Cheerio.CheerioAPI, length: number) {
         const DOM = $("> div > div", $("> div", $("body > div")[4])[2]).slice(
@@ -122,6 +147,24 @@ export class Maishift extends BaseScoreAdapter implements MaimaiScoreAdapter {
             undefined,
             1 * 60 * 1000
         );
+        if (!scoresHTML) {
+            return {
+                err: new FailedToFetchError(
+                    "maidraw.maimai.adapter.maishift",
+                    "personal best scores",
+                    "An unknown error has occured."
+                ),
+            };
+        }
+        if (this.isPagePrivate(scoresHTML)) {
+            return {
+                err: new FailedToFetchError(
+                    "maidraw.maimai.adapter.maishift",
+                    "personal best scores",
+                    "The user does not have any score or their profile is private."
+                ),
+            };
+        }
         const oldScoresHTML = await this.get<string>(
             `/profile/${username}/records?&v=${(() => {
                 if (this.minorToAccumulateVer(this.CURRENT_MINOR) >= 25) {
@@ -146,7 +189,24 @@ export class Maishift extends BaseScoreAdapter implements MaimaiScoreAdapter {
             undefined,
             1 * 60 * 1000
         );
-        if (!scoresHTML || !oldScoresHTML) return null;
+        if (!oldScoresHTML) {
+            return {
+                err: new FailedToFetchError(
+                    "maidraw.maimai.adapter.maishift",
+                    "personal best scores",
+                    "An unknown error has occured."
+                ),
+            };
+        }
+        if (this.isPagePrivate(oldScoresHTML)) {
+            return {
+                err: new FailedToFetchError(
+                    "maidraw.maimai.adapter.maishift",
+                    "personal best scores",
+                    "The user does not have any score or their profile is private."
+                ),
+            };
+        }
         const $new = Cheerio.load(
             scoresHTML.replace(/<style.*?>.*?<\/style>/g, "")
         );
@@ -157,39 +217,16 @@ export class Maishift extends BaseScoreAdapter implements MaimaiScoreAdapter {
         const newScores = this.getScoresFromDOM($new, 15);
         const oldScores = this.getScoresFromDOM($old, 35);
 
-        return { newScores, oldScores };
+        return { data: { newScores, oldScores } };
     }
     async getPlayerInfo(username: string) {
-        const res = await this.profileScraper(username);
-        if (!res) {
-            return {
-                err: new FailedToFetchError(
-                    "maidraw.maimai.adapter.maishift",
-                    "player profile",
-                    "An unknown error has occured."
-                ),
-            };
-        }
-        return {
-            data: {
-                name: res.name,
-                rating: res.rating,
-            },
-        };
+        return await this.profileScraper(username);
     }
     async getPlayerProfilePicture(username: string) {
         const res = await this.profileScraper(username);
-        if (!res?.avatarUrl) {
-            return {
-                err: new FailedToFetchError(
-                    "maidraw.maimai.adapter.maishift",
-                    "player profile",
-                    "An unknown error has occured."
-                ),
-            };
-        }
+        if (res.err) return res;
         const buffer = await this.get<Buffer>(
-            res.avatarUrl,
+            res.data.avatarUrl,
             undefined,
             2 * 60 * 60 * 1000,
             {
@@ -209,25 +246,25 @@ export class Maishift extends BaseScoreAdapter implements MaimaiScoreAdapter {
     }
     async getPlayerBest50(username: string) {
         const res = await this.best50Scraper(username);
-        if (!res)
-            return {
-                err: new FailedToFetchError(
-                    "maidraw.maimai.adapter.maishift",
-                    "best 50 scores",
-                    "An unknown error has occured."
-                ),
-            };
+        if (res.err) return res;
         const scores: IScore[] = [];
         const oldScores: IScore[] = [];
-        for (const score of res.newScores) {
+        for (const score of res.data.newScores) {
             const converted = await this.toMaiDrawScore(score);
             if (converted) scores.push(converted);
         }
-        for (const score of res.oldScores) {
+        for (const score of res.data.oldScores) {
             const converted = await this.toMaiDrawScore(score);
             if (converted) oldScores.push(converted);
         }
         return { data: { new: scores, old: oldScores } };
+    }
+    private isPagePrivate(HTML: string) {
+        return [
+            "No Record Found or Profile is Private",
+            "找不到記錄或個人檔案設為私人",
+            "기록이 존재하지 않거나 비공개입니다",
+        ].some((s) => HTML.includes(s));
     }
     private async scoreScraper(
         username: string,
@@ -235,9 +272,9 @@ export class Maishift extends BaseScoreAdapter implements MaimaiScoreAdapter {
         difficulty: EDifficulty
     ) {
         const chart = Database.getLocalChart(chartId, difficulty);
-        if (!chart) return null;
+        if (!chart) return { data: null };
         const addVersion = chart.addVersion.EX ?? chart.addVersion.DX;
-        if (!addVersion) return null;
+        if (!addVersion) return { data: null };
         const accumulateVer = this.minorToAccumulateVer(
             addVersion?.gameVersion.minor,
             chartId > 10000
@@ -272,14 +309,32 @@ export class Maishift extends BaseScoreAdapter implements MaimaiScoreAdapter {
             undefined,
             1 * 60 * 1000
         );
-        if (!HTML) return null;
+        if (!HTML) {
+            return {
+                err: new FailedToFetchError(
+                    "maidraw.maimai.adapter.maishift",
+                    "player score",
+                    "An unknown error has occured."
+                ),
+            };
+        }
+        if (this.isPagePrivate(HTML)) {
+            return {
+                err: new FailedToFetchError(
+                    "maidraw.maimai.adapter.maishift",
+                    "player score",
+                    "The user does not have any score or their profile is private."
+                ),
+            };
+        }
         const $ = Cheerio.load(HTML.replace(/<style.*?>.*?<\/style>/g, ""));
         const scores = this.getScoresFromDOM($, 100);
-        return (
-            scores.find(
-                (s) => s.name == chart.name && s.isDX == chartId > 10000
-            ) || null
-        );
+        return {
+            data:
+                scores.find(
+                    (s) => s.name == chart.name && s.isDX == chartId > 10000
+                ) ?? null,
+        };
     }
 
     async getPlayerScore(username: string, chartId: number) {
@@ -308,9 +363,12 @@ export class Maishift extends BaseScoreAdapter implements MaimaiScoreAdapter {
                 chartId,
                 difficulty
             );
-            if (score) {
+            if (score.err) {
+                return { err: score.err };
+            }
+            if (score.data) {
                 res[EDifficulty[difficulty].toLowerCase() as keyof typeof res] =
-                    await this.toMaiDrawScore(score);
+                    await this.toMaiDrawScore(score.data);
             }
         }
         return { data: res };
