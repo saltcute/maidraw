@@ -12,7 +12,7 @@ const upath = require("upath");
     MaiDraw.Maimai.Database.setLocalDatabasePath("../maimai-songs-database");
 
     const fs = require("fs");
-    const themes = ["jp-circle", "jp-prismplus", "jp-prism"];
+    const themes = ["jp-circleplus", "jp-circle", "jp-prismplus", "jp-prism"];
     for (let theme of themes) {
         for (const region of ["DX", "EX", "CN"]) {
             const { data: result, err } = await painter.drawWithScoreSource(
@@ -49,7 +49,7 @@ const upath = require("upath");
                         })
                         .toBuffer()
                 );
-                console.log(`${theme} passed.`);
+                console.log(`${theme}-${region} passed.`);
             }
         }
     }
