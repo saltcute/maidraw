@@ -38,7 +38,7 @@ const upath = require("upath");
                 switch (theme) {
                     case "jp-circleplus-landscape":
                     case "jp-circleplus-portrait":
-                        return kamai.versions().circleplus();
+                        return kamai.versions().circlePlus();
                     case "jp-circle-landscape":
                     case "jp-circle-portrait":
                         return kamai.versions().circle();
