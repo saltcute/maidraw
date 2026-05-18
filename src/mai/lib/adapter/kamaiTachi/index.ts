@@ -44,14 +44,14 @@ export class KamaiTachi extends BaseScoreAdapter implements MaimaiScoreAdapter {
                 songs: KamaiTachi.ISong[];
             }>
         >(
-            `/api/v1/users/${userId}/games/maimaidx/Single/pbs/all`,
+            `/api/v1/users/${userId}/games/maimaidx/pbs/all`,
             undefined,
             60 * 1000
         );
     }
     public async getScoreHistory(userId: string, chartId: string) {
         return this.get<KamaiTachi.IResponse<KamaiTachi.IScore[]>>(
-            `/api/v1/users/${userId}/games/maimaidx/Single/scores/${chartId}`,
+            `/api/v1/users/${userId}/games/maimaidx/scores/${chartId}`,
             undefined,
             60 * 1000
         );

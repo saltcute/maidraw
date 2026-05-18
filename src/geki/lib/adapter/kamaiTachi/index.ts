@@ -149,11 +149,7 @@ export class KamaiTachi extends BaseScoreAdapter implements OngekiScoreAdapter {
                 pbs: KamaiTachi.IPb[];
                 songs: KamaiTachi.ISong[];
             }>
-        >(
-            `/api/v1/users/${userId}/games/ongeki/Single/pbs/all`,
-            undefined,
-            60 * 1000
-        );
+        >(`/api/v1/users/${userId}/games/ongeki/pbs/all`, undefined, 60 * 1000);
     }
     async getPlayerRecentScores(userId: string) {
         return this.get<
@@ -163,7 +159,7 @@ export class KamaiTachi extends BaseScoreAdapter implements OngekiScoreAdapter {
                 songs: KamaiTachi.ISong[];
             }>
         >(
-            `/api/v1/users/${userId}/games/ongeki/Single/scores/recent`,
+            `/api/v1/users/${userId}/games/ongeki/scores/recent`,
             undefined,
             60 * 1000
         );
@@ -458,7 +454,7 @@ export class KamaiTachi extends BaseScoreAdapter implements OngekiScoreAdapter {
                 order: number;
             }[] = [];
             for (let i = 0; i < scores.length; i++) {
-                r30 = r30.sort((a, b) => a.order - b.order);
+                r30.sort((a, b) => a.order - b.order);
                 const score = scores[i];
                 // console.log(`#${i} ${score.chart.name} Rating: ${score.rating}`);
                 if (r30.length < 30) {
@@ -474,10 +470,11 @@ export class KamaiTachi extends BaseScoreAdapter implements OngekiScoreAdapter {
                             // console.log(`SSS rating guard triggered.`);
                             if (r30.length >= 30) {
                                 const best10 = r30
-                                    .sort((a, b) =>
-                                        a.score.rating == b.score.rating
-                                            ? b.score.score - a.score.score
-                                            : b.score.rating - a.score.rating
+                                    .slice()
+                                    .sort(
+                                        (a, b) =>
+                                            b.score.rating - a.score.rating ||
+                                            b.score.score - a.score.score
                                     )
                                     .slice(0, 10);
                                 for (let j = 0; j < r30.length; ++j) {

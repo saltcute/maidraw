@@ -127,7 +127,7 @@ export class KamaiTachi
                 songs: KamaiTachi.ISong[];
             }>
         >(
-            `/api/v1/users/${userId}/games/chunithm/Single/pbs/all`,
+            `/api/v1/users/${userId}/games/chunithm/pbs/all`,
             undefined,
             60 * 1000
         );
@@ -140,7 +140,7 @@ export class KamaiTachi
                 songs: KamaiTachi.ISong[];
             }>
         >(
-            `/api/v1/users/${userId}/games/chunithm/Single/scores/recent`,
+            `/api/v1/users/${userId}/games/chunithm/scores/recent`,
             undefined,
             60 * 1000
         );
