@@ -14,8 +14,7 @@ import Util from "@maidraw/lib/util";
 
 export class KamaiTachi
     extends BaseScoreAdapter
-    implements ChunithmScoreAdapter
-{
+    implements ChunithmScoreAdapter {
     private readonly CURRENT_VERSION: KamaiTachi.EGameVersions;
     constructor({
         baseURL = "https://kamai.tachi.ac/",
@@ -94,10 +93,10 @@ export class KamaiTachi
                     : null,
                 advanced: advanced
                     ? this.toMaiDrawScore(
-                          advanced.pb,
-                          advanced.chart,
-                          advanced.song
-                      )
+                        advanced.pb,
+                        advanced.chart,
+                        advanced.song
+                    )
                     : null,
                 expert: expert
                     ? this.toMaiDrawScore(expert.pb, expert.chart, expert.song)
@@ -110,10 +109,10 @@ export class KamaiTachi
                     : null,
                 worldsEnd: worldsEnd
                     ? this.toMaiDrawScore(
-                          worldsEnd.pb,
-                          worldsEnd.chart,
-                          worldsEnd.song
-                      )
+                        worldsEnd.pb,
+                        worldsEnd.chart,
+                        worldsEnd.song
+                    )
                     : null,
             },
         };
@@ -361,13 +360,13 @@ export class KamaiTachi
                     KamaiTachi.EGameVersions.CHUNITHM_NEW
                 ) >= 0
                     ? ChunithmUtil.calculateRating(
-                          internalLevel,
-                          score.scoreData.score
-                      )
+                        internalLevel,
+                        score.scoreData.score
+                    )
                     : ChunithmUtil.calculatePLostRating(
-                          internalLevel,
-                          score.scoreData.score
-                      ),
+                        internalLevel,
+                        score.scoreData.score
+                    ),
         };
     }
     private getDatabaseVersion(
@@ -404,13 +403,13 @@ export class KamaiTachi
                     if (
                         version == KamaiTachi.EGameVersions.CHUNITHM_PARADISE ||
                         version ==
-                            KamaiTachi.EGameVersions.CHUNITHM_PARADISE_LOST
+                        KamaiTachi.EGameVersions.CHUNITHM_PARADISE_LOST
                     ) {
                         return (
                             this.getKamaiVersion(v.version.name) ==
-                                KamaiTachi.EGameVersions.CHUNITHM_PARADISE ||
+                            KamaiTachi.EGameVersions.CHUNITHM_PARADISE ||
                             this.getKamaiVersion(v.version.name) ==
-                                KamaiTachi.EGameVersions.CHUNITHM_PARADISE_LOST
+                            KamaiTachi.EGameVersions.CHUNITHM_PARADISE_LOST
                         );
                     } else {
                         return this.getKamaiVersion(v.version.name) == version;
@@ -452,28 +451,29 @@ export class KamaiTachi
                 pbs.push({ pb, chart, song });
             }
         }
-        const newScores = pbs.filter(
-            (v) => v.song.data.displayVersion == currentVersion
-        );
-        const oldScores = pbs.filter((v) => {
-            const diff = this.getDatabaseDifficulty(v.chart);
-            const version =
-                (diff == EDifficulty.ULTIMA
-                    ? this.getDatabaseVersion(v.chart)
-                    : null) ?? v.song.data.displayVersion;
-            if (diff == EDifficulty.ULTIMA) {
-                return (
-                    KamaiTachi.compareGameVersions(currentVersion, version) >=
-                        0 &&
-                    v.song.data.displayVersion != currentVersion &&
-                    (omnimix ||
-                        this.isChartInVersionStrict(v.chart, currentVersion))
-                );
-            }
+        const newScores = pbs.filter((v) => {
+            const localChart = Database.getLocalChart(
+                v.chart.data.inGameID,
+                this.getDatabaseDifficulty(v.chart)
+            );
             return (
-                KamaiTachi.compareGameVersions(currentVersion, version) > 0 &&
-                (omnimix ||
-                    this.isChartInVersionStrict(v.chart, currentVersion))
+                this.CURRENT_VERSION ==
+                ((localChart?.addVersion?.name as KamaiTachi.EGameVersions) ??
+                    v.chart.data.displayVersion)
+            );
+        });
+        const oldScores = pbs.filter((v) => {
+            const localChart = Database.getLocalChart(
+                v.chart.data.inGameID,
+                this.getDatabaseDifficulty(v.chart)
+            );
+            return (
+                KamaiTachi.compareGameVersions(
+                    this.CURRENT_VERSION,
+                    (localChart?.addVersion
+                        ?.name as KamaiTachi.EGameVersions) ??
+                    v.chart.data.displayVersion
+                ) > 0
             );
         });
 
@@ -566,25 +566,21 @@ export class KamaiTachi
             }
         }
         const bestScores = pbs.filter((v) => {
-            const diff = this.getDatabaseDifficulty(v.chart);
-            const version =
-                (diff == EDifficulty.ULTIMA
-                    ? this.getDatabaseVersion(v.chart)
-                    : null) ?? v.song.data.displayVersion;
             return (
-                KamaiTachi.compareGameVersions(currentVersion, version) >= 0 &&
+                KamaiTachi.compareGameVersions(
+                    currentVersion,
+                    v.chart.data.displayVersion as KamaiTachi.EGameVersions
+                ) >= 0 &&
                 (omnimix ||
                     this.isChartInVersionStrict(v.chart, currentVersion))
             );
         });
         const recentScores = recents.filter((v) => {
-            const diff = this.getDatabaseDifficulty(v.chart);
-            const version =
-                (diff == EDifficulty.ULTIMA
-                    ? this.getDatabaseVersion(v.chart)
-                    : null) ?? v.song.data.displayVersion;
             return (
-                KamaiTachi.compareGameVersions(currentVersion, version) >= 0 &&
+                KamaiTachi.compareGameVersions(
+                    currentVersion,
+                    v.chart.data.displayVersion as KamaiTachi.EGameVersions
+                ) >= 0 &&
                 (omnimix ||
                     this.isChartInVersionStrict(v.chart, currentVersion))
             );
@@ -879,7 +875,10 @@ export namespace KamaiTachi {
     export type IResponse<T> = ISuccessResponse<T> | IErrorResponse;
     export interface IChart {
         chartID: string;
+        legacyChartID: string;
+        song: ISong;
         data: {
+            displayVersion: EGameVersions; // Actual chart release version for ULTIMA/World's End
             inGameID: number;
         };
         difficulty: string;
@@ -894,7 +893,7 @@ export namespace KamaiTachi {
         altTitles: string[];
         artist: string;
         data: {
-            displayVersion: EGameVersions;
+            // displayVersion: EGameVersions; // Removed 2026-05-20
             genre: string;
         };
         id: number;
