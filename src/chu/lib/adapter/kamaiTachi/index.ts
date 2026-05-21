@@ -14,7 +14,8 @@ import Util from "@maidraw/lib/util";
 
 export class KamaiTachi
     extends BaseScoreAdapter
-    implements ChunithmScoreAdapter {
+    implements ChunithmScoreAdapter
+{
     private readonly CURRENT_VERSION: KamaiTachi.EGameVersions;
     constructor({
         baseURL = "https://kamai.tachi.ac/",
@@ -93,10 +94,10 @@ export class KamaiTachi
                     : null,
                 advanced: advanced
                     ? this.toMaiDrawScore(
-                        advanced.pb,
-                        advanced.chart,
-                        advanced.song
-                    )
+                          advanced.pb,
+                          advanced.chart,
+                          advanced.song
+                      )
                     : null,
                 expert: expert
                     ? this.toMaiDrawScore(expert.pb, expert.chart, expert.song)
@@ -109,10 +110,10 @@ export class KamaiTachi
                     : null,
                 worldsEnd: worldsEnd
                     ? this.toMaiDrawScore(
-                        worldsEnd.pb,
-                        worldsEnd.chart,
-                        worldsEnd.song
-                    )
+                          worldsEnd.pb,
+                          worldsEnd.chart,
+                          worldsEnd.song
+                      )
                     : null,
             },
         };
@@ -360,13 +361,13 @@ export class KamaiTachi
                     KamaiTachi.EGameVersions.CHUNITHM_NEW
                 ) >= 0
                     ? ChunithmUtil.calculateRating(
-                        internalLevel,
-                        score.scoreData.score
-                    )
+                          internalLevel,
+                          score.scoreData.score
+                      )
                     : ChunithmUtil.calculatePLostRating(
-                        internalLevel,
-                        score.scoreData.score
-                    ),
+                          internalLevel,
+                          score.scoreData.score
+                      ),
         };
     }
     private getDatabaseVersion(
@@ -403,13 +404,13 @@ export class KamaiTachi
                     if (
                         version == KamaiTachi.EGameVersions.CHUNITHM_PARADISE ||
                         version ==
-                        KamaiTachi.EGameVersions.CHUNITHM_PARADISE_LOST
+                            KamaiTachi.EGameVersions.CHUNITHM_PARADISE_LOST
                     ) {
                         return (
                             this.getKamaiVersion(v.version.name) ==
-                            KamaiTachi.EGameVersions.CHUNITHM_PARADISE ||
+                                KamaiTachi.EGameVersions.CHUNITHM_PARADISE ||
                             this.getKamaiVersion(v.version.name) ==
-                            KamaiTachi.EGameVersions.CHUNITHM_PARADISE_LOST
+                                KamaiTachi.EGameVersions.CHUNITHM_PARADISE_LOST
                         );
                     } else {
                         return this.getKamaiVersion(v.version.name) == version;
@@ -472,7 +473,7 @@ export class KamaiTachi
                     this.CURRENT_VERSION,
                     (localChart?.addVersion
                         ?.name as KamaiTachi.EGameVersions) ??
-                    v.chart.data.displayVersion
+                        v.chart.data.displayVersion
                 ) > 0
             );
         });
@@ -860,6 +861,11 @@ export class KamaiTachi
             currentVersion: KamaiTachi.EGameVersions.CHUNITHM_XVERSE,
         });
     }
+    public xversex() {
+        return new KamaiTachi({
+            currentVersion: KamaiTachi.EGameVersions.CHUNITHM_XVERSEX,
+        });
+    }
 }
 
 export namespace KamaiTachi {
@@ -993,6 +999,7 @@ export namespace KamaiTachi {
     }
 
     export enum EGameVersions {
+        CHUNITHM_XVERSEX = "CHUNITHM X-VERSE-X",
         CHUNITHM_XVERSE = "CHUNITHM X-VERSE",
         CHUNITHM_VERSE = "CHUNITHM VERSE",
         CHUNITHM_LUMINOUS_PLUS = "CHUNITHM LUMINOUS PLUS",
@@ -1017,6 +1024,7 @@ export namespace KamaiTachi {
         CHUNITHM = "CHUNITHM",
     }
     const GameVersions = [
+        EGameVersions.CHUNITHM_XVERSEX,
         EGameVersions.CHUNITHM_XVERSE,
         EGameVersions.CHUNITHM_VERSE,
         EGameVersions.CHUNITHM_LUMINOUS_PLUS,
