@@ -81,7 +81,7 @@ export class KamaiTachi extends BaseScoreAdapter implements OngekiScoreAdapter {
         );
         const lunatic = pbs.find(
             (v) =>
-                difficultyCompare(v.chart, "Lunatic") &&
+                difficultyCompare(v.chart, "Re:Master") &&
                 v.chart.data.inGameID == lunaticLocalChart?.meta.reMaster?.real
         );
         return {
@@ -166,6 +166,7 @@ export class KamaiTachi extends BaseScoreAdapter implements OngekiScoreAdapter {
     }
     private getDatabaseDifficulty(chart: KamaiTachi.IChart) {
         switch (true) {
+            case chart.difficulty.toUpperCase().includes("RE:MASTER"):
             case chart.difficulty.toUpperCase().includes("LUNATIC"):
                 return EDifficulty.LUNATIC;
             case chart.difficulty.toUpperCase().includes("MASTER"):
@@ -219,21 +220,7 @@ export class KamaiTachi extends BaseScoreAdapter implements OngekiScoreAdapter {
                 return {
                     id: chart.data.inGameID,
                     name: song.title,
-                    difficulty: (() => {
-                        switch (chart.difficulty) {
-                            case "LUNATIC":
-                                return EDifficulty.LUNATIC;
-                            case "MASTER":
-                                return EDifficulty.MASTER;
-                            case "EXPERT":
-                                return EDifficulty.EXPERT;
-                            case "ADVANCED":
-                                return EDifficulty.ADVANCED;
-                            case "BASIC":
-                            default:
-                                return EDifficulty.BASIC;
-                        }
-                    })(),
+                    difficulty: this.getDatabaseDifficulty(chart),
                     level: internalLevel,
                     maxPlatinumScore: chart.data.maxPlatScore,
                 };
@@ -291,7 +278,9 @@ export class KamaiTachi extends BaseScoreAdapter implements OngekiScoreAdapter {
                 if (score.scoreData.platinumStars)
                     return OngekiUtil.calculateReFreshStarRating(
                         internalLevel,
-                        score.scoreData.platinumStars
+                        KamaiTachi.PLATINUM_STAR_MAP[
+                            score.scoreData.platinumStars
+                        ]
                     );
                 else return 0;
             })(),
@@ -708,6 +697,15 @@ export namespace KamaiTachi {
         description: string;
     }
     export type IResponse<T> = ISuccessResponse<T> | IErrorResponse;
+    export const PLATINUM_STAR_MAP = {
+        "0-star": 0,
+        "1-star": 1,
+        "2-star": 2,
+        "3-star": 3,
+        "4-star": 4,
+        "5-star": 5,
+        "R-star": 5,
+    } as const;
     export interface IChart {
         chartID: string;
         data: {
@@ -753,7 +751,7 @@ export namespace KamaiTachi {
             noteLamp: string;
             bellLamp: string;
             platinumScore: number;
-            platinumStars: number;
+            platinumStars: keyof typeof PLATINUM_STAR_MAP;
             judgements: {
                 cbreak: number;
                 break: number;
@@ -811,7 +809,7 @@ export namespace KamaiTachi {
             noteLamp: string;
             bellLamp: string;
             platinumScore: number;
-            platinumStars: number;
+            platinumStars: keyof typeof PLATINUM_STAR_MAP;
             judgements: {
                 cbreak: number;
                 break: number;
