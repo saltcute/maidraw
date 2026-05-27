@@ -153,6 +153,7 @@ export namespace OngekiUtil {
         switch (true) {
             case score >= 1010000: {
                 scoreCoef = 2.0;
+                bonus += 0.3; // SSS+ bonus;
                 break;
             }
             case score >= 1007500: {
