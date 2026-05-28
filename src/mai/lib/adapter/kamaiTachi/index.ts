@@ -62,7 +62,7 @@ export class KamaiTachi extends BaseScoreAdapter implements MaimaiScoreAdapter {
         song: KamaiTachi.ISong
     ): IScore {
         const localChart = Database.getLocalChart(
-            chart.data.inGameID,
+            chart.data.inGameID ?? 0,
             this.getDatabaseDifficulty(chart)
         );
         const DXLevel = localChart?.events
@@ -106,7 +106,7 @@ export class KamaiTachi extends BaseScoreAdapter implements MaimaiScoreAdapter {
         return {
             chart: (() => {
                 return {
-                    id: chart.data.inGameID,
+                    id: chart.data.inGameID ?? 0,
                     name: song.title,
                     difficulty: (() => {
                         switch (chart.difficulty.toUpperCase()) {
@@ -310,7 +310,7 @@ export class KamaiTachi extends BaseScoreAdapter implements MaimaiScoreAdapter {
             }[] = [];
         newScores = pbs.filter((v) => {
             const localChart = Database.getLocalChart(
-                v.chart.data.inGameID,
+                v.chart.data.inGameID ?? 0,
                 this.getDatabaseDifficulty(v.chart)
             );
             const diff = KamaiTachi.compareGameVersions(
@@ -333,7 +333,7 @@ export class KamaiTachi extends BaseScoreAdapter implements MaimaiScoreAdapter {
         });
         oldScores = pbs.filter((v) => {
             const localChart = Database.getLocalChart(
-                v.chart.data.inGameID,
+                v.chart.data.inGameID ?? 0,
                 this.getDatabaseDifficulty(v.chart)
             );
             const diff = KamaiTachi.compareGameVersions(
@@ -507,8 +507,8 @@ export class KamaiTachi extends BaseScoreAdapter implements MaimaiScoreAdapter {
         }
         function difficultyCompare(payload: KamaiTachi.IChart, target: string) {
             return (
-                payload.difficulty ==
-                `${payload.data.inGameID >= 10000 && payload.data.inGameID < 100000 ? "DX " : ""}${target}`
+                payload.difficulty.replace("DX ", "").toLowerCase() ==
+                target.toLowerCase()
             );
         }
         const basic = pbs.find(
@@ -854,7 +854,7 @@ export namespace KamaiTachi {
     export interface IChart {
         chartID: string;
         data: {
-            inGameID: number;
+            inGameID: number | null;
             displayVersion: KamaiGameVersions;
         };
         difficulty: string;
