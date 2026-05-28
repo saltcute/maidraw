@@ -115,8 +115,6 @@ export class KamaiTachi extends BaseScoreAdapter implements OngekiScoreAdapter {
     getPlatinumScore(score: KamaiTachi.IScore | KamaiTachi.IPb) {
         const ASSUMED_PLAT_SCORE_RATE = 0;
         if (score.scoreData.platinumScore) return score.scoreData.platinumScore;
-        else if (score.scoreData.optional.platScore)
-            return score.scoreData.optional.platScore;
         else {
             let platScore =
                 (1 + ASSUMED_PLAT_SCORE_RATE) *
@@ -187,7 +185,7 @@ export class KamaiTachi extends BaseScoreAdapter implements OngekiScoreAdapter {
         type: "refresh" | "classic" = "refresh"
     ): IScore {
         const localChart = Database.getLocalChart(
-            chart.data.inGameID,
+            chart.data.inGameID || 0,
             this.getDatabaseDifficulty(chart)
         );
         const internalLevel =
@@ -218,7 +216,7 @@ export class KamaiTachi extends BaseScoreAdapter implements OngekiScoreAdapter {
         return {
             chart: (() => {
                 return {
-                    id: chart.data.inGameID,
+                    id: chart.data.inGameID ?? 0,
                     name: song.title,
                     difficulty: this.getDatabaseDifficulty(chart),
                     level: internalLevel,
@@ -709,10 +707,11 @@ export namespace KamaiTachi {
     export interface IChart {
         chartID: string;
         data: {
-            inGameID: number;
+            inGameID: number | null;
             displayVersion: EGameVersions;
-            chartViewURL: string;
+            chartViewURL?: string;
             maxPlatScore: number;
+            isBonusTrack: boolean;
         };
         difficulty: string;
         isPrimary: boolean;
@@ -758,21 +757,22 @@ export namespace KamaiTachi {
                 hit: number;
                 miss: number;
             };
-            optional: {
-                bellCount?: number;
-                bellGraph?: number[];
-                damage?: number;
-                lifeGraph: number[];
-                fast?: number;
-                slow?: number;
-                platScore?: number;
+            optional: Partial<{
+                fast: number;
+                slow: number;
+                maxCombo: number;
+                damage: number;
+                bellCount: number;
+                totalBellCount: number;
                 scoreGraph: number[];
-                totalBellCount?: number;
+                platinumGraph: number[];
+                bellGraph: number[];
+                lifeGraph: number[];
                 enumIndexes: {
                     lamp?: number;
                     grade?: number;
                 };
-            };
+            }>;
             grade: string;
             enumIndexes: {
                 noteLamp: number;
@@ -816,18 +816,22 @@ export namespace KamaiTachi {
                 hit: number;
                 miss: number;
             };
-            optional: {
-                bellCount?: number;
-                damage?: number;
-                fast?: number;
-                slow?: number;
-                platScore?: number;
-                totalBellCount?: number;
+            optional: Partial<{
+                fast: number;
+                slow: number;
+                maxCombo: number;
+                damage: number;
+                bellCount: number;
+                totalBellCount: number;
+                scoreGraph: number[];
+                platinumGraph: number[];
+                bellGraph: number[];
+                lifeGraph: number[];
                 enumIndexes: {
                     lamp?: number;
                     grade?: number;
                 };
-            };
+            }>;
             grade: string;
             enumIndexes: {
                 noteLamp: number;
