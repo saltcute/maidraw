@@ -9,6 +9,8 @@ const upath = require("upath");
 
     const fs = require("fs");
     const themes = [
+        "jp-xversex-landscape-recents",
+        "jp-xversex-landscape-new",
         "jp-paradiselost-landscape-recents",
         "jp-paradiselost-landscape-new",
         "jp-xverse-landscape-recents",
@@ -24,6 +26,9 @@ const upath = require("upath");
         const { data: result, err } = await painter.drawWithScoreSource(
             (() => {
                 switch (theme) {
+                    case "jp-xversex-landscape-recents":
+                    case "jp-xversex-landscape-new":
+                        return kamai.xversex();
                     case "jp-xverse-landscape-recents":
                     case "jp-xverse-landscape-new":
                         return kamai.xverse();

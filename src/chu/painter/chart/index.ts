@@ -133,8 +133,8 @@ export class ChartPainter extends ChunithmPainter<typeof ChartPainter.Theme> {
                             (() => {
                                 const type = variables.type;
                                 const version = options?.version;
-                                if (!type || version) return version;
-                                if (type === "recents") return "crystal";
+                                if (version) return version;
+                                if (type === "recents") return "new";
                                 else return "verse";
                             })(),
                         );

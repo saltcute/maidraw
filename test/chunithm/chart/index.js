@@ -11,7 +11,7 @@ const upath = require("upath");
     MaiDraw.Chuni.Database.setLocalDatabasePath("../maimai-songs-database");
 
     const fs = require("fs");
-    const themes = ["jp-xverse", "jp-verse"];
+    const themes = ["jp-xversex", "jp-xverse", "jp-verse"];
     for (let theme of themes) {
         for (const region of ["JPN"]) {
             const { data: result, err } = await painter.drawWithScoreSource(
@@ -19,7 +19,7 @@ const upath = require("upath");
                 {
                     username: process.env.NAME,
                     chartId: process.env.CHART ?? 18,
-                    type: "recents",
+                    type: "new",
                 },
                 {
                     scale: process.env.SCALE ?? 1,

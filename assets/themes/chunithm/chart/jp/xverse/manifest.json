@@ -86,7 +86,8 @@
                         "220": "../../common/versionless/logo/jpn/220.webp",
                         "225": "../../common/versionless/logo/jpn/225.webp",
                         "230": "../../common/versionless/logo/jpn/230.webp",
-                        "240": "../../common/versionless/logo/jpn/240.webp"
+                        "240": "../../common/versionless/logo/jpn/240.webp",
+                        "245": "../../common/versionless/logo/jpn/245.webp"
                     },
                     "INT": {
                         "100": "../../common/versionless/logo/int/100.webp",
@@ -156,6 +157,8 @@
             "y": 1403,
             "borderColor": "#226180",
             "align": "left",
+            "width": 1200,
+            "linebreak": true,
             "probability": 0.1,
             "customLines": [
                 "../../../../../hitokoto/general.json",
