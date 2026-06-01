@@ -1,9 +1,8 @@
-import * as geki from "./geki";
 import * as chu from "./chu";
-import * as mai from "./mai";
-
+import * as geki from "./geki";
 import * as adapter from "./lib/adapter";
 import * as error from "./lib/error";
+import * as mai from "./mai";
 
 export namespace MaiDraw {
     export import Maimai = mai.Maimai;

@@ -1,19 +1,16 @@
-import _ from "lodash";
-
-import { MaimaiScoreAdapter } from "..";
-import { MaimaiUtil } from "../../util";
-
-import {
-    IScore,
-    ESyncTypes,
-    EComboTypes,
-    EDifficulty,
-    EAchievementTypes,
-} from "@maidraw/mai/type";
-import { Database } from "@maidraw/mai/lib/database";
 import { BaseScoreAdapter } from "@maidraw/lib/adapter";
 import { FailedToFetchError } from "@maidraw/lib/error";
 import Util from "@maidraw/lib/util";
+import * as Database from "@maidraw/mai/lib/database";
+import {
+    EAchievementTypes,
+    EComboTypes,
+    EDifficulty,
+    ESyncTypes,
+    type IScore,
+} from "@maidraw/mai/type";
+import { MaimaiUtil } from "../../util";
+import type { MaimaiScoreAdapter } from "..";
 
 export class KamaiTachi extends BaseScoreAdapter implements MaimaiScoreAdapter {
     private currentVersion: KamaiTachi.GameVersions;
@@ -46,37 +43,34 @@ export class KamaiTachi extends BaseScoreAdapter implements MaimaiScoreAdapter {
         >(
             `/api/v1/users/${userId}/games/maimaidx/pbs/all`,
             undefined,
-            60 * 1000
+            60 * 1000,
         );
     }
     public async getScoreHistory(userId: string, chartId: string) {
         return this.get<KamaiTachi.IResponse<KamaiTachi.IScore[]>>(
             `/api/v1/users/${userId}/games/maimaidx/scores/${chartId}`,
             undefined,
-            60 * 1000
+            60 * 1000,
         );
     }
     private toMaiDrawScore(
         score: KamaiTachi.IPb,
         chart: KamaiTachi.IChart,
-        song: KamaiTachi.ISong
+        song: KamaiTachi.ISong,
     ): IScore {
         const localChart = Database.getLocalChart(
             chart.data.inGameID ?? 0,
-            this.getDatabaseDifficulty(chart)
+            this.getDatabaseDifficulty(chart),
         );
         const DXLevel = localChart?.events
             .filter((v) => v.type === "existence")
-            .find((v) => v.version.name == this.currentVersion["DX"])
-            ?.data.level;
+            .find((v) => v.version.name === this.currentVersion.DX)?.data.level;
         const EXLevel = localChart?.events
             .filter((v) => v.type === "existence")
-            .find((v) => v.version.name == this.currentVersion["EX"])
-            ?.data.level;
+            .find((v) => v.version.name === this.currentVersion.EX)?.data.level;
         const CNLevel = localChart?.events
             .filter((v) => v.type === "existence")
-            .find((v) => v.version.name == this.currentVersion["CN"])
-            ?.data.level;
+            .find((v) => v.version.name === this.currentVersion.CN)?.data.level;
         const internalLevel = localChart
             ? (() => {
                   switch (this.currentRegion) {
@@ -122,8 +116,6 @@ export class KamaiTachi extends BaseScoreAdapter implements MaimaiScoreAdapter {
                             case "ADVANCED":
                             case "DX ADVANCED":
                                 return EDifficulty.ADVANCED;
-                            case "BASIC":
-                            case "DX BASIC":
                             default:
                                 return EDifficulty.BASIC;
                         }
@@ -173,7 +165,6 @@ export class KamaiTachi extends BaseScoreAdapter implements MaimaiScoreAdapter {
                         return EAchievementTypes.SSS;
                     case "SSS+":
                         return EAchievementTypes.SSSP;
-                    case "D":
                     default:
                         return EAchievementTypes.D;
                 }
@@ -185,10 +176,10 @@ export class KamaiTachi extends BaseScoreAdapter implements MaimaiScoreAdapter {
                       combo,
                       KamaiTachi.compareGameVersions(
                           this.currentVersion,
-                          KamaiTachi.GameVersions.CIRCLE
+                          KamaiTachi.GameVersions.CIRCLE,
                       ) >= 0
                           ? "circle"
-                          : "dx"
+                          : "dx",
                   )
                 : score.calculatedData.rate,
             dxScore: (() => {
@@ -222,7 +213,6 @@ export class KamaiTachi extends BaseScoreAdapter implements MaimaiScoreAdapter {
                 return EDifficulty.EXPERT;
             case chart.difficulty.toUpperCase().includes("ADVANCED"):
                 return EDifficulty.ADVANCED;
-            case chart.difficulty.toUpperCase().includes("BASIC"):
             default:
                 return EDifficulty.BASIC;
         }
@@ -235,7 +225,7 @@ export class KamaiTachi extends BaseScoreAdapter implements MaimaiScoreAdapter {
         }: {
             omnimix?: boolean;
             use?: "AP" | "FC" | "ALL";
-        } = {}
+        } = {},
     ) {
         function filterAP(score: {
             chart: KamaiTachi.IChart;
@@ -243,8 +233,8 @@ export class KamaiTachi extends BaseScoreAdapter implements MaimaiScoreAdapter {
             pb: KamaiTachi.IPb;
         }) {
             return (
-                score.pb.scoreData.lamp == "ALL PERFECT" ||
-                score.pb.scoreData.lamp == "ALL PERFECT+"
+                score.pb.scoreData.lamp === "ALL PERFECT" ||
+                score.pb.scoreData.lamp === "ALL PERFECT+"
             );
         }
         function filterFC(score: {
@@ -253,8 +243,8 @@ export class KamaiTachi extends BaseScoreAdapter implements MaimaiScoreAdapter {
             pb: KamaiTachi.IPb;
         }) {
             return (
-                score.pb.scoreData.lamp == "FULL COMBO" ||
-                score.pb.scoreData.lamp == "FULL COMBO+"
+                score.pb.scoreData.lamp === "FULL COMBO" ||
+                score.pb.scoreData.lamp === "FULL COMBO+"
             );
         }
         function filterUseAchievementFilter(score: {
@@ -267,7 +257,6 @@ export class KamaiTachi extends BaseScoreAdapter implements MaimaiScoreAdapter {
                     return filterFC(score);
                 case "FC":
                     return filterAP(score) || filterFC(score);
-                case "ALL":
                 default:
                     return true;
             }
@@ -280,9 +269,9 @@ export class KamaiTachi extends BaseScoreAdapter implements MaimaiScoreAdapter {
                     "personal best scores",
                     Util.sanitizeKamaitachiErrorMessage(
                         `${rawPBs?.description ?? "An unknown error has occured."}`,
-                        userId
+                        userId,
                     ),
-                    { userId }
+                    { userId },
                 ),
             };
         }
@@ -292,8 +281,10 @@ export class KamaiTachi extends BaseScoreAdapter implements MaimaiScoreAdapter {
             pb: KamaiTachi.IPb;
         }[] = [];
         for (const pb of rawPBs.body.pbs) {
-            let chart = rawPBs.body.charts.find((v) => v.chartID == pb.chartID);
-            let song = rawPBs.body.songs.find((v) => v.id == pb.songID);
+            const chart = rawPBs.body.charts.find(
+                (v) => v.chartID === pb.chartID,
+            );
+            const song = rawPBs.body.songs.find((v) => v.id === pb.songID);
             if (chart && song) {
                 pbs.push({ pb, chart, song });
             }
@@ -311,42 +302,42 @@ export class KamaiTachi extends BaseScoreAdapter implements MaimaiScoreAdapter {
         newScores = pbs.filter((v) => {
             const localChart = Database.getLocalChart(
                 v.chart.data.inGameID ?? 0,
-                this.getDatabaseDifficulty(v.chart)
+                this.getDatabaseDifficulty(v.chart),
             );
             const diff = KamaiTachi.compareGameVersions(
                 this.currentVersion,
                 KamaiTachi.getGameVersion(
                     localChart?.addVersion[this.currentRegion]?.name ??
-                        v.chart.data.displayVersion
-                )
+                        v.chart.data.displayVersion,
+                ),
             );
             if (
                 KamaiTachi.compareGameVersions(
                     this.currentVersion,
-                    KamaiTachi.GameVersions.CIRCLE
+                    KamaiTachi.GameVersions.CIRCLE,
                 ) >= 0
             ) {
                 return 0 <= diff && diff <= 1;
             } else {
-                return diff == 0;
+                return diff === 0;
             }
         });
         oldScores = pbs.filter((v) => {
             const localChart = Database.getLocalChart(
                 v.chart.data.inGameID ?? 0,
-                this.getDatabaseDifficulty(v.chart)
+                this.getDatabaseDifficulty(v.chart),
             );
             const diff = KamaiTachi.compareGameVersions(
                 this.currentVersion,
                 KamaiTachi.getGameVersion(
                     localChart?.addVersion[this.currentRegion]?.name ??
-                        v.chart.data.displayVersion
-                )
+                        v.chart.data.displayVersion,
+                ),
             );
             if (
                 KamaiTachi.compareGameVersions(
                     this.currentVersion,
-                    KamaiTachi.GameVersions.CIRCLE
+                    KamaiTachi.GameVersions.CIRCLE,
                 ) >= 0
             ) {
                 // Chart version is 2 versions older than current Version
@@ -385,12 +376,12 @@ export class KamaiTachi extends BaseScoreAdapter implements MaimaiScoreAdapter {
                     .sort(
                         (a, b) =>
                             b.dxRating - a.dxRating ||
-                            b.achievement - a.achievement
+                            b.achievement - a.achievement,
                     )
                     .sort(
                         (a, b) =>
                             b.dxRating - a.dxRating ||
-                            b.chart.level - a.chart.level
+                            b.chart.level - a.chart.level,
                     )
                     .slice(0, 15),
                 old: oldScores
@@ -398,12 +389,12 @@ export class KamaiTachi extends BaseScoreAdapter implements MaimaiScoreAdapter {
                     .sort(
                         (a, b) =>
                             b.dxRating - a.dxRating ||
-                            b.achievement - a.achievement
+                            b.achievement - a.achievement,
                     )
                     .sort(
                         (a, b) =>
                             b.dxRating - a.dxRating ||
-                            b.chart.level - a.chart.level
+                            b.chart.level - a.chart.level,
                     )
                     .slice(0, 35),
             },
@@ -417,7 +408,7 @@ export class KamaiTachi extends BaseScoreAdapter implements MaimaiScoreAdapter {
         } = {
             omnimix: true,
             use: "ALL",
-        }
+        },
     ) {
         const profile = await this.getPlayerProfileRaw(userId);
         if (!profile?.success) {
@@ -427,15 +418,15 @@ export class KamaiTachi extends BaseScoreAdapter implements MaimaiScoreAdapter {
                     "player profile",
                     Util.sanitizeKamaitachiErrorMessage(
                         `${profile?.description ?? "An unknown error has occured."}`,
-                        userId
+                        userId,
                     ),
-                    { userId }
+                    { userId },
                 ),
             };
         }
         const { data: scores, err: serr } = await this.getPlayerBest50(
             userId,
-            options
+            options,
         );
         if (serr) {
             return { err: serr };
@@ -465,14 +456,14 @@ export class KamaiTachi extends BaseScoreAdapter implements MaimaiScoreAdapter {
             `/api/v1/users/${userId}/pfp`,
             undefined,
             2 * 60 * 60 * 1000,
-            { responseType: "arraybuffer" }
+            { responseType: "arraybuffer" },
         );
         if (!pfp) {
             return {
                 err: new FailedToFetchError(
                     "maidraw.maimai.adapter.kamaitachi",
                     "profile picture",
-                    "An unknown error has occured."
+                    "An unknown error has occured.",
                 ),
             };
         }
@@ -487,9 +478,9 @@ export class KamaiTachi extends BaseScoreAdapter implements MaimaiScoreAdapter {
                     "personal best scores",
                     Util.sanitizeKamaitachiErrorMessage(
                         `${rawPBs?.description ?? "An unknown error has occured."}`,
-                        username
+                        username,
                     ),
-                    { username }
+                    { username },
                 ),
             };
         }
@@ -499,47 +490,49 @@ export class KamaiTachi extends BaseScoreAdapter implements MaimaiScoreAdapter {
             pb: KamaiTachi.IPb;
         }[] = [];
         for (const pb of rawPBs.body.pbs) {
-            let chart = rawPBs.body.charts.find((v) => v.chartID == pb.chartID);
-            let song = rawPBs.body.songs.find((v) => v.id == pb.songID);
+            const chart = rawPBs.body.charts.find(
+                (v) => v.chartID === pb.chartID,
+            );
+            const song = rawPBs.body.songs.find((v) => v.id === pb.songID);
             if (chart && song) {
                 pbs.push({ pb, chart, song });
             }
         }
         function difficultyCompare(payload: KamaiTachi.IChart, target: string) {
             return (
-                payload.difficulty.replace("DX ", "").toLowerCase() ==
+                payload.difficulty.replace("DX ", "").toLowerCase() ===
                 target.toLowerCase()
             );
         }
         const basic = pbs.find(
             (v) =>
                 difficultyCompare(v.chart, "Basic") &&
-                v.chart.data.inGameID == chartId
+                v.chart.data.inGameID === chartId,
         );
         const advanced = pbs.find(
             (v) =>
                 difficultyCompare(v.chart, "Advanced") &&
-                v.chart.data.inGameID == chartId
+                v.chart.data.inGameID === chartId,
         );
         const expert = pbs.find(
             (v) =>
                 difficultyCompare(v.chart, "Expert") &&
-                v.chart.data.inGameID == chartId
+                v.chart.data.inGameID === chartId,
         );
         const master = pbs.find(
             (v) =>
                 difficultyCompare(v.chart, "Master") &&
-                v.chart.data.inGameID == chartId
+                v.chart.data.inGameID === chartId,
         );
         const remaster = pbs.find(
             (v) =>
                 difficultyCompare(v.chart, "Re:Master") &&
-                v.chart.data.inGameID == chartId
+                v.chart.data.inGameID === chartId,
         );
         const utage = pbs.find(
             (v) =>
                 difficultyCompare(v.chart, "UTAGE") &&
-                v.chart.data.inGameID == chartId
+                v.chart.data.inGameID === chartId,
         );
         return {
             data: {
@@ -550,7 +543,7 @@ export class KamaiTachi extends BaseScoreAdapter implements MaimaiScoreAdapter {
                     ? this.toMaiDrawScore(
                           advanced.pb,
                           advanced.chart,
-                          advanced.song
+                          advanced.song,
                       )
                     : null,
                 expert: expert
@@ -563,7 +556,7 @@ export class KamaiTachi extends BaseScoreAdapter implements MaimaiScoreAdapter {
                     ? this.toMaiDrawScore(
                           remaster.pb,
                           remaster.chart,
-                          remaster.song
+                          remaster.song,
                       )
                     : null,
                 utage: utage
@@ -576,7 +569,7 @@ export class KamaiTachi extends BaseScoreAdapter implements MaimaiScoreAdapter {
         username: string,
         level: number,
         page: number,
-        options: { percise: boolean } = { percise: false }
+        options: { percise: boolean } = { percise: false },
     ) {
         if (page < 1) page = 1;
         const rawPBs = await this.getPlayerPB(username);
@@ -587,9 +580,9 @@ export class KamaiTachi extends BaseScoreAdapter implements MaimaiScoreAdapter {
                     "personal best scores",
                     Util.sanitizeKamaitachiErrorMessage(
                         `${rawPBs?.description ?? "An unknown error has occured."}`,
-                        username
+                        username,
                     ),
-                    { username }
+                    { username },
                 ),
             };
         }
@@ -599,8 +592,10 @@ export class KamaiTachi extends BaseScoreAdapter implements MaimaiScoreAdapter {
             pb: KamaiTachi.IPb;
         }[] = [];
         for (const pb of rawPBs.body.pbs) {
-            let chart = rawPBs.body.charts.find((v) => v.chartID == pb.chartID);
-            let song = rawPBs.body.songs.find((v) => v.id == pb.songID);
+            const chart = rawPBs.body.charts.find(
+                (v) => v.chartID === pb.chartID,
+            );
+            const song = rawPBs.body.songs.find((v) => v.id === pb.songID);
             if (chart && song) {
                 pbs.push({ pb, chart, song });
             }
@@ -611,12 +606,12 @@ export class KamaiTachi extends BaseScoreAdapter implements MaimaiScoreAdapter {
                 .sort(
                     (a, b) =>
                         b.achievement - a.achievement ||
-                        b.chart.level - a.chart.level
+                        b.chart.level - a.chart.level,
                 )
                 .filter((v) =>
                     options.percise
-                        ? v.chart.level == level
-                        : this.levelBoundChecker(v.chart.level, level, 6)
+                        ? v.chart.level === level
+                        : this.levelBoundChecker(v.chart.level, level, 6),
                 )
                 .slice((page - 1) * 50, (page - 1) * 50 + 50),
         };
@@ -901,7 +896,7 @@ export namespace KamaiTachi {
                 fast: number;
                 slow: number;
                 maxCombo: number;
-                enumIndexes: any;
+                enumIndexes: unknown;
             };
             grade: string;
             enumIndexes: {
@@ -910,7 +905,7 @@ export namespace KamaiTachi {
             };
         };
         scoreID: string;
-        scoreMeta: any;
+        scoreMeta: unknown;
         service: string;
         songID: number;
         timeAchieved: number;
@@ -956,7 +951,7 @@ export namespace KamaiTachi {
                 fast: number;
                 slow: number;
                 maxCombo: number;
-                enumIndexes: any;
+                enumIndexes: unknown;
             };
             grade: string;
             enumIndexes: {
@@ -1190,7 +1185,7 @@ export namespace KamaiTachi {
      */
     export function compareGameVersions(
         a: AllGameVersions | null,
-        b: AllGameVersions | null
+        b: AllGameVersions | null,
     ): number {
         if (!a && !b) return 0;
         if (!a) return -1; // b is newer

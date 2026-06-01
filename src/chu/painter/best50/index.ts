@@ -1,15 +1,13 @@
+import * as Database from "@maidraw/chu/lib/database";
+import type { IScore } from "@maidraw/chu/type";
+import { IllegalArgumentError, MissingThemeError } from "@maidraw/lib/error";
+import { PainterModule, ThemeManager } from "@maidraw/lib/painter";
+import { Util } from "@maidraw/lib/util";
+import { Canvas } from "canvas";
 import upath from "upath";
 import { z } from "zod/v4";
-import { Canvas } from "canvas";
-
-import { ChunithmScoreAdapter } from "../../lib/adapter";
+import type { ChunithmScoreAdapter } from "../../lib/adapter";
 import { ChunithmPainter, ChunithmPainterModule } from "..";
-
-import { Util } from "@maidraw/lib/util";
-import { IScore } from "@maidraw/chu/type";
-import { PainterModule, ThemeManager } from "@maidraw/lib/painter";
-import { Database } from "@maidraw/chu/lib/database";
-import { IllegalArgumentError, MissingThemeError } from "@maidraw/lib/error";
 
 export class Best50Painter extends ChunithmPainter<typeof Best50Painter.Theme> {
     public static readonly Theme = ThemeManager.BaseTheme.extend({
@@ -20,7 +18,7 @@ export class Best50Painter extends ChunithmPainter<typeof Best50Painter.Theme> {
                 PainterModule.Image.schema,
                 PainterModule.Text.schema,
                 PainterModule.Hitokoto.schema,
-            ])
+            ]),
         ),
     });
     public constructor() {
@@ -32,7 +30,7 @@ export class Best50Painter extends ChunithmPainter<typeof Best50Painter.Theme> {
                         Best50Painter.assetsPath,
                         "themes",
                         "chunithm",
-                        "best"
+                        "best",
                     ),
                 ],
                 defaultTheme: Best50Painter.DEFAULT_THEME,
@@ -56,7 +54,7 @@ export class Best50Painter extends ChunithmPainter<typeof Best50Painter.Theme> {
             bestScores?: IScore[];
             type?: "new" | "recents";
             version?: "chunithm" | "crystal" | "new" | "verse";
-        }
+        },
     ) {
         let currentTheme = this.theme.get(this.theme.defaultTheme);
         if (options?.theme) {
@@ -72,13 +70,13 @@ export class Best50Painter extends ChunithmPainter<typeof Best50Painter.Theme> {
             ]);
             const canvas = new Canvas(
                 currentTheme.content.width * (options?.scale ?? 1),
-                currentTheme.content.height * (options?.scale ?? 1)
+                currentTheme.content.height * (options?.scale ?? 1),
             );
             const version = (() => {
                 const type = options?.type;
                 const version = options?.version;
                 if (!type || version) return version;
-                if (type == "recents") return "crystal";
+                if (type === "recents") return "crystal";
                 else return "verse";
             })();
             const ctx = canvas.getContext("2d");
@@ -90,7 +88,7 @@ export class Best50Painter extends ChunithmPainter<typeof Best50Painter.Theme> {
                         await PainterModule.Image.draw(
                             ctx,
                             currentTheme,
-                            element
+                            element,
                         );
                         break;
                     }
@@ -98,7 +96,7 @@ export class Best50Painter extends ChunithmPainter<typeof Best50Painter.Theme> {
                         await PainterModule.Hitokoto.draw(
                             ctx,
                             currentTheme,
-                            element
+                            element,
                         );
                         break;
                     }
@@ -120,8 +118,8 @@ export class Best50Painter extends ChunithmPainter<typeof Best50Painter.Theme> {
                                         element.scoreBubble.width +
                                         element.scoreBubble.gap
                             ) {
-                                let curScore;
-                                if (element.region == "new")
+                                let curScore: IScore;
+                                if (element.region === "new")
                                     curScore = variables.newScores[index];
                                 else curScore = variables.oldScores[index];
                                 if (curScore) {
@@ -133,7 +131,7 @@ export class Best50Painter extends ChunithmPainter<typeof Best50Painter.Theme> {
                                         index,
                                         x,
                                         y,
-                                        version
+                                        version,
                                     );
                                 } else if (
                                     element.scoreBubble.strictScoreCount ===
@@ -142,11 +140,9 @@ export class Best50Painter extends ChunithmPainter<typeof Best50Painter.Theme> {
                                 ) {
                                     await ChunithmPainterModule.Best50.ScoreGrid.drawOutline(
                                         ctx,
-                                        currentTheme,
                                         element,
-                                        index,
                                         x,
-                                        y
+                                        y,
                                     );
                                 }
                             }
@@ -161,7 +157,7 @@ export class Best50Painter extends ChunithmPainter<typeof Best50Painter.Theme> {
                             variables.username,
                             variables.rating,
                             options?.profilePicture,
-                            version
+                            version,
                         );
                         break;
                     }
@@ -171,12 +167,12 @@ export class Best50Painter extends ChunithmPainter<typeof Best50Painter.Theme> {
                             if (!bestScores) return 0;
                             return getRatingAvg(
                                 bestScores.slice(0, length),
-                                length
+                                length,
                             );
                         }
                         function getRatingAvg(
                             scores: IScore[],
-                            length: number
+                            length: number,
                         ) {
                             if (scores.length <= 0) return 0;
                             return (
@@ -187,7 +183,7 @@ export class Best50Painter extends ChunithmPainter<typeof Best50Painter.Theme> {
                         }
                         await PainterModule.Text.draw(ctx, element, {
                             username: Util.HalfFullWidthConvert.toFullWidth(
-                                variables.username
+                                variables.username,
                             ),
                             rating: Util.truncate(variables.rating, 2),
                             naiveBest30: Util.truncate(getNaiveRating(30), 2),
@@ -195,16 +191,16 @@ export class Best50Painter extends ChunithmPainter<typeof Best50Painter.Theme> {
                             newScoreRatingAvg: Util.truncate(
                                 getRatingAvg(
                                     variables.newScores,
-                                    options.type == "recents" ? 10 : 20
+                                    options.type === "recents" ? 10 : 20,
                                 ),
-                                2
+                                2,
                             ),
                             oldScoreRatingAvg: Util.truncate(
                                 getRatingAvg(
                                     variables.oldScores.slice(0, 30),
-                                    30
+                                    30,
                                 ),
-                                2
+                                2,
                             ),
                         });
                         break;
@@ -227,28 +223,28 @@ export class Best50Painter extends ChunithmPainter<typeof Best50Painter.Theme> {
             profilePicture?: Buffer | null;
             type?: "new" | "recents";
             version?: "chunithm" | "crystal" | "new" | "verse";
-        }
+        },
     ) {
         if (!options.type) options.type = "new";
         const { data: profile, err: perr } = await source.getPlayerInfo(
             variables.username,
-            options.type
+            options.type,
         );
         if (perr) return { err: perr };
         let newScores: IScore[],
             oldScores: IScore[],
             bestScores: IScore[] | undefined;
-        if (options.type == "new") {
+        if (options.type === "new") {
             const { data: score, err: serr } = await source.getPlayerBest50(
-                variables.username
+                variables.username,
             );
             if (serr) return { err: serr };
             newScores = score.new;
             oldScores = score.old;
             bestScores = score.best;
-        } else if (options.type == "recents") {
+        } else if (options.type === "recents") {
             const { data: score, err: serr } = await source.getPlayerRecent40(
-                variables.username
+                variables.username,
             );
             if (serr) return { err: serr };
             newScores = score.recent;
@@ -258,7 +254,7 @@ export class Best50Painter extends ChunithmPainter<typeof Best50Painter.Theme> {
             return {
                 err: new IllegalArgumentError(
                     "maidraw.chunithm.painter.best50",
-                    `Type can only be "recents" or "new". Found ${options.type}.`
+                    `Type can only be "recents" or "new". Found ${options.type}.`,
                 ),
             };
         return this.draw(
@@ -274,13 +270,13 @@ export class Best50Painter extends ChunithmPainter<typeof Best50Painter.Theme> {
                     if (options?.profilePicture) return options?.profilePicture;
                     const { data: pfp, err: pfperr } =
                         await source.getPlayerProfilePicture(
-                            variables.username
+                            variables.username,
                         );
                     if (pfperr) return undefined;
                     return pfp;
                 })(),
                 bestScores,
-            }
+            },
         );
     }
 }

@@ -1,7 +1,6 @@
-import _ from "lodash";
-
 import Util from "@maidraw/lib/util";
-import { Database } from "./database";
+import _ from "lodash";
+import type * as Database from "./database";
 
 export namespace ChunithmUtil {
     export class Version {
@@ -174,23 +173,23 @@ export namespace ChunithmUtil {
                     _.isEqual(v.gameVersion.minor, version.gameVersion.minor)
                 );
             });
-            if (index == -1) {
+            if (index === -1) {
                 return version;
-            } else if (index == this.versions.length - 1) {
-                return this.versions[index];
+            } else if (index === Version.versions.length - 1) {
+                return Version.versions[index];
             }
-            return this.versions[index + 1];
+            return Version.versions[index + 1];
         }
         static getPreviousVersion(version: Database.IVersion) {
             const index = _.findIndex(Version.versions, (v) => {
                 return _.isEqual(v.gameVersion, version.gameVersion);
             });
-            if (index == -1) {
+            if (index === -1) {
                 return version;
-            } else if (index == 0) {
-                return this.versions[index];
+            } else if (index === 0) {
+                return Version.versions[index];
             }
-            return this.versions[index - 1];
+            return Version.versions[index - 1];
         }
         static toEventVersion(version: Database.IVersion) {
             const event = {
@@ -212,7 +211,7 @@ export namespace ChunithmUtil {
      */
     export function calculateRating(
         internalLevel: number,
-        score: number
+        score: number,
     ): number {
         let bonus = 0;
         switch (true) {
@@ -278,7 +277,7 @@ export namespace ChunithmUtil {
      */
     export function calculatePLostRating(
         internalLevel: number,
-        score: number
+        score: number,
     ): number {
         let bonus = 0;
         switch (true) {

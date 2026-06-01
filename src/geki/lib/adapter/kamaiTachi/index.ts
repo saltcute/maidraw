@@ -3,14 +3,14 @@ import {
     EBellTypes,
     EComboTypes,
     EDifficulty,
-    IScore,
+    type IScore,
 } from "@maidraw/geki/type";
-import { Util } from "@maidraw/lib/util";
-import { OngekiUtil } from "../../util";
-import { Database } from "../../database";
-import { OngekiScoreAdapter } from "..";
 import { BaseScoreAdapter } from "@maidraw/lib/adapter";
 import { FailedToFetchError, IllegalArgumentError } from "@maidraw/lib/error";
+import { Util } from "@maidraw/lib/util";
+import * as Database from "../../database";
+import { OngekiUtil } from "../../util";
+import type { OngekiScoreAdapter } from "..";
 
 export class KamaiTachi extends BaseScoreAdapter implements OngekiScoreAdapter {
     private readonly CURRENT_VERSION: KamaiTachi.EGameVersions;
@@ -34,9 +34,9 @@ export class KamaiTachi extends BaseScoreAdapter implements OngekiScoreAdapter {
                     "personal best scores",
                     Util.sanitizeKamaitachiErrorMessage(
                         `${rawPBs?.description ?? "An unknown error has occured."}`,
-                        username
+                        username,
                     ),
-                    { username }
+                    { username },
                 ),
             };
         }
@@ -46,43 +46,46 @@ export class KamaiTachi extends BaseScoreAdapter implements OngekiScoreAdapter {
             pb: KamaiTachi.IPb;
         }[] = [];
         for (const pb of rawPBs.body.pbs) {
-            let chart = rawPBs.body.charts.find((v) => v.chartID == pb.chartID);
-            let song = rawPBs.body.songs.find((v) => v.id == pb.songID);
+            const chart = rawPBs.body.charts.find(
+                (v) => v.chartID === pb.chartID,
+            );
+            const song = rawPBs.body.songs.find((v) => v.id === pb.songID);
             if (chart && song) {
                 pbs.push({ pb, chart, song });
             }
         }
         function difficultyCompare(payload: KamaiTachi.IChart, target: string) {
-            return payload.difficulty.toLowerCase() == target.toLowerCase();
+            return payload.difficulty.toLowerCase() === target.toLowerCase();
         }
         const basic = pbs.find(
             (v) =>
                 difficultyCompare(v.chart, "Basic") &&
-                v.chart.data.inGameID == chartId
+                v.chart.data.inGameID === chartId,
         );
         const advanced = pbs.find(
             (v) =>
                 difficultyCompare(v.chart, "Advanced") &&
-                v.chart.data.inGameID == chartId
+                v.chart.data.inGameID === chartId,
         );
         const expert = pbs.find(
             (v) =>
                 difficultyCompare(v.chart, "Expert") &&
-                v.chart.data.inGameID == chartId
+                v.chart.data.inGameID === chartId,
         );
         const master = pbs.find(
             (v) =>
                 difficultyCompare(v.chart, "Master") &&
-                v.chart.data.inGameID == chartId
+                v.chart.data.inGameID === chartId,
         );
         const lunaticLocalChart = Database.getLocalChart(
             chartId,
-            EDifficulty.LUNATIC
+            EDifficulty.LUNATIC,
         );
         const lunatic = pbs.find(
             (v) =>
                 difficultyCompare(v.chart, "Re:Master") &&
-                v.chart.data.inGameID == lunaticLocalChart?.meta.reMaster?.real
+                v.chart.data.inGameID ===
+                    lunaticLocalChart?.meta.reMaster?.real,
         );
         return {
             data: {
@@ -93,7 +96,7 @@ export class KamaiTachi extends BaseScoreAdapter implements OngekiScoreAdapter {
                     ? this.toMaiDrawScore(
                           advanced.pb,
                           advanced.chart,
-                          advanced.song
+                          advanced.song,
                       )
                     : null,
                 expert: expert
@@ -106,7 +109,7 @@ export class KamaiTachi extends BaseScoreAdapter implements OngekiScoreAdapter {
                     ? this.toMaiDrawScore(
                           lunatic.pb,
                           lunatic.chart,
-                          lunatic.song
+                          lunatic.song,
                       )
                     : null,
             },
@@ -135,7 +138,7 @@ export class KamaiTachi extends BaseScoreAdapter implements OngekiScoreAdapter {
 
     getPlatinumScoreRatio(
         chart: KamaiTachi.IChart,
-        score: KamaiTachi.IScore | KamaiTachi.IPb
+        score: KamaiTachi.IScore | KamaiTachi.IPb,
     ) {
         return this.getPlatinumScore(score) / chart.data.maxPlatScore;
     }
@@ -159,7 +162,7 @@ export class KamaiTachi extends BaseScoreAdapter implements OngekiScoreAdapter {
         >(
             `/api/v1/users/${userId}/games/ongeki/scores/recent`,
             undefined,
-            60 * 1000
+            60 * 1000,
         );
     }
     private getDatabaseDifficulty(chart: KamaiTachi.IChart) {
@@ -173,7 +176,6 @@ export class KamaiTachi extends BaseScoreAdapter implements OngekiScoreAdapter {
                 return EDifficulty.EXPERT;
             case chart.difficulty.toUpperCase().includes("ADVANCED"):
                 return EDifficulty.ADVANCED;
-            case chart.difficulty.toUpperCase().includes("BASIC"):
             default:
                 return EDifficulty.BASIC;
         }
@@ -182,16 +184,16 @@ export class KamaiTachi extends BaseScoreAdapter implements OngekiScoreAdapter {
         score: KamaiTachi.IPb | KamaiTachi.IScore,
         chart: KamaiTachi.IChart,
         song: KamaiTachi.ISong,
-        type: "refresh" | "classic" = "refresh"
+        type: "refresh" | "classic" = "refresh",
     ): IScore {
         const localChart = Database.getLocalChart(
             chart.data.inGameID || 0,
-            this.getDatabaseDifficulty(chart)
+            this.getDatabaseDifficulty(chart),
         );
         const internalLevel =
             localChart?.events
                 .filter((v) => v.type === "existence")
-                .find((v) => v.version.name == this.CURRENT_VERSION)?.data
+                .find((v) => v.version.name === this.CURRENT_VERSION)?.data
                 .level ?? chart.levelNum;
         const combo = (() => {
             switch (score.scoreData.noteLamp) {
@@ -251,23 +253,22 @@ export class KamaiTachi extends BaseScoreAdapter implements OngekiScoreAdapter {
                         return EAchievementTypes.SSS;
                     case "SSS+":
                         return EAchievementTypes.SSSP;
-                    case "D":
                     default:
                         return EAchievementTypes.D;
                 }
             })(),
             rating: (() => {
-                if (type == "classic")
+                if (type === "classic")
                     return OngekiUtil.calculateScoreRating(
                         internalLevel,
-                        score.scoreData.score
+                        score.scoreData.score,
                     );
                 else
                     return OngekiUtil.calculateReFreshScoreRating(
                         internalLevel,
                         score.scoreData.score,
                         bell,
-                        combo
+                        combo,
                     );
                 // if (type == "classic") return score.calculatedData.rating;
                 // else return score.calculatedData.scoreRating;
@@ -278,7 +279,7 @@ export class KamaiTachi extends BaseScoreAdapter implements OngekiScoreAdapter {
                         internalLevel,
                         KamaiTachi.PLATINUM_STAR_MAP[
                             score.scoreData.platinumStars
-                        ]
+                        ],
                     );
                 else return 0;
             })(),
@@ -286,7 +287,7 @@ export class KamaiTachi extends BaseScoreAdapter implements OngekiScoreAdapter {
     }
     async getPlayerBest60(
         userId: string,
-        currentVersion = this.CURRENT_VERSION
+        currentVersion = this.CURRENT_VERSION,
     ) {
         const rawPBs = await this.getPlayerPB(userId);
         if (!rawPBs?.success) {
@@ -296,9 +297,9 @@ export class KamaiTachi extends BaseScoreAdapter implements OngekiScoreAdapter {
                     "personal best scores",
                     Util.sanitizeKamaitachiErrorMessage(
                         `${rawPBs?.description ?? "An unknown error has occured."}`,
-                        userId
+                        userId,
                     ),
-                    { userId }
+                    { userId },
                 ),
             };
         }
@@ -308,30 +309,32 @@ export class KamaiTachi extends BaseScoreAdapter implements OngekiScoreAdapter {
             pb: KamaiTachi.IPb;
         }[] = [];
         for (const pb of rawPBs.body.pbs) {
-            let chart = rawPBs.body.charts.find((v) => v.chartID == pb.chartID);
-            let song = rawPBs.body.songs.find((v) => v.id == pb.songID);
+            const chart = rawPBs.body.charts.find(
+                (v) => v.chartID === pb.chartID,
+            );
+            const song = rawPBs.body.songs.find((v) => v.id === pb.songID);
             if (chart && song && chart.levelNum > 0) {
                 pbs.push({ pb, chart, song });
             }
         }
         const newScores = pbs.filter(
-            (v) => v.chart.data.displayVersion == currentVersion
+            (v) => v.chart.data.displayVersion === currentVersion,
         );
         const oldScores = pbs.filter(
             (v) =>
                 v.chart &&
                 KamaiTachi.compareGameVersions(
                     currentVersion,
-                    v.chart.data.displayVersion
-                ) > 0
+                    v.chart.data.displayVersion,
+                ) > 0,
         );
         const bestScores = pbs.filter(
             (v) =>
                 v.chart &&
                 KamaiTachi.compareGameVersions(
                     currentVersion,
-                    v.chart.data.displayVersion
-                ) >= 0
+                    v.chart.data.displayVersion,
+                ) >= 0,
         );
         return {
             data: {
@@ -347,7 +350,7 @@ export class KamaiTachi extends BaseScoreAdapter implements OngekiScoreAdapter {
                     .map((v) => this.toMaiDrawScore(v.pb, v.chart, v.song))
                     .sort(
                         (a, b) =>
-                            b.starRating - a.starRating || b.score - a.score
+                            b.starRating - a.starRating || b.score - a.score,
                     )
                     .filter((v) => v.starRating > 0)
                     .slice(0, 50),
@@ -360,7 +363,7 @@ export class KamaiTachi extends BaseScoreAdapter implements OngekiScoreAdapter {
     }
     async getPlayerBest55(
         userId: string,
-        currentVersion = this.CURRENT_VERSION
+        currentVersion = this.CURRENT_VERSION,
     ) {
         const rawPBs = await this.getPlayerPB(userId);
         if (!rawPBs?.success) {
@@ -370,9 +373,9 @@ export class KamaiTachi extends BaseScoreAdapter implements OngekiScoreAdapter {
                     "personal best scores",
                     Util.sanitizeKamaitachiErrorMessage(
                         `${rawPBs?.description ?? "An unknown error has occured."}`,
-                        userId
+                        userId,
                     ),
-                    { userId }
+                    { userId },
                 ),
             };
         }
@@ -384,9 +387,9 @@ export class KamaiTachi extends BaseScoreAdapter implements OngekiScoreAdapter {
                     "recent scores",
                     Util.sanitizeKamaitachiErrorMessage(
                         `${rawRecents?.description ?? "An unknown error has occured."}`,
-                        userId
+                        userId,
                     ),
-                    { userId }
+                    { userId },
                 ),
             };
         }
@@ -401,42 +404,46 @@ export class KamaiTachi extends BaseScoreAdapter implements OngekiScoreAdapter {
             scores: KamaiTachi.IScore;
         }[] = [];
         for (const pb of rawPBs.body.pbs) {
-            let chart = rawPBs.body.charts.find((v) => v.chartID == pb.chartID);
-            let song = rawPBs.body.songs.find((v) => v.id == pb.songID);
+            const chart = rawPBs.body.charts.find(
+                (v) => v.chartID === pb.chartID,
+            );
+            const song = rawPBs.body.songs.find((v) => v.id === pb.songID);
             if (chart && song && chart.levelNum > 0) {
                 pbs.push({ pb, chart, song });
             }
         }
         for (const recent of rawRecents.body.scores) {
-            let chart = rawRecents.body.charts.find(
-                (v) => v.chartID == recent.chartID
+            const chart = rawRecents.body.charts.find(
+                (v) => v.chartID === recent.chartID,
             );
-            let song = rawRecents.body.songs.find((v) => v.id == recent.songID);
+            const song = rawRecents.body.songs.find(
+                (v) => v.id === recent.songID,
+            );
             if (chart && song) {
                 recents.push({ scores: recent, chart, song });
             }
         }
         const newScores = pbs.filter(
-            (v) => v.chart.data.displayVersion == currentVersion
+            (v) => v.chart.data.displayVersion === currentVersion,
         );
         const oldScores = pbs.filter(
             (v) =>
                 v.chart &&
                 KamaiTachi.compareGameVersions(
                     currentVersion,
-                    v.chart.data.displayVersion
-                ) > 0
+                    v.chart.data.displayVersion,
+                ) > 0,
         );
         const recentScores = recents.filter(
             (v) =>
                 v.chart &&
                 KamaiTachi.compareGameVersions(
                     currentVersion,
-                    v.chart.data.displayVersion
-                ) >= 0
+                    v.chart.data.displayVersion,
+                ) >= 0,
         );
         function ratingGuardSimulation(scores: IScore[]) {
-            let r30: {
+            const r30: {
                 score: IScore;
                 order: number;
             }[] = [];
@@ -450,6 +457,7 @@ export class KamaiTachi extends BaseScoreAdapter implements OngekiScoreAdapter {
                 } else {
                     switch (score.rank) {
                         case EAchievementTypes.SSS:
+                        // biome-ignore lint/suspicious/noFallthroughSwitchClause: falls through
                         case EAchievementTypes.SSSP:
                             while (r30.length > 30) {
                                 r30.shift();
@@ -461,7 +469,7 @@ export class KamaiTachi extends BaseScoreAdapter implements OngekiScoreAdapter {
                                     .sort(
                                         (a, b) =>
                                             b.score.rating - a.score.rating ||
-                                            b.score.score - a.score.score
+                                            b.score.score - a.score.score,
                                     )
                                     .slice(0, 10);
                                 for (let j = 0; j < r30.length; ++j) {
@@ -492,9 +500,9 @@ export class KamaiTachi extends BaseScoreAdapter implements OngekiScoreAdapter {
             }
             return r30
                 .sort((a, b) =>
-                    a.score.rating == b.score.rating
+                    a.score.rating === b.score.rating
                         ? b.score.score - a.score.score
-                        : b.score.rating - a.score.rating
+                        : b.score.rating - a.score.rating,
                 )
                 .slice(0, 10)
                 .map((v) => v.score);
@@ -509,28 +517,28 @@ export class KamaiTachi extends BaseScoreAdapter implements OngekiScoreAdapter {
                                 v.scores,
                                 v.chart,
                                 v.song,
-                                "classic"
-                            )
+                                "classic",
+                            ),
                         )
                         .filter(
-                            (v) => v.chart.difficulty != EDifficulty.LUNATIC
-                        )
+                            (v) => v.chart.difficulty !== EDifficulty.LUNATIC,
+                        ),
                 ),
                 new: newScores
                     .map((v) =>
-                        this.toMaiDrawScore(v.pb, v.chart, v.song, "classic")
+                        this.toMaiDrawScore(v.pb, v.chart, v.song, "classic"),
                     )
                     .sort((a, b) => b.rating - a.rating || b.score - a.score)
                     .slice(0, 15),
                 old: oldScores
                     .map((v) =>
-                        this.toMaiDrawScore(v.pb, v.chart, v.song, "classic")
+                        this.toMaiDrawScore(v.pb, v.chart, v.song, "classic"),
                     )
                     .sort((a, b) => b.rating - a.rating || b.score - a.score)
                     .slice(0, 30),
                 best: pbs
                     .map((v) =>
-                        this.toMaiDrawScore(v.pb, v.chart, v.song, "classic")
+                        this.toMaiDrawScore(v.pb, v.chart, v.song, "classic"),
                     )
                     .sort((a, b) => b.rating - a.rating || b.score - a.score)
                     .slice(0, 45),
@@ -546,13 +554,13 @@ export class KamaiTachi extends BaseScoreAdapter implements OngekiScoreAdapter {
                     "player profile",
                     Util.sanitizeKamaitachiErrorMessage(
                         `${profile?.description ?? "An unknown error has occured."}`,
-                        userId
+                        userId,
                     ),
-                    { userId }
+                    { userId },
                 ),
             };
         }
-        if (type == "refresh") {
+        if (type === "refresh") {
             const { data: scores, err: serr } =
                 await this.getPlayerBest60(userId);
             if (serr) {
@@ -576,16 +584,15 @@ export class KamaiTachi extends BaseScoreAdapter implements OngekiScoreAdapter {
                         Util.truncateNumber(platRating / 50, 3),
                 },
             };
-        } else if (type == "classic") {
+        } else if (type === "classic") {
             const { data: scores, err: serr } =
                 await this.getPlayerBest55(userId);
             if (serr) {
                 return { err: serr };
             }
-            let rating = 0;
-            [...scores.recent, ...scores.new, ...scores.old].forEach(
-                (v) => (rating += v.rating)
-            );
+            const rating = [...scores.recent, ...scores.new, ...scores.old]
+                .map((v) => v.rating)
+                .reduce((prev, cur) => prev + cur);
             return {
                 data: {
                     name: profile?.body.username,
@@ -596,7 +603,7 @@ export class KamaiTachi extends BaseScoreAdapter implements OngekiScoreAdapter {
             return {
                 err: new IllegalArgumentError(
                     "maidraw.ongeki.adapter.kamaitachi",
-                    `Type can only be "refresh" or "classic".`
+                    `Type can only be "refresh" or "classic".`,
                 ),
             };
     }
@@ -614,14 +621,14 @@ export class KamaiTachi extends BaseScoreAdapter implements OngekiScoreAdapter {
             `/api/v1/users/${userId}/pfp`,
             undefined,
             2 * 60 * 60 * 1000,
-            { responseType: "arraybuffer" }
+            { responseType: "arraybuffer" },
         );
         if (!pfp) {
             return {
                 err: new FailedToFetchError(
                     "maidraw.ongeki.adapter.kamaitachi",
                     "profile picture",
-                    "An unknown error has occured."
+                    "An unknown error has occured.",
                 ),
             };
         }
@@ -782,7 +789,7 @@ export namespace KamaiTachi {
         };
         songID: number;
         scoreID: string;
-        scoreMeta: any;
+        scoreMeta: unknown;
         timeAdded: number;
         timeAchieved: number;
         service: string;
@@ -882,11 +889,11 @@ export namespace KamaiTachi {
      */
     export function compareGameVersions(
         a: EGameVersions,
-        b: EGameVersions
+        b: EGameVersions,
     ): number {
         if (!GameVersions.includes(a)) return -1;
         if (!GameVersions.includes(b)) return 1;
-        if (a == b) return 0;
+        if (a === b) return 0;
         return GameVersions.indexOf(b) - GameVersions.indexOf(a);
     }
 }

@@ -1,15 +1,15 @@
+import { BaseScoreAdapter } from "@maidraw/lib/adapter";
+import { FailedToFetchError, UnsupportedMethodError } from "@maidraw/lib/error";
+import * as Database from "@maidraw/mai/lib/database";
 import {
     EAchievementTypes,
     EComboTypes,
     EDifficulty,
     ESyncTypes,
-    IChart,
-    IScore,
+    type IChart,
+    type IScore,
 } from "@maidraw/mai/type";
-import { Database } from "@maidraw/mai/lib/database";
-import { BaseScoreAdapter } from "@maidraw/lib/adapter";
-import { MaimaiScoreAdapter } from "..";
-import { FailedToFetchError, UnsupportedMethodError } from "@maidraw/lib/error";
+import type { MaimaiScoreAdapter } from "..";
 
 export namespace DivingFish {
     export interface IPlayResult {
@@ -102,7 +102,7 @@ export class DivingFish extends BaseScoreAdapter implements MaimaiScoreAdapter {
                 err: new FailedToFetchError(
                     "maidraw.maimai.adapter.divingfish",
                     "best 50 scores",
-                    "Unknown error."
+                    "Unknown error.",
                 ),
             };
         }
@@ -112,7 +112,7 @@ export class DivingFish extends BaseScoreAdapter implements MaimaiScoreAdapter {
                 .map((chart) => {
                     return Database.getLocalChart(
                         chart.song_id,
-                        chart.level_index as unknown as EDifficulty
+                        chart.level_index as unknown as EDifficulty,
                     );
                 })
                 .filter((v) => v !== null)
@@ -130,11 +130,11 @@ export class DivingFish extends BaseScoreAdapter implements MaimaiScoreAdapter {
         }
         const newScores = pbs.records.filter(
             async (v) =>
-                (await this.getSong(v.song_id.toString()))?.basic_info.is_new
+                (await this.getSong(v.song_id.toString()))?.basic_info.is_new,
         );
         const oldScores = pbs.records.filter(
             async (v) =>
-                !(await this.getSong(v.song_id.toString()))?.basic_info.is_new
+                !(await this.getSong(v.song_id.toString()))?.basic_info.is_new,
         );
         return {
             data: {
@@ -149,7 +149,7 @@ export class DivingFish extends BaseScoreAdapter implements MaimaiScoreAdapter {
         return songList.flatMap((song) => {
             return song.charts.map((chart, index) => {
                 return {
-                    id: parseInt(song.id),
+                    id: parseInt(song.id, 10),
                     name: song.title,
                     level: song.ds[index],
                     difficulty: index,
@@ -165,7 +165,7 @@ export class DivingFish extends BaseScoreAdapter implements MaimaiScoreAdapter {
                 err: new FailedToFetchError(
                     "maidraw.maimai.adapter.divingfish",
                     "player profile",
-                    "Unknown error."
+                    "Unknown error.",
                 ),
             };
         } else {
@@ -183,32 +183,32 @@ export class DivingFish extends BaseScoreAdapter implements MaimaiScoreAdapter {
             {
                 username,
             },
-            60 * 1000
+            60 * 1000,
         );
     }
     async getSong(id: string) {
-        return (await this.getSongList()).find((v) => v.id == id) || null;
+        return (await this.getSongList()).find((v) => v.id === id) || null;
     }
     async getSongList(): Promise<DivingFish.ISongListResponse> {
         const cached = (await this.cache.get(
-            "divingfish-songList"
+            "divingfish-songList",
         )) as DivingFish.ISongListResponse | null;
         if (cached) return cached;
         const res = (await this.get(`/music_data`).catch(
-            (e) => []
+            () => [],
         )) as unknown as DivingFish.ISongListResponse;
         this.cache.put("divingfish-songList", res, 24 * 60 * 60 * 1000);
         return res;
     }
     private toMaiDrawScore(
         scores: DivingFish.IPlayResult[],
-        charts: IChart[]
+        charts: IChart[],
     ): IScore[] {
         return scores.map((score) => {
             return {
                 chart: (() => {
                     const chart = charts.find(
-                        (chart) => chart.id === score.song_id
+                        (chart) => chart.id === score.song_id,
                     );
                     return {
                         id: score.song_id,
@@ -301,32 +301,32 @@ export class DivingFish extends BaseScoreAdapter implements MaimaiScoreAdapter {
             };
         });
     }
-    async getPlayerProfilePicture(username: string) {
+    async getPlayerProfilePicture(_username: string) {
         return {
             err: new UnsupportedMethodError(
                 "maidraw.maimai.adapter.divingfish",
-                "getPlayerProfilePicture"
+                "getPlayerProfilePicture",
             ),
         };
     }
-    async getPlayerScore(username: string, chartId: number) {
+    async getPlayerScore(_username: string, _chartId: number) {
         return {
             err: new UnsupportedMethodError(
                 "maidraw.maimai.adapter.divingfish",
-                "getPlayerScore"
+                "getPlayerScore",
             ),
         };
     }
     async getPlayerLevel50(
-        username: string,
-        level: number,
-        page: number,
-        options: { percise: boolean }
+        _username: string,
+        _level: number,
+        _page: number,
+        _options: { percise: boolean },
     ) {
         return {
             err: new UnsupportedMethodError(
                 "maidraw.maimai.adapter.divingfish",
-                "getPlayerLevel50"
+                "getPlayerLevel50",
             ),
         };
     }

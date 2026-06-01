@@ -1,16 +1,13 @@
 import Bunyan from "bunyan";
-
-import * as database from "./lib/database";
-
-import * as chart from "./painter/chart";
-import * as bests from "./painter/best50";
-import * as level50 from "./painter/level50";
-
 import * as adapter from "./lib/adapter";
-import * as lxns from "./lib/adapter/lxns";
-import * as maishift from "./lib/adapter/maishift";
 import * as divingFish from "./lib/adapter/divingFish";
 import * as kamaiTachi from "./lib/adapter/kamaiTachi";
+import * as lxns from "./lib/adapter/lxns";
+import * as maishift from "./lib/adapter/maishift";
+import * as database from "./lib/database";
+import * as bests from "./painter/best50";
+import * as chart from "./painter/chart";
+import * as level50 from "./painter/level50";
 
 import * as types from "./type";
 
@@ -49,7 +46,7 @@ export class Maimai {
 export namespace Maimai {
     export import Types = types;
 
-    export import Database = database.Database;
+    export import Database = database;
 
     export import MaimaiScoreAdapter = adapter.MaimaiScoreAdapter;
     export namespace Adapters {

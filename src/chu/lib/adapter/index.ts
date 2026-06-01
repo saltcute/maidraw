@@ -1,5 +1,5 @@
-import { IScore } from "@maidraw/chu/type";
-import { DataOrError } from "@maidraw/lib/error";
+import type { IScore } from "@maidraw/chu/type";
+import type { DataOrError } from "@maidraw/lib/error";
 
 export interface ChunithmScoreAdapter {
     getPlayerRecent40(username: string): Promise<
@@ -17,7 +17,7 @@ export interface ChunithmScoreAdapter {
     >;
     getPlayerInfo(
         username: string,
-        type: "new" | "recents"
+        type: "new" | "recents",
     ): Promise<
         DataOrError<{
             name: string;
@@ -27,7 +27,7 @@ export interface ChunithmScoreAdapter {
     getPlayerProfilePicture(username: string): Promise<DataOrError<Buffer>>;
     getPlayerScore(
         username: string,
-        chartId: number
+        chartId: number,
     ): Promise<
         DataOrError<{
             basic: IScore | null;

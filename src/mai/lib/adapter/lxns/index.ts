@@ -1,20 +1,19 @@
-import { MaimaiScoreAdapter } from "..";
-
-import {
-    IScore,
-    IChart,
-    ESyncTypes,
-    EComboTypes,
-    EDifficulty,
-    EAchievementTypes,
-} from "@maidraw/mai/type";
-import { Database } from "@maidraw/mai/lib/database";
 import { BaseScoreAdapter } from "@maidraw/lib/adapter";
 import {
     FailedToFetchError,
     IllegalArgumentError,
     UnsupportedMethodError,
 } from "@maidraw/lib/error";
+import * as Database from "@maidraw/mai/lib/database";
+import {
+    EAchievementTypes,
+    EComboTypes,
+    EDifficulty,
+    ESyncTypes,
+    type IChart,
+    type IScore,
+} from "@maidraw/mai/type";
+import type { MaimaiScoreAdapter } from "..";
 
 export class LXNS extends BaseScoreAdapter implements MaimaiScoreAdapter {
     constructor({
@@ -25,7 +24,7 @@ export class LXNS extends BaseScoreAdapter implements MaimaiScoreAdapter {
         baseURL?: string;
     }) {
         super({ baseURL });
-        this.axios.defaults.headers.common["Authorization"] = auth;
+        this.axios.defaults.headers.common.Authorization = auth;
     }
     private async getChartList(targets: LXNS.IScore[]) {
         let chartList: IChart[];
@@ -34,8 +33,8 @@ export class LXNS extends BaseScoreAdapter implements MaimaiScoreAdapter {
                 .map((chart) => {
                     return Database.getLocalChart(
                         chart.id +
-                            (chart.type == LXNS.ESongTypes.DX ? 10000 : 0),
-                        chart.level_index as unknown as EDifficulty
+                            (chart.type === LXNS.ESongTypes.DX ? 10000 : 0),
+                        chart.level_index as unknown as EDifficulty,
                     );
                 })
                 .filter((v) => v !== null)
@@ -46,12 +45,12 @@ export class LXNS extends BaseScoreAdapter implements MaimaiScoreAdapter {
                         level:
                             (() => {
                                 return v.events
-                                    .filter((v) => v.version.region == "CN")
-                                    .filter((v) => v.type == "existence")
+                                    .filter((v) => v.version.region === "CN")
+                                    .filter((v) => v.type === "existence")
                                     .sort(
                                         (a, b) =>
                                             b.version.gameVersion.release -
-                                            a.version.gameVersion.release
+                                            a.version.gameVersion.release,
                                     )
                                     .pop()?.data.level;
                             })() || v.level,
@@ -71,7 +70,7 @@ export class LXNS extends BaseScoreAdapter implements MaimaiScoreAdapter {
                 err: new FailedToFetchError(
                     "maidraw.maimai.adapter.lxns",
                     "best 50 scores",
-                    `${b50?.message && b50.code ? `${b50.code} ${b50.message}` : "An unknown error has occured"}.`
+                    `${b50?.message && b50.code ? `${b50.code} ${b50.message}` : "An unknown error has occured"}.`,
                 ),
             };
         }
@@ -93,7 +92,7 @@ export class LXNS extends BaseScoreAdapter implements MaimaiScoreAdapter {
                 err: new FailedToFetchError(
                     "maidraw.maimai.adapter.lxns",
                     "player profile",
-                    `${profile?.message && profile.code ? `${profile.code} ${profile.message}` : "An unknown error has occured"}.`
+                    `${profile?.message && profile.code ? `${profile.code} ${profile.message}` : "An unknown error has occured"}.`,
                 ),
             };
         }
@@ -108,12 +107,12 @@ export class LXNS extends BaseScoreAdapter implements MaimaiScoreAdapter {
         return await this.get<LXNS.IAPIResponse<LXNS.IBest50Response>>(
             `/player/${friendCode}/bests`,
             undefined,
-            60 * 1000
+            60 * 1000,
         );
     }
     async getPlayerRawProfile(friendCode: string) {
         return await this.get<LXNS.IAPIResponse<LXNS.IPlayer>>(
-            `/player/${friendCode}`
+            `/player/${friendCode}`,
         );
     }
     async getSong(songId: number): Promise<LXNS.ISong> {
@@ -122,7 +121,7 @@ export class LXNS extends BaseScoreAdapter implements MaimaiScoreAdapter {
     }
     async getSongList(): Promise<LXNS.ISongListResponse> {
         const cached = (await this.cache.get(
-            "lxns-songList-maimai"
+            "lxns-songList-maimai",
         )) as LXNS.ISongListResponse | null;
         if (cached) return cached;
         const res = (await this.get<LXNS.ISongListResponse>(`/song/list`, {
@@ -190,7 +189,7 @@ export class LXNS extends BaseScoreAdapter implements MaimaiScoreAdapter {
     }
     private toMaiDrawScore(
         scores: LXNS.IScore[],
-        chartList: IChart[]
+        chartList: IChart[],
     ): IScore[] {
         return scores
             .map((chart) => {
@@ -198,11 +197,11 @@ export class LXNS extends BaseScoreAdapter implements MaimaiScoreAdapter {
                     (v) =>
                         v.id ===
                             chart.id +
-                                (chart.type == LXNS.ESongTypes.DX
+                                (chart.type === LXNS.ESongTypes.DX
                                     ? 10000
                                     : 0) &&
-                        v.difficulty ==
-                            (chart.level_index as unknown as EDifficulty)
+                        v.difficulty ===
+                            (chart.level_index as unknown as EDifficulty),
                 );
                 if (!chartDetail) return null;
                 return {
@@ -283,7 +282,7 @@ export class LXNS extends BaseScoreAdapter implements MaimaiScoreAdapter {
                 err: new FailedToFetchError(
                     "maidraw.maimai.adapter.lxns",
                     "player profile",
-                    `${player?.message && player.code ? `${player.code} ${player.message}` : "An unknown error has occured"}.`
+                    `${player?.message && player.code ? `${player.code} ${player.message}` : "An unknown error has occured"}.`,
                 ),
             };
         }
@@ -295,14 +294,14 @@ export class LXNS extends BaseScoreAdapter implements MaimaiScoreAdapter {
             {
                 baseURL: "https://assets2.lxns.net",
                 responseType: "arraybuffer",
-            }
+            },
         );
         if (!iconImage) {
             return {
                 err: new FailedToFetchError(
                     "maidraw.maimai.adapter.lxns",
                     "player profile picture",
-                    "An unknown error has occured."
+                    "An unknown error has occured.",
                 ),
             };
         }
@@ -327,14 +326,14 @@ export class LXNS extends BaseScoreAdapter implements MaimaiScoreAdapter {
             {
                 song_id: chartId % 10000,
                 song_type: SONG_TYPE,
-            }
+            },
         );
         if (!res?.success) {
             return {
                 err: new FailedToFetchError(
                     "maidraw.maimai.adapter.lxns",
                     "personal best scores",
-                    `${res?.message && res.code ? `${res.code} ${res.message}` : "An unknown error has occured"}.`
+                    `${res?.message && res.code ? `${res.code} ${res.message}` : "An unknown error has occured"}.`,
                 ),
             };
         }
@@ -348,25 +347,27 @@ export class LXNS extends BaseScoreAdapter implements MaimaiScoreAdapter {
                         ...NUL,
                         basic:
                             scores.find(
-                                (v) => v.chart.difficulty == EDifficulty.BASIC
+                                (v) => v.chart.difficulty === EDifficulty.BASIC,
                             ) || null,
                         advanced:
                             scores.find(
                                 (v) =>
-                                    v.chart.difficulty == EDifficulty.ADVANCED
+                                    v.chart.difficulty === EDifficulty.ADVANCED,
                             ) || null,
                         expert:
                             scores.find(
-                                (v) => v.chart.difficulty == EDifficulty.EXPERT
+                                (v) =>
+                                    v.chart.difficulty === EDifficulty.EXPERT,
                             ) || null,
                         master:
                             scores.find(
-                                (v) => v.chart.difficulty == EDifficulty.MASTER
+                                (v) =>
+                                    v.chart.difficulty === EDifficulty.MASTER,
                             ) || null,
                         remaster:
                             scores.find(
                                 (v) =>
-                                    v.chart.difficulty == EDifficulty.REMASTER
+                                    v.chart.difficulty === EDifficulty.REMASTER,
                             ) || null,
                     },
                 };
@@ -383,21 +384,21 @@ export class LXNS extends BaseScoreAdapter implements MaimaiScoreAdapter {
                 return {
                     err: new IllegalArgumentError(
                         "maidraw.maimai.adapter.lxns",
-                        `Song type can only be "standard", "dx" or "utage". Found "${SONG_TYPE}".`
+                        `Song type can only be "standard", "dx" or "utage". Found "${SONG_TYPE}".`,
                     ),
                 };
         }
     }
     async getPlayerLevel50(
-        username: string,
-        level: number,
-        page: number,
-        options: { percise: boolean }
+        _username: string,
+        _level: number,
+        _page: number,
+        _options: { percise: boolean },
     ) {
         return {
             err: new UnsupportedMethodError(
                 "maidraw.maimai.adapter.lxns",
-                "getPlayerLevel50"
+                "getPlayerLevel50",
             ),
         };
     }
@@ -527,7 +528,7 @@ export namespace LXNS {
         name: string;
         rating: number;
         friend_code: number;
-        trophy: any;
+        trophy: unknown;
         trophy_name: string;
         course_rank: string;
         class_rank: string;
@@ -535,7 +536,7 @@ export namespace LXNS {
         icon: ICollection;
         name_plate: ICollection;
         frame: ICollection;
-        upload_time: any;
+        upload_time: unknown;
     }
     export interface ICollection {
         id: number;
@@ -543,7 +544,7 @@ export namespace LXNS {
         color: string;
         description: string;
         genre: string;
-        required: any;
+        required: unknown;
     }
     export interface IBest50Response {
         /**

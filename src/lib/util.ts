@@ -1,17 +1,15 @@
-import {
-    CanvasGradient,
-    CanvasPattern,
-    CanvasRenderingContext2D,
-    loadImage,
-    TextMetrics,
-} from "canvas";
-import _ from "lodash";
-import Color from "color";
 import Bunyan from "bunyan";
+import {
+    type CanvasGradient,
+    type CanvasPattern,
+    type CanvasRenderingContext2D,
+    loadImage,
+    type TextMetrics,
+} from "canvas";
+import Color from "color";
 import { fillTextWithTwemoji } from "node-canvas-with-twemoji-and-discord-emoji";
-
-import { z as zod } from "zod/v4";
 import sharp from "sharp";
+import { z as zod } from "zod/v4";
 
 export class Util {
     /**
@@ -20,7 +18,7 @@ export class Util {
     static truncate(
         payload: number,
         percision: number,
-        roundingPosition: number = 10
+        roundingPosition: number = 10,
     ): string {
         const str = payload.toFixed(roundingPosition);
         let [int, dec] = str.split(".");
@@ -32,9 +30,9 @@ export class Util {
     static truncateNumber(
         payload: number,
         percision: number,
-        roundingPosition: number = 10
+        roundingPosition: number = 10,
     ): number {
-        return parseFloat(this.truncate(payload, percision, roundingPosition));
+        return parseFloat(Util.truncate(payload, percision, roundingPosition));
     }
     /**
      * Dirty implementation, pretty much ignores percision loss.
@@ -44,22 +42,22 @@ export class Util {
         let [int, dec] = str.split(".");
         if (!int) int = "";
         if (!dec) {
-            if (percision <= 0) return int + "";
+            if (percision <= 0) return `${int}`;
             else return `${int}.${"0".repeat(percision)}`;
         } else {
-            if (percision <= 0) return parseInt(int) + 1 + "";
+            if (percision <= 0) return `${parseInt(int, 10) + 1}`;
             else {
                 if (dec.length < percision)
                     return `${int}.${dec.padEnd(percision, "0")}`;
                 const result = Math.ceil(
                     parseFloat(
-                        `${int}${dec.substring(0, percision)}.${dec.substring(percision)}`
-                    )
+                        `${int}${dec.substring(0, percision)}.${dec.substring(percision)}`,
+                    ),
                 ).toString();
                 if (result.length < percision) return result;
                 return `${result.substring(
                     0,
-                    result.length - percision
+                    result.length - percision,
                 )}.${result.substring(result.length - percision)}`;
             }
         }
@@ -69,7 +67,7 @@ export class Util {
         ctx: CanvasRenderingContext2D,
         original: string,
         maxWidth: number,
-        lineBreakSuffix = "..."
+        lineBreakSuffix = "...",
     ): string {
         const metrics = ctx.measureText(original);
         if (metrics.width <= maxWidth) return original;
@@ -77,10 +75,10 @@ export class Util {
             let cur = original.slice(0, i);
             if (ctx.measureText(cur + lineBreakSuffix).width <= maxWidth) {
                 // Trim full-width spaces.
-                while (cur[cur.length - 1] == "　") {
+                while (cur[cur.length - 1] === "　") {
                     cur = cur.substring(0, cur.length - 1);
                 }
-                while (cur[0] == "　") {
+                while (cur[0] === "　") {
                     cur = cur.substring(1, cur.length);
                 }
                 return cur.trim() + lineBreakSuffix;
@@ -97,7 +95,7 @@ export class Util {
                 unitCount = 8,
                 channels = 4;
             safeImage = Buffer.alloc(
-                unitSize * unitSize * unitCount * unitCount * channels
+                unitSize * unitSize * unitCount * unitCount * channels,
             );
             for (let i = 0; i < unitCount; ++i) {
                 for (let j = 0; j < unitCount; ++j) {
@@ -109,7 +107,7 @@ export class Util {
                         ) {
                             const idx =
                                 (y * unitSize * unitCount + x) * channels;
-                            if ((i + j) % 2 == 0) {
+                            if ((i + j) % 2 === 0) {
                                 safeImage[idx + 0] = 0xff;
                                 safeImage[idx + 1] = 0x00;
                                 safeImage[idx + 2] = 0xff;
@@ -168,31 +166,31 @@ export class Util {
             widthConstraintType?: "shrink-cut" | "cut" | "shrink" | "none";
             shrinkAnchor?: "top" | "center" | "bottom";
             shrinkMinFontSize?: number;
-        }
+        },
     ) {
         ctx.font = `${fontSize}px ${font}`;
         if (
-            widthConstraintType == "shrink" ||
-            widthConstraintType == "shrink-cut"
+            widthConstraintType === "shrink" ||
+            widthConstraintType === "shrink-cut"
         ) {
             let fs = fontSize;
             for (; fs >= shrinkMinFontSize; fs--) {
-                const measurement = this.measureText(
+                const measurement = Util.measureText(
                     ctx,
                     str,
                     fs,
                     Infinity,
-                    font
+                    font,
                 );
                 if (measurement.width <= maxWidth) break;
             }
-            const measurement = this.measureText(ctx, str, fs, Infinity, font);
-            const originalMesurement = this.measureText(
+            const measurement = Util.measureText(ctx, str, fs, Infinity, font);
+            const originalMesurement = Util.measureText(
                 ctx,
                 str,
                 fontSize,
                 Infinity,
-                font
+                font,
             );
             const originalHeight =
                 originalMesurement.actualBoundingBoxAscent +
@@ -200,17 +198,20 @@ export class Util {
             const newHeight =
                 measurement.actualBoundingBoxAscent +
                 measurement.actualBoundingBoxDescent;
-            if (shrinkAnchor == "top") {
+            if (shrinkAnchor === "top") {
                 y -= originalHeight;
                 y += newHeight;
-            } else if (shrinkAnchor == "center") {
+            } else if (shrinkAnchor === "center") {
                 y -= (originalHeight - newHeight) / 2;
             }
             fontSize = fs;
         }
         ctx.font = `${fontSize}px ${font}`;
-        if (widthConstraintType == "cut" || widthConstraintType == "shrink-cut")
-            str = this.findMaxFitString(ctx, str, maxWidth, lineBreakSuffix);
+        if (
+            widthConstraintType === "cut" ||
+            widthConstraintType === "shrink-cut"
+        )
+            str = Util.findMaxFitString(ctx, str, maxWidth, lineBreakSuffix);
         if (linewidth > 0) {
             ctx.strokeStyle = borderColor;
             ctx.lineWidth = linewidth;
@@ -244,7 +245,7 @@ export class Util {
         linewidth: number,
         mainColor: string | CanvasGradient | CanvasPattern = "white",
         borderColor: string | CanvasGradient | CanvasPattern = "black",
-        font: string = `"standard-font-title-latin", "standard-font-title-jp"`
+        font: string = `"standard-font-title-latin", "standard-font-title-jp"`,
     ) {
         let curX = x,
             curY = y;
@@ -286,7 +287,7 @@ export class Util {
                         mainColor,
                         borderColor,
                         font,
-                    }
+                    },
                 );
                 ctx.restore();
                 curY += width + verticalSpacing;
@@ -306,10 +307,10 @@ export class Util {
         textAlign: "left" | "center" | "right" = "left",
         mainColor: string | CanvasGradient | CanvasPattern = "white",
         font: string = `"standard-font-title-latin", "standard-font-title-jp"`,
-        lineBreakSuffix = "..."
+        lineBreakSuffix = "...",
     ) {
         ctx.font = `${fontSize}px ${font}`;
-        str = this.findMaxFitString(ctx, str, maxWidth, lineBreakSuffix);
+        str = Util.findMaxFitString(ctx, str, maxWidth, lineBreakSuffix);
 
         ctx.textDrawingMode = "glyph";
         ctx.fillStyle = mainColor;
@@ -323,11 +324,11 @@ export class Util {
         original: string,
         fontSize: number,
         maxWidth: number,
-        font: string = `"standard-font-title-latin", "standard-font-title-jp"`
+        font: string = `"standard-font-title-latin", "standard-font-title-jp"`,
     ): TextMetrics {
         ctx.font = `${fontSize}px ${font}`;
         const metrics = ctx.measureText(
-            Util.findMaxFitString(ctx, original, maxWidth, "...")
+            Util.findMaxFitString(ctx, original, maxWidth, "..."),
         );
         return metrics;
     }
@@ -396,33 +397,33 @@ export namespace Util {
                 full: "￠￡￢￣￤￥￦\u3000￨￩￪￫￬￭￮",
             },
         };
-        // @ts-ignore
+        // @ts-expect-error
         private static readonly toFull = (set) => (c) =>
             set.delta
                 ? String.fromCharCode(c.charCodeAt(0) + set.delta)
                 : [...set.full][[...set.half].indexOf(c)];
-        // @ts-ignore
+        // @ts-expect-error
         private static readonly toHalf = (set) => (c) =>
             set.delta
                 ? String.fromCharCode(c.charCodeAt(0) - set.delta)
                 : [...set.half][[...set.full].indexOf(c)];
-        // @ts-ignore
+        // @ts-expect-error
         private static readonly re = (set, way) =>
-            set[way + "RE"] || new RegExp("[" + set[way] + "]", "g");
+            set[`${way}RE`] || new RegExp(`[${set[way]}]`, "g");
         private static readonly sets = Object.values(this.charsets);
-        // @ts-ignore
+        // @ts-expect-error
         static toFullWidth = (str0) =>
             this.sets.reduce(
                 (str, set) =>
                     str.replace(this.re(set, "half"), this.toFull(set)),
-                str0
+                str0,
             );
-        // @ts-ignore
+        // @ts-expect-error
         static toHalfWidth = (str0) =>
             this.sets.reduce(
                 (str, set) =>
                     str.replace(this.re(set, "full"), this.toHalf(set)),
-                str0
+                str0,
             );
     }
 

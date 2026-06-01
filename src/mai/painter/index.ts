@@ -1,22 +1,20 @@
+import { Painter, type Theme, ThemeManager } from "@maidraw/lib/painter";
+import { Util } from "@maidraw/lib/util";
+import { Canvas, type CanvasRenderingContext2D } from "canvas";
+import Color from "color";
 import _ from "lodash";
 import sharp from "sharp";
-import Color from "color";
 import { z } from "zod/v4";
-import { Canvas, CanvasRenderingContext2D } from "canvas";
-
+import type { MaimaiScoreAdapter } from "../lib/adapter";
+import * as Database from "../lib/database";
+import { MaimaiUtil } from "../lib/util";
 import {
     EAchievementTypes,
     EComboTypes,
     EDifficulty,
     ESyncTypes,
-    IScore,
+    type IScore,
 } from "../type";
-import { MaimaiScoreAdapter } from "../lib/adapter";
-
-import { Util } from "@maidraw/lib/util";
-import { Painter, Theme, ThemeManager } from "@maidraw/lib/painter";
-import { Database } from "../lib/database";
-import { MaimaiUtil } from "../lib/util";
 
 export abstract class MaimaiPainter<
     Schema extends typeof ThemeManager.BaseObject,
@@ -62,21 +60,22 @@ export namespace MaimaiPainterModule {
         });
         export async function draw(
             ctx: CanvasRenderingContext2D,
+            // biome-ignore lint/suspicious/noExplicitAny: need major refactor
             theme: Theme<any>,
             element: z.infer<typeof schema>,
             username: string,
             rating: number,
-            profilePicture?: Buffer
+            profilePicture?: Buffer,
         ) {
             const nameplate = await Util.loadImage(
-                theme.getFile(element.sprites.profile.nameplate)
+                theme.getFile(element.sprites.profile.nameplate),
             );
             ctx.drawImage(
                 nameplate,
                 element.x,
                 element.y,
                 element.height * 6.207,
-                element.height
+                element.height,
             );
 
             /* Begin Profile Picture Draw */
@@ -88,7 +87,7 @@ export namespace MaimaiPainterModule {
                     element.y + element.height * 0.064,
                     element.height * 0.872,
                     element.height * 0.872,
-                    (element.height * 0.872) / 16
+                    (element.height * 0.872) / 16,
                 );
                 ctx.clip();
                 ctx.fillStyle = "white";
@@ -104,7 +103,7 @@ export namespace MaimaiPainterModule {
                     theme.getFile(element.sprites.profile.icon);
                 const { dominant } = await sharp(pfp).stats();
                 const icon = await Util.loadImage(
-                    await sharp(pfp).png().toBuffer()
+                    await sharp(pfp).png().toBuffer(),
                 );
 
                 const cropSize = Math.min(icon.width, icon.height);
@@ -117,7 +116,7 @@ export namespace MaimaiPainterModule {
                     element.x + element.height * 0.064,
                     element.y + element.height * 0.064,
                     element.height * 0.872,
-                    element.height * 0.872
+                    element.height * 0.872,
                 );
 
                 if (profilePicture) {
@@ -127,7 +126,7 @@ export namespace MaimaiPainterModule {
                         element.y + element.height * 0.064,
                         element.height * 0.872,
                         element.height * 0.872,
-                        (element.height * 0.872) / 16
+                        (element.height * 0.872) / 16,
                     );
                     ctx.strokeStyle = Color.rgb(dominant).darken(0.3).hex();
                     ctx.lineWidth = element.height / 30;
@@ -143,67 +142,67 @@ export namespace MaimaiPainterModule {
                 switch (true) {
                     case rating >= 15000: {
                         dxRatingImg = theme.getFile(
-                            element.sprites.dxRating.rainbow
+                            element.sprites.dxRating.rainbow,
                         );
                         break;
                     }
                     case rating >= 14500: {
                         dxRatingImg = theme.getFile(
-                            element.sprites.dxRating.platinum
+                            element.sprites.dxRating.platinum,
                         );
                         break;
                     }
                     case rating >= 14000: {
                         dxRatingImg = theme.getFile(
-                            element.sprites.dxRating.gold
+                            element.sprites.dxRating.gold,
                         );
                         break;
                     }
                     case rating >= 13000: {
                         dxRatingImg = theme.getFile(
-                            element.sprites.dxRating.silver
+                            element.sprites.dxRating.silver,
                         );
                         break;
                     }
                     case rating >= 12000: {
                         dxRatingImg = theme.getFile(
-                            element.sprites.dxRating.bronze
+                            element.sprites.dxRating.bronze,
                         );
                         break;
                     }
                     case rating >= 10000: {
                         dxRatingImg = theme.getFile(
-                            element.sprites.dxRating.purple
+                            element.sprites.dxRating.purple,
                         );
                         break;
                     }
                     case rating >= 8000: {
                         dxRatingImg = theme.getFile(
-                            element.sprites.dxRating.red
+                            element.sprites.dxRating.red,
                         );
                         break;
                     }
                     case rating >= 6000: {
                         dxRatingImg = theme.getFile(
-                            element.sprites.dxRating.yellow
+                            element.sprites.dxRating.yellow,
                         );
                         break;
                     }
                     case rating >= 4000: {
                         dxRatingImg = theme.getFile(
-                            element.sprites.dxRating.green
+                            element.sprites.dxRating.green,
                         );
                         break;
                     }
                     case rating >= 2000: {
                         dxRatingImg = theme.getFile(
-                            element.sprites.dxRating.blue
+                            element.sprites.dxRating.blue,
                         );
                         break;
                     }
                     default: {
                         dxRatingImg = theme.getFile(
-                            element.sprites.dxRating.white
+                            element.sprites.dxRating.white,
                         );
                         break;
                     }
@@ -214,7 +213,7 @@ export namespace MaimaiPainterModule {
                     element.x + element.height,
                     element.y + element.height * 0.064,
                     (element.height / 3) * 5.108,
-                    element.height / 3
+                    element.height / 3,
                 );
             }
             /* End DX Rating Draw */
@@ -227,7 +226,7 @@ export namespace MaimaiPainterModule {
                     element.y + element.height * (0.064 + 0.333 + 1 / 32),
                     ((element.height / 3) * 5.108 * 6) / 5,
                     (element.height * 7) / 24,
-                    element.height / 20
+                    element.height / 20,
                 );
                 ctx.fillStyle = "white";
                 ctx.strokeStyle = Color.rgb(180, 180, 180).hex();
@@ -238,7 +237,7 @@ export namespace MaimaiPainterModule {
                 const ratingImgBuffer = await getRatingNumber(
                     rating,
                     theme,
-                    element
+                    element,
                 );
                 if (ratingImgBuffer) {
                     const { width, height } =
@@ -252,7 +251,7 @@ export namespace MaimaiPainterModule {
                             element.x + element.height * 1.785,
                             element.y + element.height * 0.15,
                             drawHeight * aspectRatio,
-                            drawHeight
+                            drawHeight,
                         );
                     }
                 }
@@ -272,7 +271,7 @@ export namespace MaimaiPainterModule {
                         font: "standard-font-username",
                         widthConstraintType: "shrink",
                         shrinkAnchor: "center",
-                    }
+                    },
                 );
             }
             /* End Username Draw*/
@@ -280,14 +279,15 @@ export namespace MaimaiPainterModule {
 
         async function getRatingNumber(
             num: number,
+            // biome-ignore lint/suspicious/noExplicitAny: need major refactor
             theme: Theme<any>,
-            element: z.infer<typeof schema>
+            element: z.infer<typeof schema>,
         ) {
             async function getRatingDigit(
                 map: Buffer,
                 digit: number,
                 unitWidth: number,
-                unitHeight: number
+                unitHeight: number,
             ) {
                 digit = Math.trunc(digit % 10);
                 return await sharp(map)
@@ -307,7 +307,7 @@ export namespace MaimaiPainterModule {
             let digits: (Buffer | null)[] = [];
             while (num > 0) {
                 digits.push(
-                    await getRatingDigit(map, num % 10, unitWidth, unitHeight)
+                    await getRatingDigit(map, num % 10, unitWidth, unitHeight),
                 );
                 num = Math.trunc(num / 10);
             }
@@ -385,6 +385,7 @@ export namespace MaimaiPainterModule {
             });
             export async function draw(
                 ctx: CanvasRenderingContext2D,
+                // biome-ignore lint/suspicious/noExplicitAny: need major refactor
                 theme: Theme<any>,
                 element: z.infer<typeof schema>,
                 {
@@ -400,7 +401,7 @@ export namespace MaimaiPainterModule {
                     index: number;
                     score: IScore;
                     scale?: number;
-                }
+                },
             ) {
                 let curColor = "#FFFFFF";
                 switch (score.chart.difficulty) {
@@ -433,7 +434,7 @@ export namespace MaimaiPainterModule {
                     y,
                     element.scoreBubble.width,
                     element.scoreBubble.height,
-                    (element.scoreBubble.height * 0.806) / 7
+                    (element.scoreBubble.height * 0.806) / 7,
                 );
                 ctx.strokeStyle = new Color(curColor).darken(0.3).hexa();
                 ctx.lineWidth = element.scoreBubble.margin / 4;
@@ -445,7 +446,7 @@ export namespace MaimaiPainterModule {
                     y,
                     element.scoreBubble.width,
                     element.scoreBubble.height,
-                    (element.scoreBubble.height * 0.806) / 7
+                    (element.scoreBubble.height * 0.806) / 7,
                 );
                 ctx.clip();
 
@@ -460,7 +461,7 @@ export namespace MaimaiPainterModule {
                         y,
                         element.scoreBubble.width,
                         element.scoreBubble.height * 0.742,
-                        cardRoundCornerRadius
+                        cardRoundCornerRadius,
                     );
                     ctx.clip();
                     ctx.fillStyle = curColor;
@@ -485,7 +486,7 @@ export namespace MaimaiPainterModule {
                             return Color.hsv(
                                 87.59 * (1 - status),
                                 76.32,
-                                89.41
+                                89.41,
                             );
                         }
                         ctx.fillStyle = getStatusColor(scale).hexa();
@@ -496,7 +497,7 @@ export namespace MaimaiPainterModule {
                             y - cardRoundCornerRadius,
                             cardRoundCornerRadius * 2,
                             cardRoundCornerRadius * 2,
-                            cardRoundCornerRadius / 4
+                            cardRoundCornerRadius / 4,
                         );
                         ctx.closePath();
                         ctx.fill();
@@ -506,44 +507,44 @@ export namespace MaimaiPainterModule {
 
                     const jacketSize = Math.min(
                         element.scoreBubble.width,
-                        element.scoreBubble.height * 0.742
+                        element.scoreBubble.height * 0.742,
                     );
 
                     const jacketMaskGrad = ctx.createLinearGradient(
                         x + jacketSize / 2,
                         y + jacketSize / 2,
                         x + jacketSize,
-                        y + jacketSize / 2
+                        y + jacketSize / 2,
                     );
                     jacketMaskGrad.addColorStop(
                         0,
-                        new Color(curColor).alpha(0).hexa()
+                        new Color(curColor).alpha(0).hexa(),
                     );
                     jacketMaskGrad.addColorStop(
                         0.25,
-                        new Color(curColor).alpha(0.2).hexa()
+                        new Color(curColor).alpha(0.2).hexa(),
                     );
                     jacketMaskGrad.addColorStop(
                         1,
-                        new Color(curColor).alpha(1).hexa()
+                        new Color(curColor).alpha(1).hexa(),
                     );
                     const jacketMaskGradDark = ctx.createLinearGradient(
                         x + jacketSize / 2,
                         y + jacketSize / 2,
                         x + jacketSize,
-                        y + jacketSize / 2
+                        y + jacketSize / 2,
                     );
                     jacketMaskGradDark.addColorStop(
                         0,
-                        new Color(curColor).darken(0.3).alpha(0).hexa()
+                        new Color(curColor).darken(0.3).alpha(0).hexa(),
                     );
                     jacketMaskGradDark.addColorStop(
                         0.25,
-                        new Color(curColor).darken(0.3).alpha(0.2).hexa()
+                        new Color(curColor).darken(0.3).alpha(0.2).hexa(),
                     );
                     jacketMaskGradDark.addColorStop(
                         1,
-                        new Color(curColor).darken(0.3).alpha(1).hexa()
+                        new Color(curColor).darken(0.3).alpha(1).hexa(),
                     );
 
                     /** Begin Jacket Draw*/
@@ -556,17 +557,13 @@ export namespace MaimaiPainterModule {
                         ctx.fillStyle = "#b6ffab";
                         ctx.fillRect(x, y, jacketSize, jacketSize);
                     }
-                    /** End Jacket Draw*/
-
-                    /** Begin Jacket Gradient Mask Draw*/ {
-                        ctx.fillStyle = jacketMaskGrad;
-                        ctx.fillRect(
-                            x + jacketSize / 2,
-                            y,
-                            (jacketSize * 3) / 4,
-                            jacketSize
-                        );
-                    } /** End Jacket Gradient Mask Draw*/
+                    ctx.fillStyle = jacketMaskGrad;
+                    ctx.fillRect(
+                        x + jacketSize / 2,
+                        y,
+                        (jacketSize * 3) / 4,
+                        jacketSize,
+                    );
 
                     /** Begin Title Draw */ {
                         const titleFontSize =
@@ -588,28 +585,25 @@ export namespace MaimaiPainterModule {
                                 borderColor: jacketMaskGradDark,
                                 widthConstraintType: "shrink-cut",
                                 shrinkMinFontSize: titleFontSize * 0.85,
-                            }
+                            },
                         );
                     } /** End Title Draw */
-
-                    /** Begin Separation Line Draw */ {
-                        ctx.beginPath();
-                        ctx.roundRect(
-                            x + (jacketSize * 13) / 16,
-                            y +
-                                element.scoreBubble.margin +
-                                element.scoreBubble.height *
-                                    0.806 *
-                                    (0.144 + 0.072),
-                            element.scoreBubble.width -
-                                (jacketSize * 13) / 16 -
-                                element.scoreBubble.margin,
-                            element.scoreBubble.height * 0.806 * 0.02,
-                            (element.scoreBubble.height * 0.806 * 0.02) / 2
-                        );
-                        ctx.fillStyle = jacketMaskGradDark;
-                        ctx.fill();
-                    } /** End Separation Line Draw */
+                    ctx.beginPath();
+                    ctx.roundRect(
+                        x + (jacketSize * 13) / 16,
+                        y +
+                            element.scoreBubble.margin +
+                            element.scoreBubble.height *
+                                0.806 *
+                                (0.144 + 0.072),
+                        element.scoreBubble.width -
+                            (jacketSize * 13) / 16 -
+                            element.scoreBubble.margin,
+                        element.scoreBubble.height * 0.806 * 0.02,
+                        (element.scoreBubble.height * 0.806 * 0.02) / 2,
+                    );
+                    ctx.fillStyle = jacketMaskGradDark;
+                    ctx.fill();
 
                     /** Begin Achievement Rate Draw */
                     Util.drawText(
@@ -630,7 +624,7 @@ export namespace MaimaiPainterModule {
                             textAlign: "right",
                             mainColor: "white",
                             borderColor: new Color(curColor).darken(0.3).hexa(),
-                        }
+                        },
                     );
                     /** End Achievement Rate Draw */
 
@@ -640,72 +634,72 @@ export namespace MaimaiPainterModule {
                         switch (score.achievementRank) {
                             case EAchievementTypes.D:
                                 rankImg = theme.getFile(
-                                    element.sprites.achievement.d
+                                    element.sprites.achievement.d,
                                 );
                                 break;
                             case EAchievementTypes.C:
                                 rankImg = theme.getFile(
-                                    element.sprites.achievement.c
+                                    element.sprites.achievement.c,
                                 );
                                 break;
                             case EAchievementTypes.B:
                                 rankImg = theme.getFile(
-                                    element.sprites.achievement.b
+                                    element.sprites.achievement.b,
                                 );
                                 break;
                             case EAchievementTypes.BB:
                                 rankImg = theme.getFile(
-                                    element.sprites.achievement.bb
+                                    element.sprites.achievement.bb,
                                 );
                                 break;
                             case EAchievementTypes.BBB:
                                 rankImg = theme.getFile(
-                                    element.sprites.achievement.bbb
+                                    element.sprites.achievement.bbb,
                                 );
                                 break;
                             case EAchievementTypes.A:
                                 rankImg = theme.getFile(
-                                    element.sprites.achievement.a
+                                    element.sprites.achievement.a,
                                 );
                                 break;
                             case EAchievementTypes.AA:
                                 rankImg = theme.getFile(
-                                    element.sprites.achievement.aa
+                                    element.sprites.achievement.aa,
                                 );
                                 break;
                             case EAchievementTypes.AAA:
                                 rankImg = theme.getFile(
-                                    element.sprites.achievement.aaa
+                                    element.sprites.achievement.aaa,
                                 );
                                 break;
                             case EAchievementTypes.S:
                                 rankImg = theme.getFile(
-                                    element.sprites.achievement.s
+                                    element.sprites.achievement.s,
                                 );
                                 break;
                             case EAchievementTypes.SP:
                                 rankImg = theme.getFile(
-                                    element.sprites.achievement.sp
+                                    element.sprites.achievement.sp,
                                 );
                                 break;
                             case EAchievementTypes.SS:
                                 rankImg = theme.getFile(
-                                    element.sprites.achievement.ss
+                                    element.sprites.achievement.ss,
                                 );
                                 break;
                             case EAchievementTypes.SSP:
                                 rankImg = theme.getFile(
-                                    element.sprites.achievement.ssp
+                                    element.sprites.achievement.ssp,
                                 );
                                 break;
                             case EAchievementTypes.SSS:
                                 rankImg = theme.getFile(
-                                    element.sprites.achievement.sss
+                                    element.sprites.achievement.sss,
                                 );
                                 break;
                             default:
                                 rankImg = theme.getFile(
-                                    element.sprites.achievement.sssp
+                                    element.sprites.achievement.sssp,
                                 );
                         }
                         const img = await Util.loadImage(rankImg);
@@ -718,7 +712,7 @@ export namespace MaimaiPainterModule {
                                     0.806 *
                                     (0.144 + 0.144 + 0.208 + 0.02),
                             element.scoreBubble.height * 0.806 * 0.3 * 2.133,
-                            element.scoreBubble.height * 0.806 * 0.3
+                            element.scoreBubble.height * 0.806 * 0.3,
                         );
                     }
                     /** End Achievement Rank Draw */
@@ -729,59 +723,59 @@ export namespace MaimaiPainterModule {
                         switch (score.combo) {
                             case EComboTypes.NONE:
                                 comboImg = theme.getFile(
-                                    element.sprites.milestone.none
+                                    element.sprites.milestone.none,
                                 );
                                 break;
                             case EComboTypes.FULL_COMBO:
                                 comboImg = theme.getFile(
-                                    element.sprites.milestone.fc
+                                    element.sprites.milestone.fc,
                                 );
                                 break;
                             case EComboTypes.FULL_COMBO_PLUS:
                                 comboImg = theme.getFile(
-                                    element.sprites.milestone.fcp
+                                    element.sprites.milestone.fcp,
                                 );
                                 break;
                             case EComboTypes.ALL_PERFECT:
                                 comboImg = theme.getFile(
-                                    element.sprites.milestone.ap
+                                    element.sprites.milestone.ap,
                                 );
                                 break;
                             case EComboTypes.ALL_PERFECT_PLUS:
                                 comboImg = theme.getFile(
-                                    element.sprites.milestone.app
+                                    element.sprites.milestone.app,
                                 );
                                 break;
                         }
                         switch (score.sync) {
                             case ESyncTypes.NONE:
                                 syncImg = theme.getFile(
-                                    element.sprites.milestone.none
+                                    element.sprites.milestone.none,
                                 );
                                 break;
                             case ESyncTypes.SYNC_PLAY:
                                 syncImg = theme.getFile(
-                                    element.sprites.milestone.sync
+                                    element.sprites.milestone.sync,
                                 );
                                 break;
                             case ESyncTypes.FULL_SYNC:
                                 syncImg = theme.getFile(
-                                    element.sprites.milestone.fs
+                                    element.sprites.milestone.fs,
                                 );
                                 break;
                             case ESyncTypes.FULL_SYNC_PLUS:
                                 syncImg = theme.getFile(
-                                    element.sprites.milestone.fsp
+                                    element.sprites.milestone.fsp,
                                 );
                                 break;
                             case ESyncTypes.FULL_SYNC_DX:
                                 syncImg = theme.getFile(
-                                    element.sprites.milestone.fdx
+                                    element.sprites.milestone.fdx,
                                 );
                                 break;
                             case ESyncTypes.FULL_SYNC_DX_PLUS:
                                 syncImg = theme.getFile(
-                                    element.sprites.milestone.fdxp
+                                    element.sprites.milestone.fdxp,
                                 );
                                 break;
                         }
@@ -799,7 +793,7 @@ export namespace MaimaiPainterModule {
                                     0.806 *
                                     (0.144 + 0.144 + 0.208 + 0.01),
                             element.scoreBubble.height * 0.806 * 0.32,
-                            element.scoreBubble.height * 0.806 * 0.32
+                            element.scoreBubble.height * 0.806 * 0.32,
                         );
                         const sync = await Util.loadImage(syncImg);
                         ctx.drawImage(
@@ -815,7 +809,7 @@ export namespace MaimaiPainterModule {
                                     0.806 *
                                     (0.144 + 0.144 + 0.208 + 0.01),
                             element.scoreBubble.height * 0.806 * 0.32,
-                            element.scoreBubble.height * 0.806 * 0.32
+                            element.scoreBubble.height * 0.806 * 0.32,
                         );
                     }
                     /** End Milestone Draw */
@@ -825,7 +819,7 @@ export namespace MaimaiPainterModule {
                         const chartModeBadgeImg = theme.getFile(
                             score.chart.id > 10000
                                 ? element.sprites.mode.dx
-                                : element.sprites.mode.standard
+                                : element.sprites.mode.standard,
                         );
                         const { width, height } =
                             await sharp(chartModeBadgeImg).metadata();
@@ -839,74 +833,58 @@ export namespace MaimaiPainterModule {
                                 element.scoreBubble.margin +
                                 element.scoreBubble.height * 0.806 * 0.02,
                             drawHeight,
-                            drawHeight / aspectRatio
+                            drawHeight / aspectRatio,
                         );
                     }
-                    /** End Chart Mode Draw */
-
-                    /** Begin Bests Index Draw */
-                    {
-                        Util.drawText(
-                            ctx,
-                            `#${index + 1}`,
-                            x + element.scoreBubble.margin * 2,
-                            y + jacketSize - element.scoreBubble.margin * 2,
-                            element.scoreBubble.height * 0.806 * 0.128,
-                            element.scoreBubble.height * 0.806 * 0.04,
-                            {
-                                textAlign: "left",
-                                mainColor: "white",
-                                borderColor: new Color(curColor)
-                                    .darken(0.3)
-                                    .hexa(),
-                            }
-                        );
-                    }
-                    /** End Bests Index Draw */
-
-                    ctx.restore();
-                }
-                /** End Main Content Draw */
-
-                /** Begin Difficulty & DX Rating Draw */
-                {
                     Util.drawText(
                         ctx,
-                        `${Util.truncate(score.chart.level, 1)}  ↑${Util.truncate(score.dxRating, 0)}`,
+                        `#${index + 1}`,
                         x + element.scoreBubble.margin * 2,
-                        y +
-                            element.scoreBubble.height *
-                                (0.806 + (1 - 0.806) / 2),
+                        y + jacketSize - element.scoreBubble.margin * 2,
                         element.scoreBubble.height * 0.806 * 0.128,
                         element.scoreBubble.height * 0.806 * 0.04,
                         {
                             textAlign: "left",
                             mainColor: "white",
                             borderColor: new Color(curColor).darken(0.3).hexa(),
-                        }
+                        },
                     );
+                    /** End Bests Index Draw */
 
-                    if (score.dxScore >= 0 && score.chart.maxDxScore > 0) {
-                        Util.drawText(
-                            ctx,
-                            `${score.dxScore}/${score.chart.maxDxScore}`,
-                            x +
-                                element.scoreBubble.width -
-                                element.scoreBubble.margin * 2,
-                            y +
-                                element.scoreBubble.height *
-                                    (0.806 + (1 - 0.806) / 2),
-                            element.scoreBubble.height * 0.806 * 0.128,
-                            element.scoreBubble.height * 0.806 * 0.04,
-                            {
-                                textAlign: "right",
-                                mainColor: "white",
-                                borderColor: new Color(curColor)
-                                    .darken(0.3)
-                                    .hexa(),
-                            }
-                        );
-                    }
+                    ctx.restore();
+                }
+                Util.drawText(
+                    ctx,
+                    `${Util.truncate(score.chart.level, 1)}  ↑${Util.truncate(score.dxRating, 0)}`,
+                    x + element.scoreBubble.margin * 2,
+                    y + element.scoreBubble.height * (0.806 + (1 - 0.806) / 2),
+                    element.scoreBubble.height * 0.806 * 0.128,
+                    element.scoreBubble.height * 0.806 * 0.04,
+                    {
+                        textAlign: "left",
+                        mainColor: "white",
+                        borderColor: new Color(curColor).darken(0.3).hexa(),
+                    },
+                );
+
+                if (score.dxScore >= 0 && score.chart.maxDxScore > 0) {
+                    Util.drawText(
+                        ctx,
+                        `${score.dxScore}/${score.chart.maxDxScore}`,
+                        x +
+                            element.scoreBubble.width -
+                            element.scoreBubble.margin * 2,
+                        y +
+                            element.scoreBubble.height *
+                                (0.806 + (1 - 0.806) / 2),
+                        element.scoreBubble.height * 0.806 * 0.128,
+                        element.scoreBubble.height * 0.806 * 0.04,
+                        {
+                            textAlign: "right",
+                            mainColor: "white",
+                            borderColor: new Color(curColor).darken(0.3).hexa(),
+                        },
+                    );
                 }
                 /** End Difficulty & DX Rating Draw */
 
@@ -915,17 +893,9 @@ export namespace MaimaiPainterModule {
             }
             export async function drawOutline(
                 ctx: CanvasRenderingContext2D,
-                theme: Theme<any>,
                 element: z.infer<typeof schema>,
-                {
-                    x,
-                    y,
-                    index,
-                }: {
-                    x: number;
-                    y: number;
-                    index: number;
-                }
+                x: number,
+                y: number,
             ) {
                 ctx.save();
 
@@ -937,7 +907,7 @@ export namespace MaimaiPainterModule {
                     y,
                     element.scoreBubble.width,
                     element.scoreBubble.height,
-                    ROUND_CORNOR_RADIUS
+                    ROUND_CORNOR_RADIUS,
                 );
 
                 const BASE_COLOR = new Color("#949494");
@@ -1047,11 +1017,12 @@ export namespace MaimaiPainterModule {
 
             export async function draw(
                 ctx: CanvasRenderingContext2D,
+                // biome-ignore lint/suspicious/noExplicitAny: need major refactor
                 theme: Theme<any>,
                 element: z.infer<typeof schema>,
                 chartId: number,
                 scores: (IScore | null)[],
-                region: "DX" | "EX" | "CN" = "DX"
+                region: "DX" | "EX" | "CN" = "DX",
             ) {
                 /* Begin Background Draw */
                 ctx.roundRect(
@@ -1060,7 +1031,7 @@ export namespace MaimaiPainterModule {
                     element.width,
                     element.height,
                     Math.min(theme.content.width, theme.content.height) *
-                        (3 / 128)
+                        (3 / 128),
                 );
                 ctx.fillStyle = element.color.card;
                 ctx.strokeStyle = new Color(element.color.card)
@@ -1093,7 +1064,7 @@ export namespace MaimaiPainterModule {
                 ) {
                     const chart = difficulties[i];
                     if (chart)
-                        if (difficulties.length > 4 && i == 0) {
+                        if (difficulties.length > 4 && i === 0) {
                             await drawChartGridCard(
                                 ctx,
                                 theme,
@@ -1105,7 +1076,7 @@ export namespace MaimaiPainterModule {
                                 cardHeight,
                                 true,
                                 region,
-                                scores[i]
+                                scores[i],
                             );
                             i++;
                             const chartA = difficulties[i];
@@ -1123,7 +1094,7 @@ export namespace MaimaiPainterModule {
                                     cardHeight,
                                     true,
                                     region,
-                                    scores[i]
+                                    scores[i],
                                 );
                         } else {
                             await drawChartGridCard(
@@ -1137,7 +1108,7 @@ export namespace MaimaiPainterModule {
                                 cardHeight,
                                 false,
                                 region,
-                                scores[i]
+                                scores[i],
                             );
                         }
                 }
@@ -1145,6 +1116,7 @@ export namespace MaimaiPainterModule {
 
             async function drawChartGridCard(
                 ctx: CanvasRenderingContext2D,
+                // biome-ignore lint/suspicious/noExplicitAny: need major refactor
                 theme: Theme<any>,
                 element: z.infer<typeof schema>,
                 chart: Database.IChart,
@@ -1154,7 +1126,7 @@ export namespace MaimaiPainterModule {
                 height: number,
                 isShort: boolean,
                 targetRegion: "DX" | "EX" | "CN" = "DX",
-                score?: IScore | null
+                score?: IScore | null,
             ) {
                 let curColor = "#FFFFFF";
                 switch (chart.difficulty) {
@@ -1241,13 +1213,13 @@ export namespace MaimaiPainterModule {
                                 borderColor: new Color(curColor)
                                     .darken(0.3)
                                     .hexa(),
-                            }
+                            },
                         );
                         const difficultyTextWidth = Util.measureText(
                             ctx,
                             difficultiy,
                             titleSize,
-                            Infinity
+                            Infinity,
                         ).width;
                         Util.drawText(
                             ctx,
@@ -1265,7 +1237,7 @@ export namespace MaimaiPainterModule {
                                 borderColor: new Color(curColor)
                                     .darken(0.3)
                                     .hexa(),
-                            }
+                            },
                         );
 
                         ctx.beginPath();
@@ -1277,7 +1249,7 @@ export namespace MaimaiPainterModule {
                                 element.bubble.margin * (1 / 4),
                             height * 2 - element.bubble.margin * 2,
                             height * 0.806 * 0.02,
-                            height * 0.806 * 0.16
+                            height * 0.806 * 0.16,
                         );
                         ctx.fillStyle = new Color(curColor).darken(0.3).hex();
                         ctx.fill();
@@ -1309,199 +1281,186 @@ export namespace MaimaiPainterModule {
                                 borderColor: new Color(curColor)
                                     .darken(0.3)
                                     .hexa(),
-                            }
+                            },
                         );
                     }
-                    /** End Achievement Rate Draw */
-
-                    /** Begin Achievement Rank Draw */
-                    {
-                        if (score) {
-                            let rankImg: Buffer;
-                            switch (score.achievementRank) {
-                                case EAchievementTypes.D:
-                                    rankImg = theme.getFile(
-                                        element.sprites.achievement.d
-                                    );
-                                    break;
-                                case EAchievementTypes.C:
-                                    rankImg = theme.getFile(
-                                        element.sprites.achievement.c
-                                    );
-                                    break;
-                                case EAchievementTypes.B:
-                                    rankImg = theme.getFile(
-                                        element.sprites.achievement.b
-                                    );
-                                    break;
-                                case EAchievementTypes.BB:
-                                    rankImg = theme.getFile(
-                                        element.sprites.achievement.bb
-                                    );
-                                    break;
-                                case EAchievementTypes.BBB:
-                                    rankImg = theme.getFile(
-                                        element.sprites.achievement.bbb
-                                    );
-                                    break;
-                                case EAchievementTypes.A:
-                                    rankImg = theme.getFile(
-                                        element.sprites.achievement.a
-                                    );
-                                    break;
-                                case EAchievementTypes.AA:
-                                    rankImg = theme.getFile(
-                                        element.sprites.achievement.aa
-                                    );
-                                    break;
-                                case EAchievementTypes.AAA:
-                                    rankImg = theme.getFile(
-                                        element.sprites.achievement.aaa
-                                    );
-                                    break;
-                                case EAchievementTypes.S:
-                                    rankImg = theme.getFile(
-                                        element.sprites.achievement.s
-                                    );
-                                    break;
-                                case EAchievementTypes.SP:
-                                    rankImg = theme.getFile(
-                                        element.sprites.achievement.sp
-                                    );
-                                    break;
-                                case EAchievementTypes.SS:
-                                    rankImg = theme.getFile(
-                                        element.sprites.achievement.ss
-                                    );
-                                    break;
-                                case EAchievementTypes.SSP:
-                                    rankImg = theme.getFile(
-                                        element.sprites.achievement.ssp
-                                    );
-                                    break;
-                                case EAchievementTypes.SSS:
-                                    rankImg = theme.getFile(
-                                        element.sprites.achievement.sss
-                                    );
-                                    break;
-                                default:
-                                    rankImg = theme.getFile(
-                                        element.sprites.achievement.sssp
-                                    );
-                            }
-                            const img = await Util.loadImage(rankImg);
-                            ctx.drawImage(
-                                img,
-                                x + element.bubble.margin * (1 / 4),
-                                y +
-                                    element.bubble.margin +
-                                    titleSize +
-                                    element.bubble.margin * (1 / 2),
-                                height * 0.806 * 0.3 * 2.133,
-                                height * 0.806 * 0.3
-                            );
+                    if (score) {
+                        let rankImg: Buffer;
+                        switch (score.achievementRank) {
+                            case EAchievementTypes.D:
+                                rankImg = theme.getFile(
+                                    element.sprites.achievement.d,
+                                );
+                                break;
+                            case EAchievementTypes.C:
+                                rankImg = theme.getFile(
+                                    element.sprites.achievement.c,
+                                );
+                                break;
+                            case EAchievementTypes.B:
+                                rankImg = theme.getFile(
+                                    element.sprites.achievement.b,
+                                );
+                                break;
+                            case EAchievementTypes.BB:
+                                rankImg = theme.getFile(
+                                    element.sprites.achievement.bb,
+                                );
+                                break;
+                            case EAchievementTypes.BBB:
+                                rankImg = theme.getFile(
+                                    element.sprites.achievement.bbb,
+                                );
+                                break;
+                            case EAchievementTypes.A:
+                                rankImg = theme.getFile(
+                                    element.sprites.achievement.a,
+                                );
+                                break;
+                            case EAchievementTypes.AA:
+                                rankImg = theme.getFile(
+                                    element.sprites.achievement.aa,
+                                );
+                                break;
+                            case EAchievementTypes.AAA:
+                                rankImg = theme.getFile(
+                                    element.sprites.achievement.aaa,
+                                );
+                                break;
+                            case EAchievementTypes.S:
+                                rankImg = theme.getFile(
+                                    element.sprites.achievement.s,
+                                );
+                                break;
+                            case EAchievementTypes.SP:
+                                rankImg = theme.getFile(
+                                    element.sprites.achievement.sp,
+                                );
+                                break;
+                            case EAchievementTypes.SS:
+                                rankImg = theme.getFile(
+                                    element.sprites.achievement.ss,
+                                );
+                                break;
+                            case EAchievementTypes.SSP:
+                                rankImg = theme.getFile(
+                                    element.sprites.achievement.ssp,
+                                );
+                                break;
+                            case EAchievementTypes.SSS:
+                                rankImg = theme.getFile(
+                                    element.sprites.achievement.sss,
+                                );
+                                break;
+                            default:
+                                rankImg = theme.getFile(
+                                    element.sprites.achievement.sssp,
+                                );
                         }
+                        const img = await Util.loadImage(rankImg);
+                        ctx.drawImage(
+                            img,
+                            x + element.bubble.margin * (1 / 4),
+                            y +
+                                element.bubble.margin +
+                                titleSize +
+                                element.bubble.margin * (1 / 2),
+                            height * 0.806 * 0.3 * 2.133,
+                            height * 0.806 * 0.3,
+                        );
                     }
-                    /** End Achievement Rank Draw */
-
-                    /** Begin Milestone Draw */
-                    {
-                        if (score) {
-                            let comboImg: Buffer, syncImg: Buffer;
-                            switch (score.combo) {
-                                case EComboTypes.NONE:
-                                    comboImg = theme.getFile(
-                                        element.sprites.milestone.none
-                                    );
-                                    break;
-                                case EComboTypes.FULL_COMBO:
-                                    comboImg = theme.getFile(
-                                        element.sprites.milestone.fc
-                                    );
-                                    break;
-                                case EComboTypes.FULL_COMBO_PLUS:
-                                    comboImg = theme.getFile(
-                                        element.sprites.milestone.fcp
-                                    );
-                                    break;
-                                case EComboTypes.ALL_PERFECT:
-                                    comboImg = theme.getFile(
-                                        element.sprites.milestone.ap
-                                    );
-                                    break;
-                                case EComboTypes.ALL_PERFECT_PLUS:
-                                    comboImg = theme.getFile(
-                                        element.sprites.milestone.app
-                                    );
-                                    break;
-                            }
-                            switch (score.sync) {
-                                case ESyncTypes.NONE:
-                                    syncImg = theme.getFile(
-                                        element.sprites.milestone.none
-                                    );
-                                    break;
-                                case ESyncTypes.SYNC_PLAY:
-                                    syncImg = theme.getFile(
-                                        element.sprites.milestone.sync
-                                    );
-                                    break;
-                                case ESyncTypes.FULL_SYNC:
-                                    syncImg = theme.getFile(
-                                        element.sprites.milestone.fs
-                                    );
-                                    break;
-                                case ESyncTypes.FULL_SYNC_PLUS:
-                                    syncImg = theme.getFile(
-                                        element.sprites.milestone.fsp
-                                    );
-                                    break;
-                                case ESyncTypes.FULL_SYNC_DX:
-                                    syncImg = theme.getFile(
-                                        element.sprites.milestone.fdx
-                                    );
-                                    break;
-                                case ESyncTypes.FULL_SYNC_DX_PLUS:
-                                    syncImg = theme.getFile(
-                                        element.sprites.milestone.fdxp
-                                    );
-                                    break;
-                            }
-                            const combo = await Util.loadImage(comboImg);
-                            ctx.drawImage(
-                                combo,
-                                x +
-                                    height *
-                                        0.806 *
-                                        (0.32 * 2.133 + 0.06 - 0.1),
-                                y +
-                                    element.bubble.margin +
-                                    titleSize +
-                                    element.bubble.margin * (1 / 2),
-                                height * 0.806 * 0.32,
-                                height * 0.806 * 0.32
-                            );
-                            const sync = await Util.loadImage(syncImg);
-                            ctx.drawImage(
-                                sync,
-                                x +
-                                    height *
-                                        0.806 *
-                                        (0.32 * 2.133 + 0.04 + 0.32 - 0.1),
-                                y +
-                                    element.bubble.margin +
-                                    titleSize +
-                                    element.bubble.margin * (1 / 2),
-                                height * 0.806 * 0.32,
-                                height * 0.806 * 0.32
-                            );
+                    if (score) {
+                        let comboImg: Buffer, syncImg: Buffer;
+                        switch (score.combo) {
+                            case EComboTypes.NONE:
+                                comboImg = theme.getFile(
+                                    element.sprites.milestone.none,
+                                );
+                                break;
+                            case EComboTypes.FULL_COMBO:
+                                comboImg = theme.getFile(
+                                    element.sprites.milestone.fc,
+                                );
+                                break;
+                            case EComboTypes.FULL_COMBO_PLUS:
+                                comboImg = theme.getFile(
+                                    element.sprites.milestone.fcp,
+                                );
+                                break;
+                            case EComboTypes.ALL_PERFECT:
+                                comboImg = theme.getFile(
+                                    element.sprites.milestone.ap,
+                                );
+                                break;
+                            case EComboTypes.ALL_PERFECT_PLUS:
+                                comboImg = theme.getFile(
+                                    element.sprites.milestone.app,
+                                );
+                                break;
                         }
+                        switch (score.sync) {
+                            case ESyncTypes.NONE:
+                                syncImg = theme.getFile(
+                                    element.sprites.milestone.none,
+                                );
+                                break;
+                            case ESyncTypes.SYNC_PLAY:
+                                syncImg = theme.getFile(
+                                    element.sprites.milestone.sync,
+                                );
+                                break;
+                            case ESyncTypes.FULL_SYNC:
+                                syncImg = theme.getFile(
+                                    element.sprites.milestone.fs,
+                                );
+                                break;
+                            case ESyncTypes.FULL_SYNC_PLUS:
+                                syncImg = theme.getFile(
+                                    element.sprites.milestone.fsp,
+                                );
+                                break;
+                            case ESyncTypes.FULL_SYNC_DX:
+                                syncImg = theme.getFile(
+                                    element.sprites.milestone.fdx,
+                                );
+                                break;
+                            case ESyncTypes.FULL_SYNC_DX_PLUS:
+                                syncImg = theme.getFile(
+                                    element.sprites.milestone.fdxp,
+                                );
+                                break;
+                        }
+                        const combo = await Util.loadImage(comboImg);
+                        ctx.drawImage(
+                            combo,
+                            x + height * 0.806 * (0.32 * 2.133 + 0.06 - 0.1),
+                            y +
+                                element.bubble.margin +
+                                titleSize +
+                                element.bubble.margin * (1 / 2),
+                            height * 0.806 * 0.32,
+                            height * 0.806 * 0.32,
+                        );
+                        const sync = await Util.loadImage(syncImg);
+                        ctx.drawImage(
+                            sync,
+                            x +
+                                height *
+                                    0.806 *
+                                    (0.32 * 2.133 + 0.04 + 0.32 - 0.1),
+                            y +
+                                element.bubble.margin +
+                                titleSize +
+                                element.bubble.margin * (1 / 2),
+                            height * 0.806 * 0.32,
+                            height * 0.806 * 0.32,
+                        );
                     }
                     /** End Milestone Draw */
 
                     /** Begin Version Draw */
                     {
-                        let versions: {
+                        const versions: {
                             region: "OLD" | "DX" | "EX" | "CN";
                             version?: Database.IVersion;
                             EXAppend: boolean;
@@ -1516,13 +1475,13 @@ export namespace MaimaiPainterModule {
                         const isUSALocked = (() => {
                             for (const event of chart.events) {
                                 if (
-                                    event.version.region == "EX" &&
-                                    event.type == "usa_lock" &&
+                                    event.version.region === "EX" &&
+                                    event.type === "usa_lock" &&
                                     findVersion(
                                         event.version.gameVersion.minor,
                                         event.version.gameVersion.isDX,
-                                        false
-                                    ) == EX_LATEST
+                                        false,
+                                    ) === EX_LATEST
                                 ) {
                                     return true;
                                 }
@@ -1530,27 +1489,27 @@ export namespace MaimaiPainterModule {
                             return false;
                         })();
                         const VER_DX =
-                            chart.difficulty == EDifficulty.REMASTER
+                            chart.difficulty === EDifficulty.REMASTER
                                 ? chart.events.find(
                                       (v) =>
-                                          v.type == "existence" &&
-                                          v.version.region == "DX"
+                                          v.type === "existence" &&
+                                          v.version.region === "DX",
                                   )?.version
                                 : chart.addVersion.DX;
                         const VER_EX =
-                            chart.difficulty == EDifficulty.REMASTER
+                            chart.difficulty === EDifficulty.REMASTER
                                 ? chart.events.find(
                                       (v) =>
-                                          v.type == "existence" &&
-                                          v.version.region == "EX"
+                                          v.type === "existence" &&
+                                          v.version.region === "EX",
                                   )?.version
                                 : chart.addVersion.EX;
                         const VER_CN =
-                            chart.difficulty == EDifficulty.REMASTER
+                            chart.difficulty === EDifficulty.REMASTER
                                 ? chart.events.find(
                                       (v) =>
-                                          v.type == "existence" &&
-                                          v.version.region == "CN"
+                                          v.type === "existence" &&
+                                          v.version.region === "CN",
                                   )?.version
                                 : chart.addVersion.CN;
                         if (VER_DX) {
@@ -1572,7 +1531,7 @@ export namespace MaimaiPainterModule {
                                         ) &&
                                         _.isEqual(
                                             versions[i].version?.gameVersion,
-                                            VER_EX.gameVersion
+                                            VER_EX.gameVersion,
                                         )
                                     ) {
                                         versions[i].EXAppend = true;
@@ -1593,7 +1552,7 @@ export namespace MaimaiPainterModule {
                                         !version.version.gameVersion.isDX &&
                                         _.isEqual(
                                             versions[i].version?.gameVersion,
-                                            VER_CN.gameVersion
+                                            VER_CN.gameVersion,
                                         )
                                     ) {
                                         break;
@@ -1605,10 +1564,8 @@ export namespace MaimaiPainterModule {
                                 }
                             }
                         }
-                        let counter = 0;
                         for (const version of versions) {
                             if (version.version) {
-                                counter++;
                                 if (!version.version.gameVersion.isDX)
                                     version.region = "OLD";
                             }
@@ -1642,7 +1599,7 @@ export namespace MaimaiPainterModule {
                             if (version.version) {
                                 let region = version.region;
                                 if (
-                                    version.region == "EX" &&
+                                    version.region === "EX" &&
                                     !(
                                         version.version.gameVersion.minor >=
                                             10 &&
@@ -1654,13 +1611,13 @@ export namespace MaimaiPainterModule {
                                 const rawVersion = findVersion(
                                     version.version.gameVersion.minor,
                                     version.version.gameVersion.isDX,
-                                    region == "CN"
+                                    region === "CN",
                                 );
                                 if (rawVersion != null) {
                                     const versionImage = theme.getFile(
                                         element.sprites.versions[region][
                                             rawVersion
-                                        ]
+                                        ],
                                     );
 
                                     try {
@@ -1668,9 +1625,9 @@ export namespace MaimaiPainterModule {
                                         if (versionImage) {
                                             const versionImg =
                                                 await Util.loadImage(
-                                                    versionImage
+                                                    versionImage,
                                                 );
-                                            let text;
+                                            let text: string;
                                             switch (version.region) {
                                                 case "DX":
                                                     if (version.EXAppend)
@@ -1686,14 +1643,15 @@ export namespace MaimaiPainterModule {
                                                 default:
                                                     text = "";
                                             }
+                                            curx -= versionImageWidth;
                                             ctx.drawImage(
                                                 versionImg,
-                                                (curx -= versionImageWidth),
+                                                curx,
                                                 cury,
                                                 versionImageWidth,
-                                                versionImageHeight
+                                                versionImageHeight,
                                             );
-                                            if (version.region != "OLD") {
+                                            if (version.region !== "OLD") {
                                                 await Util.drawEmojiOrGlyph(
                                                     ctx,
                                                     text,
@@ -1705,7 +1663,7 @@ export namespace MaimaiPainterModule {
                                                             2,
                                                     regionTextSize,
                                                     Infinity,
-                                                    "right"
+                                                    "right",
                                                 );
                                                 curx -=
                                                     Util.visibleLength(text) *
@@ -1721,7 +1679,7 @@ export namespace MaimaiPainterModule {
 
                         /** Begin Note Count Draw */
                         const noteCountTexts = Object.entries(
-                            chart.meta.notes
+                            chart.meta.notes,
                         ).map(([k, v]) => `${Util.capitalize(k)}: ${v}`);
                         const noteCountTextSize =
                             (height - element.bubble.margin * 4) /
@@ -1748,13 +1706,13 @@ export namespace MaimaiPainterModule {
                                     borderColor: new Color(curColor)
                                         .darken(0.3)
                                         .hexa(),
-                                }
+                                },
                             );
                             const length = Util.measureText(
                                 ctx,
                                 v,
                                 noteCountTextSize,
-                                Infinity
+                                Infinity,
                             ).width;
                             if (length > noteCountLength)
                                 noteCountLength = length;
@@ -1769,7 +1727,6 @@ export namespace MaimaiPainterModule {
                                         return EX_LATEST;
                                     case "CN":
                                         return CN_LATEST;
-                                    case "DX":
                                     default:
                                         return DX_LATEST;
                                 }
@@ -1780,23 +1737,23 @@ export namespace MaimaiPainterModule {
                                 element.bubble.margin * 4 -
                                 noteCountLength;
                             const maxFitTrendCount = Math.trunc(
-                                maxWidth / versionImageWidth
+                                maxWidth / versionImageWidth,
                             );
                             const trendEvents = chart.events.filter(
                                 (v) =>
-                                    v.type == "existence" &&
-                                    v.version.region == targetRegion
+                                    v.type === "existence" &&
+                                    v.version.region === targetRegion,
                             ) as Database.Events.Existence[];
                             let actualEvents: Database.Events[] = _.uniqWith(
                                 trendEvents,
                                 (a, b) => {
                                     return _.isEqual(
                                         a.data.level,
-                                        b.data.level
+                                        b.data.level,
                                     );
-                                }
+                                },
                             );
-                            if (actualEvents.length == maxFitTrendCount) {
+                            if (actualEvents.length === maxFitTrendCount) {
                             } else if (actualEvents.length > maxFitTrendCount) {
                                 while (actualEvents.length > maxFitTrendCount)
                                     actualEvents.shift();
@@ -1804,7 +1761,7 @@ export namespace MaimaiPainterModule {
                                 actualEvents.shift();
                                 actualEvents.unshift(trendEvents[0]);
                                 actualEvents.push(
-                                    trendEvents[trendEvents.length - 1]
+                                    trendEvents[trendEvents.length - 1],
                                 );
                             } else if (trendEvents.length > maxFitTrendCount) {
                                 actualEvents = _.filter(
@@ -1814,15 +1771,15 @@ export namespace MaimaiPainterModule {
                                             _.isEqual(
                                                 v.version.gameVersion,
                                                 trendEvents[0].version
-                                                    .gameVersion
+                                                    .gameVersion,
                                             ) ||
                                             _.isEqual(
                                                 v.version.gameVersion,
                                                 trendEvents[
                                                     trendEvents.length - 1
-                                                ].version.gameVersion
+                                                ].version.gameVersion,
                                             )
-                                        )
+                                        ),
                                 );
                                 for (
                                     let i = trendEvents.length - 2;
@@ -1838,19 +1795,19 @@ export namespace MaimaiPainterModule {
                                             return (
                                                 _.isEqual(
                                                     a.version.gameVersion.major,
-                                                    b.version.gameVersion.major
+                                                    b.version.gameVersion.major,
                                                 ) &&
                                                 _.isEqual(
                                                     a.version.gameVersion.minor,
-                                                    b.version.gameVersion.minor
+                                                    b.version.gameVersion.minor,
                                                 )
                                             );
-                                        }
+                                        },
                                     );
                                 }
                                 actualEvents.unshift(trendEvents[0]);
                                 actualEvents.push(
-                                    trendEvents[trendEvents.length - 1]
+                                    trendEvents[trendEvents.length - 1],
                                 );
                                 actualEvents = _.uniqWith(
                                     actualEvents,
@@ -1858,30 +1815,30 @@ export namespace MaimaiPainterModule {
                                         return (
                                             _.isEqual(
                                                 a.version.gameVersion.major,
-                                                b.version.gameVersion.major
+                                                b.version.gameVersion.major,
                                             ) &&
                                             _.isEqual(
                                                 a.version.gameVersion.minor,
-                                                b.version.gameVersion.minor
+                                                b.version.gameVersion.minor,
                                             )
                                         );
-                                    }
+                                    },
                                 );
                                 actualEvents = _.sortBy(
                                     actualEvents,
-                                    (v) => v.version.gameVersion.minor
+                                    (v) => v.version.gameVersion.minor,
                                 );
                                 if (trendEvents.length > 1) {
                                     if (actualEvents.length >= maxFitTrendCount)
                                         actualEvents.pop();
                                     actualEvents.push(
-                                        trendEvents[trendEvents.length - 1]
+                                        trendEvents[trendEvents.length - 1],
                                     );
                                 }
                                 const removalEvent = chart.events.find(
                                     (v) =>
-                                        v.type == "removal" &&
-                                        v.version.region == targetRegion
+                                        v.type === "removal" &&
+                                        v.version.region === targetRegion,
                                 ) as Database.Events.Removal | undefined;
                                 if (removalEvent) {
                                     actualEvents.pop();
@@ -1901,8 +1858,8 @@ export namespace MaimaiPainterModule {
                                     version: MaimaiUtil.Version.toEventVersion(
                                         MaimaiUtil.Version.getNextVersion(
                                             trendEvents[trendEvents.length - 1]
-                                                .version
-                                        )
+                                                .version,
+                                        ),
                                     ),
                                 });
                             }
@@ -1910,11 +1867,11 @@ export namespace MaimaiPainterModule {
                                 return (
                                     _.isEqual(
                                         a.version.gameVersion.major,
-                                        b.version.gameVersion.major
+                                        b.version.gameVersion.major,
                                     ) &&
                                     _.isEqual(
                                         a.version.gameVersion.minor,
-                                        b.version.gameVersion.minor
+                                        b.version.gameVersion.minor,
                                     ) &&
                                     _.isEqual(a.type, b.type)
                                 );
@@ -1942,7 +1899,6 @@ export namespace MaimaiPainterModule {
                                                 return "maimai DX International ver";
                                             case "CN":
                                                 return "舞萌DX";
-                                            case "DX":
                                             default:
                                                 return "maimai でっらくす";
                                         }
@@ -1959,7 +1915,7 @@ export namespace MaimaiPainterModule {
                                         borderColor: new Color(curColor)
                                             .darken(0.3)
                                             .hexa(),
-                                    }
+                                    },
                                 );
                             } else {
                                 for (
@@ -1983,7 +1939,7 @@ export namespace MaimaiPainterModule {
                                         event.version.gameVersion.isDX
                                             ? targetRegion
                                             : "OLD";
-                                    if (logoRegion == "EX") {
+                                    if (logoRegion === "EX") {
                                         if (
                                             !(
                                                 10 <=
@@ -1999,13 +1955,13 @@ export namespace MaimaiPainterModule {
                                     const rawVersion = findVersion(
                                         event.version.gameVersion.minor,
                                         event.version.gameVersion.isDX,
-                                        logoRegion == "CN"
+                                        logoRegion === "CN",
                                     );
                                     if (rawVersion != null) {
                                         const versionImage = theme.getFile(
                                             element.sprites.versions[
                                                 logoRegion
-                                            ][rawVersion]
+                                            ][rawVersion],
                                         );
                                         try {
                                             if (!versionImage)
@@ -2013,14 +1969,14 @@ export namespace MaimaiPainterModule {
                                             sharp(versionImage);
                                             const versionImg =
                                                 await Util.loadImage(
-                                                    versionImage
+                                                    versionImage,
                                                 );
                                             ctx.drawImage(
                                                 versionImg,
                                                 curx,
                                                 cury,
                                                 versionImageWidth,
-                                                versionImageHeight
+                                                versionImageHeight,
                                             );
                                         } catch {
                                             const str = `${event.version.gameVersion.isDX ? "DX " : ""}${event.version.gameVersion.major}.${event.version.gameVersion.minor}`;
@@ -2029,7 +1985,7 @@ export namespace MaimaiPainterModule {
                                                     ctx,
                                                     str,
                                                     noteCountTextSize * 1.2,
-                                                    Infinity
+                                                    Infinity,
                                                 );
                                             Util.drawText(
                                                 ctx,
@@ -2046,21 +2002,21 @@ export namespace MaimaiPainterModule {
                                                     textAlign: "center",
                                                     mainColor: "white",
                                                     borderColor: new Color(
-                                                        curColor
+                                                        curColor,
                                                     )
                                                         .darken(0.3)
                                                         .hexa(),
-                                                }
+                                                },
                                             );
                                         }
 
-                                        if (event.type == "existence") {
+                                        if (event.type === "existence") {
                                             let symbol = "";
-                                            if (i != 0) {
+                                            if (i !== 0) {
                                                 const lastEvent =
                                                     actualEvents[i - 1];
                                                 if (
-                                                    lastEvent.type ==
+                                                    lastEvent.type ===
                                                     "existence"
                                                 ) {
                                                     if (
@@ -2074,7 +2030,7 @@ export namespace MaimaiPainterModule {
                                                     )
                                                         symbol = "↓";
                                                     else if (
-                                                        lastEvent.data.level ==
+                                                        lastEvent.data.level ===
                                                         event.data.level
                                                     )
                                                         symbol = "→";
@@ -2093,13 +2049,13 @@ export namespace MaimaiPainterModule {
                                                     textAlign: "center",
                                                     mainColor: "white",
                                                     borderColor: new Color(
-                                                        curColor
+                                                        curColor,
                                                     )
                                                         .darken(0.3)
                                                         .hexa(),
-                                                }
+                                                },
                                             );
-                                        } else if (event.type == "removal") {
+                                        } else if (event.type === "removal") {
                                             Util.drawText(
                                                 ctx,
                                                 `❌`,
@@ -2113,11 +2069,11 @@ export namespace MaimaiPainterModule {
                                                     textAlign: "center",
                                                     mainColor: "white",
                                                     borderColor: new Color(
-                                                        curColor
+                                                        curColor,
                                                     )
                                                         .darken(0.3)
                                                         .hexa(),
-                                                }
+                                                },
                                             );
                                         }
                                         curx += versionImageWidth + addGap;
@@ -2139,42 +2095,39 @@ export namespace MaimaiPainterModule {
                     y + height * 0.742,
                     height * 2,
                     height * (1 - 0.742),
-                    [0, (height * 0.806) / 7, 0, (height * 0.806) / 7]
+                    [0, (height * 0.806) / 7, 0, (height * 0.806) / 7],
                 );
                 ctx.fill();
-                /** Begin Difficulty & DX Rating Draw */
-                {
-                    ctx.save();
-                    ctx.clip();
-                    Util.drawText(
-                        ctx,
-                        chart.designer.name || "-",
-                        x + element.bubble.margin,
-                        y + height * (0.806 + (1 - 0.806) / 2),
-                        height * 0.806 * 0.128,
-                        height * 0.806 * 0.04,
-                        {
-                            textAlign: "left",
-                            mainColor: "white",
-                            borderColor: new Color(curColor).darken(0.3).hexa(),
-                        }
-                    );
-                    ctx.restore();
+                ctx.save();
+                ctx.clip();
+                Util.drawText(
+                    ctx,
+                    chart.designer.name || "-",
+                    x + element.bubble.margin,
+                    y + height * (0.806 + (1 - 0.806) / 2),
+                    height * 0.806 * 0.128,
+                    height * 0.806 * 0.04,
+                    {
+                        textAlign: "left",
+                        mainColor: "white",
+                        borderColor: new Color(curColor).darken(0.3).hexa(),
+                    },
+                );
+                ctx.restore();
 
-                    Util.drawText(
-                        ctx,
-                        `${score && score.dxScore >= 0 ? `${score.dxScore}/` : "MAX DX SCR: "}${chart.meta.maxDXScore}`,
-                        x + height * 2 - element.bubble.margin,
-                        y + height - element.bubble.margin * 3.1,
-                        height * 0.806 * 0.128,
-                        height * 0.806 * 0.04,
-                        {
-                            textAlign: "right",
-                            mainColor: "white",
-                            borderColor: new Color(curColor).darken(0.3).hexa(),
-                        }
-                    );
-                }
+                Util.drawText(
+                    ctx,
+                    `${score && score.dxScore >= 0 ? `${score.dxScore}/` : "MAX DX SCR: "}${chart.meta.maxDXScore}`,
+                    x + height * 2 - element.bubble.margin,
+                    y + height - element.bubble.margin * 3.1,
+                    height * 0.806 * 0.128,
+                    height * 0.806 * 0.04,
+                    {
+                        textAlign: "right",
+                        mainColor: "white",
+                        borderColor: new Color(curColor).darken(0.3).hexa(),
+                    },
+                );
                 /** End Difficulty & DX Rating Draw */
 
                 ctx.restore();
@@ -2201,10 +2154,11 @@ export namespace MaimaiPainterModule {
 
             export async function draw(
                 ctx: CanvasRenderingContext2D,
+                // biome-ignore lint/suspicious/noExplicitAny: need major refactor
                 theme: Theme<any>,
                 element: z.infer<typeof schema>,
                 chartId: number,
-                region: "DX" | "EX" | "CN" = "DX"
+                region: "DX" | "EX" | "CN" = "DX",
             ) {
                 const jacketMargin = element.margin;
                 const textMargin = element.margin;
@@ -2225,7 +2179,7 @@ export namespace MaimaiPainterModule {
                     element.y,
                     element.width,
                     element.height,
-                    backGroundBorderRadius
+                    backGroundBorderRadius,
                 );
                 ctx.fillStyle = element.color.card;
                 ctx.strokeStyle = new Color(element.color.card)
@@ -2246,7 +2200,7 @@ export namespace MaimaiPainterModule {
                         element.y + jacketMargin,
                         element.width - jacketMargin * 2,
                         element.width - jacketMargin * 2,
-                        jacketBorderRadius
+                        jacketBorderRadius,
                     );
                     ctx.save();
                     ctx.clip();
@@ -2255,7 +2209,7 @@ export namespace MaimaiPainterModule {
                         element.x + jacketMargin,
                         element.y + jacketMargin,
                         element.width - jacketMargin * 2,
-                        element.width - jacketMargin * 2
+                        element.width - jacketMargin * 2,
                     );
                     ctx.restore();
                 }
@@ -2272,13 +2226,13 @@ export namespace MaimaiPainterModule {
                         ctx,
                         chart.name,
                         textSizeTitle,
-                        Infinity
+                        Infinity,
                     );
                     const titleActualHeight = Math.abs(ascent - decent);
                     const chartModeBadgeImg = theme.getFile(
                         chart.id > 10000
                             ? element.sprites.mode.dx
-                            : element.sprites.mode.standard
+                            : element.sprites.mode.standard,
                     );
                     const { width: modeWidth, height: modeHeight } =
                         await sharp(chartModeBadgeImg).metadata();
@@ -2298,7 +2252,7 @@ export namespace MaimaiPainterModule {
                         ctx,
                         chart.name,
                         textSizeTitle,
-                        textTitleMaxWidth
+                        textTitleMaxWidth,
                     );
 
                     Util.drawText(
@@ -2317,7 +2271,7 @@ export namespace MaimaiPainterModule {
                             textAlign: "left",
                             mainColor: "white",
                             borderColor: textColor,
-                        }
+                        },
                     );
 
                     Util.drawText(
@@ -2336,7 +2290,7 @@ export namespace MaimaiPainterModule {
                             textAlign: "left",
                             mainColor: "white",
                             borderColor: textColor,
-                        }
+                        },
                     );
                     Util.drawText(
                         ctx,
@@ -2354,19 +2308,19 @@ export namespace MaimaiPainterModule {
                             textAlign: "left",
                             mainColor: "white",
                             borderColor: textColor,
-                        }
+                        },
                     );
 
                     const isUSALocked = (() => {
                         for (const event of chart.events) {
                             if (
-                                event.version.region == "EX" &&
-                                event.type == "usa_lock" &&
+                                event.version.region === "EX" &&
+                                event.type === "usa_lock" &&
                                 findVersion(
                                     event.version.gameVersion.minor,
                                     event.version.gameVersion.isDX,
-                                    false
-                                ) == EX_LATEST
+                                    false,
+                                ) === EX_LATEST
                             ) {
                                 return true;
                             }
@@ -2376,22 +2330,22 @@ export namespace MaimaiPainterModule {
                     const EVENT_DX = chart.events
                         .filter(
                             (v) =>
-                                v.version.region == "DX" &&
-                                v.version.gameVersion.minor >= DX_LATEST
+                                v.version.region === "DX" &&
+                                v.version.gameVersion.minor >= DX_LATEST,
                         )
                         .map((v) => v.type);
                     const EVENT_EX = chart.events
                         .filter(
                             (v) =>
-                                v.version.region == "EX" &&
-                                v.version.gameVersion.minor >= EX_LATEST
+                                v.version.region === "EX" &&
+                                v.version.gameVersion.minor >= EX_LATEST,
                         )
                         .map((v) => v.type);
                     const EVENT_CN = chart.events
                         .filter(
                             (v) =>
-                                v.version.region == "CN" &&
-                                v.version.gameVersion.minor >= CN_LATEST
+                                v.version.region === "CN" &&
+                                v.version.gameVersion.minor >= CN_LATEST,
                         )
                         .map((v) => v.type);
                     const EXIST_DX =
@@ -2426,7 +2380,7 @@ export namespace MaimaiPainterModule {
                         element.width - textMargin * 2,
                         "right",
                         "white",
-                        textColor
+                        textColor,
                     );
 
                     /** Begin Chart Mode Draw */
@@ -2444,7 +2398,7 @@ export namespace MaimaiPainterModule {
                                 titleActualHeight / 2 +
                                 textSizeTitle / 2,
                             textSizeTitle * aspectRatio,
-                            textSizeTitle
+                            textSizeTitle,
                         );
                     }
                     /** End Chart Mode Draw */

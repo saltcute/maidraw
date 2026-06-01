@@ -1,18 +1,15 @@
+import { type DataOrError, MissingThemeError } from "@maidraw/lib/error";
+import { PainterModule, ThemeManager } from "@maidraw/lib/painter";
+import { Util } from "@maidraw/lib/util";
+import { EComboTypes, type IScore } from "@maidraw/mai/type";
+import { Canvas } from "canvas";
 import _ from "lodash";
 import upath from "upath";
 import { z } from "zod/v4";
-import { Canvas } from "canvas";
-
-import { EComboTypes, IScore } from "@maidraw/mai/type";
-import { Util } from "@maidraw/lib/util";
-import { PainterModule, ThemeManager } from "@maidraw/lib/painter";
-
+import type { MaimaiScoreAdapter } from "../../lib/adapter";
+import * as Database from "../../lib/database";
 import { MaimaiUtil } from "../../lib/util";
-import { Database } from "../../lib/database";
-import { MaimaiScoreAdapter } from "../../lib/adapter";
-
-import { MaimaiPainterModule, MaimaiPainter } from "..";
-import { DataOrError, MissingThemeError } from "@maidraw/lib/error";
+import { MaimaiPainter, MaimaiPainterModule } from "..";
 
 export class Best50Painter extends MaimaiPainter<typeof Best50Painter.Theme> {
     public static readonly Theme = ThemeManager.BaseTheme.extend({
@@ -23,7 +20,7 @@ export class Best50Painter extends MaimaiPainter<typeof Best50Painter.Theme> {
                 PainterModule.Image.schema,
                 PainterModule.Text.schema,
                 PainterModule.Hitokoto.schema,
-            ])
+            ]),
         ),
     });
 
@@ -37,7 +34,7 @@ export class Best50Painter extends MaimaiPainter<typeof Best50Painter.Theme> {
                         Best50Painter.assetsPath,
                         "themes",
                         "maimai",
-                        "best50"
+                        "best50",
                     ),
                 ],
                 defaultTheme: Best50Painter.DEFAULT_THEME,
@@ -52,7 +49,7 @@ export class Best50Painter extends MaimaiPainter<typeof Best50Painter.Theme> {
             newScores: IScore[];
             oldScores: IScore[];
         },
-        options?: { scale?: number; theme?: string; profilePicture?: Buffer }
+        options?: { scale?: number; theme?: string; profilePicture?: Buffer },
     ): Promise<DataOrError<Buffer>> {
         let currentTheme = this.theme.get(this.theme.defaultTheme);
         if (options?.theme) {
@@ -68,7 +65,7 @@ export class Best50Painter extends MaimaiPainter<typeof Best50Painter.Theme> {
             ]);
             const canvas = new Canvas(
                 currentTheme.content.width * (options?.scale ?? 1),
-                currentTheme.content.height * (options?.scale ?? 1)
+                currentTheme.content.height * (options?.scale ?? 1),
             );
             const ctx = canvas.getContext("2d");
             if (options?.scale) ctx.scale(options.scale, options.scale);
@@ -79,7 +76,7 @@ export class Best50Painter extends MaimaiPainter<typeof Best50Painter.Theme> {
                         await PainterModule.Image.draw(
                             ctx,
                             currentTheme,
-                            element
+                            element,
                         );
                         break;
                     }
@@ -87,7 +84,7 @@ export class Best50Painter extends MaimaiPainter<typeof Best50Painter.Theme> {
                         await PainterModule.Hitokoto.draw(
                             ctx,
                             currentTheme,
-                            element
+                            element,
                         );
                         break;
                     }
@@ -109,8 +106,8 @@ export class Best50Painter extends MaimaiPainter<typeof Best50Painter.Theme> {
                                         element.scoreBubble.width +
                                         element.scoreBubble.gap
                             ) {
-                                let curScore;
-                                if (element.region == "new")
+                                let curScore: IScore;
+                                if (element.region === "new")
                                     curScore = variables.newScores[index];
                                 else curScore = variables.oldScores[index];
                                 if (curScore) {
@@ -124,7 +121,7 @@ export class Best50Painter extends MaimaiPainter<typeof Best50Painter.Theme> {
                                             index,
                                             score: curScore,
                                             scale: curScore.optionalData?.scale,
-                                        }
+                                        },
                                     );
                                 } else if (
                                     element.scoreBubble.strictScoreCount ===
@@ -133,13 +130,9 @@ export class Best50Painter extends MaimaiPainter<typeof Best50Painter.Theme> {
                                 ) {
                                     await MaimaiPainterModule.Best50.ScoreGrid.drawOutline(
                                         ctx,
-                                        currentTheme,
                                         element,
-                                        {
-                                            x,
-                                            y,
-                                            index,
-                                        }
+                                        x,
+                                        y,
                                     );
                                 }
                             }
@@ -153,14 +146,14 @@ export class Best50Painter extends MaimaiPainter<typeof Best50Painter.Theme> {
                             element,
                             variables.username,
                             variables.rating,
-                            options?.profilePicture
+                            options?.profilePicture,
                         );
                         break;
                     }
                     case "text": {
                         const getRatingBase = (
                             scores: IScore[],
-                            length: number
+                            length: number,
                         ) => {
                             if (scores.length < length) return 0;
                             return (
@@ -170,8 +163,8 @@ export class Best50Painter extends MaimaiPainter<typeof Best50Painter.Theme> {
                                             v.chart.level,
                                             v.achievement,
                                             EComboTypes.NONE,
-                                            "dx"
-                                        )
+                                            "dx",
+                                        ),
                                     )
                                     .sort((a, b) => a - b)
                                     .slice(0, length)[0] || 0
@@ -179,7 +172,7 @@ export class Best50Painter extends MaimaiPainter<typeof Best50Painter.Theme> {
                         };
                         function getRatingAvg(
                             scores: IScore[],
-                            length: number
+                            length: number,
                         ) {
                             if (scores.length <= 0) return 0;
                             return (
@@ -190,7 +183,7 @@ export class Best50Painter extends MaimaiPainter<typeof Best50Painter.Theme> {
                         }
                         const getRatingTargetLevel = (
                             rating: number,
-                            achievement: number
+                            achievement: number,
                         ) => {
                             for (let level = 10; level <= 150; ++level) {
                                 const calculateRating =
@@ -198,7 +191,7 @@ export class Best50Painter extends MaimaiPainter<typeof Best50Painter.Theme> {
                                         level / 10,
                                         achievement,
                                         EComboTypes.NONE,
-                                        "dx"
+                                        "dx",
                                     );
                                 if (
                                     Math.trunc(calculateRating) >
@@ -211,7 +204,7 @@ export class Best50Painter extends MaimaiPainter<typeof Best50Painter.Theme> {
                         };
                         function getMilestone(
                             scores: IScore[],
-                            length: number
+                            length: number,
                         ) {
                             const base = getRatingBase(scores, length);
                             const targets = [];
@@ -229,35 +222,35 @@ export class Best50Painter extends MaimaiPainter<typeof Best50Painter.Theme> {
                             if (scores.length >= length && targets.length > 0)
                                 return `Next rating boost: ${_.uniqWith(
                                     targets.sort((a, b) => a.level - b.level),
-                                    (a, b) => a.level == b.level
+                                    (a, b) => a.level === b.level,
                                 )
                                     .map(
                                         (v) =>
-                                            `lv. ${Util.ceilWithPercision(v.level, 1)} ${v.score >= 100.5 ? "SSS+" : `SSS ${Util.truncate(v.score, 1)}%`}`
+                                            `lv. ${Util.ceilWithPercision(v.level, 1)} ${v.score >= 100.5 ? "SSS+" : `SSS ${Util.truncate(v.score, 1)}%`}`,
                                     )
                                     .join("/")}`;
                             else return "Good job!";
                         }
                         await PainterModule.Text.draw(ctx, element, {
                             username: Util.HalfFullWidthConvert.toFullWidth(
-                                variables.username
+                                variables.username,
                             ),
                             rating: Util.truncate(variables.rating, 0),
                             newScoreRatingAvgString: `NEW scores average: ${Util.ceilWithPercision(
                                 getRatingAvg(variables.newScores, 15),
-                                0
+                                0,
                             )}`,
                             oldScoreRatingAvgString: `OLD scores average: ${Util.ceilWithPercision(
                                 getRatingAvg(variables.oldScores, 35),
-                                0
+                                0,
                             )}`,
                             newScoreMilestone: getMilestone(
                                 variables.newScores,
-                                15
+                                15,
                             ),
                             oldScoreMilestone: getMilestone(
                                 variables.oldScores,
-                                35
+                                35,
                             ),
                         });
                         break;
@@ -277,14 +270,14 @@ export class Best50Painter extends MaimaiPainter<typeof Best50Painter.Theme> {
             scale?: number;
             theme?: string;
             profilePicture?: Buffer | null;
-        }
+        },
     ) {
         const { data: profile, err: perr } = await source.getPlayerInfo(
-            variables.username
+            variables.username,
         );
         if (perr) return { err: perr };
         const { data: score, err: serr } = await source.getPlayerBest50(
-            variables.username
+            variables.username,
         );
         if (serr) return { err: serr };
         return this.draw(
@@ -300,12 +293,12 @@ export class Best50Painter extends MaimaiPainter<typeof Best50Painter.Theme> {
                     if (options?.profilePicture) return options?.profilePicture;
                     const { data: pfp, err: pfperr } =
                         await source.getPlayerProfilePicture(
-                            variables.username
+                            variables.username,
                         );
                     if (pfperr) return undefined;
                     return pfp;
                 })(),
-            }
+            },
         );
     }
 }

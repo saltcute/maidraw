@@ -87,11 +87,11 @@ export interface IChart {
 
 export const RATING_CONSTANTS = {
     [EAchievementTypes.D]: {
-        [0.4]: 6.4,
-        [0.3]: 4.8,
-        [0.2]: 3.2,
-        [0.1]: 1.6,
-        [0]: 0,
+        0.4: 6.4,
+        0.3: 4.8,
+        0.2: 3.2,
+        0.1: 1.6,
+        0: 0,
     },
     [EAchievementTypes.C]: 13.6,
     [EAchievementTypes.B]: 13.6,

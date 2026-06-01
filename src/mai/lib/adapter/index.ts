@@ -1,5 +1,5 @@
-import { DataOrError } from "@maidraw/lib/error";
-import { IScore } from "../../type";
+import type { DataOrError } from "@maidraw/lib/error";
+import type { IScore } from "../../type";
 
 export interface MaimaiScoreAdapter {
     getPlayerBest50(username: string): Promise<
@@ -17,7 +17,7 @@ export interface MaimaiScoreAdapter {
     getPlayerProfilePicture(username: string): Promise<DataOrError<Buffer>>;
     getPlayerScore(
         username: string,
-        chartId: number
+        chartId: number,
     ): Promise<
         DataOrError<{
             basic: IScore | null;
@@ -34,6 +34,6 @@ export interface MaimaiScoreAdapter {
         page: number,
         options?: {
             percise: boolean;
-        }
+        },
     ): Promise<DataOrError<IScore[]>>;
 }

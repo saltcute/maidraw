@@ -1,16 +1,19 @@
+import { Painter, type Theme, ThemeManager } from "@maidraw/lib/painter";
+import { Util } from "@maidraw/lib/util";
+import { Canvas, type CanvasRenderingContext2D } from "canvas";
+import Color from "color";
 import _ from "lodash";
 import sharp from "sharp";
-import Color from "color";
 import { z } from "zod/v4";
-import { Canvas, CanvasRenderingContext2D } from "canvas";
-
-import { Database } from "../lib/database";
+import type { ChunithmScoreAdapter } from "../lib/adapter";
+import * as Database from "../lib/database";
 import { ChunithmUtil } from "../lib/util";
-import { ChunithmScoreAdapter } from "../lib/adapter";
-import { EAchievementTypes, EComboTypes, EDifficulty, IScore } from "../type";
-
-import { Util } from "@maidraw/lib/util";
-import { Painter, Theme, ThemeManager } from "@maidraw/lib/painter";
+import {
+    EAchievementTypes,
+    EComboTypes,
+    EDifficulty,
+    type IScore,
+} from "../type";
 
 export abstract class ChunithmPainter<
     Schema extends typeof ThemeManager.BaseObject,
@@ -51,22 +54,23 @@ export namespace ChunithmPainterModule {
         });
         export async function draw(
             ctx: CanvasRenderingContext2D,
+            // biome-ignore lint/suspicious/noExplicitAny: need major refactor
             theme: Theme<any>,
             element: z.infer<typeof schema>,
             username: string,
             rating: number,
             profilePicture?: Buffer,
-            type: "chunithm" | "crystal" | "new" | "verse" = "verse"
+            type: "chunithm" | "crystal" | "new" | "verse" = "verse",
         ) {
             const nameplate = await Util.loadImage(
-                theme.getFile(element.sprites.profile.nameplate)
+                theme.getFile(element.sprites.profile.nameplate),
             );
             ctx.drawImage(
                 nameplate,
                 element.x,
                 element.y,
                 element.height * 2.526,
-                element.height
+                element.height,
             );
 
             /* Begin Profile Picture Draw */
@@ -78,7 +82,7 @@ export namespace ChunithmPainterModule {
                     element.y + element.height * 0.3,
                     element.height * 0.45,
                     element.height * 0.45,
-                    0
+                    0,
                 );
                 ctx.clip();
                 ctx.fillStyle = "white";
@@ -94,7 +98,7 @@ export namespace ChunithmPainterModule {
                     theme.getFile(element.sprites.profile.icon);
                 const { dominant } = await sharp(pfp).stats();
                 const icon = await Util.loadImage(
-                    await sharp(pfp).png().toBuffer()
+                    await sharp(pfp).png().toBuffer(),
                 );
 
                 const cropSize = Math.min(icon.width, icon.height);
@@ -107,7 +111,7 @@ export namespace ChunithmPainterModule {
                     element.x + element.height * 2.0,
                     element.y + element.height * 0.3,
                     element.height * 0.45,
-                    element.height * 0.45
+                    element.height * 0.45,
                 );
 
                 if (profilePicture) {
@@ -117,7 +121,7 @@ export namespace ChunithmPainterModule {
                         element.y + element.height * 0.3,
                         element.height * 0.45,
                         element.height * 0.45,
-                        0
+                        0,
                     );
                     ctx.strokeStyle = Color.rgb(dominant).darken(0.3).hex();
                     ctx.lineWidth = element.height / 128;
@@ -135,7 +139,7 @@ export namespace ChunithmPainterModule {
                     element.y + element.height * (11 / 32),
                     element.height * (85 / 64),
                     element.height * (13 / 32),
-                    0
+                    0,
                 );
                 ctx.fillStyle = "rgba(255, 255, 255, 0.45)";
                 ctx.fill();
@@ -152,7 +156,7 @@ export namespace ChunithmPainterModule {
                         mainColor: "black",
                         borderColor: "black",
                         font: "standard-font-username",
-                    }
+                    },
                 );
                 Util.drawText(
                     ctx,
@@ -166,7 +170,7 @@ export namespace ChunithmPainterModule {
                         mainColor: "black",
                         borderColor: "black",
                         font: "standard-font-username",
-                    }
+                    },
                 );
 
                 Util.drawText(
@@ -183,7 +187,7 @@ export namespace ChunithmPainterModule {
                         borderColor: "black",
                         font: "chunithm-font-username",
                         widthConstraintType: "shrink",
-                    }
+                    },
                 );
 
                 const { number: ratingNumberImg, text: ratingTextImg } =
@@ -200,7 +204,7 @@ export namespace ChunithmPainterModule {
                         element.x + element.height * (41 / 64),
                         element.y + element.height * (82 / 128),
                         drawWidth,
-                        drawHeight
+                        drawHeight,
                     );
                 }
                 if (ratingNumberImg) {
@@ -213,21 +217,22 @@ export namespace ChunithmPainterModule {
                         element.x + element.height * (63 / 64),
                         element.y + element.height * (81 / 128),
                         drawWidth,
-                        drawHeight
+                        drawHeight,
                     );
                 }
             }
             // TODO: render color on rating < 12
             async function getRatingNumber(
                 num: number,
+                // biome-ignore lint/suspicious/noExplicitAny: need major refactor
                 theme: Theme<any>,
-                element: z.infer<typeof schema>
+                element: z.infer<typeof schema>,
             ) {
                 async function getRatingDigit(
                     map: Buffer,
                     digit: number,
                     unitWidth: number,
-                    unitHeight: number
+                    unitHeight: number,
                 ) {
                     digit = Math.trunc(digit % 10);
                     return await sharp(map)
@@ -242,7 +247,7 @@ export namespace ChunithmPainterModule {
                 async function getRatingDot(
                     map: Buffer,
                     unitWidth: number,
-                    unitHeight: number
+                    unitHeight: number,
                 ) {
                     return await sharp(map)
                         .extract({
@@ -256,7 +261,7 @@ export namespace ChunithmPainterModule {
                 async function getRatingText(
                     map: Buffer,
                     unitWidth: number,
-                    unitHeight: number
+                    unitHeight: number,
                 ) {
                     return await sharp(map)
                         .extract({
@@ -269,49 +274,48 @@ export namespace ChunithmPainterModule {
                 }
                 const map = (() => {
                     switch (true) {
+                        case type === "chunithm" && num < 13:
+                        case type === "crystal" && num < 13:
+                        case type === "new" && num < 13.25:
+                        case type === "verse" && num < 13.25:
+                            return theme.getFile(
+                                element.sprites.ratingNumberMap.bronze,
+                            );
+                        case type === "chunithm" && num < 14:
+                        case type === "crystal" && num < 14:
+                        case type === "new" && num < 14.5:
+                        case type === "verse" && num < 14.5:
+                            return theme.getFile(
+                                element.sprites.ratingNumberMap.silver,
+                            );
+                        case type === "chunithm" && num < 14.5:
+                        case type === "crystal" && num < 14.5:
+                        case type === "new" && num < 15.25:
+                        case type === "verse" && num < 15.25:
+                            return theme.getFile(
+                                element.sprites.ratingNumberMap.gold,
+                            );
+                        case type === "chunithm" && num < 15:
+                        case type === "crystal" && num < 15:
+                        case type === "new" && num < 16:
+                        case type === "verse" && num < 16:
+                            return theme.getFile(
+                                element.sprites.ratingNumberMap.platinum,
+                            );
+                        case type === "chunithm":
+                        case type === "crystal":
+                        case type === "new":
+                        case type === "verse" && num < 17:
+                            return theme.getFile(
+                                element.sprites.ratingNumberMap.rainbow,
+                            );
+                        case type === "verse":
+                            return theme.getFile(
+                                element.sprites.ratingNumberMap.kiwami,
+                            );
                         default:
-                        case num < 12:
                             return theme.getFile(
-                                element.sprites.ratingNumberMap.white
-                            );
-                        case type == "chunithm" && num < 13:
-                        case type == "crystal" && num < 13:
-                        case type == "new" && num < 13.25:
-                        case type == "verse" && num < 13.25:
-                            return theme.getFile(
-                                element.sprites.ratingNumberMap.bronze
-                            );
-                        case type == "chunithm" && num < 14:
-                        case type == "crystal" && num < 14:
-                        case type == "new" && num < 14.5:
-                        case type == "verse" && num < 14.5:
-                            return theme.getFile(
-                                element.sprites.ratingNumberMap.silver
-                            );
-                        case type == "chunithm" && num < 14.5:
-                        case type == "crystal" && num < 14.5:
-                        case type == "new" && num < 15.25:
-                        case type == "verse" && num < 15.25:
-                            return theme.getFile(
-                                element.sprites.ratingNumberMap.gold
-                            );
-                        case type == "chunithm" && num < 15:
-                        case type == "crystal" && num < 15:
-                        case type == "new" && num < 16:
-                        case type == "verse" && num < 16:
-                            return theme.getFile(
-                                element.sprites.ratingNumberMap.platinum
-                            );
-                        case type == "chunithm":
-                        case type == "crystal":
-                        case type == "new":
-                        case type == "verse" && num < 17:
-                            return theme.getFile(
-                                element.sprites.ratingNumberMap.rainbow
-                            );
-                        case type == "verse":
-                            return theme.getFile(
-                                element.sprites.ratingNumberMap.kiwami
+                                element.sprites.ratingNumberMap.white,
                             );
                     }
                 })();
@@ -331,7 +335,7 @@ export namespace ChunithmPainterModule {
                                 return getRatingDot(
                                     map,
                                     unitWidth,
-                                    unitHeight
+                                    unitHeight,
                                 ).then((img) => {
                                     return {
                                         str: v,
@@ -341,21 +345,9 @@ export namespace ChunithmPainterModule {
                             else if ("0" <= v && v <= "9")
                                 return getRatingDigit(
                                     map,
-                                    parseInt(v),
+                                    parseInt(v, 10),
                                     unitWidth,
-                                    unitHeight
-                                ).then((img) => {
-                                    return {
-                                        str: v,
-                                        img,
-                                    };
-                                });
-                            else if ("0" <= v && v <= "9")
-                                return getRatingDigit(
-                                    map,
-                                    parseInt(v),
-                                    unitWidth,
-                                    unitHeight
+                                    unitHeight,
                                 ).then((img) => {
                                     return {
                                         str: v,
@@ -367,16 +359,16 @@ export namespace ChunithmPainterModule {
                                     str: v,
                                     img: null,
                                 };
-                        })
+                        }),
                 );
                 const canvas = new Canvas(
                     unitWidth * digits.length,
-                    unitHeight
+                    unitHeight,
                 );
                 const ctx = canvas.getContext("2d");
                 for (let i = 0, curx = 0; i < digits.length; ++i) {
                     const curDigit = digits[i];
-                    if (!curDigit || !curDigit.img) continue;
+                    if (!curDigit?.img) continue;
                     const img = await Util.loadImage(curDigit.img);
                     ctx.drawImage(img, curx, 0);
                     if (curDigit.str === ".") {
@@ -444,13 +436,14 @@ export namespace ChunithmPainterModule {
             });
             export async function draw(
                 ctx: CanvasRenderingContext2D,
+                // biome-ignore lint/suspicious/noExplicitAny: need major refactor
                 theme: Theme<any>,
                 element: z.infer<typeof schema>,
                 score: IScore,
                 index: number,
                 x: number,
                 y: number,
-                version: "chunithm" | "crystal" | "new" | "verse" = "verse"
+                version: "chunithm" | "crystal" | "new" | "verse" = "verse",
             ) {
                 let curColor = "#FFFFFF";
                 switch (score.chart.difficulty) {
@@ -483,7 +476,7 @@ export namespace ChunithmPainterModule {
                     y,
                     element.scoreBubble.width,
                     element.scoreBubble.height,
-                    (element.scoreBubble.height * 0.806) / 7
+                    (element.scoreBubble.height * 0.806) / 7,
                 );
                 ctx.strokeStyle = new Color(curColor).darken(0.3).hexa();
                 ctx.lineWidth = element.scoreBubble.margin / 4;
@@ -495,7 +488,7 @@ export namespace ChunithmPainterModule {
                     y,
                     element.scoreBubble.width,
                     element.scoreBubble.height,
-                    (element.scoreBubble.height * 0.806) / 7
+                    (element.scoreBubble.height * 0.806) / 7,
                 );
                 ctx.clip();
 
@@ -508,7 +501,7 @@ export namespace ChunithmPainterModule {
                         y,
                         element.scoreBubble.width,
                         element.scoreBubble.height * 0.742,
-                        (element.scoreBubble.height * 0.806) / 7
+                        (element.scoreBubble.height * 0.806) / 7,
                     );
                     ctx.clip();
                     ctx.fillStyle = curColor;
@@ -516,44 +509,44 @@ export namespace ChunithmPainterModule {
 
                     const jacketSize = Math.min(
                         element.scoreBubble.width,
-                        element.scoreBubble.height * 0.742
+                        element.scoreBubble.height * 0.742,
                     );
 
                     const jacketMaskGrad = ctx.createLinearGradient(
                         x + jacketSize / 2,
                         y + jacketSize / 2,
                         x + jacketSize,
-                        y + jacketSize / 2
+                        y + jacketSize / 2,
                     );
                     jacketMaskGrad.addColorStop(
                         0,
-                        new Color(curColor).alpha(0).hexa()
+                        new Color(curColor).alpha(0).hexa(),
                     );
                     jacketMaskGrad.addColorStop(
                         0.25,
-                        new Color(curColor).alpha(0.2).hexa()
+                        new Color(curColor).alpha(0.2).hexa(),
                     );
                     jacketMaskGrad.addColorStop(
                         1,
-                        new Color(curColor).alpha(1).hexa()
+                        new Color(curColor).alpha(1).hexa(),
                     );
                     const jacketMaskGradDark = ctx.createLinearGradient(
                         x + jacketSize / 2,
                         y + jacketSize / 2,
                         x + jacketSize,
-                        y + jacketSize / 2
+                        y + jacketSize / 2,
                     );
                     jacketMaskGradDark.addColorStop(
                         0,
-                        new Color(curColor).darken(0.3).alpha(0).hexa()
+                        new Color(curColor).darken(0.3).alpha(0).hexa(),
                     );
                     jacketMaskGradDark.addColorStop(
                         0.25,
-                        new Color(curColor).darken(0.3).alpha(0.2).hexa()
+                        new Color(curColor).darken(0.3).alpha(0.2).hexa(),
                     );
                     jacketMaskGradDark.addColorStop(
                         1,
-                        new Color(curColor).darken(0.3).alpha(1).hexa()
+                        new Color(curColor).darken(0.3).alpha(1).hexa(),
                     );
 
                     /** Begin Jacket Draw*/
@@ -566,17 +559,13 @@ export namespace ChunithmPainterModule {
                         ctx.fillStyle = "#b6ffab";
                         ctx.fillRect(x, y, jacketSize, jacketSize);
                     }
-                    /** End Jacket Draw*/
-
-                    /** Begin Jacket Gradient Mask Draw*/ {
-                        ctx.fillStyle = jacketMaskGrad;
-                        ctx.fillRect(
-                            x + jacketSize / 2,
-                            y,
-                            (jacketSize * 3) / 4,
-                            jacketSize
-                        );
-                    } /** End Jacket Gradient Mask Draw*/
+                    ctx.fillStyle = jacketMaskGrad;
+                    ctx.fillRect(
+                        x + jacketSize / 2,
+                        y,
+                        (jacketSize * 3) / 4,
+                        jacketSize,
+                    );
 
                     /** Begin Title Draw */ {
                         const titleFontSize =
@@ -598,28 +587,25 @@ export namespace ChunithmPainterModule {
                                 borderColor: jacketMaskGradDark,
                                 widthConstraintType: "shrink-cut",
                                 shrinkMinFontSize: titleFontSize * 0.85,
-                            }
+                            },
                         );
                     } /** End Title Draw */
-
-                    /** Begin Separation Line Draw */ {
-                        ctx.beginPath();
-                        ctx.roundRect(
-                            x + (jacketSize * 13) / 16,
-                            y +
-                                element.scoreBubble.margin +
-                                element.scoreBubble.height *
-                                    0.806 *
-                                    (0.144 + 0.072),
-                            element.scoreBubble.width -
-                                (jacketSize * 13) / 16 -
-                                element.scoreBubble.margin,
-                            element.scoreBubble.height * 0.806 * 0.02,
-                            (element.scoreBubble.height * 0.806 * 0.02) / 2
-                        );
-                        ctx.fillStyle = jacketMaskGradDark;
-                        ctx.fill();
-                    } /** End Separation Line Draw */
+                    ctx.beginPath();
+                    ctx.roundRect(
+                        x + (jacketSize * 13) / 16,
+                        y +
+                            element.scoreBubble.margin +
+                            element.scoreBubble.height *
+                                0.806 *
+                                (0.144 + 0.072),
+                        element.scoreBubble.width -
+                            (jacketSize * 13) / 16 -
+                            element.scoreBubble.margin,
+                        element.scoreBubble.height * 0.806 * 0.02,
+                        (element.scoreBubble.height * 0.806 * 0.02) / 2,
+                    );
+                    ctx.fillStyle = jacketMaskGradDark;
+                    ctx.fill();
 
                     /** Begin Achievement Rate Draw */
                     Util.drawText(
@@ -640,7 +626,7 @@ export namespace ChunithmPainterModule {
                             textAlign: "right",
                             mainColor: "white",
                             borderColor: new Color(curColor).darken(0.3).hexa(),
-                        }
+                        },
                     );
                     /** End Achievement Rate Draw */
 
@@ -650,92 +636,93 @@ export namespace ChunithmPainterModule {
                         switch (score.rank) {
                             case EAchievementTypes.D:
                                 rankImg = theme.getFile(
-                                    element.sprites.achievement.d
+                                    element.sprites.achievement.d,
                                 );
                                 break;
                             case EAchievementTypes.C:
                                 rankImg = theme.getFile(
-                                    element.sprites.achievement.c
+                                    element.sprites.achievement.c,
                                 );
                                 break;
                             case EAchievementTypes.B:
                                 rankImg = theme.getFile(
-                                    element.sprites.achievement.b
+                                    element.sprites.achievement.b,
                                 );
                                 break;
                             case EAchievementTypes.BB:
                                 rankImg = theme.getFile(
-                                    element.sprites.achievement.bb
+                                    element.sprites.achievement.bb,
                                 );
                                 break;
                             case EAchievementTypes.BBB:
                                 rankImg = theme.getFile(
-                                    element.sprites.achievement.bbb
+                                    element.sprites.achievement.bbb,
                                 );
                                 break;
                             case EAchievementTypes.A:
                                 rankImg = theme.getFile(
-                                    element.sprites.achievement.a
+                                    element.sprites.achievement.a,
                                 );
                                 break;
                             case EAchievementTypes.AA:
                                 rankImg = theme.getFile(
-                                    element.sprites.achievement.aa
+                                    element.sprites.achievement.aa,
                                 );
                                 break;
                             case EAchievementTypes.AAA:
                                 rankImg = theme.getFile(
-                                    element.sprites.achievement.aaa
+                                    element.sprites.achievement.aaa,
                                 );
                                 break;
-                            case version == "chunithm" && EAchievementTypes.S:
-                            case version == "chunithm" && EAchievementTypes.SP:
-                            case version == "crystal" && EAchievementTypes.S:
-                            case version == "crystal" && EAchievementTypes.SP:
-                            case version == "new" && EAchievementTypes.S:
-                            case version == "verse" && EAchievementTypes.S:
+                            case version === "chunithm" && EAchievementTypes.S:
+                            case version === "chunithm" && EAchievementTypes.SP:
+                            case version === "crystal" && EAchievementTypes.S:
+                            case version === "crystal" && EAchievementTypes.SP:
+                            case version === "new" && EAchievementTypes.S:
+                            case version === "verse" && EAchievementTypes.S:
                                 rankImg = theme.getFile(
-                                    element.sprites.achievement.s
+                                    element.sprites.achievement.s,
                                 );
                                 break;
-                            case version == "new" && EAchievementTypes.SP:
-                            case version == "verse" && EAchievementTypes.SP:
+                            case version === "new" && EAchievementTypes.SP:
+                            case version === "verse" && EAchievementTypes.SP:
                                 rankImg = theme.getFile(
-                                    element.sprites.achievement.sp
+                                    element.sprites.achievement.sp,
                                 );
                                 break;
-                            case version == "chunithm" && EAchievementTypes.SS:
-                            case version == "chunithm" && EAchievementTypes.SSP:
-                            case version == "crystal" && EAchievementTypes.SS:
-                            case version == "crystal" && EAchievementTypes.SSP:
-                            case version == "new" && EAchievementTypes.SS:
-                            case version == "verse" && EAchievementTypes.SS:
+                            case version === "chunithm" && EAchievementTypes.SS:
+                            case version === "chunithm" &&
+                                EAchievementTypes.SSP:
+                            case version === "crystal" && EAchievementTypes.SS:
+                            case version === "crystal" && EAchievementTypes.SSP:
+                            case version === "new" && EAchievementTypes.SS:
+                            case version === "verse" && EAchievementTypes.SS:
                                 rankImg = theme.getFile(
-                                    element.sprites.achievement.ss
+                                    element.sprites.achievement.ss,
                                 );
                                 break;
-                            case version == "new" && EAchievementTypes.SSP:
-                            case version == "verse" && EAchievementTypes.SSP:
+                            case version === "new" && EAchievementTypes.SSP:
+                            case version === "verse" && EAchievementTypes.SSP:
                                 rankImg = theme.getFile(
-                                    element.sprites.achievement.ssp
+                                    element.sprites.achievement.ssp,
                                 );
                                 break;
-                            case version == "chunithm" && EAchievementTypes.SSS:
-                            case version == "chunithm" &&
+                            case version === "chunithm" &&
+                                EAchievementTypes.SSS:
+                            case version === "chunithm" &&
                                 EAchievementTypes.SSSP:
-                            case version == "crystal" && EAchievementTypes.SSS:
-                            case version == "crystal" && EAchievementTypes.SSSP:
-                            case version == "new" && EAchievementTypes.SSS:
-                            case version == "verse" && EAchievementTypes.SSS:
+                            case version === "crystal" && EAchievementTypes.SSS:
+                            case version === "crystal" &&
+                                EAchievementTypes.SSSP:
+                            case version === "new" && EAchievementTypes.SSS:
+                            case version === "verse" && EAchievementTypes.SSS:
                                 rankImg = theme.getFile(
-                                    element.sprites.achievement.sss
+                                    element.sprites.achievement.sss,
                                 );
                                 break;
-                            case version == "new" && EAchievementTypes.SSSP:
-                            case version == "verse" && EAchievementTypes.SSSP:
                             default:
                                 rankImg = theme.getFile(
-                                    element.sprites.achievement.sssp
+                                    element.sprites.achievement.sssp,
                                 );
                         }
                         const img = await Util.loadImage(rankImg);
@@ -748,7 +735,7 @@ export namespace ChunithmPainterModule {
                                     0.806 *
                                     (0.144 + 0.144 - 0.01),
                             element.scoreBubble.height * 0.806 * 0.2 * 3,
-                            element.scoreBubble.height * 0.806 * 0.2
+                            element.scoreBubble.height * 0.806 * 0.2,
                         );
                     }
                     /** End Achievement Rank Draw */
@@ -759,22 +746,22 @@ export namespace ChunithmPainterModule {
                         switch (score.combo) {
                             case EComboTypes.NONE:
                                 comboImg = theme.getFile(
-                                    element.sprites.milestone.none
+                                    element.sprites.milestone.none,
                                 );
                                 break;
                             case EComboTypes.FULL_COMBO:
                                 comboImg = theme.getFile(
-                                    element.sprites.milestone.fc
+                                    element.sprites.milestone.fc,
                                 );
                                 break;
                             case EComboTypes.ALL_JUSTICE:
                                 comboImg = theme.getFile(
-                                    element.sprites.milestone.aj
+                                    element.sprites.milestone.aj,
                                 );
                                 break;
                             case EComboTypes.ALL_JUSTICE_CRITICAL:
                                 comboImg = theme.getFile(
-                                    element.sprites.milestone.ajc
+                                    element.sprites.milestone.ajc,
                                 );
                                 break;
                         }
@@ -794,7 +781,8 @@ export namespace ChunithmPainterModule {
                             element.scoreBubble.height * 0.806 * 0.32 * 3,
                             (element.scoreBubble.height * 0.806 * 0.32 * 3) /
                                 6.7,
-                            (element.scoreBubble.height * 0.806 * 0.32 * 3) / 56
+                            (element.scoreBubble.height * 0.806 * 0.32 * 3) /
+                                56,
                         );
                         ctx.fill();
                         const combo = await Util.loadImage(comboImg);
@@ -812,71 +800,55 @@ export namespace ChunithmPainterModule {
                                     (0.144 + 0.144 + 0.208 + 0.1),
                             element.scoreBubble.height * 0.806 * 0.32 * 3,
                             (element.scoreBubble.height * 0.806 * 0.32 * 3) /
-                                6.7
+                                6.7,
                         );
                     }
-                    /** End Milestone Draw */
-
-                    /** Begin Bests Index Draw */
-                    {
-                        Util.drawText(
-                            ctx,
-                            `#${index + 1}`,
-                            x + element.scoreBubble.margin * 2,
-                            y + jacketSize - element.scoreBubble.margin * 2,
-                            element.scoreBubble.height * 0.806 * 0.128,
-                            element.scoreBubble.height * 0.806 * 0.04,
-                            {
-                                textAlign: "left",
-                                mainColor: "white",
-                                borderColor: new Color(curColor)
-                                    .darken(0.3)
-                                    .hexa(),
-                            }
-                        );
-                    }
-                    /** End Bests Index Draw */
-
-                    ctx.restore();
-                }
-                /** End Main Content Draw */
-
-                /** Begin Difficulty & Rating Draw */
-                {
                     Util.drawText(
                         ctx,
-                        `lv. ${Util.truncate(score.chart.level, 1)}`,
+                        `#${index + 1}`,
                         x + element.scoreBubble.margin * 2,
-                        y +
-                            element.scoreBubble.height *
-                                (0.806 + (1 - 0.806) / 2),
+                        y + jacketSize - element.scoreBubble.margin * 2,
                         element.scoreBubble.height * 0.806 * 0.128,
                         element.scoreBubble.height * 0.806 * 0.04,
                         {
                             textAlign: "left",
                             mainColor: "white",
                             borderColor: new Color(curColor).darken(0.3).hexa(),
-                        }
+                        },
                     );
+                    /** End Bests Index Draw */
 
-                    Util.drawText(
-                        ctx,
-                        `+${Util.truncate(score.rating, 2)}`,
-                        x +
-                            element.scoreBubble.width -
-                            element.scoreBubble.margin * 2,
-                        y +
-                            element.scoreBubble.height *
-                                (0.806 + (1 - 0.806) / 2),
-                        element.scoreBubble.height * 0.806 * 0.128,
-                        element.scoreBubble.height * 0.806 * 0.04,
-                        {
-                            textAlign: "right",
-                            mainColor: "white",
-                            borderColor: new Color(curColor).darken(0.3).hexa(),
-                        }
-                    );
+                    ctx.restore();
                 }
+                Util.drawText(
+                    ctx,
+                    `lv. ${Util.truncate(score.chart.level, 1)}`,
+                    x + element.scoreBubble.margin * 2,
+                    y + element.scoreBubble.height * (0.806 + (1 - 0.806) / 2),
+                    element.scoreBubble.height * 0.806 * 0.128,
+                    element.scoreBubble.height * 0.806 * 0.04,
+                    {
+                        textAlign: "left",
+                        mainColor: "white",
+                        borderColor: new Color(curColor).darken(0.3).hexa(),
+                    },
+                );
+
+                Util.drawText(
+                    ctx,
+                    `+${Util.truncate(score.rating, 2)}`,
+                    x +
+                        element.scoreBubble.width -
+                        element.scoreBubble.margin * 2,
+                    y + element.scoreBubble.height * (0.806 + (1 - 0.806) / 2),
+                    element.scoreBubble.height * 0.806 * 0.128,
+                    element.scoreBubble.height * 0.806 * 0.04,
+                    {
+                        textAlign: "right",
+                        mainColor: "white",
+                        borderColor: new Color(curColor).darken(0.3).hexa(),
+                    },
+                );
                 /** End Difficulty & Rating Draw */
 
                 ctx.restore();
@@ -885,11 +857,9 @@ export namespace ChunithmPainterModule {
 
             export async function drawOutline(
                 ctx: CanvasRenderingContext2D,
-                theme: Theme<any>,
                 element: z.infer<typeof schema>,
-                index: number,
                 x: number,
-                y: number
+                y: number,
             ) {
                 ctx.save();
 
@@ -901,7 +871,7 @@ export namespace ChunithmPainterModule {
                     y,
                     element.scoreBubble.width,
                     element.scoreBubble.height,
-                    ROUND_CORNOR_RADIUS
+                    ROUND_CORNOR_RADIUS,
                 );
 
                 const BASE_COLOR = new Color("#949494");
@@ -948,7 +918,6 @@ export namespace ChunithmPainterModule {
                         return CHUNITHM_INT_VERSIONS;
                     case "CHN":
                         return ZHONGERJIEZOU_VERSIONS;
-                    case "JPN":
                     default:
                         return CHUNITHM_VERSIONS;
                 }
@@ -1013,11 +982,12 @@ export namespace ChunithmPainterModule {
 
             export async function draw(
                 ctx: CanvasRenderingContext2D,
+                // biome-ignore lint/suspicious/noExplicitAny: need major refactor
                 theme: Theme<any>,
                 element: z.infer<typeof schema>,
                 chartId: number,
                 scores: (IScore | null)[],
-                region: "JPN" | "INT" | "CHN" = "JPN"
+                region: "JPN" | "INT" | "CHN" = "JPN",
             ) {
                 /* Begin Background Draw */
                 ctx.roundRect(
@@ -1026,7 +996,7 @@ export namespace ChunithmPainterModule {
                     element.width,
                     element.height,
                     Math.min(theme.content.width, theme.content.height) *
-                        (3 / 128)
+                        (3 / 128),
                 );
                 ctx.fillStyle = element.color.card;
                 ctx.strokeStyle = new Color(element.color.card)
@@ -1055,7 +1025,7 @@ export namespace ChunithmPainterModule {
                 ) {
                     const chart = difficulties[i];
                     if (chart)
-                        if (difficulties.length > 4 && i == 0) {
+                        if (difficulties.length > 4 && i === 0) {
                             await drawChartGridCard(
                                 ctx,
                                 theme,
@@ -1067,7 +1037,7 @@ export namespace ChunithmPainterModule {
                                 cardHeight,
                                 true,
                                 region,
-                                scores[i]
+                                scores[i],
                             );
                             i++;
                             const chartA = difficulties[i];
@@ -1085,7 +1055,7 @@ export namespace ChunithmPainterModule {
                                     cardHeight,
                                     true,
                                     region,
-                                    scores[i]
+                                    scores[i],
                                 );
                         } else {
                             await drawChartGridCard(
@@ -1099,7 +1069,7 @@ export namespace ChunithmPainterModule {
                                 cardHeight,
                                 false,
                                 region,
-                                scores[i]
+                                scores[i],
                             );
                         }
                 }
@@ -1107,6 +1077,7 @@ export namespace ChunithmPainterModule {
 
             async function drawChartGridCard(
                 ctx: CanvasRenderingContext2D,
+                // biome-ignore lint/suspicious/noExplicitAny: need major refactor
                 theme: Theme<any>,
                 element: z.infer<typeof schema>,
                 chart: Database.IChart,
@@ -1116,7 +1087,7 @@ export namespace ChunithmPainterModule {
                 height: number,
                 isShort: boolean,
                 targetRegion: "JPN" | "INT" | "CHN" = "JPN",
-                score?: IScore | null
+                score?: IScore | null,
             ) {
                 let curColor = "#FFFFFF";
                 switch (chart.difficulty) {
@@ -1203,25 +1174,26 @@ export namespace ChunithmPainterModule {
                                 borderColor: new Color(curColor)
                                     .darken(0.3)
                                     .hexa(),
-                            }
+                            },
                         );
                         const difficultyTextWidth = Util.measureText(
                             ctx,
                             difficultiy,
                             titleSize,
-                            Infinity
+                            Infinity,
                         ).width;
                         Util.drawText(
                             ctx,
                             `Lv. ${Util.truncate(
                                 chart.events
                                     .filter(
-                                        (v) => v.version.region == targetRegion
+                                        (v) =>
+                                            v.version.region === targetRegion,
                                     )
                                     .reverse()
-                                    .find((v) => v.type == "existence")?.data
+                                    .find((v) => v.type === "existence")?.data
                                     .level || 0,
-                                1
+                                1,
                             )}${score ? `　+${Util.truncate(score.rating, 2)}` : ""}`,
                             x + element.bubble.margin * 2 + difficultyTextWidth,
                             y +
@@ -1236,7 +1208,7 @@ export namespace ChunithmPainterModule {
                                 borderColor: new Color(curColor)
                                     .darken(0.3)
                                     .hexa(),
-                            }
+                            },
                         );
 
                         ctx.beginPath();
@@ -1248,7 +1220,7 @@ export namespace ChunithmPainterModule {
                                 element.bubble.margin * (1 / 4),
                             height * 2 - element.bubble.margin * 2,
                             height * 0.806 * 0.02,
-                            height * 0.806 * 0.16
+                            height * 0.806 * 0.16,
                         );
                         ctx.fillStyle = new Color(curColor).darken(0.3).hex();
                         ctx.fill();
@@ -1278,102 +1250,97 @@ export namespace ChunithmPainterModule {
                                 borderColor: new Color(curColor)
                                     .darken(0.3)
                                     .hexa(),
-                            }
+                            },
                         );
                     }
-                    /** End Achievement Rate Draw */
-
-                    /** Begin Achievement Rank Draw */
-                    {
-                        if (score) {
-                            let rankImg: Buffer;
-                            switch (score.rank) {
-                                case EAchievementTypes.D:
-                                    rankImg = theme.getFile(
-                                        element.sprites.achievement.d
-                                    );
-                                    break;
-                                case EAchievementTypes.C:
-                                    rankImg = theme.getFile(
-                                        element.sprites.achievement.c
-                                    );
-                                    break;
-                                case EAchievementTypes.B:
-                                    rankImg = theme.getFile(
-                                        element.sprites.achievement.b
-                                    );
-                                    break;
-                                case EAchievementTypes.BB:
-                                    rankImg = theme.getFile(
-                                        element.sprites.achievement.bb
-                                    );
-                                    break;
-                                case EAchievementTypes.BBB:
-                                    rankImg = theme.getFile(
-                                        element.sprites.achievement.bbb
-                                    );
-                                    break;
-                                case EAchievementTypes.A:
-                                    rankImg = theme.getFile(
-                                        element.sprites.achievement.a
-                                    );
-                                    break;
-                                case EAchievementTypes.AA:
-                                    rankImg = theme.getFile(
-                                        element.sprites.achievement.aa
-                                    );
-                                    break;
-                                case EAchievementTypes.AAA:
-                                    rankImg = theme.getFile(
-                                        element.sprites.achievement.aaa
-                                    );
-                                    break;
-                                case EAchievementTypes.S:
-                                    rankImg = theme.getFile(
-                                        element.sprites.achievement.s
-                                    );
-                                    break;
-                                case EAchievementTypes.SP:
-                                    rankImg = theme.getFile(
-                                        element.sprites.achievement.sp
-                                    );
-                                    break;
-                                case EAchievementTypes.SS:
-                                    rankImg = theme.getFile(
-                                        element.sprites.achievement.ss
-                                    );
-                                    break;
-                                case EAchievementTypes.SSP:
-                                    rankImg = theme.getFile(
-                                        element.sprites.achievement.ssp
-                                    );
-                                    break;
-                                case EAchievementTypes.SSS:
-                                    rankImg = theme.getFile(
-                                        element.sprites.achievement.sss
-                                    );
-                                    break;
-                                default:
-                                    rankImg = theme.getFile(
-                                        element.sprites.achievement.sssp
-                                    );
-                            }
-
-                            const blockHeight = height * 0.806 * 0.3 * 0.85,
-                                blockWidth = blockHeight * (540 / 180);
-
-                            const img = await Util.loadImage(rankImg);
-                            ctx.drawImage(
-                                img,
-                                x + element.bubble.margin * (1 / 2),
-                                y +
-                                    element.bubble.margin +
-                                    titleSize +
-                                    element.bubble.margin * (1 / 2),
-                                blockWidth,
-                                blockHeight
-                            );
+                    if (score) {
+                        let rankImg: Buffer;
+                        switch (score.rank) {
+                            case EAchievementTypes.D:
+                                rankImg = theme.getFile(
+                                    element.sprites.achievement.d,
+                                );
+                                break;
+                            case EAchievementTypes.C:
+                                rankImg = theme.getFile(
+                                    element.sprites.achievement.c,
+                                );
+                                break;
+                            case EAchievementTypes.B:
+                                rankImg = theme.getFile(
+                                    element.sprites.achievement.b,
+                                );
+                                break;
+                            case EAchievementTypes.BB:
+                                rankImg = theme.getFile(
+                                    element.sprites.achievement.bb,
+                                );
+                                break;
+                            case EAchievementTypes.BBB:
+                                rankImg = theme.getFile(
+                                    element.sprites.achievement.bbb,
+                                );
+                                break;
+                            case EAchievementTypes.A:
+                                rankImg = theme.getFile(
+                                    element.sprites.achievement.a,
+                                );
+                                break;
+                            case EAchievementTypes.AA:
+                                rankImg = theme.getFile(
+                                    element.sprites.achievement.aa,
+                                );
+                                break;
+                            case EAchievementTypes.AAA:
+                                rankImg = theme.getFile(
+                                    element.sprites.achievement.aaa,
+                                );
+                                break;
+                            case EAchievementTypes.S:
+                                rankImg = theme.getFile(
+                                    element.sprites.achievement.s,
+                                );
+                                break;
+                            case EAchievementTypes.SP:
+                                rankImg = theme.getFile(
+                                    element.sprites.achievement.sp,
+                                );
+                                break;
+                            case EAchievementTypes.SS:
+                                rankImg = theme.getFile(
+                                    element.sprites.achievement.ss,
+                                );
+                                break;
+                            case EAchievementTypes.SSP:
+                                rankImg = theme.getFile(
+                                    element.sprites.achievement.ssp,
+                                );
+                                break;
+                            case EAchievementTypes.SSS:
+                                rankImg = theme.getFile(
+                                    element.sprites.achievement.sss,
+                                );
+                                break;
+                            default:
+                                rankImg = theme.getFile(
+                                    element.sprites.achievement.sssp,
+                                );
                         }
+
+                        const blockHeight = height * 0.806 * 0.3 * 0.85,
+                            blockWidth = blockHeight * (540 / 180);
+
+                        const img = await Util.loadImage(rankImg);
+                        ctx.drawImage(
+                            img,
+                            x + element.bubble.margin * (1 / 2),
+                            y +
+                                element.bubble.margin +
+                                titleSize +
+                                element.bubble.margin * (1 / 2),
+                            blockWidth,
+                            blockHeight,
+                        );
                     }
                     /** End Achievement Rank Draw */
 
@@ -1396,7 +1363,7 @@ export namespace ChunithmPainterModule {
                             curY,
                             blockWidth,
                             blockHeight,
-                            blockWidth / 56
+                            blockWidth / 56,
                         );
                         ctx.fill();
                         if (score) {
@@ -1404,22 +1371,22 @@ export namespace ChunithmPainterModule {
                             switch (score.combo) {
                                 case EComboTypes.NONE:
                                     comboImg = theme.getFile(
-                                        element.sprites.milestone.none
+                                        element.sprites.milestone.none,
                                     );
                                     break;
                                 case EComboTypes.FULL_COMBO:
                                     comboImg = theme.getFile(
-                                        element.sprites.milestone.fc
+                                        element.sprites.milestone.fc,
                                     );
                                     break;
                                 case EComboTypes.ALL_JUSTICE:
                                     comboImg = theme.getFile(
-                                        element.sprites.milestone.aj
+                                        element.sprites.milestone.aj,
                                     );
                                     break;
                                 case EComboTypes.ALL_JUSTICE_CRITICAL:
                                     comboImg = theme.getFile(
-                                        element.sprites.milestone.ajc
+                                        element.sprites.milestone.ajc,
                                     );
                                     break;
                             }
@@ -1429,7 +1396,7 @@ export namespace ChunithmPainterModule {
                                 curX,
                                 curY,
                                 blockWidth,
-                                blockHeight
+                                blockHeight,
                             );
                         }
                     }
@@ -1438,7 +1405,7 @@ export namespace ChunithmPainterModule {
                     const scorePartWidth =
                         element.bubble.margin * (3 / 2) + height * 2;
                     const noteCountTexts = Object.entries(chart.meta.notes).map(
-                        ([k, v]) => `${Util.capitalize(k)}: ${v}`
+                        ([k, v]) => `${Util.capitalize(k)}: ${v}`,
                     );
                     const noteCountTextSize = (() => {
                         let base =
@@ -1449,7 +1416,7 @@ export namespace ChunithmPainterModule {
                             base > 4 &&
                             noteCountTexts
                                 .map((v) =>
-                                    Util.measureText(ctx, v, base, Infinity)
+                                    Util.measureText(ctx, v, base, Infinity),
                                 )
                                 .find((v) => v.width > width - scorePartWidth);
                             base--
@@ -1462,8 +1429,8 @@ export namespace ChunithmPainterModule {
                                 ctx,
                                 v,
                                 noteCountTextSize,
-                                Infinity
-                            )
+                                Infinity,
+                            ),
                         )
                         .reduce((a, b) => (a.width > b.width ? a : b)).width;
                     /** Begin Note Count Draw */
@@ -1491,13 +1458,13 @@ export namespace ChunithmPainterModule {
                                     borderColor: new Color(curColor)
                                         .darken(0.3)
                                         .hexa(),
-                                }
+                                },
                             );
                             const length = Util.measureText(
                                 ctx,
                                 v,
                                 noteCountTextSize,
-                                Infinity
+                                Infinity,
                             ).width;
                             if (length > noteCountLength)
                                 noteCountLength = length;
@@ -1513,11 +1480,11 @@ export namespace ChunithmPainterModule {
                             version: undefined,
                         };
                         const VER =
-                            chart.difficulty == EDifficulty.ULTIMA
+                            chart.difficulty === EDifficulty.ULTIMA
                                 ? chart.events.find(
                                       (v) =>
-                                          v.type == "existence" &&
-                                          v.version.region == targetRegion
+                                          v.type === "existence" &&
+                                          v.version.region === targetRegion,
                                   )?.version
                                 : chart.addVersion;
                         version.version = VER;
@@ -1538,13 +1505,13 @@ export namespace ChunithmPainterModule {
                         ) {
                             const rawVersion = findVersion(
                                 ChunithmUtil.getNumberVersion(version.version),
-                                targetRegion
+                                targetRegion,
                             );
                             if (rawVersion) {
                                 const versionImage = theme.getFile(
                                     element.sprites.versions[version.region][
                                         rawVersion
-                                    ]
+                                    ],
                                 );
                                 try {
                                     sharp(versionImage);
@@ -1556,7 +1523,7 @@ export namespace ChunithmPainterModule {
                                             curx - versionImageWidth,
                                             cury,
                                             versionImageWidth,
-                                            versionImageHeight
+                                            versionImageHeight,
                                         );
                                     }
                                 } catch {}
@@ -1572,7 +1539,6 @@ export namespace ChunithmPainterModule {
                                         return INT_LATEST;
                                     case "CHN":
                                         return CHN_LATEST;
-                                    case "JPN":
                                     default:
                                         return JPN_LATEST;
                                 }
@@ -1584,24 +1550,24 @@ export namespace ChunithmPainterModule {
                                 noteCountLength -
                                 versionImageWidth;
                             const maxFitTrendCount = Math.trunc(
-                                maxWidth / versionImageWidth
+                                maxWidth / versionImageWidth,
                             );
                             const trendEvents = chart.events.filter(
                                 (v) =>
-                                    v.type == "existence" &&
-                                    v.version.region == targetRegion
+                                    v.type === "existence" &&
+                                    v.version.region === targetRegion,
                             ) as Database.Events.Existence[];
                             let actualEvents: Database.Events[] = _.uniqWith(
                                 trendEvents,
                                 (a, b) => {
                                     return _.isEqual(
                                         a.data.level,
-                                        b.data.level
+                                        b.data.level,
                                     );
-                                }
+                                },
                             );
 
-                            if (actualEvents.length == maxFitTrendCount) {
+                            if (actualEvents.length === maxFitTrendCount) {
                             } else if (actualEvents.length > maxFitTrendCount) {
                                 while (actualEvents.length > maxFitTrendCount)
                                     actualEvents.shift();
@@ -1609,7 +1575,7 @@ export namespace ChunithmPainterModule {
                                 actualEvents.shift();
                                 actualEvents.unshift(trendEvents[0]);
                                 actualEvents.push(
-                                    trendEvents[trendEvents.length - 1]
+                                    trendEvents[trendEvents.length - 1],
                                 );
                             } else if (trendEvents.length > maxFitTrendCount) {
                                 actualEvents = _.filter(
@@ -1619,15 +1585,15 @@ export namespace ChunithmPainterModule {
                                             _.isEqual(
                                                 v.version.gameVersion,
                                                 trendEvents[0].version
-                                                    .gameVersion
+                                                    .gameVersion,
                                             ) ||
                                             _.isEqual(
                                                 v.version.gameVersion,
                                                 trendEvents[
                                                     trendEvents.length - 1
-                                                ].version.gameVersion
+                                                ].version.gameVersion,
                                             )
-                                        )
+                                        ),
                                 );
                                 for (
                                     let i = trendEvents.length - 2;
@@ -1643,19 +1609,19 @@ export namespace ChunithmPainterModule {
                                             return (
                                                 _.isEqual(
                                                     a.version.gameVersion.major,
-                                                    b.version.gameVersion.major
+                                                    b.version.gameVersion.major,
                                                 ) &&
                                                 _.isEqual(
                                                     a.version.gameVersion.minor,
-                                                    b.version.gameVersion.minor
+                                                    b.version.gameVersion.minor,
                                                 )
                                             );
-                                        }
+                                        },
                                     );
                                 }
                                 actualEvents.unshift(trendEvents[0]);
                                 actualEvents.push(
-                                    trendEvents[trendEvents.length - 1]
+                                    trendEvents[trendEvents.length - 1],
                                 );
                                 actualEvents = _.uniqWith(
                                     actualEvents,
@@ -1663,29 +1629,29 @@ export namespace ChunithmPainterModule {
                                         return (
                                             _.isEqual(
                                                 a.version.gameVersion.major,
-                                                b.version.gameVersion.major
+                                                b.version.gameVersion.major,
                                             ) &&
                                             _.isEqual(
                                                 a.version.gameVersion.minor,
-                                                b.version.gameVersion.minor
+                                                b.version.gameVersion.minor,
                                             )
                                         );
-                                    }
+                                    },
                                 );
                                 actualEvents = _.sortBy(actualEvents, (v) =>
-                                    ChunithmUtil.getNumberVersion(v.version)
+                                    ChunithmUtil.getNumberVersion(v.version),
                                 );
                                 if (trendEvents.length > 1) {
                                     if (actualEvents.length >= maxFitTrendCount)
                                         actualEvents.pop();
                                     actualEvents.push(
-                                        trendEvents[trendEvents.length - 1]
+                                        trendEvents[trendEvents.length - 1],
                                     );
                                 }
                                 const removalEvent = chart.events.find(
                                     (v) =>
-                                        v.type == "removal" &&
-                                        v.version.region == targetRegion
+                                        v.type === "removal" &&
+                                        v.version.region === targetRegion,
                                 ) as Database.Events.Removal | undefined;
                                 if (removalEvent) {
                                     actualEvents.pop();
@@ -1697,7 +1663,7 @@ export namespace ChunithmPainterModule {
                             if (
                                 ChunithmUtil.getNumberVersion(
                                     actualEvents[actualEvents.length - 1]
-                                        .version
+                                        .version,
                                 ) < CURRENT_VER
                             ) {
                                 while (actualEvents.length >= maxFitTrendCount)
@@ -1709,8 +1675,8 @@ export namespace ChunithmPainterModule {
                                             ChunithmUtil.Version.getNextVersion(
                                                 trendEvents[
                                                     trendEvents.length - 1
-                                                ].version
-                                            )
+                                                ].version,
+                                            ),
                                         ),
                                 });
                             }
@@ -1718,11 +1684,11 @@ export namespace ChunithmPainterModule {
                                 return (
                                     _.isEqual(
                                         a.version.gameVersion.major,
-                                        b.version.gameVersion.major
+                                        b.version.gameVersion.major,
                                     ) &&
                                     _.isEqual(
                                         a.version.gameVersion.minor,
-                                        b.version.gameVersion.minor
+                                        b.version.gameVersion.minor,
                                     ) &&
                                     _.isEqual(a.type, b.type)
                                 );
@@ -1759,15 +1725,15 @@ export namespace ChunithmPainterModule {
                                 const event = actualEvents[i];
                                 const rawVersion = findVersion(
                                     ChunithmUtil.getNumberVersion(
-                                        event.version
+                                        event.version,
                                     ),
-                                    targetRegion
+                                    targetRegion,
                                 );
                                 if (rawVersion) {
                                     const versionImage = theme.getFile(
                                         element.sprites.versions[targetRegion][
                                             rawVersion
-                                        ]
+                                        ],
                                     );
                                     try {
                                         if (!versionImage)
@@ -1780,7 +1746,7 @@ export namespace ChunithmPainterModule {
                                             curx,
                                             cury,
                                             versionImageWidth,
-                                            versionImageHeight
+                                            versionImageHeight,
                                         );
                                     } catch {
                                         const str = `${event.version.gameVersion.major}.${event.version.gameVersion.minor}`;
@@ -1788,7 +1754,7 @@ export namespace ChunithmPainterModule {
                                             ctx,
                                             str,
                                             noteCountTextSize * 1.2,
-                                            Infinity
+                                            Infinity,
                                         );
                                         Util.drawText(
                                             ctx,
@@ -1807,15 +1773,17 @@ export namespace ChunithmPainterModule {
                                                 borderColor: new Color(curColor)
                                                     .darken(0.3)
                                                     .hexa(),
-                                            }
+                                            },
                                         );
                                     }
-                                    if (event.type == "existence") {
+                                    if (event.type === "existence") {
                                         let symbol = "";
-                                        if (i != 0) {
+                                        if (i !== 0) {
                                             const lastEvent =
                                                 actualEvents[i - 1];
-                                            if (lastEvent.type == "existence") {
+                                            if (
+                                                lastEvent.type === "existence"
+                                            ) {
                                                 if (
                                                     lastEvent.data.level <
                                                     event.data.level
@@ -1827,7 +1795,7 @@ export namespace ChunithmPainterModule {
                                                 )
                                                     symbol = "↓";
                                                 else if (
-                                                    lastEvent.data.level ==
+                                                    lastEvent.data.level ===
                                                     event.data.level
                                                 )
                                                     symbol = "→";
@@ -1848,9 +1816,9 @@ export namespace ChunithmPainterModule {
                                                 borderColor: new Color(curColor)
                                                     .darken(0.3)
                                                     .hexa(),
-                                            }
+                                            },
                                         );
-                                    } else if (event.type == "removal") {
+                                    } else if (event.type === "removal") {
                                         Util.drawText(
                                             ctx,
                                             `❌`,
@@ -1866,7 +1834,7 @@ export namespace ChunithmPainterModule {
                                                 borderColor: new Color(curColor)
                                                     .darken(0.3)
                                                     .hexa(),
-                                            }
+                                            },
                                         );
                                     }
                                     curx += versionImageWidth + addGap;
@@ -1887,41 +1855,25 @@ export namespace ChunithmPainterModule {
                     y + height * 0.742,
                     height * 2,
                     height * (1 - 0.742),
-                    [0, (height * 0.806) / 7, 0, (height * 0.806) / 7]
+                    [0, (height * 0.806) / 7, 0, (height * 0.806) / 7],
                 );
                 ctx.fill();
-                /** Begin Difficulty & DX Rating Draw */
-                {
-                    ctx.save();
-                    ctx.clip();
-                    Util.drawText(
-                        ctx,
-                        chart.designer || "-",
-                        x + element.bubble.margin,
-                        y + height * (0.806 + (1 - 0.806) / 2),
-                        height * 0.806 * 0.128,
-                        height * 0.806 * 0.04,
-                        {
-                            textAlign: "left",
-                            mainColor: "white",
-                            borderColor: new Color(curColor).darken(0.3).hexa(),
-                        }
-                    );
-                    ctx.restore();
-
-                    // Util.drawText(
-                    //     ctx,
-                    //     `${score ? `${score.dxScore}/` : "MAX DX SCR: "}${chart.meta.maxDXScore}`,
-                    //     x + height * 2 - element.bubble.margin,
-                    //     y + height - element.bubble.margin * 3.1,
-                    //     height * 0.806 * 0.128,
-                    //     height * 0.806 * 0.04,
-                    //     Infinity,
-                    //     "right",
-                    //     "white",
-                    //     new Color(curColor).darken(0.3).hexa()
-                    // );
-                }
+                ctx.save();
+                ctx.clip();
+                Util.drawText(
+                    ctx,
+                    chart.designer || "-",
+                    x + element.bubble.margin,
+                    y + height * (0.806 + (1 - 0.806) / 2),
+                    height * 0.806 * 0.128,
+                    height * 0.806 * 0.04,
+                    {
+                        textAlign: "left",
+                        mainColor: "white",
+                        borderColor: new Color(curColor).darken(0.3).hexa(),
+                    },
+                );
+                ctx.restore();
                 /** End Difficulty & DX Rating Draw */
 
                 ctx.restore();
@@ -1942,9 +1894,10 @@ export namespace ChunithmPainterModule {
 
             export async function draw(
                 ctx: CanvasRenderingContext2D,
+                // biome-ignore lint/suspicious/noExplicitAny: need major refactor
                 theme: Theme<any>,
                 element: z.infer<typeof schema>,
-                chartId: number
+                chartId: number,
             ) {
                 const jacketMargin = element.margin;
                 const textMargin = element.margin;
@@ -1969,7 +1922,7 @@ export namespace ChunithmPainterModule {
                     element.y,
                     element.width,
                     element.height,
-                    backGroundBorderRadius
+                    backGroundBorderRadius,
                 );
                 ctx.fillStyle = element.color.card;
                 ctx.strokeStyle = new Color(element.color.card)
@@ -1990,7 +1943,7 @@ export namespace ChunithmPainterModule {
                         element.y + jacketMargin,
                         element.width - jacketMargin * 2,
                         element.width - jacketMargin * 2,
-                        jacketBorderRadius
+                        jacketBorderRadius,
                     );
                     ctx.save();
                     ctx.clip();
@@ -1999,7 +1952,7 @@ export namespace ChunithmPainterModule {
                         element.x + jacketMargin,
                         element.y + jacketMargin,
                         element.width - jacketMargin * 2,
-                        element.width - jacketMargin * 2
+                        element.width - jacketMargin * 2,
                     );
                     ctx.restore();
                 }
@@ -2009,29 +1962,12 @@ export namespace ChunithmPainterModule {
                 if (chart) {
                     const textSizeTitle = element.width * (1 / 16);
                     const textSizeSecondary = element.width * (1 / 24);
-                    const {
-                        actualBoundingBoxAscent: ascent,
-                        actualBoundingBoxDescent: decent,
-                    } = Util.measureText(
-                        ctx,
-                        chart.name,
-                        textSizeTitle,
-                        Infinity
-                    );
-                    const titleActualHeight = Math.abs(ascent - decent);
 
                     const textLineWidth = element.width * (7 / 512);
                     const textColor = new Color(element.color.card)
                         .darken(0.5)
                         .hex();
                     const textTitleMaxWidth = element.width - textMargin * 2;
-
-                    const titleMetrics = Util.measureText(
-                        ctx,
-                        chart.name,
-                        textSizeTitle,
-                        textTitleMaxWidth
-                    );
 
                     Util.drawText(
                         ctx,
@@ -2049,7 +1985,7 @@ export namespace ChunithmPainterModule {
                             textAlign: "left",
                             mainColor: "white",
                             borderColor: textColor,
-                        }
+                        },
                     );
 
                     Util.drawText(
@@ -2068,12 +2004,12 @@ export namespace ChunithmPainterModule {
                             textAlign: "left",
                             mainColor: "white",
                             borderColor: textColor,
-                        }
+                        },
                     );
                     function getBpmRange(bpms: number[]) {
                         const uniqueBpms = _.uniq(bpms);
                         if (uniqueBpms.length <= 0) return "0";
-                        else if (uniqueBpms.length == 1)
+                        else if (uniqueBpms.length === 1)
                             return `${uniqueBpms[0]}`;
                         else {
                             const minBpm = Math.min(...uniqueBpms);
@@ -2097,31 +2033,31 @@ export namespace ChunithmPainterModule {
                             textAlign: "left",
                             mainColor: "white",
                             borderColor: textColor,
-                        }
+                        },
                     );
 
                     const EVENT_JPN = chart.events
                         .filter(
                             (v) =>
-                                v.version.region == "JPN" &&
+                                v.version.region === "JPN" &&
                                 ChunithmUtil.getNumberVersion(v.version) >=
-                                    JPN_LATEST
+                                    JPN_LATEST,
                         )
                         .map((v) => v.type);
                     const EVENT_INT = chart.events
                         .filter(
                             (v) =>
-                                v.version.region == "INT" &&
+                                v.version.region === "INT" &&
                                 ChunithmUtil.getNumberVersion(v.version) >=
-                                    INT_LATEST
+                                    INT_LATEST,
                         )
                         .map((v) => v.type);
                     const EVENT_CHN = chart.events
                         .filter(
                             (v) =>
-                                v.version.region == "CHN" &&
+                                v.version.region === "CHN" &&
                                 ChunithmUtil.getNumberVersion(v.version) >=
-                                    CHN_LATEST
+                                    CHN_LATEST,
                         )
                         .map((v) => v.type);
                     const EXIST_JPN =
@@ -2156,7 +2092,7 @@ export namespace ChunithmPainterModule {
                         element.width - textMargin * 2,
                         "right",
                         "white",
-                        textColor
+                        textColor,
                     );
                 }
                 /* End Detail Draw */

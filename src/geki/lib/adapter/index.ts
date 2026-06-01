@@ -1,5 +1,5 @@
-import { IScore } from "@maidraw/geki/type";
-import { DataOrError } from "@maidraw/lib/error";
+import type { IScore } from "@maidraw/geki/type";
+import type { DataOrError } from "@maidraw/lib/error";
 
 export interface OngekiScoreAdapter {
     getPlayerBest55(username: string): Promise<
@@ -20,7 +20,7 @@ export interface OngekiScoreAdapter {
     >;
     getPlayerScore(
         username: string,
-        chartId: number
+        chartId: number,
     ): Promise<
         DataOrError<{
             basic: IScore | null;
@@ -32,7 +32,7 @@ export interface OngekiScoreAdapter {
     >;
     getPlayerInfo(
         username: string,
-        type: "refresh" | "classic"
+        type: "refresh" | "classic",
     ): Promise<
         DataOrError<{
             name: string;

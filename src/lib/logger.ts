@@ -5,7 +5,7 @@ export class Logger extends Bunyan {
         if (typeof name === "undefined") {
             name = ["maidraw", "logger"];
         }
-        if (name instanceof Array) {
+        if (Array.isArray(name)) {
             name = name.join(".");
         }
         super({

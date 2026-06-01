@@ -1,10 +1,10 @@
-import * as fs from "fs";
-import upath from "upath";
+import * as fs from "node:fs";
+import { type CanvasRenderingContext2D, registerFont } from "canvas";
 import Color from "color";
-import { z } from "zod/v4";
 import { globSync } from "glob";
 import stringFormat from "string-template";
-import { CanvasRenderingContext2D, Image, registerFont } from "canvas";
+import upath from "upath";
+import { z } from "zod/v4";
 
 import { Util } from "./util";
 
@@ -33,68 +33,68 @@ export abstract class Painter<
                 Painter.assetsPath,
                 "fonts",
                 "gen-jyuu-gothic",
-                "GenJyuuGothic-Bold.ttf"
+                "GenJyuuGothic-Bold.ttf",
             ),
             {
                 family: "standard-font-title-jp",
-            }
+            },
         );
         registerFont(
             upath.join(
                 Painter.assetsPath,
                 "fonts",
                 "comfortaa",
-                "Comfortaa-Bold.ttf"
+                "Comfortaa-Bold.ttf",
             ),
             {
                 family: "standard-font-title-latin",
-            }
+            },
         );
         registerFont(
             upath.join(
                 Painter.assetsPath,
                 "fonts",
                 "seurat-db",
-                "FOT-Seurat Pro DB.otf"
+                "FOT-Seurat Pro DB.otf",
             ),
             {
                 family: "standard-font-username",
-            }
+            },
         );
         registerFont(
             upath.join(Painter.assetsPath, "fonts", "jost", "Jost-Regular.ttf"),
             {
                 family: "ongeki-font-level",
-            }
+            },
         );
         registerFont(
             upath.join(
                 Painter.assetsPath,
                 "fonts",
                 "sega-sans-db",
-                "SegaKakuGothic-DB.ttf"
+                "SegaKakuGothic-DB.ttf",
             ),
             {
                 family: "chunithm-font-username",
-            }
+            },
         );
     }
 
     public abstract draw(
-        variables: Record<string, any>,
-        options: { scale?: number } | Record<string, any>
+        variables: Record<string, unknown>,
+        options: { scale?: number } | Record<string, unknown>,
     ): Promise<DataOrError<Buffer>>;
     public abstract drawWithScoreSource(
         source: Adapter,
-        variables: Record<string, any>,
-        options: { scale?: number } | Record<string, any>
+        variables: Record<string, unknown>,
+        options: { scale?: number } | Record<string, unknown>,
     ): Promise<DataOrError<Buffer>>;
 }
 
 export class Theme<T> {
     public constructor(
         private readonly basePath: string,
-        public readonly content: T
+        public readonly content: T,
     ) {}
 
     public getFile(file: string) {
@@ -141,9 +141,9 @@ export class ThemeManager<Schema extends typeof ThemeManager.BaseObject> {
         }
     }
     public constructor(
-        private schema: Schema,
+        public readonly schema: Schema,
         searchPaths: string[] = [],
-        private _defaultTheme: string
+        private _defaultTheme: string,
     ) {
         for (const path of searchPaths) {
             const manifests = globSync(upath.join(path, "**", "manifest.json"));
@@ -153,14 +153,12 @@ export class ThemeManager<Schema extends typeof ThemeManager.BaseObject> {
         }
     }
 
-    public validate(theme: any): z.infer<typeof this.schema> | null {
+    public validate(theme: unknown): z.infer<typeof this.schema> | null {
         const result = this.schema.safeParse(theme);
         if (result.success) {
             return result.data;
         } else {
-            this.logger.error(
-                `Cannot validate theme${theme.name ? ` ${theme.name}:` : ":"}`
-            );
+            this.logger.error(`Cannot validate theme:`);
             this.logger.error(result.error);
             return null;
         }
@@ -181,7 +179,7 @@ export class ThemeManager<Schema extends typeof ThemeManager.BaseObject> {
             if (validated) {
                 this.loadedThemes.set(
                     validated.name,
-                    new Theme(upath.dirname(path), validated)
+                    new Theme(upath.dirname(path), validated),
                 );
                 return true;
             } else return false;
@@ -192,7 +190,7 @@ export class ThemeManager<Schema extends typeof ThemeManager.BaseObject> {
 }
 
 import LineBreaker from "linebreak";
-import { DataOrError } from "./error";
+import type { DataOrError } from "./error";
 
 export namespace PainterModule {
     export namespace Image {
@@ -225,13 +223,13 @@ export namespace PainterModule {
         });
         export async function draw(
             ctx: CanvasRenderingContext2D,
-            theme: Theme<any>,
-            element: z.infer<typeof schema>
+            theme: Theme<unknown>,
+            element: z.infer<typeof schema>,
         ) {
             const img = await Util.loadImage(theme.getFile(element.path));
             const { width: imgWidth, height: imgHeight } = img;
             const aspectRatio = imgWidth / imgHeight;
-            let width, height;
+            let width: number, height: number;
             if (element.width && element.height) {
                 width = element.width;
                 height = element.height;
@@ -247,9 +245,6 @@ export namespace PainterModule {
             }
             ctx.save();
             switch (element.anchor) {
-                case "lt":
-                default:
-                    break;
                 case "ct":
                 case "mt":
                     ctx.translate(-width / 2, 0);
@@ -310,7 +305,7 @@ export namespace PainterModule {
             /**
              * Variables that will be used to format the text content.
              */
-            variables: Record<string, string> = {}
+            variables: Record<string, string> = {},
         ) {
             variables = {
                 ...builtinVariables,
@@ -334,7 +329,7 @@ export namespace PainterModule {
                         lines.push(
                             filledContent
                                 .substring(lastBreak, lastPossibleBreak)
-                                .trim()
+                                .trim(),
                         );
                         lastBreak = lastPossibleBreak;
                     }
@@ -347,8 +342,8 @@ export namespace PainterModule {
                         Util.findMaxFitString(
                             ctx,
                             originalContent,
-                            element.width || Infinity
-                        ).trim()
+                            element.width || Infinity,
+                        ).trim(),
                     );
                 }
             }
@@ -372,7 +367,7 @@ export namespace PainterModule {
                                   .hex(),
                         font: element.font,
                         lineBreakSuffix: element.linebreak ? "" : "...",
-                    }
+                    },
                 );
             }
         }
@@ -392,23 +387,23 @@ export namespace PainterModule {
         });
         export async function draw(
             ctx: CanvasRenderingContext2D,
-            theme: Theme<any>,
+            theme: Theme<unknown>,
             element: z.infer<typeof schema>,
             probability?: number,
             customLines?: Record<string, string>,
-            blocklist?: string[]
+            blocklist?: string[],
         ) {
             probability = probability ?? element.probability ?? 1.0;
-            function getRandomMemberFromArray(
-                array: any[],
-                probability: number
+            function getRandomMemberFromArray<T>(
+                array: T[],
+                probability: number,
             ) {
                 const r = Math.random();
-                if (probability <= 0 || r > probability) return;
+                if (probability <= 0 || r > probability) return null;
                 return array[Math.floor((r / probability) * array.length)];
             }
             let localLines = {};
-            if (element.customLines != undefined) {
+            if (element.customLines !== undefined) {
                 for (const path of Array.isArray(element.customLines)
                     ? element.customLines
                     : [element.customLines]) {
@@ -424,11 +419,13 @@ export namespace PainterModule {
                 ...localLines,
                 ...customLines,
             };
-            const keyList = Object.keys(lines).filter(
-                (v) => !blocklist?.includes(v)
+            const availableLines = Object.entries(lines)
+                .filter(([k]) => !blocklist?.includes(k))
+                .map(([_, v]) => v);
+            const content = getRandomMemberFromArray(
+                availableLines,
+                probability,
             );
-            const content =
-                lines[getRandomMemberFromArray(keyList, probability)];
             if (content) {
                 Text.draw(ctx, {
                     ...element,

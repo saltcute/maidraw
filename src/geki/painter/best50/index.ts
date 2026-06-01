@@ -1,15 +1,13 @@
+import * as Database from "@maidraw/geki/lib/database";
+import type { IScore } from "@maidraw/geki/type";
+import { IllegalArgumentError, MissingThemeError } from "@maidraw/lib/error";
+import { PainterModule, ThemeManager } from "@maidraw/lib/painter";
+import { Util } from "@maidraw/lib/util";
+import { Canvas } from "canvas";
 import upath from "upath";
 import { z } from "zod/v4";
-import { Canvas } from "canvas";
-import { IScore } from "@maidraw/geki/type";
-
-import { OngekiScoreAdapter } from "../../lib/adapter";
+import type { OngekiScoreAdapter } from "../../lib/adapter";
 import { OngekiPainter, OngekiPainterModule } from "..";
-
-import { Util } from "@maidraw/lib/util";
-import { PainterModule, ThemeManager } from "@maidraw/lib/painter";
-import { Database } from "@maidraw/geki/lib/database";
-import { IllegalArgumentError, MissingThemeError } from "@maidraw/lib/error";
 
 export class Best50Painter extends OngekiPainter<typeof Best50Painter.Theme> {
     public static readonly Theme = ThemeManager.BaseTheme.extend({
@@ -20,7 +18,7 @@ export class Best50Painter extends OngekiPainter<typeof Best50Painter.Theme> {
                 PainterModule.Image.schema,
                 PainterModule.Text.schema,
                 PainterModule.Hitokoto.schema,
-            ])
+            ]),
         ),
     });
     public constructor() {
@@ -32,7 +30,7 @@ export class Best50Painter extends OngekiPainter<typeof Best50Painter.Theme> {
                         Best50Painter.assetsPath,
                         "themes",
                         "ongeki",
-                        "best"
+                        "best",
                     ),
                 ],
                 defaultTheme: Best50Painter.DEFAULT_THEME,
@@ -56,7 +54,7 @@ export class Best50Painter extends OngekiPainter<typeof Best50Painter.Theme> {
             profilePicture?: Buffer;
             bestScores?: IScore[];
             type?: "refresh" | "classic";
-        }
+        },
     ) {
         let currentTheme = this.theme.get(this.theme.defaultTheme);
         if (options?.theme) {
@@ -72,7 +70,7 @@ export class Best50Painter extends OngekiPainter<typeof Best50Painter.Theme> {
             ]);
             const canvas = new Canvas(
                 currentTheme.content.width * (options?.scale ?? 1),
-                currentTheme.content.height * (options?.scale ?? 1)
+                currentTheme.content.height * (options?.scale ?? 1),
             );
             const ctx = canvas.getContext("2d");
             if (options?.scale) ctx.scale(options.scale, options.scale);
@@ -83,7 +81,7 @@ export class Best50Painter extends OngekiPainter<typeof Best50Painter.Theme> {
                         await PainterModule.Image.draw(
                             ctx,
                             currentTheme,
-                            element
+                            element,
                         );
                         break;
                     }
@@ -91,17 +89,17 @@ export class Best50Painter extends OngekiPainter<typeof Best50Painter.Theme> {
                         await PainterModule.Hitokoto.draw(
                             ctx,
                             currentTheme,
-                            element
+                            element,
                         );
                         break;
                     }
                     case "score-grid": {
                         const gapx =
-                            typeof element.scoreBubble.gap == "number"
+                            typeof element.scoreBubble.gap === "number"
                                 ? element.scoreBubble.gap
                                 : element.scoreBubble.gap.x;
                         const gapy =
-                            typeof element.scoreBubble.gap == "number"
+                            typeof element.scoreBubble.gap === "number"
                                 ? element.scoreBubble.gap
                                 : element.scoreBubble.gap.y;
                         for (
@@ -116,10 +114,10 @@ export class Best50Painter extends OngekiPainter<typeof Best50Painter.Theme> {
                                     ++index,
                                     x += element.scoreBubble.width + gapx
                             ) {
-                                let curScore;
-                                if (element.region == "new")
+                                let curScore: IScore;
+                                if (element.region === "new")
                                     curScore = variables.newScores[index];
-                                else if (element.region == "old")
+                                else if (element.region === "old")
                                     curScore = variables.oldScores[index];
                                 else
                                     curScore =
@@ -133,7 +131,7 @@ export class Best50Painter extends OngekiPainter<typeof Best50Painter.Theme> {
                                         index,
                                         x,
                                         y,
-                                        options.type
+                                        options.type,
                                     );
                                 } else if (
                                     element.scoreBubble.strictScoreCount ===
@@ -142,11 +140,9 @@ export class Best50Painter extends OngekiPainter<typeof Best50Painter.Theme> {
                                 ) {
                                     await OngekiPainterModule.Best50.ScoreGrid.drawOutline(
                                         ctx,
-                                        currentTheme,
                                         element,
-                                        index,
                                         x,
-                                        y
+                                        y,
                                     );
                                 }
                             }
@@ -161,17 +157,17 @@ export class Best50Painter extends OngekiPainter<typeof Best50Painter.Theme> {
                             variables.username,
                             variables.rating,
                             options?.profilePicture,
-                            options?.type
+                            options?.type,
                         );
                         break;
                     }
                     case "text": {
                         function getNaiveRating(
-                            type: "refresh" | "classic" = "refresh"
+                            type: "refresh" | "classic" = "refresh",
                         ) {
                             const bestScores = options?.bestScores;
                             if (!bestScores) return 0;
-                            if (type == "refresh") {
+                            if (type === "refresh") {
                                 const scoreRating = bestScores
                                     .slice(0, 60)
                                     .map((v) => v.rating)
@@ -188,58 +184,62 @@ export class Best50Painter extends OngekiPainter<typeof Best50Painter.Theme> {
                             } else {
                                 return Util.truncateNumber(
                                     getRatingAvg(bestScores, 45),
-                                    2
+                                    2,
                                 );
                             }
                         }
                         function getRatingAvg(
                             scores: IScore[],
                             length: number,
-                            type: "score" | "star" = "score"
+                            type: "score" | "star" = "score",
                         ) {
                             if (scores.length <= 0) return 0;
                             return (
                                 scores
                                     .slice(0, length)
                                     .map((v) =>
-                                        type == "star" ? v.starRating : v.rating
+                                        type === "star"
+                                            ? v.starRating
+                                            : v.rating,
                                     )
                                     .reduce((sum, v) => sum + v, 0) / length
                             );
                         }
                         await PainterModule.Text.draw(ctx, element, {
                             username: Util.HalfFullWidthConvert.toFullWidth(
-                                variables.username
+                                variables.username,
                             ),
                             rating: Util.truncate(
                                 variables.rating,
-                                options.type == "refresh" ? 3 : 2
+                                options.type === "refresh" ? 3 : 2,
                             ),
-                            naiveRatingAverage: `NAIVE ${options.type == "refresh" ? 60 : 45} average: ${Util.truncate(
+                            naiveRatingAverage: `NAIVE ${options.type === "refresh" ? 60 : 45} average: ${Util.truncate(
                                 getNaiveRating(options.type),
-                                options.type == "refresh" ? 3 : 2
+                                options.type === "refresh" ? 3 : 2,
                             )}`,
                             newScoreRatingAvg: Util.truncate(
                                 getRatingAvg(
                                     variables.newScores,
-                                    options.type == "refresh" ? 10 : 15
+                                    options.type === "refresh" ? 10 : 15,
                                 ),
-                                options.type == "refresh" ? 3 : 2
+                                options.type === "refresh" ? 3 : 2,
                             ),
                             oldScoreRatingAvg: Util.truncate(
                                 getRatingAvg(
                                     variables.oldScores,
-                                    options.type == "refresh" ? 50 : 30
+                                    options.type === "refresh" ? 50 : 30,
                                 ),
-                                options.type == "refresh" ? 3 : 2
+                                options.type === "refresh" ? 3 : 2,
                             ),
                             recentOrPlatinumScoreAvg: Util.truncate(
                                 getRatingAvg(
                                     variables.recentOrPlatinumScores,
-                                    options.type == "refresh" ? 50 : 10,
-                                    options.type == "refresh" ? "star" : "score"
+                                    options.type === "refresh" ? 50 : 10,
+                                    options.type === "refresh"
+                                        ? "star"
+                                        : "score",
                                 ),
-                                options.type == "refresh" ? 3 : 2
+                                options.type === "refresh" ? 3 : 2,
                             ),
                         });
                         break;
@@ -260,30 +260,30 @@ export class Best50Painter extends OngekiPainter<typeof Best50Painter.Theme> {
             theme?: string;
             profilePicture?: Buffer | null;
             type?: "refresh" | "classic";
-        }
+        },
     ) {
         if (!options.type) options.type = "refresh";
         const { data: profile, err: perr } = await source.getPlayerInfo(
             variable.username,
-            options.type
+            options.type,
         );
         if (perr) return { err: perr };
         let newScores: IScore[],
             oldScores: IScore[],
             recentOrPlatinumScores: IScore[],
             bestScores: IScore[] | undefined;
-        if (options.type == "refresh") {
+        if (options.type === "refresh") {
             const { data: score, err: serr } = await source.getPlayerBest60(
-                variable.username
+                variable.username,
             );
             if (serr) return { err: serr };
             newScores = score.new;
             oldScores = score.old;
             recentOrPlatinumScores = score.plat;
             bestScores = score.best;
-        } else if (options.type == "classic") {
+        } else if (options.type === "classic") {
             const { data: score, err: serr } = await source.getPlayerBest55(
-                variable.username
+                variable.username,
             );
             if (serr) return { err: serr };
             recentOrPlatinumScores = score.recent;
@@ -294,7 +294,7 @@ export class Best50Painter extends OngekiPainter<typeof Best50Painter.Theme> {
             return {
                 err: new IllegalArgumentError(
                     "maidraw.ongeki.painter.best50",
-                    `Type can only be "refresh" or "classic". Found ${options.type}.`
+                    `Type can only be "refresh" or "classic". Found ${options.type}.`,
                 ),
             };
         return this.draw(
@@ -315,7 +315,7 @@ export class Best50Painter extends OngekiPainter<typeof Best50Painter.Theme> {
                     return pfp;
                 })(),
                 bestScores,
-            }
+            },
         );
     }
 }

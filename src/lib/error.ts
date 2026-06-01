@@ -7,7 +7,7 @@ export class BaseError extends Error {
         public readonly namespace: string,
         public readonly type: string,
         public readonly message: string,
-        public readonly data?: any
+        public readonly data?: unknown,
     ) {
         super(message);
     }
@@ -25,7 +25,7 @@ export class MissingChartError extends BaseError {
             namespace,
             "missing-chart",
             `Cannot find chart with ID ${chartId}.`,
-            { chartId }
+            { chartId },
         );
     }
 }
@@ -36,7 +36,7 @@ export class UnsupportedMethodError extends BaseError {
             namespace,
             "unsupported-method",
             `"${method}" is not supported by this adapter.`,
-            { method }
+            { method },
         );
     }
 }
@@ -46,24 +46,24 @@ export class FailedToFetchError extends BaseError {
         namespace: string,
         subject: string,
         reason: string = "",
-        data?: any
+        data?: unknown,
     ) {
         super(
             namespace,
             "failed-to-fetch",
             `Failed to fetch ${subject}. ${reason}`,
-            data
+            data,
         );
     }
 }
 
 export class IllegalArgumentError extends BaseError {
-    public constructor(namespace: string, detail: string, data?: any) {
+    public constructor(namespace: string, detail: string, data?: unknown) {
         super(
             namespace,
             "illegal-argument",
             `An argument specified is illegal. ${detail}`,
-            data
+            data,
         );
     }
 }

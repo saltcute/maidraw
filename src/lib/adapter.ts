@@ -1,7 +1,6 @@
-import axios, { AxiosInstance } from "axios";
-
 import { Cache } from "@maidraw/lib/cache";
 import { Logger } from "@maidraw/lib/logger";
+import axios, { type AxiosInstance } from "axios";
 
 export abstract class BaseScoreAdapter {
     private static _cache = new Cache();
@@ -21,12 +20,12 @@ export abstract class BaseScoreAdapter {
     private readonly MAX_LOG_LENGTH = 1000;
     protected async get<T>(
         endpoint: string,
-        data?: any,
+        data?: unknown,
         /**
          * Cache TTL in milliseconds. Defaults to 30 minutes.
          */
         cacheTTL: number = 30 * 60 * 1000,
-        options: axios.AxiosRequestConfig = {}
+        options: axios.AxiosRequestConfig = {},
     ): Promise<T | undefined> {
         const cacheKey = `${this.axios.defaults.baseURL}${endpoint}${
             data
@@ -41,10 +40,10 @@ export abstract class BaseScoreAdapter {
                         data
                             ? ` ${JSON.stringify(data).substring(
                                   0,
-                                  this.MAX_LOG_LENGTH
+                                  this.MAX_LOG_LENGTH,
                               )}`
                             : ""
-                    }, cache HIT`
+                    }, cache HIT`,
                 );
                 return cacheContent as T;
             }
@@ -67,16 +66,16 @@ export abstract class BaseScoreAdapter {
                 data
                     ? ` ${JSON.stringify(data).substring(
                           0,
-                          this.MAX_LOG_LENGTH
+                          this.MAX_LOG_LENGTH,
                       )}`
                     : ""
-            }, cache MISS, took ${timeDifference}ms`
+            }, cache MISS, took ${timeDifference}ms`,
         );
         return res;
     }
     protected async post<T>(
         endpoint: string,
-        data?: any
+        data?: unknown,
     ): Promise<T | undefined> {
         const beginTimestamp = Date.now();
         const res = await this.axios
@@ -89,10 +88,10 @@ export abstract class BaseScoreAdapter {
                 data
                     ? ` ${JSON.stringify(data).substring(
                           0,
-                          this.MAX_LOG_LENGTH
+                          this.MAX_LOG_LENGTH,
                       )}`
                     : ""
-            }, took ${timeDifference}ms`
+            }, took ${timeDifference}ms`,
         );
         return res;
     }

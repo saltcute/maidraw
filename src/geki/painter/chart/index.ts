@@ -1,16 +1,13 @@
-import _ from "lodash";
+import { MissingChartError, MissingThemeError } from "@maidraw/lib/error";
+import { PainterModule, ThemeManager } from "@maidraw/lib/painter";
+import { Util } from "@maidraw/lib/util";
+import { Canvas } from "canvas";
 import upath from "upath";
 import { z } from "zod/v4";
-import { Canvas } from "canvas";
-
-import { EDifficulty, IScore } from "../../type";
-import { OngekiScoreAdapter } from "../../lib/adapter";
-
-import { Util } from "@maidraw/lib/util";
+import type { OngekiScoreAdapter } from "../../lib/adapter";
+import * as Database from "../../lib/database";
+import { EDifficulty, type IScore } from "../../type";
 import { OngekiPainter, OngekiPainterModule } from "..";
-import { PainterModule, ThemeManager } from "@maidraw/lib/painter";
-import { Database } from "../../lib/database";
-import { MissingChartError, MissingThemeError } from "@maidraw/lib/error";
 
 export class ChartPainter extends OngekiPainter<typeof ChartPainter.Theme> {
     public static readonly Theme = ThemeManager.BaseTheme.extend({
@@ -23,7 +20,7 @@ export class ChartPainter extends OngekiPainter<typeof ChartPainter.Theme> {
                 PainterModule.Image.schema,
                 PainterModule.Text.schema,
                 PainterModule.Hitokoto.schema,
-            ])
+            ]),
         ),
     });
     public constructor() {
@@ -35,7 +32,7 @@ export class ChartPainter extends OngekiPainter<typeof ChartPainter.Theme> {
                         ChartPainter.assetsPath,
                         "themes",
                         "ongeki",
-                        "chart"
+                        "chart",
                     ),
                 ],
                 defaultTheme: ChartPainter.DEFAULT_THEME,
@@ -58,7 +55,7 @@ export class ChartPainter extends OngekiPainter<typeof ChartPainter.Theme> {
             theme?: string;
             profilePicture?: Buffer;
             region?: "JPN";
-        } = {}
+        } = {},
     ) {
         let currentTheme = this.theme.get(this.theme.defaultTheme);
         if (options?.theme) {
@@ -75,14 +72,14 @@ export class ChartPainter extends OngekiPainter<typeof ChartPainter.Theme> {
             return {
                 err: new MissingChartError(
                     "maidraw.ongeki.painter.chart",
-                    variables.chartId
+                    variables.chartId,
                 ),
             };
         if (currentTheme) {
             await Database.cacheJackets([variables.chartId]);
             const canvas = new Canvas(
                 currentTheme.content.width * (options?.scale ?? 1),
-                currentTheme.content.height * (options?.scale ?? 1)
+                currentTheme.content.height * (options?.scale ?? 1),
             );
             const ctx = canvas.getContext("2d");
             if (options?.scale) ctx.scale(options.scale, options.scale);
@@ -93,7 +90,7 @@ export class ChartPainter extends OngekiPainter<typeof ChartPainter.Theme> {
                         await PainterModule.Image.draw(
                             ctx,
                             currentTheme,
-                            element
+                            element,
                         );
                         break;
                     }
@@ -101,7 +98,7 @@ export class ChartPainter extends OngekiPainter<typeof ChartPainter.Theme> {
                         await PainterModule.Hitokoto.draw(
                             ctx,
                             currentTheme,
-                            element
+                            element,
                         );
                         break;
                     }
@@ -113,7 +110,7 @@ export class ChartPainter extends OngekiPainter<typeof ChartPainter.Theme> {
                             variables.chartId,
                             variables.scores,
                             options?.region,
-                            variables.type
+                            variables.type,
                         );
                         break;
                     }
@@ -122,7 +119,7 @@ export class ChartPainter extends OngekiPainter<typeof ChartPainter.Theme> {
                             ctx,
                             currentTheme,
                             element,
-                            variables.chartId
+                            variables.chartId,
                         );
                         break;
                     }
@@ -131,7 +128,7 @@ export class ChartPainter extends OngekiPainter<typeof ChartPainter.Theme> {
                             ctx,
                             currentTheme,
                             element,
-                            charts.find((v) => v != undefined)?.meta.boss
+                            charts.find((v) => v !== undefined)?.meta.boss,
                         );
                         break;
                     }
@@ -142,14 +139,14 @@ export class ChartPainter extends OngekiPainter<typeof ChartPainter.Theme> {
                             element,
                             variables.username,
                             variables.rating,
-                            options?.profilePicture
+                            options?.profilePicture,
                         );
                         break;
                     }
                     case "text": {
                         await PainterModule.Text.draw(ctx, element, {
                             username: Util.HalfFullWidthConvert.toFullWidth(
-                                variables.username
+                                variables.username,
                             ),
                             rating: Util.truncate(variables.rating, 0),
                         });
@@ -175,16 +172,16 @@ export class ChartPainter extends OngekiPainter<typeof ChartPainter.Theme> {
             theme?: string;
             profilePicture?: Buffer | null;
             region?: "JPN";
-        } = {}
+        } = {},
     ) {
         const { data: profile, err: perr } = await source.getPlayerInfo(
             variables.username,
-            variables.type
+            variables.type,
         );
         if (perr) return { err: perr };
         const { data: score, err: serr } = await source.getPlayerScore(
             variables.username,
-            variables.chartId
+            variables.chartId,
         );
         if (serr) return { err: serr };
         return this.draw(
@@ -207,12 +204,12 @@ export class ChartPainter extends OngekiPainter<typeof ChartPainter.Theme> {
                     if (options?.profilePicture) return options?.profilePicture;
                     const { data: pfp, err: pfperr } =
                         await source.getPlayerProfilePicture(
-                            variables.username
+                            variables.username,
                         );
                     if (pfperr) return undefined;
                     return pfp;
                 })(),
-            }
+            },
         );
     }
 }

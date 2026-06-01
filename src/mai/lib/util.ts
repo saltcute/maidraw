@@ -1,8 +1,7 @@
-import _ from "lodash";
-
-import { EAchievementTypes, EComboTypes } from "../type";
-import { Database } from "./database";
 import Util from "@maidraw/lib/util";
+import _ from "lodash";
+import { EAchievementTypes, EComboTypes } from "../type";
+import type * as Database from "./database";
 
 export namespace MaimaiUtil {
     export class Version {
@@ -124,23 +123,23 @@ export namespace MaimaiUtil {
                     _.isEqual(v.gameVersion.minor, version.gameVersion.minor)
                 );
             });
-            if (index == -1) {
+            if (index === -1) {
                 return version;
-            } else if (index == this.versions.length - 1) {
-                return this.versions[index];
+            } else if (index === Version.versions.length - 1) {
+                return Version.versions[index];
             }
-            return this.versions[index + 1];
+            return Version.versions[index + 1];
         }
         static getPreviousVersion(version: Database.IVersion) {
             const index = _.findIndex(Version.versions, (v) => {
                 return _.isEqual(v.gameVersion, version.gameVersion);
             });
-            if (index == -1) {
+            if (index === -1) {
                 return version;
-            } else if (index == 0) {
-                return this.versions[index];
+            } else if (index === 0) {
+                return Version.versions[index];
             }
-            return this.versions[index - 1];
+            return Version.versions[index - 1];
         }
         static toEventVersion(version: Database.IVersion) {
             const event = {
@@ -153,11 +152,11 @@ export namespace MaimaiUtil {
     }
     export const RATING_CONSTANTS = {
         [EAchievementTypes.D]: {
-            [0.4]: 6.4,
-            [0.3]: 4.8,
-            [0.2]: 3.2,
-            [0.1]: 1.6,
-            [0]: 0,
+            0.4: 6.4,
+            0.3: 4.8,
+            0.2: 3.2,
+            0.1: 1.6,
+            0: 0,
         },
         [EAchievementTypes.C]: 13.6,
         [EAchievementTypes.B]: 13.6,
@@ -183,7 +182,7 @@ export namespace MaimaiUtil {
         internalLevel: number,
         achievement: number,
         combo: EComboTypes,
-        version: "dx" | "circle"
+        version: "dx" | "circle",
     ): number {
         let ratingConstant = 0;
         switch (true) {
@@ -260,12 +259,12 @@ export namespace MaimaiUtil {
             (Math.min(achievement, 100.5) / 100) *
                 ratingConstant *
                 internalLevel,
-            0
+            0,
         );
         if (
             version === "circle" &&
             [EComboTypes.ALL_PERFECT, EComboTypes.ALL_PERFECT_PLUS].includes(
-                combo
+                combo,
             )
         ) {
             rating += 1;

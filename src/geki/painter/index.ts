@@ -1,22 +1,20 @@
+import { Painter, type Theme, ThemeManager } from "@maidraw/lib/painter";
+import { Util } from "@maidraw/lib/util";
+import { Canvas, type CanvasRenderingContext2D } from "canvas";
+import Color from "color";
 import _ from "lodash";
 import sharp from "sharp";
-import Color from "color";
 import { z } from "zod/v4";
-import { Canvas, CanvasRenderingContext2D } from "canvas";
-
-import { Database } from "../lib/database";
-import { OngekiScoreAdapter } from "../lib/adapter";
+import type { OngekiScoreAdapter } from "../lib/adapter";
+import * as Database from "../lib/database";
+import { OngekiUtil } from "../lib/util";
 import {
     EAchievementTypes,
     EBellTypes,
     EComboTypes,
     EDifficulty,
-    IScore,
+    type IScore,
 } from "../type";
-
-import { Util } from "@maidraw/lib/util";
-import { Painter, Theme, ThemeManager } from "@maidraw/lib/painter";
-import { OngekiUtil } from "../lib/util";
 
 export abstract class OngekiPainter<
     Schema extends typeof ThemeManager.BaseObject,
@@ -77,16 +75,17 @@ export namespace OngekiPainterModule {
         });
         export async function draw(
             ctx: CanvasRenderingContext2D,
+            // biome-ignore lint/suspicious/noExplicitAny: need major refactor
             theme: Theme<any>,
             element: z.infer<typeof schema>,
             username: string,
             rating: number,
             profilePicture?: Buffer,
-            type: "refresh" | "classic" = "refresh"
+            type: "refresh" | "classic" = "refresh",
         ) {
             try {
                 const userplate = sharp(
-                    theme.getFile(element.sprites.profile.userplate)
+                    theme.getFile(element.sprites.profile.userplate),
                 );
                 const upper = await userplate
                     .resize({
@@ -114,7 +113,7 @@ export namespace OngekiPainterModule {
                     element.x,
                     element.y,
                     theme.content.width,
-                    theme.content.width * (166 / 1080)
+                    theme.content.width * (166 / 1080),
                 );
                 ctx.drawImage(
                     lowerImage,
@@ -123,14 +122,14 @@ export namespace OngekiPainterModule {
                         theme.content.height -
                         theme.content.width * (130 / 1080),
                     theme.content.width,
-                    theme.content.width * (130 / 1080)
+                    theme.content.width * (130 / 1080),
                 );
             } catch {}
 
             ctx.save();
             ctx.translate(
                 element.x + theme.content.width * (7 / 32) * (59 / 128),
-                element.y + theme.content.width * (7 / 32) * (16 / 128)
+                element.y + theme.content.width * (7 / 32) * (16 / 128),
             );
 
             /* Begin Profile Picture Draw */
@@ -141,7 +140,7 @@ export namespace OngekiPainterModule {
                     0,
                     0,
                     theme.content.width * (7 / 32) * 0.45,
-                    theme.content.width * (7 / 32) * 0.45
+                    theme.content.width * (7 / 32) * 0.45,
                 );
                 ctx.clip();
                 ctx.fillStyle = "white";
@@ -157,7 +156,7 @@ export namespace OngekiPainterModule {
                     theme.getFile(element.sprites.profile.icon);
                 const { dominant } = await sharp(pfp).stats();
                 const icon = await Util.loadImage(
-                    await sharp(pfp).png().toBuffer()
+                    await sharp(pfp).png().toBuffer(),
                 );
 
                 const cropSize = Math.min(icon.width, icon.height);
@@ -170,7 +169,7 @@ export namespace OngekiPainterModule {
                     0,
                     0,
                     theme.content.width * (7 / 32) * 0.45,
-                    theme.content.width * (7 / 32) * 0.45
+                    theme.content.width * (7 / 32) * 0.45,
                 );
 
                 if (profilePicture) {
@@ -179,7 +178,7 @@ export namespace OngekiPainterModule {
                         0,
                         0,
                         theme.content.width * (7 / 32) * 0.45,
-                        theme.content.width * (7 / 32) * 0.45
+                        theme.content.width * (7 / 32) * 0.45,
                     );
                     ctx.strokeStyle = Color.rgb(dominant).darken(0.3).hex();
                     ctx.lineWidth = (theme.content.width * (7 / 32)) / 128;
@@ -187,137 +186,132 @@ export namespace OngekiPainterModule {
                 }
                 ctx.restore();
             }
-            /* End Profile Picture Draw */
-
-            /* Begin Username Draw */
+            ctx.save();
+            ctx.translate(theme.content.width * (7 / 32) * 0.45, 0);
             {
-                ctx.save();
-                ctx.translate(theme.content.width * (7 / 32) * 0.45, 0);
-                {
-                    ctx.beginPath();
-                    ctx.rect(
-                        0,
-                        theme.content.width * (7 / 32) * (19 / 128),
-                        theme.content.width * (7 / 32) * (41 / 128),
-                        theme.content.width * (7 / 32) * (20 / 128)
-                    );
-                    ctx.fillStyle = "#3e3e3e";
-                    ctx.fill();
-                    ctx.beginPath();
-                    ctx.rect(
-                        theme.content.width * (7 / 32) * (41 / 128),
-                        theme.content.width * (7 / 32) * (19 / 128),
-                        theme.content.width * (7 / 32) * (135 / 128),
-                        theme.content.width * (7 / 32) * (20 / 128)
-                    );
-                    ctx.fillStyle = "white";
-                    ctx.fill();
-                    Util.drawText(
-                        ctx,
-                        "Lv.",
-                        theme.content.width * (7 / 32) * (5 / 128),
-                        theme.content.width * (7 / 32) * (37 / 128),
-                        theme.content.width * (7 / 32) * (8 / 128),
-                        0,
-                        {
-                            maxWidth:
-                                (((theme.content.width * (7 / 32)) / 3) *
-                                    5.108 *
-                                    3.1) /
-                                5,
-                            textAlign: "left",
-                            mainColor: "white",
-                            borderColor: "white",
-                            font: "ongeki-font-level",
-                        }
-                    );
-                    Util.drawText(
-                        ctx,
-                        "39",
-                        theme.content.width * (7 / 32) * (14 / 128),
-                        theme.content.width * (7 / 32) * (37 / 128),
-                        theme.content.width * (7 / 32) * (21 / 128),
-                        0,
-                        {
-                            maxWidth:
-                                (((theme.content.width * (7 / 32)) / 3) *
-                                    5.108 *
-                                    3.1) /
-                                5,
-                            textAlign: "left",
-                            mainColor: "white",
-                            borderColor: "white",
-                            font: "ongeki-font-level",
-                        }
-                    );
+                ctx.beginPath();
+                ctx.rect(
+                    0,
+                    theme.content.width * (7 / 32) * (19 / 128),
+                    theme.content.width * (7 / 32) * (41 / 128),
+                    theme.content.width * (7 / 32) * (20 / 128),
+                );
+                ctx.fillStyle = "#3e3e3e";
+                ctx.fill();
+                ctx.beginPath();
+                ctx.rect(
+                    theme.content.width * (7 / 32) * (41 / 128),
+                    theme.content.width * (7 / 32) * (19 / 128),
+                    theme.content.width * (7 / 32) * (135 / 128),
+                    theme.content.width * (7 / 32) * (20 / 128),
+                );
+                ctx.fillStyle = "white";
+                ctx.fill();
+                Util.drawText(
+                    ctx,
+                    "Lv.",
+                    theme.content.width * (7 / 32) * (5 / 128),
+                    theme.content.width * (7 / 32) * (37 / 128),
+                    theme.content.width * (7 / 32) * (8 / 128),
+                    0,
+                    {
+                        maxWidth:
+                            (((theme.content.width * (7 / 32)) / 3) *
+                                5.108 *
+                                3.1) /
+                            5,
+                        textAlign: "left",
+                        mainColor: "white",
+                        borderColor: "white",
+                        font: "ongeki-font-level",
+                    },
+                );
+                Util.drawText(
+                    ctx,
+                    "39",
+                    theme.content.width * (7 / 32) * (14 / 128),
+                    theme.content.width * (7 / 32) * (37 / 128),
+                    theme.content.width * (7 / 32) * (21 / 128),
+                    0,
+                    {
+                        maxWidth:
+                            (((theme.content.width * (7 / 32)) / 3) *
+                                5.108 *
+                                3.1) /
+                            5,
+                        textAlign: "left",
+                        mainColor: "white",
+                        borderColor: "white",
+                        font: "ongeki-font-level",
+                    },
+                );
 
-                    Util.drawText(
-                        ctx,
-                        Util.HalfFullWidthConvert.toFullWidth(username),
-                        theme.content.width * (7 / 32) * (108 / 128),
-                        theme.content.width * (7 / 32) * (36 / 128),
-                        theme.content.width * (7 / 32) * (1 / 8),
-                        0,
-                        {
-                            maxWidth:
-                                theme.content.width * (7 / 32) * (135 / 128),
-                            textAlign: "center",
-                            mainColor: "black",
-                            borderColor: "black",
-                            font: "standard-font-username",
-                            widthConstraintType: "shrink",
-                            shrinkAnchor: "center",
-                        }
+                Util.drawText(
+                    ctx,
+                    Util.HalfFullWidthConvert.toFullWidth(username),
+                    theme.content.width * (7 / 32) * (108 / 128),
+                    theme.content.width * (7 / 32) * (36 / 128),
+                    theme.content.width * (7 / 32) * (1 / 8),
+                    0,
+                    {
+                        maxWidth: theme.content.width * (7 / 32) * (135 / 128),
+                        textAlign: "center",
+                        mainColor: "black",
+                        borderColor: "black",
+                        font: "standard-font-username",
+                        widthConstraintType: "shrink",
+                        shrinkAnchor: "center",
+                    },
+                );
+
+                const { number: ratingNumberImg, text: ratingTextImg } =
+                    await getRatingNumber(rating, theme, element, type);
+
+                if (ratingTextImg) {
+                    const image = await Util.loadImage(ratingTextImg);
+                    const { width, height } = image;
+                    const aspectRatio = width / height;
+                    const drawHeight =
+                        theme.content.width * (7 / 32) * (12 / 128);
+                    const drawWidth = drawHeight * aspectRatio;
+                    ctx.drawImage(
+                        image,
+                        theme.content.width * (7 / 32) * (-1 / 128),
+                        theme.content.width * (7 / 32) * (46 / 128),
+                        drawWidth,
+                        drawHeight,
                     );
-
-                    const { number: ratingNumberImg, text: ratingTextImg } =
-                        await getRatingNumber(rating, theme, element, type);
-
-                    if (ratingTextImg) {
-                        const image = await Util.loadImage(ratingTextImg);
-                        const { width, height } = image;
-                        const aspectRatio = width / height;
-                        const drawHeight =
-                            theme.content.width * (7 / 32) * (12 / 128);
-                        const drawWidth = drawHeight * aspectRatio;
-                        ctx.drawImage(
-                            image,
-                            theme.content.width * (7 / 32) * (-1 / 128),
-                            theme.content.width * (7 / 32) * (46 / 128),
-                            drawWidth,
-                            drawHeight
-                        );
-                    }
-                    if (ratingNumberImg) {
-                        const image = await Util.loadImage(ratingNumberImg);
-                        const { width, height } = image;
-                        const aspectRatio = width / height;
-                        const drawHeight =
-                            theme.content.width * (7 / 32) * (20 / 128);
-                        const drawWidth = drawHeight * aspectRatio;
-                        ctx.drawImage(
-                            image,
-                            theme.content.width * (7 / 32) * (48 / 128),
-                            theme.content.width * (7 / 32) * (39 / 128),
-                            drawWidth,
-                            drawHeight
-                        );
-                    }
                 }
-                ctx.restore();
+                if (ratingNumberImg) {
+                    const image = await Util.loadImage(ratingNumberImg);
+                    const { width, height } = image;
+                    const aspectRatio = width / height;
+                    const drawHeight =
+                        theme.content.width * (7 / 32) * (20 / 128);
+                    const drawWidth = drawHeight * aspectRatio;
+                    ctx.drawImage(
+                        image,
+                        theme.content.width * (7 / 32) * (48 / 128),
+                        theme.content.width * (7 / 32) * (39 / 128),
+                        drawWidth,
+                        drawHeight,
+                    );
+                }
             }
+            ctx.restore();
 
             async function getRatingNumber(
                 num: number,
+                // biome-ignore lint/suspicious/noExplicitAny: need major refactor
                 theme: Theme<any>,
                 element: z.infer<typeof schema>,
-                type: "refresh" | "classic"
+                type: "refresh" | "classic",
             ) {
                 async function getRatingDigit(
                     map: Buffer,
                     digit: number,
                     unitWidth: number,
-                    unitHeight: number
+                    unitHeight: number,
                 ) {
                     digit = Math.trunc(digit % 10);
                     return await sharp(map)
@@ -332,7 +326,7 @@ export namespace OngekiPainterModule {
                 async function getRatingDot(
                     map: Buffer,
                     unitWidth: number,
-                    unitHeight: number
+                    unitHeight: number,
                 ) {
                     const { height } = await sharp(map).metadata();
                     return await sharp(map)
@@ -346,9 +340,9 @@ export namespace OngekiPainterModule {
                 }
                 function getRatingColor(
                     rating: number,
-                    type: "refresh" | "classic"
+                    type: "refresh" | "classic",
                 ) {
-                    if (type == "classic") {
+                    if (type === "classic") {
                         if (rating >= 15) {
                             return "rainbow";
                         } else if (rating >= 14.5) {
@@ -399,7 +393,7 @@ export namespace OngekiPainterModule {
                     }
                 }
                 const map = theme.getFile(
-                    element.sprites.rating.numberMap[getRatingColor(num, type)]
+                    element.sprites.rating.numberMap[getRatingColor(num, type)],
                 );
                 const { width, height } = await sharp(map).metadata();
                 if (!(width && height)) return { number: null, text: null };
@@ -417,7 +411,7 @@ export namespace OngekiPainterModule {
                                 return getRatingDot(
                                     map,
                                     unitWidth,
-                                    unitHeight
+                                    unitHeight,
                                 ).then((img) => {
                                     return {
                                         str: v,
@@ -427,21 +421,9 @@ export namespace OngekiPainterModule {
                             else if ("0" <= v && v <= "9")
                                 return getRatingDigit(
                                     map,
-                                    parseInt(v),
+                                    parseInt(v, 10),
                                     unitWidth,
-                                    unitHeight
-                                ).then((img) => {
-                                    return {
-                                        str: v,
-                                        img,
-                                    };
-                                });
-                            else if ("0" <= v && v <= "9")
-                                return getRatingDigit(
-                                    map,
-                                    parseInt(v),
-                                    unitWidth,
-                                    unitHeight
+                                    unitHeight,
                                 ).then((img) => {
                                     return {
                                         str: v,
@@ -453,24 +435,24 @@ export namespace OngekiPainterModule {
                                     str: v,
                                     img: null,
                                 };
-                        })
+                        }),
                 );
                 const integerPartScale = 1.3;
                 const canvas = new Canvas(
                     unitWidth * digits.length,
-                    unitHeight * integerPartScale
+                    unitHeight * integerPartScale,
                 );
                 const ctx = canvas.getContext("2d");
                 let state: "large" | "small" = "large";
                 for (let i = 0, curx = 0; i < digits.length; ++i) {
                     const curDigit = digits[i];
-                    if (!curDigit || !curDigit.img) continue;
+                    if (!curDigit?.img) continue;
                     const img = await Util.loadImage(curDigit.img);
                     if (curDigit.str === ".") {
                         ctx.drawImage(
                             img,
                             curx,
-                            unitHeight * (integerPartScale - 1)
+                            unitHeight * (integerPartScale - 1),
                         );
                         curx += unitWidth * 0.45;
                         state = "small";
@@ -479,7 +461,7 @@ export namespace OngekiPainterModule {
                             ctx.drawImage(
                                 img,
                                 curx,
-                                unitHeight * (integerPartScale - 1) * 0.75
+                                unitHeight * (integerPartScale - 1) * 0.75,
                             );
                             curx += unitWidth * 0.6;
                         } else {
@@ -488,7 +470,7 @@ export namespace OngekiPainterModule {
                                 curx,
                                 0,
                                 unitWidth * integerPartScale,
-                                unitHeight * integerPartScale
+                                unitHeight * integerPartScale,
                             );
                             curx += unitWidth * 0.6 * integerPartScale;
                         }
@@ -499,7 +481,7 @@ export namespace OngekiPainterModule {
                     text: theme.getFile(
                         element.sprites.rating.headerText[
                             getRatingColor(rating, type)
-                        ]
+                        ],
                     ),
                 };
             }
@@ -563,13 +545,14 @@ export namespace OngekiPainterModule {
             });
             export async function draw(
                 ctx: CanvasRenderingContext2D,
+                // biome-ignore lint/suspicious/noExplicitAny: need major refactor
                 theme: Theme<any>,
                 element: z.infer<typeof schema>,
                 score: IScore,
                 index: number,
                 x: number,
                 y: number,
-                type: "refresh" | "classic" = "refresh"
+                type: "refresh" | "classic" = "refresh",
             ) {
                 let curColor = "#FFFFFF";
                 switch (score.chart.difficulty) {
@@ -599,7 +582,7 @@ export namespace OngekiPainterModule {
                     y,
                     element.scoreBubble.width,
                     element.scoreBubble.height,
-                    (element.scoreBubble.height * 0.806) / 7
+                    (element.scoreBubble.height * 0.806) / 7,
                 );
                 ctx.strokeStyle = new Color(curColor).darken(0.3).hexa();
                 ctx.lineWidth = element.scoreBubble.margin / 4;
@@ -611,7 +594,7 @@ export namespace OngekiPainterModule {
                     y,
                     element.scoreBubble.width,
                     element.scoreBubble.height,
-                    (element.scoreBubble.height * 0.806) / 7
+                    (element.scoreBubble.height * 0.806) / 7,
                 );
                 ctx.clip();
 
@@ -624,7 +607,7 @@ export namespace OngekiPainterModule {
                         y,
                         element.scoreBubble.width,
                         element.scoreBubble.height * 0.742,
-                        (element.scoreBubble.height * 0.806) / 7
+                        (element.scoreBubble.height * 0.806) / 7,
                     );
                     ctx.clip();
                     ctx.fillStyle = curColor;
@@ -632,44 +615,44 @@ export namespace OngekiPainterModule {
 
                     const jacketSize = Math.min(
                         element.scoreBubble.width,
-                        element.scoreBubble.height * 0.742
+                        element.scoreBubble.height * 0.742,
                     );
 
                     const jacketMaskGrad = ctx.createLinearGradient(
                         x + jacketSize / 2,
                         y + jacketSize / 2,
                         x + jacketSize,
-                        y + jacketSize / 2
+                        y + jacketSize / 2,
                     );
                     jacketMaskGrad.addColorStop(
                         0,
-                        new Color(curColor).alpha(0).hexa()
+                        new Color(curColor).alpha(0).hexa(),
                     );
                     jacketMaskGrad.addColorStop(
                         0.25,
-                        new Color(curColor).alpha(0.2).hexa()
+                        new Color(curColor).alpha(0.2).hexa(),
                     );
                     jacketMaskGrad.addColorStop(
                         1,
-                        new Color(curColor).alpha(1).hexa()
+                        new Color(curColor).alpha(1).hexa(),
                     );
                     const jacketMaskGradDark = ctx.createLinearGradient(
                         x + jacketSize / 2,
                         y + jacketSize / 2,
                         x + jacketSize,
-                        y + jacketSize / 2
+                        y + jacketSize / 2,
                     );
                     jacketMaskGradDark.addColorStop(
                         0,
-                        new Color(curColor).darken(0.3).alpha(0).hexa()
+                        new Color(curColor).darken(0.3).alpha(0).hexa(),
                     );
                     jacketMaskGradDark.addColorStop(
                         0.25,
-                        new Color(curColor).darken(0.3).alpha(0.2).hexa()
+                        new Color(curColor).darken(0.3).alpha(0.2).hexa(),
                     );
                     jacketMaskGradDark.addColorStop(
                         1,
-                        new Color(curColor).darken(0.3).alpha(1).hexa()
+                        new Color(curColor).darken(0.3).alpha(1).hexa(),
                     );
 
                     /** Begin Jacket Draw*/
@@ -685,13 +668,13 @@ export namespace OngekiPainterModule {
                     /** End Jacket Draw*/
 
                     /** Begin Jacket Gradient Mask Draw*/
-                    if (!(element.region == "recent" && type == "refresh")) {
+                    if (!(element.region === "recent" && type === "refresh")) {
                         ctx.fillStyle = jacketMaskGrad;
                         ctx.fillRect(
                             x + jacketSize / 2,
                             y,
                             (jacketSize * 3) / 4,
-                            jacketSize
+                            jacketSize,
                         );
                     }
                     /** End Jacket Gradient Mask Draw*/
@@ -699,7 +682,7 @@ export namespace OngekiPainterModule {
                     /** Begin Title Draw */
                     const titleTextSize =
                         element.scoreBubble.height * 0.806 * 0.144;
-                    if (!(element.region == "recent" && type == "refresh")) {
+                    if (!(element.region === "recent" && type === "refresh")) {
                         Util.drawText(
                             ctx,
                             score.chart.name,
@@ -717,7 +700,7 @@ export namespace OngekiPainterModule {
                                 borderColor: jacketMaskGradDark,
                                 widthConstraintType: "shrink-cut",
                                 shrinkMinFontSize: titleTextSize * 0.85,
-                            }
+                            },
                         );
                     } else {
                         Util.drawText(
@@ -737,13 +720,13 @@ export namespace OngekiPainterModule {
                                 widthConstraintType: "shrink-cut",
                                 shrinkAnchor: "center",
                                 shrinkMinFontSize: titleTextSize * 0.7,
-                            }
+                            },
                         );
                     }
                     /** End Title Draw */
 
                     /** Begin Separation Line Draw */
-                    if (!(element.region == "recent" && type == "refresh")) {
+                    if (!(element.region === "recent" && type === "refresh")) {
                         ctx.beginPath();
                         ctx.roundRect(
                             x + (jacketSize * 13) / 16,
@@ -756,7 +739,7 @@ export namespace OngekiPainterModule {
                                 (jacketSize * 13) / 16 -
                                 element.scoreBubble.margin,
                             element.scoreBubble.height * 0.806 * 0.02,
-                            (element.scoreBubble.height * 0.806 * 0.02) / 2
+                            (element.scoreBubble.height * 0.806 * 0.02) / 2,
                         );
                         ctx.fillStyle = jacketMaskGradDark;
                         ctx.fill();
@@ -764,7 +747,7 @@ export namespace OngekiPainterModule {
                     /** End Separation Line Draw */
 
                     /** Begin Achievement Rate Draw */
-                    if (!(element.region == "recent" && type == "refresh")) {
+                    if (!(element.region === "recent" && type === "refresh")) {
                         Util.drawText(
                             ctx,
                             Util.truncate(score.score, 0),
@@ -785,73 +768,73 @@ export namespace OngekiPainterModule {
                                 borderColor: new Color(curColor)
                                     .darken(0.3)
                                     .hexa(),
-                            }
+                            },
                         );
                     }
                     /** End Achievement Rate Draw */
 
                     /** Begin Achievement Rank Draw */
-                    if (!(element.region == "recent" && type == "refresh")) {
+                    if (!(element.region === "recent" && type === "refresh")) {
                         let rankImg: Buffer;
                         switch (score.rank) {
                             case EAchievementTypes.D:
                                 rankImg = theme.getFile(
-                                    element.sprites.achievement.d
+                                    element.sprites.achievement.d,
                                 );
                                 break;
                             case EAchievementTypes.C:
                                 rankImg = theme.getFile(
-                                    element.sprites.achievement.c
+                                    element.sprites.achievement.c,
                                 );
                                 break;
                             case EAchievementTypes.B:
                                 rankImg = theme.getFile(
-                                    element.sprites.achievement.b
+                                    element.sprites.achievement.b,
                                 );
                                 break;
                             case EAchievementTypes.BB:
                                 rankImg = theme.getFile(
-                                    element.sprites.achievement.bb
+                                    element.sprites.achievement.bb,
                                 );
                                 break;
                             case EAchievementTypes.BBB:
                                 rankImg = theme.getFile(
-                                    element.sprites.achievement.bbb
+                                    element.sprites.achievement.bbb,
                                 );
                                 break;
                             case EAchievementTypes.A:
                                 rankImg = theme.getFile(
-                                    element.sprites.achievement.a
+                                    element.sprites.achievement.a,
                                 );
                                 break;
                             case EAchievementTypes.AA:
                                 rankImg = theme.getFile(
-                                    element.sprites.achievement.aa
+                                    element.sprites.achievement.aa,
                                 );
                                 break;
                             case EAchievementTypes.AAA:
                                 rankImg = theme.getFile(
-                                    element.sprites.achievement.aaa
+                                    element.sprites.achievement.aaa,
                                 );
                                 break;
                             case EAchievementTypes.S:
                                 rankImg = theme.getFile(
-                                    element.sprites.achievement.s
+                                    element.sprites.achievement.s,
                                 );
                                 break;
                             case EAchievementTypes.SS:
                                 rankImg = theme.getFile(
-                                    element.sprites.achievement.ss
+                                    element.sprites.achievement.ss,
                                 );
                                 break;
                             case EAchievementTypes.SSS:
                                 rankImg = theme.getFile(
-                                    element.sprites.achievement.sss
+                                    element.sprites.achievement.sss,
                                 );
                                 break;
                             default:
                                 rankImg = theme.getFile(
-                                    element.sprites.achievement.sssp
+                                    element.sprites.achievement.sssp,
                                 );
                         }
                         const img = await Util.loadImage(rankImg);
@@ -862,33 +845,33 @@ export namespace OngekiPainterModule {
                                 element.scoreBubble.margin +
                                 element.scoreBubble.height * 0.835 * 0.22,
                             element.scoreBubble.height * 0.835 * 0.24 * 2,
-                            element.scoreBubble.height * 0.835 * 0.24
+                            element.scoreBubble.height * 0.835 * 0.24,
                         );
                     }
                     /** End Achievement Rank Draw */
 
                     /** Begin Milestone Draw */
-                    if (!(element.region == "recent" && type == "refresh")) {
+                    if (!(element.region === "recent" && type === "refresh")) {
                         let comboImg: Buffer;
                         switch (score.combo) {
                             case EComboTypes.NONE:
                                 comboImg = theme.getFile(
-                                    element.sprites.milestone.none
+                                    element.sprites.milestone.none,
                                 );
                                 break;
                             case EComboTypes.FULL_COMBO:
                                 comboImg = theme.getFile(
-                                    element.sprites.milestone.fc
+                                    element.sprites.milestone.fc,
                                 );
                                 break;
                             case EComboTypes.ALL_BREAK:
                                 comboImg = theme.getFile(
-                                    element.sprites.milestone.ab
+                                    element.sprites.milestone.ab,
                                 );
                                 break;
                             case EComboTypes.ALL_BREAK_PLUS:
                                 comboImg = theme.getFile(
-                                    element.sprites.milestone.abp
+                                    element.sprites.milestone.abp,
                                 );
                                 break;
                         }
@@ -896,12 +879,12 @@ export namespace OngekiPainterModule {
                         switch (score.bell) {
                             case EBellTypes.NONE:
                                 bellImg = theme.getFile(
-                                    element.sprites.milestone.none
+                                    element.sprites.milestone.none,
                                 );
                                 break;
                             case EBellTypes.FULL_BELL:
                                 bellImg = theme.getFile(
-                                    element.sprites.milestone.fb
+                                    element.sprites.milestone.fb,
                                 );
                                 break;
                         }
@@ -925,7 +908,7 @@ export namespace OngekiPainterModule {
                                 comboWidth * comboBgRatio,
                             comboBackground,
                             comboBackground * comboBgRatio,
-                            (comboBackground * comboBgRatio) / 2
+                            (comboBackground * comboBgRatio) / 2,
                         );
                         ctx.fill();
 
@@ -942,7 +925,7 @@ export namespace OngekiPainterModule {
                                 comboWidth * comboBgRatio,
                             comboBackground,
                             comboBackground * comboBgRatio,
-                            (comboBackground * comboBgRatio) / 2
+                            (comboBackground * comboBgRatio) / 2,
                         );
                         ctx.fill();
                         const combo = await Util.loadImage(comboImg);
@@ -959,7 +942,7 @@ export namespace OngekiPainterModule {
                                 element.scoreBubble.margin -
                                 comboWidth * (84 / 290),
                             comboWidth,
-                            comboWidth * (84 / 290)
+                            comboWidth * (84 / 290),
                         );
                         ctx.drawImage(
                             combo,
@@ -972,7 +955,7 @@ export namespace OngekiPainterModule {
                                 element.scoreBubble.margin -
                                 comboWidth * (84 / 290),
                             comboWidth,
-                            comboWidth * (84 / 290)
+                            comboWidth * (84 / 290),
                         );
                     }
                     /** End Milestone Draw */
@@ -996,7 +979,7 @@ export namespace OngekiPainterModule {
                                 borderColor: new Color(curColor)
                                     .darken(0.3)
                                     .hexa(),
-                            }
+                            },
                         );
 
                         if (element.region === "recent" && type === "refresh") {
@@ -1010,7 +993,7 @@ export namespace OngekiPainterModule {
                                 ctx,
                                 content,
                                 fontSize,
-                                Infinity
+                                Infinity,
                             );
                             const width =
                                 mesaure.actualBoundingBoxLeft +
@@ -1022,7 +1005,7 @@ export namespace OngekiPainterModule {
                                 x + element.scoreBubble.width - margin - width,
                                 y + jacketSize - margin - height / 2,
                                 x + element.scoreBubble.width - margin,
-                                y + jacketSize - margin - height / 2
+                                y + jacketSize - margin - height / 2,
                             );
                             [
                                 "#e81416",
@@ -1051,7 +1034,7 @@ export namespace OngekiPainterModule {
                                             : new Color(curColor)
                                                   .darken(0.3)
                                                   .hexa(),
-                                }
+                                },
                             );
                         }
                     }
@@ -1095,7 +1078,7 @@ export namespace OngekiPainterModule {
                             textAlign: "left",
                             mainColor: "white",
                             borderColor: new Color(curColor).darken(0.3).hexa(),
-                        }
+                        },
                     );
                     if (rightContent) {
                         Util.drawText(
@@ -1113,7 +1096,7 @@ export namespace OngekiPainterModule {
                                 borderColor: new Color(curColor)
                                     .darken(0.3)
                                     .hexa(),
-                            }
+                            },
                         );
                     }
                 }
@@ -1124,11 +1107,9 @@ export namespace OngekiPainterModule {
             }
             export async function drawOutline(
                 ctx: CanvasRenderingContext2D,
-                theme: Theme<any>,
                 element: z.infer<typeof schema>,
-                index: number,
                 x: number,
-                y: number
+                y: number,
             ) {
                 ctx.save();
 
@@ -1140,7 +1121,7 @@ export namespace OngekiPainterModule {
                     y,
                     element.scoreBubble.width,
                     element.scoreBubble.height,
-                    ROUND_CORNOR_RADIUS
+                    ROUND_CORNOR_RADIUS,
                 );
 
                 const BASE_COLOR = new Color("#949494");
@@ -1184,7 +1165,6 @@ export namespace OngekiPainterModule {
                         return ONGEKI_INT_VERSIONS;
                     case "CHN":
                         return YINJI_VERSIONS;
-                    case "JPN":
                     default:
                         return ONGEKI_VERSIONS;
                 }
@@ -1245,12 +1225,13 @@ export namespace OngekiPainterModule {
 
             export async function draw(
                 ctx: CanvasRenderingContext2D,
+                // biome-ignore lint/suspicious/noExplicitAny: need major refactor
                 theme: Theme<any>,
                 element: z.infer<typeof schema>,
                 chartId: number,
                 scores: (IScore | null)[],
                 region: "JPN" = "JPN",
-                type: "refresh" | "classic" = "refresh"
+                type: "refresh" | "classic" = "refresh",
             ) {
                 /* Begin Background Draw */
                 ctx.roundRect(
@@ -1259,7 +1240,7 @@ export namespace OngekiPainterModule {
                     element.width,
                     element.height,
                     Math.min(theme.content.width, theme.content.height) *
-                        (3 / 128)
+                        (3 / 128),
                 );
                 ctx.fillStyle = element.color.card;
                 ctx.strokeStyle = new Color(element.color.card)
@@ -1288,7 +1269,7 @@ export namespace OngekiPainterModule {
                 ) {
                     const chart = difficulties[i];
                     if (chart)
-                        if (difficulties.length > 4 && i == 0) {
+                        if (difficulties.length > 4 && i === 0) {
                             await drawChartGridCard(
                                 ctx,
                                 theme,
@@ -1300,7 +1281,7 @@ export namespace OngekiPainterModule {
                                 cardHeight,
                                 true,
                                 region,
-                                scores[i]
+                                scores[i],
                             );
                             i++;
                             const chartA = difficulties[i];
@@ -1319,7 +1300,7 @@ export namespace OngekiPainterModule {
                                     true,
                                     region,
                                     scores[i],
-                                    type
+                                    type,
                                 );
                         } else {
                             await drawChartGridCard(
@@ -1333,7 +1314,7 @@ export namespace OngekiPainterModule {
                                 cardHeight,
                                 false,
                                 region,
-                                scores[i]
+                                scores[i],
                             );
                         }
                 }
@@ -1341,6 +1322,7 @@ export namespace OngekiPainterModule {
 
             async function drawChartGridCard(
                 ctx: CanvasRenderingContext2D,
+                // biome-ignore lint/suspicious/noExplicitAny: need major refactor
                 theme: Theme<any>,
                 element: z.infer<typeof schema>,
                 chart: Database.IChart,
@@ -1351,7 +1333,7 @@ export namespace OngekiPainterModule {
                 isShort: boolean,
                 targetRegion: "JPN" = "JPN",
                 score?: IScore | null,
-                type: "refresh" | "classic" = "refresh"
+                type: "refresh" | "classic" = "refresh",
             ) {
                 let curColor = "#FFFFFF";
                 switch (chart.difficulty) {
@@ -1432,26 +1414,27 @@ export namespace OngekiPainterModule {
                                 borderColor: new Color(curColor)
                                     .darken(0.3)
                                     .hexa(),
-                            }
+                            },
                         );
                         const difficultyTextWidth = Util.measureText(
                             ctx,
                             difficultiy,
                             titleSize,
-                            Infinity
+                            Infinity,
                         ).width;
                         Util.drawText(
                             ctx,
                             `Lv. ${Util.truncate(
                                 chart.events
                                     .filter(
-                                        (v) => v.version.region == targetRegion
+                                        (v) =>
+                                            v.version.region === targetRegion,
                                     )
                                     .reverse()
-                                    .find((v) => v.type == "existence")?.data
+                                    .find((v) => v.type === "existence")?.data
                                     .level || 0,
-                                1
-                            )}${score ? `　↑${Util.truncate(score.rating, type == "classic" ? 2 : 3)}` : ""}`,
+                                1,
+                            )}${score ? `　↑${Util.truncate(score.rating, type === "classic" ? 2 : 3)}` : ""}`,
                             x + element.bubble.margin * 2 + difficultyTextWidth,
                             y +
                                 element.bubble.margin +
@@ -1465,7 +1448,7 @@ export namespace OngekiPainterModule {
                                 borderColor: new Color(curColor)
                                     .darken(0.3)
                                     .hexa(),
-                            }
+                            },
                         );
 
                         ctx.beginPath();
@@ -1477,7 +1460,7 @@ export namespace OngekiPainterModule {
                                 element.bubble.margin * (1 / 4),
                             height * 2 - element.bubble.margin * 2,
                             height * 0.806 * 0.02,
-                            height * 0.806 * 0.16
+                            height * 0.806 * 0.16,
                         );
                         ctx.fillStyle = new Color(curColor).darken(0.3).hex();
                         ctx.fill();
@@ -1507,194 +1490,187 @@ export namespace OngekiPainterModule {
                                 borderColor: new Color(curColor)
                                     .darken(0.3)
                                     .hexa(),
-                            }
+                            },
                         );
                     }
-                    /** End Achievement Rate Draw */
-
-                    /** Begin Achievement Rank Draw */
-                    {
-                        if (score) {
-                            let rankImg: Buffer;
-                            switch (score.rank) {
-                                case EAchievementTypes.D:
-                                    rankImg = theme.getFile(
-                                        element.sprites.achievement.d
-                                    );
-                                    break;
-                                case EAchievementTypes.C:
-                                    rankImg = theme.getFile(
-                                        element.sprites.achievement.c
-                                    );
-                                    break;
-                                case EAchievementTypes.B:
-                                    rankImg = theme.getFile(
-                                        element.sprites.achievement.b
-                                    );
-                                    break;
-                                case EAchievementTypes.BB:
-                                    rankImg = theme.getFile(
-                                        element.sprites.achievement.bb
-                                    );
-                                    break;
-                                case EAchievementTypes.BBB:
-                                    rankImg = theme.getFile(
-                                        element.sprites.achievement.bbb
-                                    );
-                                    break;
-                                case EAchievementTypes.A:
-                                    rankImg = theme.getFile(
-                                        element.sprites.achievement.a
-                                    );
-                                    break;
-                                case EAchievementTypes.AA:
-                                    rankImg = theme.getFile(
-                                        element.sprites.achievement.aa
-                                    );
-                                    break;
-                                case EAchievementTypes.AAA:
-                                    rankImg = theme.getFile(
-                                        element.sprites.achievement.aaa
-                                    );
-                                    break;
-                                case EAchievementTypes.S:
-                                    rankImg = theme.getFile(
-                                        element.sprites.achievement.s
-                                    );
-                                    break;
-                                case EAchievementTypes.SS:
-                                    rankImg = theme.getFile(
-                                        element.sprites.achievement.ss
-                                    );
-                                    break;
-                                case EAchievementTypes.SSS:
-                                    rankImg = theme.getFile(
-                                        element.sprites.achievement.sss
-                                    );
-                                    break;
-                                default:
-                                    rankImg = theme.getFile(
-                                        element.sprites.achievement.sssp
-                                    );
-                            }
-                            const achievementRankHeight =
-                                height * 0.806 * 0.3 * 0.85;
-                            const achievementRankWidth =
-                                achievementRankHeight * (286 / 143);
-
-                            const img = await Util.loadImage(rankImg);
-                            ctx.drawImage(
-                                img,
-                                x + element.bubble.margin * (1 / 2),
-                                y +
-                                    element.bubble.margin +
-                                    titleSize +
-                                    element.bubble.margin * (1 / 2),
-                                achievementRankWidth,
-                                achievementRankHeight
-                            );
-
-                            /** End Achievement Rank Draw */
-
-                            /** Begin Milestone Draw */
-
-                            const comboImgRatio = 84 / 290;
-                            const comboBgRatio = 64 / 272;
-                            const comboWidth =
-                                achievementRankHeight / comboImgRatio;
-                            const comboBackground = comboWidth * 0.9;
-                            const sizeDiff = comboWidth - comboBackground;
-
-                            const curX =
-                                    x +
-                                    element.bubble.margin * (1 / 2) +
-                                    achievementRankWidth,
-                                curY =
-                                    y +
-                                    element.bubble.margin * (3 / 2) +
-                                    titleSize;
-
-                            ctx.beginPath();
-                            ctx.fillStyle = "#e8eaec";
-                            ctx.roundRect(
-                                curX + sizeDiff / 2,
-                                curY + ((sizeDiff * 3) / 2) * comboBgRatio,
-                                comboBackground,
-                                comboBackground * comboBgRatio,
-                                (comboBackground * comboBgRatio) / 2
-                            );
-                            ctx.roundRect(
-                                curX + sizeDiff / 2,
-                                curY +
-                                    comboWidth * comboImgRatio +
-                                    sizeDiff * (1 / 2) * comboBgRatio,
-                                comboBackground,
-                                comboBackground * comboBgRatio,
-                                (comboBackground * comboBgRatio) / 2
-                            );
-                            ctx.fill();
-                            let comboImg: Buffer;
-                            switch (score.combo) {
-                                case EComboTypes.NONE:
-                                    comboImg = theme.getFile(
-                                        element.sprites.milestone.none
-                                    );
-                                    break;
-                                case EComboTypes.FULL_COMBO:
-                                    comboImg = theme.getFile(
-                                        element.sprites.milestone.fc
-                                    );
-                                    break;
-                                case EComboTypes.ALL_BREAK:
-                                    comboImg = theme.getFile(
-                                        element.sprites.milestone.ab
-                                    );
-                                    break;
-                                case EComboTypes.ALL_BREAK_PLUS:
-                                    comboImg = theme.getFile(
-                                        element.sprites.milestone.abp
-                                    );
-                                    break;
-                            }
-                            let bellImg: Buffer;
-                            switch (score.bell) {
-                                case EBellTypes.NONE:
-                                    bellImg = theme.getFile(
-                                        element.sprites.milestone.none
-                                    );
-                                    break;
-                                case EBellTypes.FULL_BELL:
-                                    bellImg = theme.getFile(
-                                        element.sprites.milestone.fb
-                                    );
-                                    break;
-                            }
-                            const combo = await Util.loadImage(comboImg);
-                            const bell = await Util.loadImage(bellImg);
-
-                            ctx.drawImage(
-                                combo,
-                                curX,
-                                curY,
-                                comboWidth,
-                                comboWidth * comboImgRatio
-                            );
-                            ctx.drawImage(
-                                bell,
-                                curX,
-                                curY +
-                                    comboWidth * comboImgRatio -
-                                    sizeDiff * comboBgRatio,
-                                comboWidth,
-                                comboWidth * comboImgRatio
-                            );
+                    if (score) {
+                        let rankImg: Buffer;
+                        switch (score.rank) {
+                            case EAchievementTypes.D:
+                                rankImg = theme.getFile(
+                                    element.sprites.achievement.d,
+                                );
+                                break;
+                            case EAchievementTypes.C:
+                                rankImg = theme.getFile(
+                                    element.sprites.achievement.c,
+                                );
+                                break;
+                            case EAchievementTypes.B:
+                                rankImg = theme.getFile(
+                                    element.sprites.achievement.b,
+                                );
+                                break;
+                            case EAchievementTypes.BB:
+                                rankImg = theme.getFile(
+                                    element.sprites.achievement.bb,
+                                );
+                                break;
+                            case EAchievementTypes.BBB:
+                                rankImg = theme.getFile(
+                                    element.sprites.achievement.bbb,
+                                );
+                                break;
+                            case EAchievementTypes.A:
+                                rankImg = theme.getFile(
+                                    element.sprites.achievement.a,
+                                );
+                                break;
+                            case EAchievementTypes.AA:
+                                rankImg = theme.getFile(
+                                    element.sprites.achievement.aa,
+                                );
+                                break;
+                            case EAchievementTypes.AAA:
+                                rankImg = theme.getFile(
+                                    element.sprites.achievement.aaa,
+                                );
+                                break;
+                            case EAchievementTypes.S:
+                                rankImg = theme.getFile(
+                                    element.sprites.achievement.s,
+                                );
+                                break;
+                            case EAchievementTypes.SS:
+                                rankImg = theme.getFile(
+                                    element.sprites.achievement.ss,
+                                );
+                                break;
+                            case EAchievementTypes.SSS:
+                                rankImg = theme.getFile(
+                                    element.sprites.achievement.sss,
+                                );
+                                break;
+                            default:
+                                rankImg = theme.getFile(
+                                    element.sprites.achievement.sssp,
+                                );
                         }
+                        const achievementRankHeight =
+                            height * 0.806 * 0.3 * 0.85;
+                        const achievementRankWidth =
+                            achievementRankHeight * (286 / 143);
+
+                        const img = await Util.loadImage(rankImg);
+                        ctx.drawImage(
+                            img,
+                            x + element.bubble.margin * (1 / 2),
+                            y +
+                                element.bubble.margin +
+                                titleSize +
+                                element.bubble.margin * (1 / 2),
+                            achievementRankWidth,
+                            achievementRankHeight,
+                        );
+
+                        /** End Achievement Rank Draw */
+
+                        /** Begin Milestone Draw */
+
+                        const comboImgRatio = 84 / 290;
+                        const comboBgRatio = 64 / 272;
+                        const comboWidth =
+                            achievementRankHeight / comboImgRatio;
+                        const comboBackground = comboWidth * 0.9;
+                        const sizeDiff = comboWidth - comboBackground;
+
+                        const curX =
+                                x +
+                                element.bubble.margin * (1 / 2) +
+                                achievementRankWidth,
+                            curY =
+                                y + element.bubble.margin * (3 / 2) + titleSize;
+
+                        ctx.beginPath();
+                        ctx.fillStyle = "#e8eaec";
+                        ctx.roundRect(
+                            curX + sizeDiff / 2,
+                            curY + ((sizeDiff * 3) / 2) * comboBgRatio,
+                            comboBackground,
+                            comboBackground * comboBgRatio,
+                            (comboBackground * comboBgRatio) / 2,
+                        );
+                        ctx.roundRect(
+                            curX + sizeDiff / 2,
+                            curY +
+                                comboWidth * comboImgRatio +
+                                sizeDiff * (1 / 2) * comboBgRatio,
+                            comboBackground,
+                            comboBackground * comboBgRatio,
+                            (comboBackground * comboBgRatio) / 2,
+                        );
+                        ctx.fill();
+                        let comboImg: Buffer;
+                        switch (score.combo) {
+                            case EComboTypes.NONE:
+                                comboImg = theme.getFile(
+                                    element.sprites.milestone.none,
+                                );
+                                break;
+                            case EComboTypes.FULL_COMBO:
+                                comboImg = theme.getFile(
+                                    element.sprites.milestone.fc,
+                                );
+                                break;
+                            case EComboTypes.ALL_BREAK:
+                                comboImg = theme.getFile(
+                                    element.sprites.milestone.ab,
+                                );
+                                break;
+                            case EComboTypes.ALL_BREAK_PLUS:
+                                comboImg = theme.getFile(
+                                    element.sprites.milestone.abp,
+                                );
+                                break;
+                        }
+                        let bellImg: Buffer;
+                        switch (score.bell) {
+                            case EBellTypes.NONE:
+                                bellImg = theme.getFile(
+                                    element.sprites.milestone.none,
+                                );
+                                break;
+                            case EBellTypes.FULL_BELL:
+                                bellImg = theme.getFile(
+                                    element.sprites.milestone.fb,
+                                );
+                                break;
+                        }
+                        const combo = await Util.loadImage(comboImg);
+                        const bell = await Util.loadImage(bellImg);
+
+                        ctx.drawImage(
+                            combo,
+                            curX,
+                            curY,
+                            comboWidth,
+                            comboWidth * comboImgRatio,
+                        );
+                        ctx.drawImage(
+                            bell,
+                            curX,
+                            curY +
+                                comboWidth * comboImgRatio -
+                                sizeDiff * comboBgRatio,
+                            comboWidth,
+                            comboWidth * comboImgRatio,
+                        );
                     }
                     /** End Milestone Draw */
                     const scorePartWidth =
                         element.bubble.margin * (3 / 2) + height * 2;
                     const noteCountTexts = Object.entries(chart.meta.notes).map(
-                        ([k, v]) => `${Util.capitalize(k)}: ${v}`
+                        ([k, v]) => `${Util.capitalize(k)}: ${v}`,
                     );
                     const noteCountTextSize = (() => {
                         let base =
@@ -1705,7 +1681,7 @@ export namespace OngekiPainterModule {
                             base > 4 &&
                             noteCountTexts
                                 .map((v) =>
-                                    Util.measureText(ctx, v, base, Infinity)
+                                    Util.measureText(ctx, v, base, Infinity),
                                 )
                                 .find((v) => v.width > width - scorePartWidth);
                             base--
@@ -1718,8 +1694,8 @@ export namespace OngekiPainterModule {
                                 ctx,
                                 v,
                                 noteCountTextSize,
-                                Infinity
-                            )
+                                Infinity,
+                            ),
                         )
                         .reduce((a, b) => (a.width > b.width ? a : b)).width;
                     /** Begin Note Count Draw */
@@ -1747,13 +1723,13 @@ export namespace OngekiPainterModule {
                                     borderColor: new Color(curColor)
                                         .darken(0.3)
                                         .hexa(),
-                                }
+                                },
                             );
                             const length = Util.measureText(
                                 ctx,
                                 v,
                                 noteCountTextSize,
-                                Infinity
+                                Infinity,
                             ).width;
                             if (length > noteCountLength)
                                 noteCountLength = length;
@@ -1769,11 +1745,11 @@ export namespace OngekiPainterModule {
                             version: undefined,
                         };
                         const VER =
-                            chart.difficulty == EDifficulty.LUNATIC
+                            chart.difficulty === EDifficulty.LUNATIC
                                 ? chart.events.find(
                                       (v) =>
-                                          v.type == "existence" &&
-                                          v.version.region == targetRegion
+                                          v.type === "existence" &&
+                                          v.version.region === targetRegion,
                                   )?.version
                                 : chart.addVersion;
                         version.version = VER;
@@ -1794,13 +1770,13 @@ export namespace OngekiPainterModule {
                         ) {
                             const rawVersion = findVersion(
                                 OngekiUtil.getNumberVersion(version.version),
-                                targetRegion
+                                targetRegion,
                             );
                             if (rawVersion) {
                                 const versionImage = theme.getFile(
                                     element.sprites.versions[version.region][
                                         rawVersion
-                                    ]
+                                    ],
                                 );
                                 try {
                                     sharp(versionImage);
@@ -1812,7 +1788,7 @@ export namespace OngekiPainterModule {
                                             curx - versionImageWidth,
                                             cury,
                                             versionImageWidth,
-                                            versionImageHeight
+                                            versionImageHeight,
                                         );
                                     }
                                 } catch {}
@@ -1828,7 +1804,6 @@ export namespace OngekiPainterModule {
                                     //     return INT_LATEST;
                                     // case "CHN":
                                     //     return CHN_LATEST;
-                                    case "JPN":
                                     default:
                                         return JPN_LATEST;
                                 }
@@ -1840,24 +1815,24 @@ export namespace OngekiPainterModule {
                                 noteCountLength -
                                 versionImageWidth;
                             const maxFitTrendCount = Math.trunc(
-                                maxWidth / versionImageWidth
+                                maxWidth / versionImageWidth,
                             );
                             const trendEvents = chart.events.filter(
                                 (v) =>
-                                    v.type == "existence" &&
-                                    v.version.region == targetRegion
+                                    v.type === "existence" &&
+                                    v.version.region === targetRegion,
                             ) as Database.Events.Existence[];
                             let actualEvents: Database.Events[] = _.uniqWith(
                                 trendEvents,
                                 (a, b) => {
                                     return _.isEqual(
                                         a.data.level,
-                                        b.data.level
+                                        b.data.level,
                                     );
-                                }
+                                },
                             );
 
-                            if (actualEvents.length == maxFitTrendCount) {
+                            if (actualEvents.length === maxFitTrendCount) {
                             } else if (actualEvents.length > maxFitTrendCount) {
                                 while (actualEvents.length > maxFitTrendCount)
                                     actualEvents.shift();
@@ -1865,7 +1840,7 @@ export namespace OngekiPainterModule {
                                 actualEvents.shift();
                                 actualEvents.unshift(trendEvents[0]);
                                 actualEvents.push(
-                                    trendEvents[trendEvents.length - 1]
+                                    trendEvents[trendEvents.length - 1],
                                 );
                             } else if (trendEvents.length > maxFitTrendCount) {
                                 actualEvents = _.filter(
@@ -1875,15 +1850,15 @@ export namespace OngekiPainterModule {
                                             _.isEqual(
                                                 v.version.gameVersion,
                                                 trendEvents[0].version
-                                                    .gameVersion
+                                                    .gameVersion,
                                             ) ||
                                             _.isEqual(
                                                 v.version.gameVersion,
                                                 trendEvents[
                                                     trendEvents.length - 1
-                                                ].version.gameVersion
+                                                ].version.gameVersion,
                                             )
-                                        )
+                                        ),
                                 );
                                 for (
                                     let i = trendEvents.length - 2;
@@ -1899,19 +1874,19 @@ export namespace OngekiPainterModule {
                                             return (
                                                 _.isEqual(
                                                     a.version.gameVersion.major,
-                                                    b.version.gameVersion.major
+                                                    b.version.gameVersion.major,
                                                 ) &&
                                                 _.isEqual(
                                                     a.version.gameVersion.minor,
-                                                    b.version.gameVersion.minor
+                                                    b.version.gameVersion.minor,
                                                 )
                                             );
-                                        }
+                                        },
                                     );
                                 }
                                 actualEvents.unshift(trendEvents[0]);
                                 actualEvents.push(
-                                    trendEvents[trendEvents.length - 1]
+                                    trendEvents[trendEvents.length - 1],
                                 );
                                 actualEvents = _.uniqWith(
                                     actualEvents,
@@ -1919,29 +1894,29 @@ export namespace OngekiPainterModule {
                                         return (
                                             _.isEqual(
                                                 a.version.gameVersion.major,
-                                                b.version.gameVersion.major
+                                                b.version.gameVersion.major,
                                             ) &&
                                             _.isEqual(
                                                 a.version.gameVersion.minor,
-                                                b.version.gameVersion.minor
+                                                b.version.gameVersion.minor,
                                             )
                                         );
-                                    }
+                                    },
                                 );
                                 actualEvents = _.sortBy(actualEvents, (v) =>
-                                    OngekiUtil.getNumberVersion(v.version)
+                                    OngekiUtil.getNumberVersion(v.version),
                                 );
                                 if (trendEvents.length > 1) {
                                     if (actualEvents.length >= maxFitTrendCount)
                                         actualEvents.pop();
                                     actualEvents.push(
-                                        trendEvents[trendEvents.length - 1]
+                                        trendEvents[trendEvents.length - 1],
                                     );
                                 }
                                 const removalEvent = chart.events.find(
                                     (v) =>
-                                        v.type == "removal" &&
-                                        v.version.region == targetRegion
+                                        v.type === "removal" &&
+                                        v.version.region === targetRegion,
                                 ) as Database.Events.Removal | undefined;
                                 if (removalEvent) {
                                     actualEvents.pop();
@@ -1953,7 +1928,7 @@ export namespace OngekiPainterModule {
                             if (
                                 OngekiUtil.getNumberVersion(
                                     actualEvents[actualEvents.length - 1]
-                                        .version
+                                        .version,
                                 ) < CURRENT_VER
                             ) {
                                 while (actualEvents.length >= maxFitTrendCount)
@@ -1963,8 +1938,8 @@ export namespace OngekiPainterModule {
                                     version: OngekiUtil.Version.toEventVersion(
                                         OngekiUtil.Version.getNextVersion(
                                             trendEvents[trendEvents.length - 1]
-                                                .version
-                                        )
+                                                .version,
+                                        ),
                                     ),
                                 });
                             }
@@ -1972,11 +1947,11 @@ export namespace OngekiPainterModule {
                                 return (
                                     _.isEqual(
                                         a.version.gameVersion.major,
-                                        b.version.gameVersion.major
+                                        b.version.gameVersion.major,
                                     ) &&
                                     _.isEqual(
                                         a.version.gameVersion.minor,
-                                        b.version.gameVersion.minor
+                                        b.version.gameVersion.minor,
                                     ) &&
                                     _.isEqual(a.type, b.type)
                                 );
@@ -2013,13 +1988,13 @@ export namespace OngekiPainterModule {
                                 const event = actualEvents[i];
                                 const rawVersion = findVersion(
                                     OngekiUtil.getNumberVersion(event.version),
-                                    targetRegion
+                                    targetRegion,
                                 );
                                 if (rawVersion) {
                                     const versionImage = theme.getFile(
                                         element.sprites.versions[targetRegion][
                                             rawVersion
-                                        ]
+                                        ],
                                     );
                                     try {
                                         if (!versionImage)
@@ -2032,7 +2007,7 @@ export namespace OngekiPainterModule {
                                             curx,
                                             cury,
                                             versionImageWidth,
-                                            versionImageHeight
+                                            versionImageHeight,
                                         );
                                     } catch {
                                         const str = `${event.version.gameVersion.major}.${event.version.gameVersion.minor}`;
@@ -2040,7 +2015,7 @@ export namespace OngekiPainterModule {
                                             ctx,
                                             str,
                                             noteCountTextSize * 1.2,
-                                            Infinity
+                                            Infinity,
                                         );
                                         Util.drawText(
                                             ctx,
@@ -2059,15 +2034,17 @@ export namespace OngekiPainterModule {
                                                 borderColor: new Color(curColor)
                                                     .darken(0.3)
                                                     .hexa(),
-                                            }
+                                            },
                                         );
                                     }
-                                    if (event.type == "existence") {
+                                    if (event.type === "existence") {
                                         let symbol = "";
-                                        if (i != 0) {
+                                        if (i !== 0) {
                                             const lastEvent =
                                                 actualEvents[i - 1];
-                                            if (lastEvent.type == "existence") {
+                                            if (
+                                                lastEvent.type === "existence"
+                                            ) {
                                                 if (
                                                     lastEvent.data.level <
                                                     event.data.level
@@ -2079,7 +2056,7 @@ export namespace OngekiPainterModule {
                                                 )
                                                     symbol = "↓";
                                                 else if (
-                                                    lastEvent.data.level ==
+                                                    lastEvent.data.level ===
                                                     event.data.level
                                                 )
                                                     symbol = "→";
@@ -2100,9 +2077,9 @@ export namespace OngekiPainterModule {
                                                 borderColor: new Color(curColor)
                                                     .darken(0.3)
                                                     .hexa(),
-                                            }
+                                            },
                                         );
-                                    } else if (event.type == "removal") {
+                                    } else if (event.type === "removal") {
                                         Util.drawText(
                                             ctx,
                                             `❌`,
@@ -2118,7 +2095,7 @@ export namespace OngekiPainterModule {
                                                 borderColor: new Color(curColor)
                                                     .darken(0.3)
                                                     .hexa(),
-                                            }
+                                            },
                                         );
                                     }
                                     curx += versionImageWidth + addGap;
@@ -2139,42 +2116,39 @@ export namespace OngekiPainterModule {
                     y + height * 0.742,
                     height * 2,
                     height * (1 - 0.742),
-                    [0, (height * 0.806) / 7, 0, (height * 0.806) / 7]
+                    [0, (height * 0.806) / 7, 0, (height * 0.806) / 7],
                 );
                 ctx.fill();
-                /** Begin Difficulty & Platinum Rating Draw */
-                {
-                    ctx.save();
-                    ctx.clip();
-                    Util.drawText(
-                        ctx,
-                        chart.designer || "-",
-                        x + element.bubble.margin,
-                        y + height * (0.806 + (1 - 0.806) / 2),
-                        height * 0.806 * 0.128,
-                        height * 0.806 * 0.04,
-                        {
-                            textAlign: "left",
-                            mainColor: "white",
-                            borderColor: new Color(curColor).darken(0.3).hexa(),
-                        }
-                    );
-                    ctx.restore();
+                ctx.save();
+                ctx.clip();
+                Util.drawText(
+                    ctx,
+                    chart.designer || "-",
+                    x + element.bubble.margin,
+                    y + height * (0.806 + (1 - 0.806) / 2),
+                    height * 0.806 * 0.128,
+                    height * 0.806 * 0.04,
+                    {
+                        textAlign: "left",
+                        mainColor: "white",
+                        borderColor: new Color(curColor).darken(0.3).hexa(),
+                    },
+                );
+                ctx.restore();
 
-                    Util.drawText(
-                        ctx,
-                        `${score ? `${score.platinumScore}/` : "MAX PT SCR: "}${chart.meta.maxPlatinumScore}`,
-                        x + height * 2 - element.bubble.margin,
-                        y + height - element.bubble.margin * 3.1,
-                        height * 0.806 * 0.128,
-                        height * 0.806 * 0.04,
-                        {
-                            textAlign: "right",
-                            mainColor: "white",
-                            borderColor: new Color(curColor).darken(0.3).hexa(),
-                        }
-                    );
-                }
+                Util.drawText(
+                    ctx,
+                    `${score ? `${score.platinumScore}/` : "MAX PT SCR: "}${chart.meta.maxPlatinumScore}`,
+                    x + height * 2 - element.bubble.margin,
+                    y + height - element.bubble.margin * 3.1,
+                    height * 0.806 * 0.128,
+                    height * 0.806 * 0.04,
+                    {
+                        textAlign: "right",
+                        mainColor: "white",
+                        borderColor: new Color(curColor).darken(0.3).hexa(),
+                    },
+                );
                 /** End Difficulty & Platinum Rating Draw */
 
                 ctx.restore();
@@ -2195,9 +2169,10 @@ export namespace OngekiPainterModule {
 
             export async function draw(
                 ctx: CanvasRenderingContext2D,
+                // biome-ignore lint/suspicious/noExplicitAny: need major refactor
                 theme: Theme<any>,
                 element: z.infer<typeof schema>,
-                chartId: number
+                chartId: number,
             ) {
                 const jacketMargin = element.margin;
                 const textMargin = element.margin;
@@ -2218,7 +2193,7 @@ export namespace OngekiPainterModule {
                     element.y,
                     element.width,
                     element.height,
-                    backGroundBorderRadius
+                    backGroundBorderRadius,
                 );
                 ctx.fillStyle = element.color.card;
                 ctx.strokeStyle = new Color(element.color.card)
@@ -2239,7 +2214,7 @@ export namespace OngekiPainterModule {
                         element.y + jacketMargin,
                         element.width - jacketMargin * 2,
                         element.width - jacketMargin * 2,
-                        jacketBorderRadius
+                        jacketBorderRadius,
                     );
                     ctx.save();
                     ctx.clip();
@@ -2248,7 +2223,7 @@ export namespace OngekiPainterModule {
                         element.x + jacketMargin,
                         element.y + jacketMargin,
                         element.width - jacketMargin * 2,
-                        element.width - jacketMargin * 2
+                        element.width - jacketMargin * 2,
                     );
                     ctx.restore();
                 }
@@ -2258,29 +2233,12 @@ export namespace OngekiPainterModule {
                 if (chart) {
                     const textSizeTitle = element.width * (1 / 16);
                     const textSizeSecondary = element.width * (1 / 24);
-                    const {
-                        actualBoundingBoxAscent: ascent,
-                        actualBoundingBoxDescent: decent,
-                    } = Util.measureText(
-                        ctx,
-                        chart.name,
-                        textSizeTitle,
-                        Infinity
-                    );
-                    const titleActualHeight = Math.abs(ascent - decent);
 
                     const textLineWidth = element.width * (7 / 512);
                     const textColor = new Color(element.color.card)
                         .darken(0.5)
                         .hex();
                     const textTitleMaxWidth = element.width - textMargin * 2;
-
-                    const titleMetrics = Util.measureText(
-                        ctx,
-                        chart.name,
-                        textSizeTitle,
-                        textTitleMaxWidth
-                    );
 
                     Util.drawText(
                         ctx,
@@ -2298,7 +2256,7 @@ export namespace OngekiPainterModule {
                             textAlign: "left",
                             mainColor: "white",
                             borderColor: textColor,
-                        }
+                        },
                     );
 
                     Util.drawText(
@@ -2317,12 +2275,12 @@ export namespace OngekiPainterModule {
                             textAlign: "left",
                             mainColor: "white",
                             borderColor: textColor,
-                        }
+                        },
                     );
                     function getBpmRange(bpms: number[]) {
                         const uniqueBpms = _.uniq(bpms);
                         if (uniqueBpms.length <= 0) return "0";
-                        else if (uniqueBpms.length == 1)
+                        else if (uniqueBpms.length === 1)
                             return `${uniqueBpms[0]}`;
                         else {
                             const minBpm = Math.min(...uniqueBpms);
@@ -2346,33 +2304,33 @@ export namespace OngekiPainterModule {
                             textAlign: "left",
                             mainColor: "white",
                             borderColor: textColor,
-                        }
+                        },
                     );
 
                     const EVENT_JPN = chart.events
                         .filter(
                             (v) =>
-                                v.version.region == "JPN" &&
+                                v.version.region === "JPN" &&
                                 OngekiUtil.getNumberVersion(v.version) >=
-                                    JPN_LATEST
+                                    JPN_LATEST,
                         )
                         .map((v) => v.type);
                     const EVENT_INT = chart.events
                         .filter(
                             (v) =>
                                 // @ts-expect-error
-                                v.version.region == "INT" &&
+                                v.version.region === "INT" &&
                                 OngekiUtil.getNumberVersion(v.version) >=
-                                    INT_LATEST
+                                    INT_LATEST,
                         )
                         .map((v) => v.type);
                     const EVENT_CHN = chart.events
                         .filter(
                             (v) =>
                                 // @ts-expect-error
-                                v.version.region == "CHN" &&
+                                v.version.region === "CHN" &&
                                 OngekiUtil.getNumberVersion(v.version) >=
-                                    CHN_LATEST
+                                    CHN_LATEST,
                         )
                         .map((v) => v.type);
                     const EXIST_JPN =
@@ -2407,7 +2365,7 @@ export namespace OngekiPainterModule {
                         element.width - textMargin * 2,
                         "right",
                         "white",
-                        textColor
+                        textColor,
                     );
                 }
                 /* End Detail Draw */
@@ -2427,6 +2385,7 @@ export namespace OngekiPainterModule {
 
             export async function draw(
                 ctx: CanvasRenderingContext2D,
+                // biome-ignore lint/suspicious/noExplicitAny: need major refactor
                 theme: Theme<any>,
                 element: z.infer<typeof schema>,
                 character?: {
@@ -2440,7 +2399,7 @@ export namespace OngekiPainterModule {
                         comment?: string;
                     };
                     level: number;
-                }
+                },
             ) {
                 const jacketMargin = element.margin;
                 const backGroundBorderRadius =
@@ -2457,7 +2416,7 @@ export namespace OngekiPainterModule {
                     element.y,
                     element.width,
                     element.height,
-                    backGroundBorderRadius
+                    backGroundBorderRadius,
                 );
                 ctx.fillStyle = element.color.card;
                 ctx.strokeStyle = new Color(element.color.card)
@@ -2488,7 +2447,7 @@ export namespace OngekiPainterModule {
                             characterImgHeight * (30 / 100),
                         characterImgWidth,
                         characterImgHeight * (70 / 100),
-                        [characterImgWidth / 2, characterImgWidth / 2, 0, 0]
+                        [characterImgWidth / 2, characterImgWidth / 2, 0, 0],
                     );
                     ctx.fillStyle = new Color(element.color.card)
                         .lighten(0.1)
@@ -2505,7 +2464,7 @@ export namespace OngekiPainterModule {
                         element.y + jacketMargin * 2,
                         characterImgWidth,
                         characterImgHeight,
-                        [characterBorderRadius, characterBorderRadius, 0, 0]
+                        [characterBorderRadius, characterBorderRadius, 0, 0],
                     );
                     ctx.save();
                     ctx.clip();
@@ -2515,7 +2474,7 @@ export namespace OngekiPainterModule {
                         element.x + cardCenterOffset,
                         element.y + jacketMargin * 2,
                         characterImgWidth,
-                        characterImgHeight
+                        characterImgHeight,
                     );
 
                     ctx.restore();
@@ -2536,11 +2495,11 @@ export namespace OngekiPainterModule {
                         ctx,
                         `Lv.${character.level} ${character.character.name}`,
                         textSizeTitle,
-                        Infinity
+                        Infinity,
                     );
                     const characterNameActualHeight = Math.abs(
                         characterNameMetrics.actualBoundingBoxAscent -
-                            characterNameMetrics.actualBoundingBoxDescent
+                            characterNameMetrics.actualBoundingBoxDescent,
                     );
                     Util.drawText(
                         ctx,
@@ -2553,14 +2512,14 @@ export namespace OngekiPainterModule {
                             textAlign: "center",
                             mainColor: "white",
                             borderColor: textColor,
-                        }
+                        },
                     );
 
                     if (character.character.comment) {
                         const card = Database.getLocalCard(character.card.id);
                         if (card) {
                             const chara = Database.getLocalCharacter(
-                                card?.characterId
+                                card?.characterId,
                             );
                             if (chara) {
                                 function getRandomFromArray(arr: string[]) {
@@ -2570,7 +2529,7 @@ export namespace OngekiPainterModule {
                                 }
                                 if (chara.voiceLines.length > 0) {
                                     const quote = getRandomFromArray(
-                                        chara.voiceLines
+                                        chara.voiceLines,
                                     );
                                     if (quote) {
                                         const curX =
@@ -2590,7 +2549,7 @@ export namespace OngekiPainterModule {
                                             textSizeSecondary,
                                             textLineWidth,
                                             "white",
-                                            textColor
+                                            textColor,
                                         );
                                         ctx.restore();
                                     }
