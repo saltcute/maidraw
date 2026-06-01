@@ -1,4 +1,4 @@
-import Util from "@maidraw/lib/util";
+import { truncateNumber } from "@maidraw/lib/utils/number";
 import _ from "lodash";
 import type * as Database from "./database";
 
@@ -220,23 +220,19 @@ export namespace ChunithmUtil {
                 break;
             }
             case score >= 1007500: {
-                bonus =
-                    2 + Util.truncateNumber((score - 1007500) / 100, 0) * 0.01;
+                bonus = 2 + truncateNumber((score - 1007500) / 100, 0) * 0.01;
                 break;
             }
             case score >= 1005000: {
-                bonus =
-                    1.5 + Util.truncateNumber((score - 1005000) / 50, 0) * 0.01;
+                bonus = 1.5 + truncateNumber((score - 1005000) / 50, 0) * 0.01;
                 break;
             }
             case score >= 1000000: {
-                bonus =
-                    1 + Util.truncateNumber((score - 1000000) / 100, 0) * 0.01;
+                bonus = 1 + truncateNumber((score - 1000000) / 100, 0) * 0.01;
                 break;
             }
             case score >= 975000: {
-                bonus =
-                    0 + Util.truncateNumber((score - 975000) / 250, 0) * 0.01;
+                bonus = 0 + truncateNumber((score - 975000) / 250, 0) * 0.01;
                 break;
             }
             // case score >= 925000: {
@@ -286,18 +282,15 @@ export namespace ChunithmUtil {
                 break;
             }
             case score >= 1005000: {
-                bonus =
-                    1.5 + Util.truncateNumber((score - 1005000) / 50, 0) * 0.01;
+                bonus = 1.5 + truncateNumber((score - 1005000) / 50, 0) * 0.01;
                 break;
             }
             case score >= 1000000: {
-                bonus =
-                    1 + Util.truncateNumber((score - 1000000) / 100, 0) * 0.01;
+                bonus = 1 + truncateNumber((score - 1000000) / 100, 0) * 0.01;
                 break;
             }
             case score >= 975000: {
-                bonus =
-                    0 + Util.truncateNumber((score - 975000) / 250, 0) * 0.01;
+                bonus = 0 + truncateNumber((score - 975000) / 250, 0) * 0.01;
                 break;
             }
             case score >= 900000: {

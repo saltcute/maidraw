@@ -4,7 +4,8 @@ import {
     MissingThemeError,
 } from "@maidraw/lib/error";
 import { PainterModule, ThemeManager } from "@maidraw/lib/painter";
-import { Util } from "@maidraw/lib/util";
+import { HalfFullWidthConvert } from "@maidraw/lib/utils/halfFullWidthConvert";
+import { truncate } from "@maidraw/lib/utils/number";
 import { Canvas } from "canvas";
 import upath from "upath";
 import { z } from "zod/v4";
@@ -137,10 +138,10 @@ export class ChartPainter extends MaimaiPainter<typeof ChartPainter.Theme> {
                     }
                     case "text": {
                         await PainterModule.Text.draw(ctx, element, {
-                            username: Util.HalfFullWidthConvert.toFullWidth(
+                            username: HalfFullWidthConvert.toFullWidth(
                                 variables.username,
                             ),
-                            rating: Util.truncate(variables.rating, 0),
+                            rating: truncate(variables.rating, 0),
                         });
                         break;
                     }

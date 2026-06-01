@@ -6,8 +6,6 @@ import stringFormat from "string-template";
 import upath from "upath";
 import { z } from "zod/v4";
 
-import { Util } from "./util";
-
 export abstract class Painter<
     Adapter,
     Schema extends typeof ThemeManager.BaseObject,
@@ -106,7 +104,7 @@ export class Theme<T> {
 }
 
 export class ThemeManager<Schema extends typeof ThemeManager.BaseObject> {
-    private logger = Util.buildLogger(["maidraw", "painter", "theme_manager"]);
+    private logger = buildLogger(["maidraw", "painter", "theme_manager"]);
 
     public static readonly Element = z.object({
         type: z.string(),
@@ -191,6 +189,10 @@ export class ThemeManager<Schema extends typeof ThemeManager.BaseObject> {
 
 import LineBreaker from "linebreak";
 import type { DataOrError } from "./error";
+import { loadImage } from "./utils/loadImage";
+import { buildLogger } from "./utils/logger";
+import { drawText, findMaxFitString } from "./utils/textDraw";
+import { color } from "./utils/zod";
 
 export namespace PainterModule {
     export namespace Image {
@@ -226,7 +228,7 @@ export namespace PainterModule {
             theme: Theme<unknown>,
             element: z.infer<typeof schema>,
         ) {
-            const img = await Util.loadImage(theme.getFile(element.path));
+            const img = await loadImage(theme.getFile(element.path));
             const { width: imgWidth, height: imgHeight } = img;
             const aspectRatio = imgWidth / imgHeight;
             let width: number, height: number;
@@ -289,8 +291,8 @@ export namespace PainterModule {
             height: z.number().min(1).optional(),
             linebreak: z.boolean().optional(),
             align: z.enum(["left", "center", "right"]).optional(),
-            color: Util.z.color().optional(),
-            borderColor: Util.z.color().optional(),
+            color: color().optional(),
+            borderColor: color().optional(),
             font: z.string().optional(),
         });
         const builtinVariables: Record<string, string> = {
@@ -339,7 +341,7 @@ export namespace PainterModule {
                 const naiveLines = filledContent.split("\n");
                 for (const originalContent of naiveLines) {
                     lines.push(
-                        Util.findMaxFitString(
+                        findMaxFitString(
                             ctx,
                             originalContent,
                             element.width || Infinity,
@@ -349,7 +351,7 @@ export namespace PainterModule {
             }
             for (let i = 0; i < lines.length; ++i) {
                 const line = lines[i];
-                Util.drawText(
+                drawText(
                     ctx,
                     line,
                     element.x,
@@ -380,8 +382,8 @@ export namespace PainterModule {
             height: z.number().min(1).optional(),
             linebreak: z.boolean().optional(),
             align: z.enum(["left", "center", "right"]).optional(),
-            color: Util.z.color().optional(),
-            borderColor: Util.z.color().optional(),
+            color: color().optional(),
+            borderColor: color().optional(),
             probability: z.number().min(0).max(1).optional(),
             customLines: z.union([z.string(), z.array(z.string())]).optional(),
         });

@@ -1,6 +1,6 @@
 import { BaseScoreAdapter } from "@maidraw/lib/adapter";
 import { FailedToFetchError } from "@maidraw/lib/error";
-import Util from "@maidraw/lib/util";
+import { sanitizeKamaitachiErrorMessage } from "@maidraw/lib/utils/misc";
 import * as Database from "@maidraw/mai/lib/database";
 import {
     EAchievementTypes,
@@ -267,7 +267,7 @@ export class KamaiTachi extends BaseScoreAdapter implements MaimaiScoreAdapter {
                 err: new FailedToFetchError(
                     "maidraw.maimai.adapter.kamaitachi",
                     "personal best scores",
-                    Util.sanitizeKamaitachiErrorMessage(
+                    sanitizeKamaitachiErrorMessage(
                         `${rawPBs?.description ?? "An unknown error has occured."}`,
                         userId,
                     ),
@@ -416,7 +416,7 @@ export class KamaiTachi extends BaseScoreAdapter implements MaimaiScoreAdapter {
                 err: new FailedToFetchError(
                     "maidraw.maimai.adapter.kamaitachi",
                     "player profile",
-                    Util.sanitizeKamaitachiErrorMessage(
+                    sanitizeKamaitachiErrorMessage(
                         `${profile?.description ?? "An unknown error has occured."}`,
                         userId,
                     ),
@@ -476,7 +476,7 @@ export class KamaiTachi extends BaseScoreAdapter implements MaimaiScoreAdapter {
                 err: new FailedToFetchError(
                     "maidraw.maimai.adapter.kamaitachi",
                     "personal best scores",
-                    Util.sanitizeKamaitachiErrorMessage(
+                    sanitizeKamaitachiErrorMessage(
                         `${rawPBs?.description ?? "An unknown error has occured."}`,
                         username,
                     ),
@@ -578,7 +578,7 @@ export class KamaiTachi extends BaseScoreAdapter implements MaimaiScoreAdapter {
                 err: new FailedToFetchError(
                     "maidraw.maimai.adapter.kamaitachi",
                     "personal best scores",
-                    Util.sanitizeKamaitachiErrorMessage(
+                    sanitizeKamaitachiErrorMessage(
                         `${rawPBs?.description ?? "An unknown error has occured."}`,
                         username,
                     ),

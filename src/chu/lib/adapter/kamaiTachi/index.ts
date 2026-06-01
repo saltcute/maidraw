@@ -6,7 +6,7 @@ import {
 } from "@maidraw/chu/type";
 import { BaseScoreAdapter } from "@maidraw/lib/adapter";
 import { FailedToFetchError, IllegalArgumentError } from "@maidraw/lib/error";
-import Util from "@maidraw/lib/util";
+import { sanitizeKamaitachiErrorMessage } from "@maidraw/lib/utils/misc";
 import * as Database from "../../database";
 import { ChunithmUtil } from "../../util";
 import type { ChunithmScoreAdapter } from "..";
@@ -33,7 +33,7 @@ export class KamaiTachi
                 err: new FailedToFetchError(
                     "maidraw.chunithm.adapter.kamaitachi",
                     "personal best scores",
-                    Util.sanitizeKamaitachiErrorMessage(
+                    sanitizeKamaitachiErrorMessage(
                         `${rawPBs?.description ?? "An unknown error has occured."}`,
                         username,
                     ),
@@ -408,7 +408,7 @@ export class KamaiTachi
                 err: new FailedToFetchError(
                     "maidraw.chunithm.adapter.kamaitachi",
                     "personal best scores",
-                    Util.sanitizeKamaitachiErrorMessage(
+                    sanitizeKamaitachiErrorMessage(
                         `${rawPBs?.description ?? "An unknown error has occured."}`,
                         userId,
                     ),
@@ -497,7 +497,7 @@ export class KamaiTachi
                 err: new FailedToFetchError(
                     "maidraw.chunithm.adapter.kamaitachi",
                     "personal best scores",
-                    Util.sanitizeKamaitachiErrorMessage(
+                    sanitizeKamaitachiErrorMessage(
                         `${rawPBs?.description ?? "An unknown error has occured."}`,
                         userId,
                     ),
@@ -511,7 +511,7 @@ export class KamaiTachi
                 err: new FailedToFetchError(
                     "maidraw.chunithm.adapter.kamaitachi",
                     "recent scores",
-                    Util.sanitizeKamaitachiErrorMessage(
+                    sanitizeKamaitachiErrorMessage(
                         `${rawRecents?.description ?? "An unknown error has occured."}`,
                         userId,
                     ),
@@ -660,7 +660,7 @@ export class KamaiTachi
                 err: new FailedToFetchError(
                     "maidraw.chunithm.adapter.kamaitachi",
                     "player profile",
-                    Util.sanitizeKamaitachiErrorMessage(
+                    sanitizeKamaitachiErrorMessage(
                         `${profile?.description ?? "An unknown error has occured."}`,
                         userId,
                     ),

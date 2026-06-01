@@ -2,7 +2,8 @@ import * as Database from "@maidraw/chu/lib/database";
 import type { IScore } from "@maidraw/chu/type";
 import { IllegalArgumentError, MissingThemeError } from "@maidraw/lib/error";
 import { PainterModule, ThemeManager } from "@maidraw/lib/painter";
-import { Util } from "@maidraw/lib/util";
+import { HalfFullWidthConvert } from "@maidraw/lib/utils/halfFullWidthConvert";
+import { truncate } from "@maidraw/lib/utils/number";
 import { Canvas } from "canvas";
 import upath from "upath";
 import { z } from "zod/v4";
@@ -182,20 +183,20 @@ export class Best50Painter extends ChunithmPainter<typeof Best50Painter.Theme> {
                             );
                         }
                         await PainterModule.Text.draw(ctx, element, {
-                            username: Util.HalfFullWidthConvert.toFullWidth(
+                            username: HalfFullWidthConvert.toFullWidth(
                                 variables.username,
                             ),
-                            rating: Util.truncate(variables.rating, 2),
-                            naiveBest30: Util.truncate(getNaiveRating(30), 2),
-                            naiveBest50: Util.truncate(getNaiveRating(50), 2),
-                            newScoreRatingAvg: Util.truncate(
+                            rating: truncate(variables.rating, 2),
+                            naiveBest30: truncate(getNaiveRating(30), 2),
+                            naiveBest50: truncate(getNaiveRating(50), 2),
+                            newScoreRatingAvg: truncate(
                                 getRatingAvg(
                                     variables.newScores,
                                     options.type === "recents" ? 10 : 20,
                                 ),
                                 2,
                             ),
-                            oldScoreRatingAvg: Util.truncate(
+                            oldScoreRatingAvg: truncate(
                                 getRatingAvg(
                                     variables.oldScores.slice(0, 30),
                                     30,

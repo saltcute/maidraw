@@ -1,6 +1,7 @@
 import { type DataOrError, MissingThemeError } from "@maidraw/lib/error";
 import { PainterModule } from "@maidraw/lib/painter";
-import { Util } from "@maidraw/lib/util";
+import { HalfFullWidthConvert } from "@maidraw/lib/utils/halfFullWidthConvert";
+import { truncate } from "@maidraw/lib/utils/number";
 import { Canvas } from "canvas";
 import upath from "upath";
 import type { MaimaiScoreAdapter } from "../../lib/adapter";
@@ -145,15 +146,14 @@ export class Level50Painter extends MaimaiPainter<typeof Best50Painter.Theme> {
                     case "text": {
                         function getTextLevel(level: number, border: number) {
                             const realBorder = Math.trunc(level) + border * 0.1;
-                            if (level < realBorder)
-                                return Util.truncate(level, 0);
-                            else return `${Util.truncate(level, 0)}+`;
+                            if (level < realBorder) return truncate(level, 0);
+                            else return `${truncate(level, 0)}+`;
                         }
                         await PainterModule.Text.draw(ctx, element, {
-                            username: Util.HalfFullWidthConvert.toFullWidth(
+                            username: HalfFullWidthConvert.toFullWidth(
                                 variables.username,
                             ),
-                            rating: Util.truncate(variables.rating, 0),
+                            rating: truncate(variables.rating, 0),
                             level50Title: `Top Scores From Lv. ${getTextLevel(variables.level, 6)}`,
                             level50Subtitle: `(Showing scores from ${(variables.page - 1) * 50 + 1} to ${variables.page * 50})`,
                         });

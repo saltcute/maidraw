@@ -2,7 +2,8 @@ import * as Database from "@maidraw/geki/lib/database";
 import type { IScore } from "@maidraw/geki/type";
 import { IllegalArgumentError, MissingThemeError } from "@maidraw/lib/error";
 import { PainterModule, ThemeManager } from "@maidraw/lib/painter";
-import { Util } from "@maidraw/lib/util";
+import { HalfFullWidthConvert } from "@maidraw/lib/utils/halfFullWidthConvert";
+import { truncate, truncateNumber } from "@maidraw/lib/utils/number";
 import { Canvas } from "canvas";
 import upath from "upath";
 import { z } from "zod/v4";
@@ -178,11 +179,11 @@ export class Best50Painter extends OngekiPainter<typeof Best50Painter.Theme> {
                                         .map((v) => v.starRating)
                                         .reduce((sum, v) => sum + v, 0);
                                 return (
-                                    Util.truncateNumber(scoreRating / 50, 3) +
-                                    Util.truncateNumber(starRating / 50, 3)
+                                    truncateNumber(scoreRating / 50, 3) +
+                                    truncateNumber(starRating / 50, 3)
                                 );
                             } else {
-                                return Util.truncateNumber(
+                                return truncateNumber(
                                     getRatingAvg(bestScores, 45),
                                     2,
                                 );
@@ -206,32 +207,32 @@ export class Best50Painter extends OngekiPainter<typeof Best50Painter.Theme> {
                             );
                         }
                         await PainterModule.Text.draw(ctx, element, {
-                            username: Util.HalfFullWidthConvert.toFullWidth(
+                            username: HalfFullWidthConvert.toFullWidth(
                                 variables.username,
                             ),
-                            rating: Util.truncate(
+                            rating: truncate(
                                 variables.rating,
                                 options.type === "refresh" ? 3 : 2,
                             ),
-                            naiveRatingAverage: `NAIVE ${options.type === "refresh" ? 60 : 45} average: ${Util.truncate(
+                            naiveRatingAverage: `NAIVE ${options.type === "refresh" ? 60 : 45} average: ${truncate(
                                 getNaiveRating(options.type),
                                 options.type === "refresh" ? 3 : 2,
                             )}`,
-                            newScoreRatingAvg: Util.truncate(
+                            newScoreRatingAvg: truncate(
                                 getRatingAvg(
                                     variables.newScores,
                                     options.type === "refresh" ? 10 : 15,
                                 ),
                                 options.type === "refresh" ? 3 : 2,
                             ),
-                            oldScoreRatingAvg: Util.truncate(
+                            oldScoreRatingAvg: truncate(
                                 getRatingAvg(
                                     variables.oldScores,
                                     options.type === "refresh" ? 50 : 30,
                                 ),
                                 options.type === "refresh" ? 3 : 2,
                             ),
-                            recentOrPlatinumScoreAvg: Util.truncate(
+                            recentOrPlatinumScoreAvg: truncate(
                                 getRatingAvg(
                                     variables.recentOrPlatinumScores,
                                     options.type === "refresh" ? 50 : 10,

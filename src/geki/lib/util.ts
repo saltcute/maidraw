@@ -1,4 +1,4 @@
-import Util from "@maidraw/lib/util";
+import { truncateNumber } from "@maidraw/lib/utils/number";
 import _ from "lodash";
 import { EBellTypes, EComboTypes } from "../type";
 import type * as Database from "./database";
@@ -210,11 +210,11 @@ export namespace OngekiUtil {
 
         return Math.max(
             0,
-            Util.truncateNumber(
+            truncateNumber(
                 parseFloat(
                     (
                         internalLevel +
-                        Util.truncateNumber(scoreCoef, 3) +
+                        truncateNumber(scoreCoef, 3) +
                         bonus
                     ).toFixed(6),
                 ),
@@ -273,11 +273,9 @@ export namespace OngekiUtil {
 
         return Math.max(
             0,
-            Util.truncateNumber(
+            truncateNumber(
                 parseFloat(
-                    (internalLevel + Util.truncateNumber(scoreCoef, 2)).toFixed(
-                        4,
-                    ),
+                    (internalLevel + truncateNumber(scoreCoef, 2)).toFixed(4),
                 ),
                 2,
             ),

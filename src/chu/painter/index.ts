@@ -1,8 +1,16 @@
 import { Painter, type Theme, ThemeManager } from "@maidraw/lib/painter";
-import { Util } from "@maidraw/lib/util";
+import { HalfFullWidthConvert } from "@maidraw/lib/utils/halfFullWidthConvert";
+import { loadImage } from "@maidraw/lib/utils/loadImage";
+import { truncate } from "@maidraw/lib/utils/number";
+import {
+    drawEmojiOrGlyph,
+    drawText,
+    measureText,
+} from "@maidraw/lib/utils/textDraw";
+import { color } from "@maidraw/lib/utils/zod";
 import { Canvas, type CanvasRenderingContext2D } from "canvas";
 import Color from "color";
-import _ from "lodash";
+import _, { capitalize } from "lodash";
 import sharp from "sharp";
 import { z } from "zod/v4";
 import type { ChunithmScoreAdapter } from "../lib/adapter";
@@ -62,7 +70,7 @@ export namespace ChunithmPainterModule {
             profilePicture?: Buffer,
             type: "chunithm" | "crystal" | "new" | "verse" = "verse",
         ) {
-            const nameplate = await Util.loadImage(
+            const nameplate = await loadImage(
                 theme.getFile(element.sprites.profile.nameplate),
             );
             ctx.drawImage(
@@ -97,9 +105,7 @@ export namespace ChunithmPainterModule {
                     profilePicture ||
                     theme.getFile(element.sprites.profile.icon);
                 const { dominant } = await sharp(pfp).stats();
-                const icon = await Util.loadImage(
-                    await sharp(pfp).png().toBuffer(),
-                );
+                const icon = await loadImage(await sharp(pfp).png().toBuffer());
 
                 const cropSize = Math.min(icon.width, icon.height);
                 ctx.drawImage(
@@ -144,7 +150,7 @@ export namespace ChunithmPainterModule {
                 ctx.fillStyle = "rgba(255, 255, 255, 0.45)";
                 ctx.fill();
 
-                Util.drawText(
+                drawText(
                     ctx,
                     "Lv.",
                     element.x + element.height * (43 / 64),
@@ -158,7 +164,7 @@ export namespace ChunithmPainterModule {
                         font: "standard-font-username",
                     },
                 );
-                Util.drawText(
+                drawText(
                     ctx,
                     "99",
                     element.x + element.height * (49 / 64),
@@ -173,9 +179,9 @@ export namespace ChunithmPainterModule {
                     },
                 );
 
-                Util.drawText(
+                drawText(
                     ctx,
-                    Util.HalfFullWidthConvert.toFullWidth(username),
+                    HalfFullWidthConvert.toFullWidth(username),
                     element.x + element.height * (57 / 64),
                     element.y + element.height * (35 / 64),
                     (element.height * 1) / 8,
@@ -195,7 +201,7 @@ export namespace ChunithmPainterModule {
 
                 const drawHeight = (element.height * 5) / 44;
                 if (ratingTextImg) {
-                    const image = await Util.loadImage(ratingTextImg);
+                    const image = await loadImage(ratingTextImg);
                     const { width, height } = image;
                     const aspectRatio = width / height;
                     const drawWidth = drawHeight * aspectRatio;
@@ -208,7 +214,7 @@ export namespace ChunithmPainterModule {
                     );
                 }
                 if (ratingNumberImg) {
-                    const image = await Util.loadImage(ratingNumberImg);
+                    const image = await loadImage(ratingNumberImg);
                     const { width, height } = image;
                     const aspectRatio = width / height;
                     const drawWidth = drawHeight * aspectRatio;
@@ -327,7 +333,7 @@ export namespace ChunithmPainterModule {
                     str: string;
                     img: Buffer | null;
                 }[] = await Promise.all(
-                    Util.truncate(num, 2)
+                    truncate(num, 2)
                         .padStart(5, " ")
                         .split("")
                         .map((v) => {
@@ -369,7 +375,7 @@ export namespace ChunithmPainterModule {
                 for (let i = 0, curx = 0; i < digits.length; ++i) {
                     const curDigit = digits[i];
                     if (!curDigit?.img) continue;
-                    const img = await Util.loadImage(curDigit.img);
+                    const img = await loadImage(curDigit.img);
                     ctx.drawImage(img, curx, 0);
                     if (curDigit.str === ".") {
                         curx += unitWidth * 0.4;
@@ -400,12 +406,12 @@ export namespace ChunithmPainterModule {
                     margin: z.number().min(0),
                     gap: z.number().min(0),
                     color: z.object({
-                        basic: Util.z.color(),
-                        advanced: Util.z.color(),
-                        expert: Util.z.color(),
-                        master: Util.z.color(),
-                        ultima: Util.z.color(),
-                        worldsEnd: Util.z.color(),
+                        basic: color(),
+                        advanced: color(),
+                        expert: color(),
+                        master: color(),
+                        ultima: color(),
+                        worldsEnd: color(),
                     }),
                     strictScoreCount: z.number().default(0),
                 }),
@@ -553,7 +559,7 @@ export namespace ChunithmPainterModule {
                     let jacket = await Database.fetchJacket(score.chart.id);
                     if (!jacket) jacket = await Database.fetchJacket(-1);
                     if (jacket) {
-                        const img = await Util.loadImage(jacket);
+                        const img = await loadImage(jacket);
                         ctx.drawImage(img, x, y, jacketSize, jacketSize);
                     } else {
                         ctx.fillStyle = "#b6ffab";
@@ -570,7 +576,7 @@ export namespace ChunithmPainterModule {
                     /** Begin Title Draw */ {
                         const titleFontSize =
                             element.scoreBubble.height * 0.806 * 0.144;
-                        Util.drawText(
+                        drawText(
                             ctx,
                             score.chart.name,
                             x + (jacketSize * 7) / 8,
@@ -608,9 +614,9 @@ export namespace ChunithmPainterModule {
                     ctx.fill();
 
                     /** Begin Achievement Rate Draw */
-                    Util.drawText(
+                    drawText(
                         ctx,
-                        Util.truncate(score.score, 0),
+                        truncate(score.score, 0),
                         x -
                             element.scoreBubble.margin -
                             element.scoreBubble.height * 0.806 * 0.02 +
@@ -725,7 +731,7 @@ export namespace ChunithmPainterModule {
                                     element.sprites.achievement.sssp,
                                 );
                         }
-                        const img = await Util.loadImage(rankImg);
+                        const img = await loadImage(rankImg);
                         ctx.drawImage(
                             img,
                             x + jacketSize * (13 / 16),
@@ -785,7 +791,7 @@ export namespace ChunithmPainterModule {
                                 56,
                         );
                         ctx.fill();
-                        const combo = await Util.loadImage(comboImg);
+                        const combo = await loadImage(comboImg);
                         ctx.drawImage(
                             combo,
                             x -
@@ -803,7 +809,7 @@ export namespace ChunithmPainterModule {
                                 6.7,
                         );
                     }
-                    Util.drawText(
+                    drawText(
                         ctx,
                         `#${index + 1}`,
                         x + element.scoreBubble.margin * 2,
@@ -820,9 +826,9 @@ export namespace ChunithmPainterModule {
 
                     ctx.restore();
                 }
-                Util.drawText(
+                drawText(
                     ctx,
-                    `lv. ${Util.truncate(score.chart.level, 1)}`,
+                    `lv. ${truncate(score.chart.level, 1)}`,
                     x + element.scoreBubble.margin * 2,
                     y + element.scoreBubble.height * (0.806 + (1 - 0.806) / 2),
                     element.scoreBubble.height * 0.806 * 0.128,
@@ -834,9 +840,9 @@ export namespace ChunithmPainterModule {
                     },
                 );
 
-                Util.drawText(
+                drawText(
                     ctx,
-                    `+${Util.truncate(score.rating, 2)}`,
+                    `+${truncate(score.rating, 2)}`,
                     x +
                         element.scoreBubble.width -
                         element.scoreBubble.margin * 2,
@@ -938,16 +944,16 @@ export namespace ChunithmPainterModule {
                 bubble: z.object({
                     margin: z.number().min(0),
                     color: z.object({
-                        basic: Util.z.color(),
-                        advanced: Util.z.color(),
-                        expert: Util.z.color(),
-                        master: Util.z.color(),
-                        ultima: Util.z.color(),
-                        worldsEnd: Util.z.color(),
+                        basic: color(),
+                        advanced: color(),
+                        expert: color(),
+                        master: color(),
+                        ultima: color(),
+                        worldsEnd: color(),
                     }),
                 }),
                 color: z.object({
-                    card: Util.z.color(),
+                    card: color(),
                 }),
                 sprites: z.object({
                     achievement: z.object({
@@ -1158,7 +1164,7 @@ export namespace ChunithmPainterModule {
                                 break;
                         }
                         const levelTextSize = titleSize * (5 / 8);
-                        Util.drawText(
+                        drawText(
                             ctx,
                             difficultiy,
                             x + element.bubble.margin,
@@ -1176,15 +1182,15 @@ export namespace ChunithmPainterModule {
                                     .hexa(),
                             },
                         );
-                        const difficultyTextWidth = Util.measureText(
+                        const difficultyTextWidth = measureText(
                             ctx,
                             difficultiy,
                             titleSize,
                             Infinity,
                         ).width;
-                        Util.drawText(
+                        drawText(
                             ctx,
-                            `Lv. ${Util.truncate(
+                            `Lv. ${truncate(
                                 chart.events
                                     .filter(
                                         (v) =>
@@ -1194,7 +1200,7 @@ export namespace ChunithmPainterModule {
                                     .find((v) => v.type === "existence")?.data
                                     .level || 0,
                                 1,
-                            )}${score ? `　+${Util.truncate(score.rating, 2)}` : ""}`,
+                            )}${score ? `　+${truncate(score.rating, 2)}` : ""}`,
                             x + element.bubble.margin * 2 + difficultyTextWidth,
                             y +
                                 element.bubble.margin +
@@ -1230,9 +1236,9 @@ export namespace ChunithmPainterModule {
                     /** Begin Achievement Rate Draw */
                     {
                         const scoreSize = height * 0.806 * 0.208;
-                        Util.drawText(
+                        drawText(
                             ctx,
-                            score ? Util.truncate(score.score, 0) : "NO RECORD",
+                            score ? truncate(score.score, 0) : "NO RECORD",
                             x +
                                 height * 2 -
                                 element.bubble.margin -
@@ -1330,7 +1336,7 @@ export namespace ChunithmPainterModule {
                         const blockHeight = height * 0.806 * 0.3 * 0.85,
                             blockWidth = blockHeight * (540 / 180);
 
-                        const img = await Util.loadImage(rankImg);
+                        const img = await loadImage(rankImg);
                         ctx.drawImage(
                             img,
                             x + element.bubble.margin * (1 / 2),
@@ -1390,7 +1396,7 @@ export namespace ChunithmPainterModule {
                                     );
                                     break;
                             }
-                            const combo = await Util.loadImage(comboImg);
+                            const combo = await loadImage(comboImg);
                             ctx.drawImage(
                                 combo,
                                 curX,
@@ -1405,7 +1411,7 @@ export namespace ChunithmPainterModule {
                     const scorePartWidth =
                         element.bubble.margin * (3 / 2) + height * 2;
                     const noteCountTexts = Object.entries(chart.meta.notes).map(
-                        ([k, v]) => `${Util.capitalize(k)}: ${v}`,
+                        ([k, v]) => `${capitalize(k)}: ${v}`,
                     );
                     const noteCountTextSize = (() => {
                         let base =
@@ -1415,9 +1421,7 @@ export namespace ChunithmPainterModule {
                             ;
                             base > 4 &&
                             noteCountTexts
-                                .map((v) =>
-                                    Util.measureText(ctx, v, base, Infinity),
-                                )
+                                .map((v) => measureText(ctx, v, base, Infinity))
                                 .find((v) => v.width > width - scorePartWidth);
                             base--
                         ) {}
@@ -1425,19 +1429,14 @@ export namespace ChunithmPainterModule {
                     })();
                     const noteCountTextWidth = noteCountTexts
                         .map((v) =>
-                            Util.measureText(
-                                ctx,
-                                v,
-                                noteCountTextSize,
-                                Infinity,
-                            ),
+                            measureText(ctx, v, noteCountTextSize, Infinity),
                         )
                         .reduce((a, b) => (a.width > b.width ? a : b)).width;
                     /** Begin Note Count Draw */
                     {
                         let noteCountLength = 0;
                         noteCountTexts.forEach((v, i) => {
-                            Util.drawText(
+                            drawText(
                                 ctx,
                                 v,
                                 x +
@@ -1460,7 +1459,7 @@ export namespace ChunithmPainterModule {
                                         .hexa(),
                                 },
                             );
-                            const length = Util.measureText(
+                            const length = measureText(
                                 ctx,
                                 v,
                                 noteCountTextSize,
@@ -1517,7 +1516,7 @@ export namespace ChunithmPainterModule {
                                     sharp(versionImage);
                                     if (versionImage) {
                                         const versionImg =
-                                            await Util.loadImage(versionImage);
+                                            await loadImage(versionImage);
                                         ctx.drawImage(
                                             versionImg,
                                             curx - versionImageWidth,
@@ -1740,7 +1739,7 @@ export namespace ChunithmPainterModule {
                                             throw "No versionImage";
                                         sharp(versionImage);
                                         const versionImg =
-                                            await Util.loadImage(versionImage);
+                                            await loadImage(versionImage);
                                         ctx.drawImage(
                                             versionImg,
                                             curx,
@@ -1750,13 +1749,13 @@ export namespace ChunithmPainterModule {
                                         );
                                     } catch {
                                         const str = `${event.version.gameVersion.major}.${event.version.gameVersion.minor}`;
-                                        const measurement = Util.measureText(
+                                        const measurement = measureText(
                                             ctx,
                                             str,
                                             noteCountTextSize * 1.2,
                                             Infinity,
                                         );
-                                        Util.drawText(
+                                        drawText(
                                             ctx,
                                             str,
                                             curx + versionImageWidth / 2,
@@ -1801,9 +1800,9 @@ export namespace ChunithmPainterModule {
                                                     symbol = "→";
                                             }
                                         }
-                                        Util.drawText(
+                                        drawText(
                                             ctx,
-                                            `${symbol}${Util.truncate(event.data.level, 1)}`,
+                                            `${symbol}${truncate(event.data.level, 1)}`,
                                             curx + versionImageWidth / 2,
                                             cury +
                                                 versionImageHeight +
@@ -1819,7 +1818,7 @@ export namespace ChunithmPainterModule {
                                             },
                                         );
                                     } else if (event.type === "removal") {
-                                        Util.drawText(
+                                        drawText(
                                             ctx,
                                             `❌`,
                                             curx + versionImageWidth / 2,
@@ -1860,7 +1859,7 @@ export namespace ChunithmPainterModule {
                 ctx.fill();
                 ctx.save();
                 ctx.clip();
-                Util.drawText(
+                drawText(
                     ctx,
                     chart.designer || "-",
                     x + element.bubble.margin,
@@ -1888,7 +1887,7 @@ export namespace ChunithmPainterModule {
                 height: z.number().min(1),
                 margin: z.number().min(0),
                 color: z.object({
-                    card: Util.z.color(),
+                    card: color(),
                 }),
             });
 
@@ -1936,7 +1935,7 @@ export namespace ChunithmPainterModule {
                 /* Begin jacket draw */
                 if (jacket) {
                     const jacketBorderRadius = backGroundBorderRadius / 2;
-                    const jacketImage = await Util.loadImage(jacket);
+                    const jacketImage = await loadImage(jacket);
                     ctx.beginPath();
                     ctx.roundRect(
                         element.x + jacketMargin,
@@ -1969,7 +1968,7 @@ export namespace ChunithmPainterModule {
                         .hex();
                     const textTitleMaxWidth = element.width - textMargin * 2;
 
-                    Util.drawText(
+                    drawText(
                         ctx,
                         chart.name,
                         element.x + textMargin,
@@ -1988,7 +1987,7 @@ export namespace ChunithmPainterModule {
                         },
                     );
 
-                    Util.drawText(
+                    drawText(
                         ctx,
                         chart.artist,
                         element.x + textMargin,
@@ -2017,7 +2016,7 @@ export namespace ChunithmPainterModule {
                             return `${minBpm}-${maxBpm}`;
                         }
                     }
-                    Util.drawText(
+                    drawText(
                         ctx,
                         `#${chart.id} BPM: ${getBpmRange(chart.bpms)}`,
                         element.x + textMargin,
@@ -2079,7 +2078,7 @@ export namespace ChunithmPainterModule {
                     if (EXIST_JPN) title.push(EXIST_JPN);
                     if (EXIST_INT) title.push(EXIST_INT);
                     if (EXIST_CHN) title.push(EXIST_CHN);
-                    await Util.drawEmojiOrGlyph(
+                    await drawEmojiOrGlyph(
                         ctx,
                         title.join(" "),
                         element.x + element.width - textMargin,

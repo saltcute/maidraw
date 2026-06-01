@@ -7,7 +7,8 @@ import {
 } from "@maidraw/geki/type";
 import { BaseScoreAdapter } from "@maidraw/lib/adapter";
 import { FailedToFetchError, IllegalArgumentError } from "@maidraw/lib/error";
-import { Util } from "@maidraw/lib/util";
+import { sanitizeKamaitachiErrorMessage } from "@maidraw/lib/utils/misc";
+import { truncateNumber } from "@maidraw/lib/utils/number";
 import * as Database from "../../database";
 import { OngekiUtil } from "../../util";
 import type { OngekiScoreAdapter } from "..";
@@ -32,7 +33,7 @@ export class KamaiTachi extends BaseScoreAdapter implements OngekiScoreAdapter {
                 err: new FailedToFetchError(
                     "maidraw.ongeki.adapter.kamaitachi",
                     "personal best scores",
-                    Util.sanitizeKamaitachiErrorMessage(
+                    sanitizeKamaitachiErrorMessage(
                         `${rawPBs?.description ?? "An unknown error has occured."}`,
                         username,
                     ),
@@ -295,7 +296,7 @@ export class KamaiTachi extends BaseScoreAdapter implements OngekiScoreAdapter {
                 err: new FailedToFetchError(
                     "maidraw.ongeki.adapter.kamaitachi",
                     "personal best scores",
-                    Util.sanitizeKamaitachiErrorMessage(
+                    sanitizeKamaitachiErrorMessage(
                         `${rawPBs?.description ?? "An unknown error has occured."}`,
                         userId,
                     ),
@@ -371,7 +372,7 @@ export class KamaiTachi extends BaseScoreAdapter implements OngekiScoreAdapter {
                 err: new FailedToFetchError(
                     "maidraw.ongeki.adapter.kamaitachi",
                     "personal best scores",
-                    Util.sanitizeKamaitachiErrorMessage(
+                    sanitizeKamaitachiErrorMessage(
                         `${rawPBs?.description ?? "An unknown error has occured."}`,
                         userId,
                     ),
@@ -385,7 +386,7 @@ export class KamaiTachi extends BaseScoreAdapter implements OngekiScoreAdapter {
                 err: new FailedToFetchError(
                     "maidraw.ongeki.adapter.kamaitachi",
                     "recent scores",
-                    Util.sanitizeKamaitachiErrorMessage(
+                    sanitizeKamaitachiErrorMessage(
                         `${rawRecents?.description ?? "An unknown error has occured."}`,
                         userId,
                     ),
@@ -552,7 +553,7 @@ export class KamaiTachi extends BaseScoreAdapter implements OngekiScoreAdapter {
                 err: new FailedToFetchError(
                     "maidraw.ongeki.adapter.kamaitachi",
                     "player profile",
-                    Util.sanitizeKamaitachiErrorMessage(
+                    sanitizeKamaitachiErrorMessage(
                         `${profile?.description ?? "An unknown error has occured."}`,
                         userId,
                     ),
@@ -567,7 +568,7 @@ export class KamaiTachi extends BaseScoreAdapter implements OngekiScoreAdapter {
                 return { err: serr };
             }
             const newRating = scores.new
-                .map((v) => Util.truncateNumber(v.rating / 5, 3))
+                .map((v) => truncateNumber(v.rating / 5, 3))
                 .reduce((sum, v) => sum + v, 0);
             const oldRating = scores.old
                 .map((v) => v.rating)
@@ -579,9 +580,9 @@ export class KamaiTachi extends BaseScoreAdapter implements OngekiScoreAdapter {
                 data: {
                     name: profile?.body.username,
                     rating:
-                        Util.truncateNumber(newRating / 10, 3) +
-                        Util.truncateNumber(oldRating / 50, 3) +
-                        Util.truncateNumber(platRating / 50, 3),
+                        truncateNumber(newRating / 10, 3) +
+                        truncateNumber(oldRating / 50, 3) +
+                        truncateNumber(platRating / 50, 3),
                 },
             };
         } else if (type === "classic") {
@@ -596,7 +597,7 @@ export class KamaiTachi extends BaseScoreAdapter implements OngekiScoreAdapter {
             return {
                 data: {
                     name: profile?.body.username,
-                    rating: Util.truncateNumber(rating / 55, 2),
+                    rating: truncateNumber(rating / 55, 2),
                 },
             };
         } else

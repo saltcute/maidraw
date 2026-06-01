@@ -1,6 +1,7 @@
 import { type DataOrError, MissingThemeError } from "@maidraw/lib/error";
 import { PainterModule, ThemeManager } from "@maidraw/lib/painter";
-import { Util } from "@maidraw/lib/util";
+import { HalfFullWidthConvert } from "@maidraw/lib/utils/halfFullWidthConvert";
+import { ceilWithPercision, truncate } from "@maidraw/lib/utils/number";
 import { EComboTypes, type IScore } from "@maidraw/mai/type";
 import { Canvas } from "canvas";
 import _ from "lodash";
@@ -226,21 +227,21 @@ export class Best50Painter extends MaimaiPainter<typeof Best50Painter.Theme> {
                                 )
                                     .map(
                                         (v) =>
-                                            `lv. ${Util.ceilWithPercision(v.level, 1)} ${v.score >= 100.5 ? "SSS+" : `SSS ${Util.truncate(v.score, 1)}%`}`,
+                                            `lv. ${ceilWithPercision(v.level, 1)} ${v.score >= 100.5 ? "SSS+" : `SSS ${truncate(v.score, 1)}%`}`,
                                     )
                                     .join("/")}`;
                             else return "Good job!";
                         }
                         await PainterModule.Text.draw(ctx, element, {
-                            username: Util.HalfFullWidthConvert.toFullWidth(
+                            username: HalfFullWidthConvert.toFullWidth(
                                 variables.username,
                             ),
-                            rating: Util.truncate(variables.rating, 0),
-                            newScoreRatingAvgString: `NEW scores average: ${Util.ceilWithPercision(
+                            rating: truncate(variables.rating, 0),
+                            newScoreRatingAvgString: `NEW scores average: ${ceilWithPercision(
                                 getRatingAvg(variables.newScores, 15),
                                 0,
                             )}`,
-                            oldScoreRatingAvgString: `OLD scores average: ${Util.ceilWithPercision(
+                            oldScoreRatingAvgString: `OLD scores average: ${ceilWithPercision(
                                 getRatingAvg(variables.oldScores, 35),
                                 0,
                             )}`,

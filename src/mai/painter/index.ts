@@ -1,8 +1,17 @@
 import { Painter, type Theme, ThemeManager } from "@maidraw/lib/painter";
-import { Util } from "@maidraw/lib/util";
+import { HalfFullWidthConvert } from "@maidraw/lib/utils/halfFullWidthConvert";
+import { loadImage } from "@maidraw/lib/utils/loadImage";
+import { truncate } from "@maidraw/lib/utils/number";
+import {
+    drawEmojiOrGlyph,
+    drawText,
+    measureText,
+    visibleLength,
+} from "@maidraw/lib/utils/textDraw";
+import { color } from "@maidraw/lib/utils/zod";
 import { Canvas, type CanvasRenderingContext2D } from "canvas";
 import Color from "color";
-import _ from "lodash";
+import _, { capitalize } from "lodash";
 import sharp from "sharp";
 import { z } from "zod/v4";
 import type { MaimaiScoreAdapter } from "../lib/adapter";
@@ -67,7 +76,7 @@ export namespace MaimaiPainterModule {
             rating: number,
             profilePicture?: Buffer,
         ) {
-            const nameplate = await Util.loadImage(
+            const nameplate = await loadImage(
                 theme.getFile(element.sprites.profile.nameplate),
             );
             ctx.drawImage(
@@ -102,9 +111,7 @@ export namespace MaimaiPainterModule {
                     profilePicture ||
                     theme.getFile(element.sprites.profile.icon);
                 const { dominant } = await sharp(pfp).stats();
-                const icon = await Util.loadImage(
-                    await sharp(pfp).png().toBuffer(),
-                );
+                const icon = await loadImage(await sharp(pfp).png().toBuffer());
 
                 const cropSize = Math.min(icon.width, icon.height);
                 ctx.drawImage(
@@ -207,7 +214,7 @@ export namespace MaimaiPainterModule {
                         break;
                     }
                 }
-                const dxRating = await Util.loadImage(dxRatingImg);
+                const dxRating = await loadImage(dxRatingImg);
                 ctx.drawImage(
                     dxRating,
                     element.x + element.height,
@@ -244,7 +251,7 @@ export namespace MaimaiPainterModule {
                         await sharp(ratingImgBuffer).metadata();
                     if (width && height) {
                         const aspectRatio = width / height;
-                        const image = await Util.loadImage(ratingImgBuffer);
+                        const image = await loadImage(ratingImgBuffer);
                         const drawHeight = (element.height * 11) / 64;
                         ctx.drawImage(
                             image,
@@ -256,9 +263,9 @@ export namespace MaimaiPainterModule {
                     }
                 }
 
-                Util.drawText(
+                drawText(
                     ctx,
-                    Util.HalfFullWidthConvert.toFullWidth(username),
+                    HalfFullWidthConvert.toFullWidth(username),
                     element.x + element.height * (1 + 1 / 16),
                     element.y + element.height * (0.064 + 0.333 + 1 / 4),
                     (element.height * 1) / 6,
@@ -318,7 +325,7 @@ export namespace MaimaiPainterModule {
             for (let i = 0; i < digits.length; ++i) {
                 const curDigit = digits[i];
                 if (!curDigit) continue;
-                const img = await Util.loadImage(curDigit);
+                const img = await loadImage(curDigit);
                 ctx.drawImage(img, unitWidth * i * 0.89, 0);
             }
             return canvas.toBuffer();
@@ -339,12 +346,12 @@ export namespace MaimaiPainterModule {
                     margin: z.number().min(0),
                     gap: z.number().min(0),
                     color: z.object({
-                        basic: Util.z.color(),
-                        advanced: Util.z.color(),
-                        expert: Util.z.color(),
-                        master: Util.z.color(),
-                        remaster: Util.z.color(),
-                        utage: Util.z.color(),
+                        basic: color(),
+                        advanced: color(),
+                        expert: color(),
+                        master: color(),
+                        remaster: color(),
+                        utage: color(),
                     }),
                     strictScoreCount: z.number().default(0),
                 }),
@@ -551,7 +558,7 @@ export namespace MaimaiPainterModule {
                     let jacket = await Database.fetchJacket(score.chart.id);
                     if (!jacket) jacket = await Database.fetchJacket(0);
                     if (jacket) {
-                        const img = await Util.loadImage(jacket);
+                        const img = await loadImage(jacket);
                         ctx.drawImage(img, x, y, jacketSize, jacketSize);
                     } else {
                         ctx.fillStyle = "#b6ffab";
@@ -568,7 +575,7 @@ export namespace MaimaiPainterModule {
                     /** Begin Title Draw */ {
                         const titleFontSize =
                             element.scoreBubble.height * 0.806 * 0.144;
-                        Util.drawText(
+                        drawText(
                             ctx,
                             score.chart.name,
                             x + (jacketSize * 7) / 8,
@@ -606,9 +613,9 @@ export namespace MaimaiPainterModule {
                     ctx.fill();
 
                     /** Begin Achievement Rate Draw */
-                    Util.drawText(
+                    drawText(
                         ctx,
-                        `${Util.truncate(score.achievement, 4)}%`,
+                        `${truncate(score.achievement, 4)}%`,
                         x -
                             element.scoreBubble.margin -
                             element.scoreBubble.height * 0.806 * 0.02 +
@@ -702,7 +709,7 @@ export namespace MaimaiPainterModule {
                                     element.sprites.achievement.sssp,
                                 );
                         }
-                        const img = await Util.loadImage(rankImg);
+                        const img = await loadImage(rankImg);
                         ctx.drawImage(
                             img,
                             x + jacketSize,
@@ -779,7 +786,7 @@ export namespace MaimaiPainterModule {
                                 );
                                 break;
                         }
-                        const combo = await Util.loadImage(comboImg);
+                        const combo = await loadImage(comboImg);
                         ctx.drawImage(
                             combo,
                             x +
@@ -795,7 +802,7 @@ export namespace MaimaiPainterModule {
                             element.scoreBubble.height * 0.806 * 0.32,
                             element.scoreBubble.height * 0.806 * 0.32,
                         );
-                        const sync = await Util.loadImage(syncImg);
+                        const sync = await loadImage(syncImg);
                         ctx.drawImage(
                             sync,
                             x +
@@ -824,7 +831,7 @@ export namespace MaimaiPainterModule {
                         const { width, height } =
                             await sharp(chartModeBadgeImg).metadata();
                         const aspectRatio = (width ?? 0) / (height ?? 1) || 3;
-                        const mode = await Util.loadImage(chartModeBadgeImg);
+                        const mode = await loadImage(chartModeBadgeImg);
                         const drawHeight = (jacketSize * 6) / 8;
                         ctx.drawImage(
                             mode,
@@ -836,7 +843,7 @@ export namespace MaimaiPainterModule {
                             drawHeight / aspectRatio,
                         );
                     }
-                    Util.drawText(
+                    drawText(
                         ctx,
                         `#${index + 1}`,
                         x + element.scoreBubble.margin * 2,
@@ -853,9 +860,9 @@ export namespace MaimaiPainterModule {
 
                     ctx.restore();
                 }
-                Util.drawText(
+                drawText(
                     ctx,
-                    `${Util.truncate(score.chart.level, 1)}  ↑${Util.truncate(score.dxRating, 0)}`,
+                    `${truncate(score.chart.level, 1)}  ↑${truncate(score.dxRating, 0)}`,
                     x + element.scoreBubble.margin * 2,
                     y + element.scoreBubble.height * (0.806 + (1 - 0.806) / 2),
                     element.scoreBubble.height * 0.806 * 0.128,
@@ -868,7 +875,7 @@ export namespace MaimaiPainterModule {
                 );
 
                 if (score.dxScore >= 0 && score.chart.maxDxScore > 0) {
-                    Util.drawText(
+                    drawText(
                         ctx,
                         `${score.dxScore}/${score.chart.maxDxScore}`,
                         x +
@@ -966,16 +973,16 @@ export namespace MaimaiPainterModule {
                 bubble: z.object({
                     margin: z.number().min(0),
                     color: z.object({
-                        basic: Util.z.color(),
-                        advanced: Util.z.color(),
-                        expert: Util.z.color(),
-                        master: Util.z.color(),
-                        remaster: Util.z.color(),
-                        utage: Util.z.color(),
+                        basic: color(),
+                        advanced: color(),
+                        expert: color(),
+                        master: color(),
+                        remaster: color(),
+                        utage: color(),
                     }),
                 }),
                 color: z.object({
-                    card: Util.z.color(),
+                    card: color(),
                 }),
                 sprites: z.object({
                     achievement: z.object({
@@ -1197,7 +1204,7 @@ export namespace MaimaiPainterModule {
                                 break;
                         }
                         const levelTextSize = titleSize * (5 / 8);
-                        Util.drawText(
+                        drawText(
                             ctx,
                             difficultiy,
                             x + element.bubble.margin,
@@ -1215,15 +1222,15 @@ export namespace MaimaiPainterModule {
                                     .hexa(),
                             },
                         );
-                        const difficultyTextWidth = Util.measureText(
+                        const difficultyTextWidth = measureText(
                             ctx,
                             difficultiy,
                             titleSize,
                             Infinity,
                         ).width;
-                        Util.drawText(
+                        drawText(
                             ctx,
-                            `Lv. ${Util.truncate(chart.level, 1)}${score ? `　↑${Util.truncate(score.dxRating, 0)}` : ""}`,
+                            `Lv. ${truncate(chart.level, 1)}${score ? `　↑${truncate(score.dxRating, 0)}` : ""}`,
                             x + element.bubble.margin * 2 + difficultyTextWidth,
                             y +
                                 element.bubble.margin +
@@ -1259,10 +1266,10 @@ export namespace MaimaiPainterModule {
                     /** Begin Achievement Rate Draw */
                     {
                         const scoreSize = height * 0.806 * 0.208;
-                        Util.drawText(
+                        drawText(
                             ctx,
                             score
-                                ? `${Util.truncate(score.achievement, 4)}%`
+                                ? `${truncate(score.achievement, 4)}%`
                                 : "NO RECORD",
                             x +
                                 height * 2 -
@@ -1357,7 +1364,7 @@ export namespace MaimaiPainterModule {
                                     element.sprites.achievement.sssp,
                                 );
                         }
-                        const img = await Util.loadImage(rankImg);
+                        const img = await loadImage(rankImg);
                         ctx.drawImage(
                             img,
                             x + element.bubble.margin * (1 / 4),
@@ -1430,7 +1437,7 @@ export namespace MaimaiPainterModule {
                                 );
                                 break;
                         }
-                        const combo = await Util.loadImage(comboImg);
+                        const combo = await loadImage(comboImg);
                         ctx.drawImage(
                             combo,
                             x + height * 0.806 * (0.32 * 2.133 + 0.06 - 0.1),
@@ -1441,7 +1448,7 @@ export namespace MaimaiPainterModule {
                             height * 0.806 * 0.32,
                             height * 0.806 * 0.32,
                         );
-                        const sync = await Util.loadImage(syncImg);
+                        const sync = await loadImage(syncImg);
                         ctx.drawImage(
                             sync,
                             x +
@@ -1624,9 +1631,7 @@ export namespace MaimaiPainterModule {
                                         sharp(versionImage);
                                         if (versionImage) {
                                             const versionImg =
-                                                await Util.loadImage(
-                                                    versionImage,
-                                                );
+                                                await loadImage(versionImage);
                                             let text: string;
                                             switch (version.region) {
                                                 case "DX":
@@ -1652,7 +1657,7 @@ export namespace MaimaiPainterModule {
                                                 versionImageHeight,
                                             );
                                             if (version.region !== "OLD") {
-                                                await Util.drawEmojiOrGlyph(
+                                                await drawEmojiOrGlyph(
                                                     ctx,
                                                     text,
                                                     curx,
@@ -1666,7 +1671,7 @@ export namespace MaimaiPainterModule {
                                                     "right",
                                                 );
                                                 curx -=
-                                                    Util.visibleLength(text) *
+                                                    visibleLength(text) *
                                                         regionTextSize +
                                                     element.bubble.margin;
                                             }
@@ -1680,13 +1685,13 @@ export namespace MaimaiPainterModule {
                         /** Begin Note Count Draw */
                         const noteCountTexts = Object.entries(
                             chart.meta.notes,
-                        ).map(([k, v]) => `${Util.capitalize(k)}: ${v}`);
+                        ).map(([k, v]) => `${capitalize(k)}: ${v}`);
                         const noteCountTextSize =
                             (height - element.bubble.margin * 4) /
                             noteCountTexts.length;
                         let noteCountLength = 0;
                         noteCountTexts.forEach((v, i) => {
-                            Util.drawText(
+                            drawText(
                                 ctx,
                                 v,
                                 x +
@@ -1708,7 +1713,7 @@ export namespace MaimaiPainterModule {
                                         .hexa(),
                                 },
                             );
-                            const length = Util.measureText(
+                            const length = measureText(
                                 ctx,
                                 v,
                                 noteCountTextSize,
@@ -1891,7 +1896,7 @@ export namespace MaimaiPainterModule {
                                     2;
                             }
                             if (actualEvents.length <= 0) {
-                                Util.drawText(
+                                drawText(
                                     ctx,
                                     `This chart is not playable in ${(() => {
                                         switch (targetRegion) {
@@ -1968,9 +1973,7 @@ export namespace MaimaiPainterModule {
                                                 throw "No versionImage";
                                             sharp(versionImage);
                                             const versionImg =
-                                                await Util.loadImage(
-                                                    versionImage,
-                                                );
+                                                await loadImage(versionImage);
                                             ctx.drawImage(
                                                 versionImg,
                                                 curx,
@@ -1980,14 +1983,13 @@ export namespace MaimaiPainterModule {
                                             );
                                         } catch {
                                             const str = `${event.version.gameVersion.isDX ? "DX " : ""}${event.version.gameVersion.major}.${event.version.gameVersion.minor}`;
-                                            const measurement =
-                                                Util.measureText(
-                                                    ctx,
-                                                    str,
-                                                    noteCountTextSize * 1.2,
-                                                    Infinity,
-                                                );
-                                            Util.drawText(
+                                            const measurement = measureText(
+                                                ctx,
+                                                str,
+                                                noteCountTextSize * 1.2,
+                                                Infinity,
+                                            );
+                                            drawText(
                                                 ctx,
                                                 str,
                                                 curx + versionImageWidth / 2,
@@ -2036,9 +2038,9 @@ export namespace MaimaiPainterModule {
                                                         symbol = "→";
                                                 }
                                             }
-                                            Util.drawText(
+                                            drawText(
                                                 ctx,
-                                                `${symbol}${Util.truncate(event.data.level, 1)}`,
+                                                `${symbol}${truncate(event.data.level, 1)}`,
                                                 curx + versionImageWidth / 2,
                                                 cury +
                                                     versionImageHeight +
@@ -2056,7 +2058,7 @@ export namespace MaimaiPainterModule {
                                                 },
                                             );
                                         } else if (event.type === "removal") {
-                                            Util.drawText(
+                                            drawText(
                                                 ctx,
                                                 `❌`,
                                                 curx + versionImageWidth / 2,
@@ -2100,7 +2102,7 @@ export namespace MaimaiPainterModule {
                 ctx.fill();
                 ctx.save();
                 ctx.clip();
-                Util.drawText(
+                drawText(
                     ctx,
                     chart.designer.name || "-",
                     x + element.bubble.margin,
@@ -2115,7 +2117,7 @@ export namespace MaimaiPainterModule {
                 );
                 ctx.restore();
 
-                Util.drawText(
+                drawText(
                     ctx,
                     `${score && score.dxScore >= 0 ? `${score.dxScore}/` : "MAX DX SCR: "}${chart.meta.maxDXScore}`,
                     x + height * 2 - element.bubble.margin,
@@ -2142,7 +2144,7 @@ export namespace MaimaiPainterModule {
                 height: z.number().min(1),
                 margin: z.number().min(0),
                 color: z.object({
-                    card: Util.z.color(),
+                    card: color(),
                 }),
                 sprites: z.object({
                     mode: z.object({
@@ -2193,7 +2195,7 @@ export namespace MaimaiPainterModule {
                 /* Begin jacket draw */
                 if (jacket) {
                     const jacketBorderRadius = backGroundBorderRadius / 2;
-                    const jacketImage = await Util.loadImage(jacket);
+                    const jacketImage = await loadImage(jacket);
                     ctx.beginPath();
                     ctx.roundRect(
                         element.x + jacketMargin,
@@ -2222,12 +2224,7 @@ export namespace MaimaiPainterModule {
                     const {
                         actualBoundingBoxAscent: ascent,
                         actualBoundingBoxDescent: decent,
-                    } = Util.measureText(
-                        ctx,
-                        chart.name,
-                        textSizeTitle,
-                        Infinity,
-                    );
+                    } = measureText(ctx, chart.name, textSizeTitle, Infinity);
                     const titleActualHeight = Math.abs(ascent - decent);
                     const chartModeBadgeImg = theme.getFile(
                         chart.id > 10000
@@ -2248,14 +2245,14 @@ export namespace MaimaiPainterModule {
                         textMargin * 2 -
                         textSizeTitle * aspectRatio;
 
-                    const titleMetrics = Util.measureText(
+                    const titleMetrics = measureText(
                         ctx,
                         chart.name,
                         textSizeTitle,
                         textTitleMaxWidth,
                     );
 
-                    Util.drawText(
+                    drawText(
                         ctx,
                         chart.name,
                         element.x + textMargin,
@@ -2274,7 +2271,7 @@ export namespace MaimaiPainterModule {
                         },
                     );
 
-                    Util.drawText(
+                    drawText(
                         ctx,
                         chart.artist,
                         element.x + textMargin,
@@ -2292,7 +2289,7 @@ export namespace MaimaiPainterModule {
                             borderColor: textColor,
                         },
                     );
-                    Util.drawText(
+                    drawText(
                         ctx,
                         `#${chart.id} BPM: ${chart.bpm}`,
                         element.x + textMargin,
@@ -2367,7 +2364,7 @@ export namespace MaimaiPainterModule {
                     if (EXIST_DX) title.push(EXIST_DX);
                     if (EXIST_EX) title.push(EXIST_EX);
                     if (EXIST_CN) title.push(EXIST_CN);
-                    await Util.drawEmojiOrGlyph(
+                    await drawEmojiOrGlyph(
                         ctx,
                         title.join(" "),
                         element.x + element.width - textMargin,
@@ -2385,7 +2382,7 @@ export namespace MaimaiPainterModule {
 
                     /** Begin Chart Mode Draw */
                     {
-                        const mode = await Util.loadImage(chartModeBadgeImg);
+                        const mode = await loadImage(chartModeBadgeImg);
                         ctx.drawImage(
                             mode,
                             element.x +

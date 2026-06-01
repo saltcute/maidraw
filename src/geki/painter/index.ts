@@ -1,5 +1,15 @@
 import { Painter, type Theme, ThemeManager } from "@maidraw/lib/painter";
-import { Util } from "@maidraw/lib/util";
+import { HalfFullWidthConvert } from "@maidraw/lib/utils/halfFullWidthConvert";
+import { loadImage } from "@maidraw/lib/utils/loadImage";
+import { truncate } from "@maidraw/lib/utils/number";
+import {
+    capitalize,
+    drawEmojiOrGlyph,
+    drawText,
+    drawVerticalText,
+    measureText,
+} from "@maidraw/lib/utils/textDraw";
+import { color } from "@maidraw/lib/utils/zod";
 import { Canvas, type CanvasRenderingContext2D } from "canvas";
 import Color from "color";
 import _ from "lodash";
@@ -105,8 +115,8 @@ export namespace OngekiPainterModule {
                     })
                     .png()
                     .toBuffer();
-                const upperImage = await Util.loadImage(upper);
-                const lowerImage = await Util.loadImage(lower);
+                const upperImage = await loadImage(upper);
+                const lowerImage = await loadImage(lower);
 
                 ctx.drawImage(
                     upperImage,
@@ -155,9 +165,7 @@ export namespace OngekiPainterModule {
                     profilePicture ||
                     theme.getFile(element.sprites.profile.icon);
                 const { dominant } = await sharp(pfp).stats();
-                const icon = await Util.loadImage(
-                    await sharp(pfp).png().toBuffer(),
-                );
+                const icon = await loadImage(await sharp(pfp).png().toBuffer());
 
                 const cropSize = Math.min(icon.width, icon.height);
                 ctx.drawImage(
@@ -207,7 +215,7 @@ export namespace OngekiPainterModule {
                 );
                 ctx.fillStyle = "white";
                 ctx.fill();
-                Util.drawText(
+                drawText(
                     ctx,
                     "Lv.",
                     theme.content.width * (7 / 32) * (5 / 128),
@@ -226,7 +234,7 @@ export namespace OngekiPainterModule {
                         font: "ongeki-font-level",
                     },
                 );
-                Util.drawText(
+                drawText(
                     ctx,
                     "39",
                     theme.content.width * (7 / 32) * (14 / 128),
@@ -246,9 +254,9 @@ export namespace OngekiPainterModule {
                     },
                 );
 
-                Util.drawText(
+                drawText(
                     ctx,
-                    Util.HalfFullWidthConvert.toFullWidth(username),
+                    HalfFullWidthConvert.toFullWidth(username),
                     theme.content.width * (7 / 32) * (108 / 128),
                     theme.content.width * (7 / 32) * (36 / 128),
                     theme.content.width * (7 / 32) * (1 / 8),
@@ -268,7 +276,7 @@ export namespace OngekiPainterModule {
                     await getRatingNumber(rating, theme, element, type);
 
                 if (ratingTextImg) {
-                    const image = await Util.loadImage(ratingTextImg);
+                    const image = await loadImage(ratingTextImg);
                     const { width, height } = image;
                     const aspectRatio = width / height;
                     const drawHeight =
@@ -283,7 +291,7 @@ export namespace OngekiPainterModule {
                     );
                 }
                 if (ratingNumberImg) {
-                    const image = await Util.loadImage(ratingNumberImg);
+                    const image = await loadImage(ratingNumberImg);
                     const { width, height } = image;
                     const aspectRatio = width / height;
                     const drawHeight =
@@ -403,7 +411,7 @@ export namespace OngekiPainterModule {
                     str: string;
                     img: Buffer | null;
                 }[] = await Promise.all(
-                    Util.truncate(num, type === "classic" ? 2 : 3)
+                    truncate(num, type === "classic" ? 2 : 3)
                         .padStart(5, " ")
                         .split("")
                         .map((v) => {
@@ -447,7 +455,7 @@ export namespace OngekiPainterModule {
                 for (let i = 0, curx = 0; i < digits.length; ++i) {
                     const curDigit = digits[i];
                     if (!curDigit?.img) continue;
-                    const img = await Util.loadImage(curDigit.img);
+                    const img = await loadImage(curDigit.img);
                     if (curDigit.str === ".") {
                         ctx.drawImage(
                             img,
@@ -511,11 +519,11 @@ export namespace OngekiPainterModule {
                         }),
                     ]),
                     color: z.object({
-                        basic: Util.z.color(),
-                        advanced: Util.z.color(),
-                        expert: Util.z.color(),
-                        master: Util.z.color(),
-                        lunatic: Util.z.color(),
+                        basic: color(),
+                        advanced: color(),
+                        expert: color(),
+                        master: color(),
+                        lunatic: color(),
                     }),
                     strictScoreCount: z.number().default(0),
                 }),
@@ -659,7 +667,7 @@ export namespace OngekiPainterModule {
                     let jacket = await Database.fetchJacket(score.chart.id);
                     if (!jacket) jacket = await Database.fetchJacket(0);
                     if (jacket) {
-                        const img = await Util.loadImage(jacket);
+                        const img = await loadImage(jacket);
                         ctx.drawImage(img, x, y, jacketSize, jacketSize);
                     } else {
                         ctx.fillStyle = "#b6ffab";
@@ -683,7 +691,7 @@ export namespace OngekiPainterModule {
                     const titleTextSize =
                         element.scoreBubble.height * 0.806 * 0.144;
                     if (!(element.region === "recent" && type === "refresh")) {
-                        Util.drawText(
+                        drawText(
                             ctx,
                             score.chart.name,
                             x + (jacketSize * 7) / 8,
@@ -703,7 +711,7 @@ export namespace OngekiPainterModule {
                             },
                         );
                     } else {
-                        Util.drawText(
+                        drawText(
                             ctx,
                             score.chart.name,
                             x + element.scoreBubble.width / 2,
@@ -748,9 +756,9 @@ export namespace OngekiPainterModule {
 
                     /** Begin Achievement Rate Draw */
                     if (!(element.region === "recent" && type === "refresh")) {
-                        Util.drawText(
+                        drawText(
                             ctx,
-                            Util.truncate(score.score, 0),
+                            truncate(score.score, 0),
                             x -
                                 element.scoreBubble.margin -
                                 element.scoreBubble.height * 0.806 * 0.02 +
@@ -837,7 +845,7 @@ export namespace OngekiPainterModule {
                                     element.sprites.achievement.sssp,
                                 );
                         }
-                        const img = await Util.loadImage(rankImg);
+                        const img = await loadImage(rankImg);
                         ctx.drawImage(
                             img,
                             x + jacketSize * (31 / 32),
@@ -928,8 +936,8 @@ export namespace OngekiPainterModule {
                             (comboBackground * comboBgRatio) / 2,
                         );
                         ctx.fill();
-                        const combo = await Util.loadImage(comboImg);
-                        const bell = await Util.loadImage(bellImg);
+                        const combo = await loadImage(comboImg);
+                        const bell = await loadImage(bellImg);
 
                         ctx.drawImage(
                             bell,
@@ -966,7 +974,7 @@ export namespace OngekiPainterModule {
                             element.region === "recent" && type === "refresh"
                                 ? element.scoreBubble.margin * 1.5
                                 : element.scoreBubble.margin * 2;
-                        Util.drawText(
+                        drawText(
                             ctx,
                             `#${index + 1}`,
                             x + margin,
@@ -989,7 +997,7 @@ export namespace OngekiPainterModule {
                             const content = `★${OngekiUtil.getStar(platRatio)}`;
                             const fontSize =
                                 element.scoreBubble.height * 0.806 * 0.128;
-                            const mesaure = Util.measureText(
+                            const mesaure = measureText(
                                 ctx,
                                 content,
                                 fontSize,
@@ -1018,7 +1026,7 @@ export namespace OngekiPainterModule {
                             ].forEach((v, i, arr) => {
                                 star6Grad.addColorStop(i / (arr.length - 1), v);
                             });
-                            Util.drawText(
+                            drawText(
                                 ctx,
                                 content,
                                 x + element.scoreBubble.width - margin,
@@ -1048,11 +1056,11 @@ export namespace OngekiPainterModule {
                 {
                     const leftContent =
                         element.region === "recent" && type === "refresh"
-                            ? `${Util.truncate(score.chart.level, 1)}`
-                            : `${Util.truncate(score.chart.level, 1)}  ↑${Util.truncate(score.rating, type === "refresh" ? 3 : 2)}`;
+                            ? `${truncate(score.chart.level, 1)}`
+                            : `${truncate(score.chart.level, 1)}  ↑${truncate(score.rating, type === "refresh" ? 3 : 2)}`;
                     const rightContent = (() => {
                         if (element.region === "recent" && type === "refresh") {
-                            return `+${Util.truncate(score.starRating, 3)}`;
+                            return `+${truncate(score.starRating, 3)}`;
                         }
                         if (
                             score.platinumScore &&
@@ -1065,7 +1073,7 @@ export namespace OngekiPainterModule {
                         element.region === "recent" && type === "refresh"
                             ? element.scoreBubble.margin * 1.5
                             : element.scoreBubble.margin * 2;
-                    Util.drawText(
+                    drawText(
                         ctx,
                         leftContent,
                         x + margin,
@@ -1081,7 +1089,7 @@ export namespace OngekiPainterModule {
                         },
                     );
                     if (rightContent) {
-                        Util.drawText(
+                        drawText(
                             ctx,
                             rightContent,
                             x + element.scoreBubble.width - margin,
@@ -1185,15 +1193,15 @@ export namespace OngekiPainterModule {
                 bubble: z.object({
                     margin: z.number().min(0),
                     color: z.object({
-                        basic: Util.z.color(),
-                        advanced: Util.z.color(),
-                        expert: Util.z.color(),
-                        master: Util.z.color(),
-                        lunatic: Util.z.color(),
+                        basic: color(),
+                        advanced: color(),
+                        expert: color(),
+                        master: color(),
+                        lunatic: color(),
                     }),
                 }),
                 color: z.object({
-                    card: Util.z.color(),
+                    card: color(),
                 }),
                 sprites: z.object({
                     achievement: z.object({
@@ -1398,7 +1406,7 @@ export namespace OngekiPainterModule {
                                 break;
                         }
                         const levelTextSize = titleSize * (5 / 8);
-                        Util.drawText(
+                        drawText(
                             ctx,
                             difficultiy,
                             x + element.bubble.margin,
@@ -1416,15 +1424,15 @@ export namespace OngekiPainterModule {
                                     .hexa(),
                             },
                         );
-                        const difficultyTextWidth = Util.measureText(
+                        const difficultyTextWidth = measureText(
                             ctx,
                             difficultiy,
                             titleSize,
                             Infinity,
                         ).width;
-                        Util.drawText(
+                        drawText(
                             ctx,
-                            `Lv. ${Util.truncate(
+                            `Lv. ${truncate(
                                 chart.events
                                     .filter(
                                         (v) =>
@@ -1434,7 +1442,7 @@ export namespace OngekiPainterModule {
                                     .find((v) => v.type === "existence")?.data
                                     .level || 0,
                                 1,
-                            )}${score ? `　↑${Util.truncate(score.rating, type === "classic" ? 2 : 3)}` : ""}`,
+                            )}${score ? `　↑${truncate(score.rating, type === "classic" ? 2 : 3)}` : ""}`,
                             x + element.bubble.margin * 2 + difficultyTextWidth,
                             y +
                                 element.bubble.margin +
@@ -1470,9 +1478,9 @@ export namespace OngekiPainterModule {
                     /** Begin Achievement Rate Draw */
                     {
                         const scoreSize = height * 0.806 * 0.208;
-                        Util.drawText(
+                        drawText(
                             ctx,
-                            score ? Util.truncate(score.score, 0) : "NO RECORD",
+                            score ? truncate(score.score, 0) : "NO RECORD",
                             x +
                                 height * 2 -
                                 element.bubble.margin -
@@ -1561,7 +1569,7 @@ export namespace OngekiPainterModule {
                         const achievementRankWidth =
                             achievementRankHeight * (286 / 143);
 
-                        const img = await Util.loadImage(rankImg);
+                        const img = await loadImage(rankImg);
                         ctx.drawImage(
                             img,
                             x + element.bubble.margin * (1 / 2),
@@ -1646,8 +1654,8 @@ export namespace OngekiPainterModule {
                                 );
                                 break;
                         }
-                        const combo = await Util.loadImage(comboImg);
-                        const bell = await Util.loadImage(bellImg);
+                        const combo = await loadImage(comboImg);
+                        const bell = await loadImage(bellImg);
 
                         ctx.drawImage(
                             combo,
@@ -1670,7 +1678,7 @@ export namespace OngekiPainterModule {
                     const scorePartWidth =
                         element.bubble.margin * (3 / 2) + height * 2;
                     const noteCountTexts = Object.entries(chart.meta.notes).map(
-                        ([k, v]) => `${Util.capitalize(k)}: ${v}`,
+                        ([k, v]) => `${capitalize(k)}: ${v}`,
                     );
                     const noteCountTextSize = (() => {
                         let base =
@@ -1680,9 +1688,7 @@ export namespace OngekiPainterModule {
                             ;
                             base > 4 &&
                             noteCountTexts
-                                .map((v) =>
-                                    Util.measureText(ctx, v, base, Infinity),
-                                )
+                                .map((v) => measureText(ctx, v, base, Infinity))
                                 .find((v) => v.width > width - scorePartWidth);
                             base--
                         ) {}
@@ -1690,19 +1696,14 @@ export namespace OngekiPainterModule {
                     })();
                     const noteCountTextWidth = noteCountTexts
                         .map((v) =>
-                            Util.measureText(
-                                ctx,
-                                v,
-                                noteCountTextSize,
-                                Infinity,
-                            ),
+                            measureText(ctx, v, noteCountTextSize, Infinity),
                         )
                         .reduce((a, b) => (a.width > b.width ? a : b)).width;
                     /** Begin Note Count Draw */
                     {
                         let noteCountLength = 0;
                         noteCountTexts.forEach((v, i) => {
-                            Util.drawText(
+                            drawText(
                                 ctx,
                                 v,
                                 x +
@@ -1725,7 +1726,7 @@ export namespace OngekiPainterModule {
                                         .hexa(),
                                 },
                             );
-                            const length = Util.measureText(
+                            const length = measureText(
                                 ctx,
                                 v,
                                 noteCountTextSize,
@@ -1782,7 +1783,7 @@ export namespace OngekiPainterModule {
                                     sharp(versionImage);
                                     if (versionImage) {
                                         const versionImg =
-                                            await Util.loadImage(versionImage);
+                                            await loadImage(versionImage);
                                         ctx.drawImage(
                                             versionImg,
                                             curx - versionImageWidth,
@@ -2001,7 +2002,7 @@ export namespace OngekiPainterModule {
                                             throw "No versionImage";
                                         sharp(versionImage);
                                         const versionImg =
-                                            await Util.loadImage(versionImage);
+                                            await loadImage(versionImage);
                                         ctx.drawImage(
                                             versionImg,
                                             curx,
@@ -2011,13 +2012,13 @@ export namespace OngekiPainterModule {
                                         );
                                     } catch {
                                         const str = `${event.version.gameVersion.major}.${event.version.gameVersion.minor}`;
-                                        const measurement = Util.measureText(
+                                        const measurement = measureText(
                                             ctx,
                                             str,
                                             noteCountTextSize * 1.2,
                                             Infinity,
                                         );
-                                        Util.drawText(
+                                        drawText(
                                             ctx,
                                             str,
                                             curx + versionImageWidth / 2,
@@ -2062,9 +2063,9 @@ export namespace OngekiPainterModule {
                                                     symbol = "→";
                                             }
                                         }
-                                        Util.drawText(
+                                        drawText(
                                             ctx,
-                                            `${symbol}${Util.truncate(event.data.level, 1)}`,
+                                            `${symbol}${truncate(event.data.level, 1)}`,
                                             curx + versionImageWidth / 2,
                                             cury +
                                                 versionImageHeight +
@@ -2080,7 +2081,7 @@ export namespace OngekiPainterModule {
                                             },
                                         );
                                     } else if (event.type === "removal") {
-                                        Util.drawText(
+                                        drawText(
                                             ctx,
                                             `❌`,
                                             curx + versionImageWidth / 2,
@@ -2121,7 +2122,7 @@ export namespace OngekiPainterModule {
                 ctx.fill();
                 ctx.save();
                 ctx.clip();
-                Util.drawText(
+                drawText(
                     ctx,
                     chart.designer || "-",
                     x + element.bubble.margin,
@@ -2136,7 +2137,7 @@ export namespace OngekiPainterModule {
                 );
                 ctx.restore();
 
-                Util.drawText(
+                drawText(
                     ctx,
                     `${score ? `${score.platinumScore}/` : "MAX PT SCR: "}${chart.meta.maxPlatinumScore}`,
                     x + height * 2 - element.bubble.margin,
@@ -2163,7 +2164,7 @@ export namespace OngekiPainterModule {
                 height: z.number().min(1),
                 margin: z.number().min(0),
                 color: z.object({
-                    card: Util.z.color(),
+                    card: color(),
                 }),
             });
 
@@ -2207,7 +2208,7 @@ export namespace OngekiPainterModule {
                 /* Begin jacket draw */
                 if (jacket) {
                     const jacketBorderRadius = backGroundBorderRadius / 2;
-                    const jacketImage = await Util.loadImage(jacket);
+                    const jacketImage = await loadImage(jacket);
                     ctx.beginPath();
                     ctx.roundRect(
                         element.x + jacketMargin,
@@ -2240,7 +2241,7 @@ export namespace OngekiPainterModule {
                         .hex();
                     const textTitleMaxWidth = element.width - textMargin * 2;
 
-                    Util.drawText(
+                    drawText(
                         ctx,
                         chart.name,
                         element.x + textMargin,
@@ -2259,7 +2260,7 @@ export namespace OngekiPainterModule {
                         },
                     );
 
-                    Util.drawText(
+                    drawText(
                         ctx,
                         chart.artist,
                         element.x + textMargin,
@@ -2288,7 +2289,7 @@ export namespace OngekiPainterModule {
                             return `${minBpm}-${maxBpm}`;
                         }
                     }
-                    Util.drawText(
+                    drawText(
                         ctx,
                         `#${chart.id} BPM: ${getBpmRange(chart.bpms)}`,
                         element.x + textMargin,
@@ -2352,7 +2353,7 @@ export namespace OngekiPainterModule {
                     if (EXIST_JPN) title.push(EXIST_JPN);
                     if (EXIST_INT) title.push(EXIST_INT);
                     if (EXIST_CHN) title.push(EXIST_CHN);
-                    await Util.drawEmojiOrGlyph(
+                    await drawEmojiOrGlyph(
                         ctx,
                         title.join(" "),
                         element.x + element.width - textMargin,
@@ -2379,7 +2380,7 @@ export namespace OngekiPainterModule {
                 height: z.number().min(1),
                 margin: z.number().min(0),
                 color: z.object({
-                    card: Util.z.color(),
+                    card: color(),
                 }),
             });
 
@@ -2438,7 +2439,7 @@ export namespace OngekiPainterModule {
                 const cardCenterOffset =
                     (element.width - characterImgWidth) / 2;
                 if (characterImg) {
-                    const characterImage = await Util.loadImage(characterImg);
+                    const characterImage = await loadImage(characterImg);
                     ctx.beginPath();
                     ctx.roundRect(
                         element.x + cardCenterOffset,
@@ -2491,7 +2492,7 @@ export namespace OngekiPainterModule {
                     .hex();
 
                 if (character) {
-                    const characterNameMetrics = Util.measureText(
+                    const characterNameMetrics = measureText(
                         ctx,
                         `Lv.${character.level} ${character.character.name}`,
                         textSizeTitle,
@@ -2501,7 +2502,7 @@ export namespace OngekiPainterModule {
                         characterNameMetrics.actualBoundingBoxAscent -
                             characterNameMetrics.actualBoundingBoxDescent,
                     );
-                    Util.drawText(
+                    drawText(
                         ctx,
                         `Lv.${character.level} ${character.character.name}`,
                         element.x + cardCenterOffset + characterImgWidth / 2,
@@ -2541,7 +2542,7 @@ export namespace OngekiPainterModule {
                                         ctx.save();
                                         ctx.translate(curX, curY);
                                         ctx.rotate((5 * Math.PI) / 180);
-                                        Util.drawVerticalText(
+                                        drawVerticalText(
                                             ctx,
                                             `「${quote}」`,
                                             0,

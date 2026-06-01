@@ -1,4 +1,4 @@
-import Util from "@maidraw/lib/util";
+import { truncateNumber } from "@maidraw/lib/utils/number";
 import _ from "lodash";
 import { EAchievementTypes, EComboTypes } from "../type";
 import type * as Database from "./database";
@@ -255,7 +255,7 @@ export namespace MaimaiUtil {
                 break;
             }
         }
-        let rating = Util.truncateNumber(
+        let rating = truncateNumber(
             (Math.min(achievement, 100.5) / 100) *
                 ratingConstant *
                 internalLevel,
