@@ -1,0 +1,188 @@
+{
+    "displayName": "CHUNITHM X-VERSE-X, landscape",
+    "name": "jp-xversex-landscape-recents",
+    "width": 2320,
+    "height": 1440,
+    "elements": [
+        {
+            "type": "image",
+            "x": 0,
+            "y": 0,
+            "width": 2320,
+            "path": "../assets/background/recents.webp"
+        },
+        {
+            "type": "image",
+            "x": 925,
+            "y": 50,
+            "width": 450,
+            "path": "../assets/logo.webp"
+        },
+        {
+            "type": "score-grid",
+            "x": 70,
+            "y": 500,
+            "horizontalSize": 2,
+            "verticalSize": 5,
+            "region": "new",
+            "index": 0,
+            "scoreBubble": {
+                "width": 290,
+                "height": 155,
+                "margin": 10,
+                "gap": 20,
+                "color": {
+                    "basic": "#70E262",
+                    "advanced": "#FFBB00",
+                    "expert": "#FF4A5A",
+                    "master": "#A04FDA",
+                    "ultima": "#591C28",
+                    "worldsEnd": "#70E262"
+                }
+            },
+            "sprites": {
+                "achievement": {
+                    "d": "../../verse/assets/achievement/D.webp",
+                    "c": "../../verse/assets/achievement/C.webp",
+                    "b": "../../verse/assets/achievement/B.webp",
+                    "bb": "../../verse/assets/achievement/BB.webp",
+                    "bbb": "../../verse/assets/achievement/BBB.webp",
+                    "a": "../../verse/assets/achievement/A.webp",
+                    "aa": "../../verse/assets/achievement/AA.webp",
+                    "aaa": "../../verse/assets/achievement/AAA.webp",
+                    "s": "../../verse/assets/achievement/S.webp",
+                    "sp": "../../verse/assets/achievement/SP.webp",
+                    "ss": "../../verse/assets/achievement/SS.webp",
+                    "ssp": "../../verse/assets/achievement/SSP.webp",
+                    "sss": "../../verse/assets/achievement/SSS.webp",
+                    "sssp": "../../verse/assets/achievement/SSSP.webp"
+                },
+                "milestone": {
+                    "aj": "../../versionless/milestone/aj.webp",
+                    "ajc": "../../versionless/milestone/ajc.webp",
+                    "fc": "../../versionless/milestone/fc.webp",
+                    "none": "../../versionless/void.webp"
+                }
+            }
+        },
+        {
+            "type": "score-grid",
+            "x": 730,
+            "y": 325,
+            "horizontalSize": 5,
+            "verticalSize": 6,
+            "region": "old",
+            "index": 0,
+            "scoreBubble": {
+                "width": 290,
+                "height": 155,
+                "margin": 10,
+                "gap": 20,
+                "color": {
+                    "basic": "#70E262",
+                    "advanced": "#FFBB00",
+                    "expert": "#FF4A5A",
+                    "master": "#A04FDA",
+                    "ultima": "#591C28",
+                    "worldsEnd": "#70E262"
+                }
+            },
+            "sprites": {
+                "achievement": {
+                    "d": "../../verse/assets/achievement/D.webp",
+                    "c": "../../verse/assets/achievement/C.webp",
+                    "b": "../../verse/assets/achievement/B.webp",
+                    "bb": "../../verse/assets/achievement/BB.webp",
+                    "bbb": "../../verse/assets/achievement/BBB.webp",
+                    "a": "../../verse/assets/achievement/A.webp",
+                    "aa": "../../verse/assets/achievement/AA.webp",
+                    "aaa": "../../verse/assets/achievement/AAA.webp",
+                    "s": "../../verse/assets/achievement/S.webp",
+                    "sp": "../../verse/assets/achievement/SP.webp",
+                    "ss": "../../verse/assets/achievement/SS.webp",
+                    "ssp": "../../verse/assets/achievement/SSP.webp",
+                    "sss": "../../verse/assets/achievement/SSS.webp",
+                    "sssp": "../../verse/assets/achievement/SSSP.webp"
+                },
+                "milestone": {
+                    "aj": "../../versionless/milestone/aj.webp",
+                    "ajc": "../../versionless/milestone/ajc.webp",
+                    "fc": "../../versionless/milestone/fc.webp",
+                    "none": "../../versionless/void.webp"
+                }
+            }
+        },
+        {
+            "type": "profile",
+            "x": 50,
+            "y": 50,
+            "height": 300,
+            "sprites": {
+                "ratingNumberMap": {
+                    "white": "../../versionless/rating/numberMaps/white.webp",
+                    "bronze": "../../versionless/rating/numberMaps/bronze.webp",
+                    "silver": "../../versionless/rating/numberMaps/silver.webp",
+                    "gold": "../../versionless/rating/numberMaps/gold.webp",
+                    "platinum": "../../versionless/rating/numberMaps/platinum.webp",
+                    "rainbow": "../../versionless/rating/numberMaps/rainbow.webp",
+                    "kiwami": "../../versionless/rating/numberMaps/kiwami.webp"
+                },
+                "profile": {
+                    "nameplate": "../../versionless/nameplate.webp",
+                    "icon": "../../versionless/icon.webp"
+                }
+            }
+        },
+        {
+            "type": "text",
+            "size": 32,
+            "x": 2240,
+            "y": 1407,
+            "borderColor": "#226180",
+            "align": "right",
+            "content": "Generated by saltbot | chunithm.cab/discord | chunithm.cab/invite"
+        },
+        {
+            "type": "text",
+            "size": 24,
+            "x": 80,
+            "y": 405,
+            "borderColor": "#226180",
+            "align": "left",
+            "content": "RECENT\nBEST\nNAIVE 50"
+        },
+        {
+            "type": "text",
+            "size": 11,
+            "x": 147,
+            "y": 438,
+            "borderColor": "#226180",
+            "align": "left",
+            "content": "NAIVE 30"
+        },
+        {
+            "type": "text",
+            "size": 24,
+            "x": 210,
+            "y": 405,
+            "borderColor": "#226180",
+            "align": "left",
+            "content": "scores average: {newScoreRatingAvg}\nscores average: {oldScoreRatingAvg}\nscores average: {naiveBest50}"
+        },
+        {
+            "type": "hitokoto",
+            "size": 24,
+            "x": 80,
+            "y": 1403,
+            "width": 1000,
+            "linebreak": true,
+            "borderColor": "#226180",
+            "align": "left",
+            "probability": 0.1,
+            "customLines": [
+                "../../../../../hitokoto/general.json",
+                "../../../../../hitokoto/support/chunithm.json"
+            ]
+        }
+    ]
+}

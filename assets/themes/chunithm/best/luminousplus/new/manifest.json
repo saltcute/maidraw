@@ -1,0 +1,181 @@
+{
+    "displayName": "CHUNITHM LUMINOUS PLUS, landscape",
+    "name": "jp-luminousplus-landscape-new",
+    "width": 2920,
+    "height": 1340,
+    "elements": [
+        {
+            "type": "image",
+            "x": 0,
+            "y": -151,
+            "width": 2920,
+            "height": 1642,
+            "path": "../../luminous/assets/background.webp"
+        },
+        {
+            "type": "image",
+            "x": 925,
+            "y": -8,
+            "width": 450,
+            "height": 323,
+            "path": "../assets/logo.webp"
+        },
+        {
+            "type": "score-grid",
+            "x": 70,
+            "y": 400,
+            "horizontalSize": 4,
+            "verticalSize": 5,
+            "region": "new",
+            "index": 0,
+            "scoreBubble": {
+                "width": 290,
+                "height": 155,
+                "margin": 10,
+                "gap": 20,
+                "color": {
+                    "basic": "#70E262",
+                    "advanced": "#FFBB00",
+                    "expert": "#FF4A5A",
+                    "master": "#A04FDA",
+                    "ultima": "#591C28",
+                    "worldsEnd": "#70E262"
+                }
+            },
+            "sprites": {
+                "achievement": {
+                    "d": "../../luminous/assets/achievement/D.webp",
+                    "c": "../../luminous/assets/achievement/C.webp",
+                    "b": "../../luminous/assets/achievement/B.webp",
+                    "bb": "../../luminous/assets/achievement/BB.webp",
+                    "bbb": "../../luminous/assets/achievement/BBB.webp",
+                    "a": "../../luminous/assets/achievement/A.webp",
+                    "aa": "../../luminous/assets/achievement/AA.webp",
+                    "aaa": "../../luminous/assets/achievement/AAA.webp",
+                    "s": "../../luminous/assets/achievement/S.webp",
+                    "sp": "../../luminous/assets/achievement/SP.webp",
+                    "ss": "../../luminous/assets/achievement/SS.webp",
+                    "ssp": "../../luminous/assets/achievement/SSP.webp",
+                    "sss": "../../luminous/assets/achievement/SSS.webp",
+                    "sssp": "../../luminous/assets/achievement/SSSP.webp"
+                },
+                "milestone": {
+                    "aj": "../../versionless/milestone/aj.webp",
+                    "ajc": "../../versionless/milestone/ajc.webp",
+                    "fc": "../../versionless/milestone/fc.webp",
+                    "none": "../../versionless/void.webp"
+                }
+            }
+        },
+        {
+            "type": "score-grid",
+            "x": 1330,
+            "y": 225,
+            "horizontalSize": 5,
+            "verticalSize": 6,
+            "region": "old",
+            "index": 0,
+            "scoreBubble": {
+                "width": 290,
+                "height": 155,
+                "margin": 10,
+                "gap": 20,
+                "color": {
+                    "basic": "#70E262",
+                    "advanced": "#FFBB00",
+                    "expert": "#FF4A5A",
+                    "master": "#A04FDA",
+                    "ultima": "#591C28",
+                    "worldsEnd": "#70E262"
+                }
+            },
+            "sprites": {
+                "achievement": {
+                    "d": "../../luminous/assets/achievement/D.webp",
+                    "c": "../../luminous/assets/achievement/C.webp",
+                    "b": "../../luminous/assets/achievement/B.webp",
+                    "bb": "../../luminous/assets/achievement/BB.webp",
+                    "bbb": "../../luminous/assets/achievement/BBB.webp",
+                    "a": "../../luminous/assets/achievement/A.webp",
+                    "aa": "../../luminous/assets/achievement/AA.webp",
+                    "aaa": "../../luminous/assets/achievement/AAA.webp",
+                    "s": "../../luminous/assets/achievement/S.webp",
+                    "sp": "../../luminous/assets/achievement/SP.webp",
+                    "ss": "../../luminous/assets/achievement/SS.webp",
+                    "ssp": "../../luminous/assets/achievement/SSP.webp",
+                    "sss": "../../luminous/assets/achievement/SSS.webp",
+                    "sssp": "../../luminous/assets/achievement/SSSP.webp"
+                },
+                "milestone": {
+                    "aj": "../../versionless/milestone/aj.webp",
+                    "ajc": "../../versionless/milestone/ajc.webp",
+                    "fc": "../../versionless/milestone/fc.webp",
+                    "none": "../../versionless/void.webp"
+                }
+            }
+        },
+        {
+            "type": "profile",
+            "x": 100,
+            "y": 100,
+            "height": 320,
+            "sprites": {
+                "ratingNumberMap": {
+                    "white": "../../versionless/rating/numberMaps/white.webp",
+                    "bronze": "../../versionless/rating/numberMaps/bronze.webp",
+                    "silver": "../../versionless/rating/numberMaps/silver.webp",
+                    "gold": "../../versionless/rating/numberMaps/gold.webp",
+                    "platinum": "../../versionless/rating/numberMaps/platinum.webp",
+                    "rainbow": "../../versionless/rating/numberMaps/rainbow.webp",
+                    "kiwami": "../../versionless/rating/numberMaps/kiwami.webp"
+                },
+                "profile": {
+                    "nameplate": "../../versionless/nameplate.webp",
+                    "icon": "../../versionless/icon.webp"
+                }
+            }
+        },
+        {
+            "type": "text",
+            "size": 32,
+            "x": 2840,
+            "y": 1307,
+            "borderColor": "#d96c64",
+            "align": "right",
+            "content": "Generated by saltbot | chunithm.cab/discord | chunithm.cab/invite"
+        },
+        {
+            "type": "text",
+            "size": 24,
+            "x": 910,
+            "y": 278,
+            "borderColor": "#d96c64",
+            "align": "left",
+            "content": "NEW\nOLD\nNAIVE 30/50"
+        },
+        {
+            "type": "text",
+            "size": 24,
+            "x": 1070,
+            "y": 278,
+            "borderColor": "#d96c64",
+            "align": "left",
+            "content": "average: {newScoreRatingAvg}\naverage: {oldScoreRatingAvg}\naverage: {naiveBest30}/{naiveBest50}"
+        },
+        {
+            "type": "hitokoto",
+            "size": 24,
+            "x": 80,
+            "y": 1303,
+            "width": 1000,
+            "linebreak": true,
+            "borderColor": "#d96c64",
+            "align": "left",
+            "probability": 0.1,
+            "customLines": [
+                "../../../../../hitokoto/general.json",
+                "../../../../../hitokoto/support/chunithm.json"
+            ]
+        }
+    ]
+}
