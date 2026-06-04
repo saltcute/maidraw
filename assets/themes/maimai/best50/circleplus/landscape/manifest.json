@@ -1,0 +1,220 @@
+{
+    "displayName": "maimai でらっくす CiRCLE PLUS, Landscape",
+    "name": "jp-circleplus-landscape",
+    "width": 2560,
+    "height": 1440,
+    "elements": [
+        {
+            "type": "image",
+            "x": 1280,
+            "y": 720,
+            "anchor": "cm",
+            "width": 2610,
+            "height": 1490,
+            "path": "../assets/background/landscape.webp"
+        },
+        {
+            "type": "image",
+            "x": 555,
+            "y": 160,
+            "height": 355,
+            "path": "../assets/chara.webp"
+        },
+        {
+            "type": "image",
+            "x": 275,
+            "y": 70,
+            "width": 210,
+            "path": "../assets/laundry.webp"
+        },
+        {
+            "type": "image",
+            "x": 260,
+            "y": 116,
+            "width": 500,
+            "path": "../assets/logo.webp"
+        },
+        {
+            "type": "score-grid",
+            "x": 70,
+            "y": 500,
+            "horizontalSize": 3,
+            "verticalSize": 5,
+            "region": "new",
+            "index": 0,
+            "scoreBubble": {
+                "width": 280,
+                "height": 155,
+                "margin": 10,
+                "gap": 20,
+                "color": {
+                    "basic": "#70E262",
+                    "advanced": "#FFBB00",
+                    "expert": "#FF4A5A",
+                    "master": "#A04FDA",
+                    "remaster": "#DDBDF5",
+                    "utage": "#70E262"
+                }
+            },
+            "sprites": {
+                "achievement": {
+                    "d": "../../circle/assets/achievement/d.webp",
+                    "c": "../../circle/assets/achievement/c.webp",
+                    "b": "../../circle/assets/achievement/b.webp",
+                    "bb": "../../circle/assets/achievement/bb.webp",
+                    "bbb": "../../circle/assets/achievement/bbb.webp",
+                    "a": "../../circle/assets/achievement/a.webp",
+                    "aa": "../../circle/assets/achievement/aa.webp",
+                    "aaa": "../../circle/assets/achievement/aaa.webp",
+                    "s": "../../circle/assets/achievement/s.webp",
+                    "sp": "../../circle/assets/achievement/sp.webp",
+                    "ss": "../../circle/assets/achievement/ss.webp",
+                    "ssp": "../../circle/assets/achievement/ssp.webp",
+                    "sss": "../../circle/assets/achievement/sss.webp",
+                    "sssp": "../../circle/assets/achievement/sssp.webp"
+                },
+                "mode": {
+                    "standard": "../../versionless/mode/jp/standard.webp",
+                    "dx": "../../versionless/mode/jp/dx.webp"
+                },
+                "milestone": {
+                    "ap": "../../versionless/milestone/ap.webp",
+                    "app": "../../versionless/milestone/app.webp",
+                    "fc": "../../versionless/milestone/fc.webp",
+                    "fcp": "../../versionless/milestone/fcp.webp",
+                    "fdx": "../../versionless/milestone/fdx.webp",
+                    "fdxp": "../../versionless/milestone/fdxp.webp",
+                    "fs": "../../versionless/milestone/fs.webp",
+                    "fsp": "../../versionless/milestone/fsp.webp",
+                    "sync": "../../versionless/milestone/sync.webp",
+                    "none": "../../versionless/milestone/none.webp"
+                }
+            }
+        },
+        {
+            "type": "score-grid",
+            "x": 1010,
+            "y": 150,
+            "horizontalSize": 5,
+            "verticalSize": 7,
+            "region": "old",
+            "index": 0,
+            "scoreBubble": {
+                "width": 280,
+                "height": 155,
+                "margin": 10,
+                "gap": 20,
+                "color": {
+                    "basic": "#70E262",
+                    "advanced": "#FFBB00",
+                    "expert": "#FF4A5A",
+                    "master": "#A04FDA",
+                    "remaster": "#DDBDF5",
+                    "utage": "#70E262"
+                }
+            },
+            "sprites": {
+                "achievement": {
+                    "d": "../../circle/assets/achievement/d.webp",
+                    "c": "../../circle/assets/achievement/c.webp",
+                    "b": "../../circle/assets/achievement/b.webp",
+                    "bb": "../../circle/assets/achievement/bb.webp",
+                    "bbb": "../../circle/assets/achievement/bbb.webp",
+                    "a": "../../circle/assets/achievement/a.webp",
+                    "aa": "../../circle/assets/achievement/aa.webp",
+                    "aaa": "../../circle/assets/achievement/aaa.webp",
+                    "s": "../../circle/assets/achievement/s.webp",
+                    "sp": "../../circle/assets/achievement/sp.webp",
+                    "ss": "../../circle/assets/achievement/ss.webp",
+                    "ssp": "../../circle/assets/achievement/ssp.webp",
+                    "sss": "../../circle/assets/achievement/sss.webp",
+                    "sssp": "../../circle/assets/achievement/sssp.webp"
+                },
+                "mode": {
+                    "standard": "../../versionless/mode/jp/standard.webp",
+                    "dx": "../../versionless/mode/jp/dx.webp"
+                },
+                "milestone": {
+                    "ap": "../../versionless/milestone/ap.webp",
+                    "app": "../../versionless/milestone/app.webp",
+                    "fc": "../../versionless/milestone/fc.webp",
+                    "fcp": "../../versionless/milestone/fcp.webp",
+                    "fdx": "../../versionless/milestone/fdx.webp",
+                    "fdxp": "../../versionless/milestone/fdxp.webp",
+                    "fs": "../../versionless/milestone/fs.webp",
+                    "fsp": "../../versionless/milestone/fsp.webp",
+                    "sync": "../../versionless/milestone/sync.webp",
+                    "none": "../../versionless/milestone/none.webp"
+                }
+            }
+        },
+        {
+            "type": "profile",
+            "x": 110,
+            "y": 345,
+            "height": 129,
+            "sprites": {
+                "dxRating": {
+                    "white": "../../versionless/dxRating/jp/white.webp",
+                    "blue": "../../versionless/dxRating/jp/blue.webp",
+                    "green": "../../versionless/dxRating/jp/green.webp",
+                    "yellow": "../../versionless/dxRating/jp/yellow.webp",
+                    "red": "../../versionless/dxRating/jp/red.webp",
+                    "purple": "../../versionless/dxRating/jp/purple.webp",
+                    "bronze": "../../versionless/dxRating/jp/bronze.webp",
+                    "silver": "../../versionless/dxRating/jp/silver.webp",
+                    "gold": "../../versionless/dxRating/jp/gold.webp",
+                    "platinum": "../../versionless/dxRating/jp/platinum.webp",
+                    "rainbow": "../../versionless/dxRating/jp/rainbow.webp"
+                },
+                "dxRatingNumberMap": "../../versionless/dxRating/numberMap.webp",
+                "profile": {
+                    "nameplate": "../../versionless/nameplate.webp",
+                    "icon": "../../versionless/icon.webp"
+                }
+            }
+        },
+        {
+            "type": "text",
+            "size": 32,
+            "x": 2480,
+            "y": 1407,
+            "borderColor": "#ff1a82",
+            "align": "right",
+            "content": "Generated by saltbot | maimaidx.cab/discord | maimaidx.cab/invite"
+        },
+        {
+            "type": "text",
+            "size": 24,
+            "x": 1030,
+            "y": 100,
+            "borderColor": "#ff1a82",
+            "align": "left",
+            "content": "{newScoreRatingAvgString}\n{oldScoreRatingAvgString}"
+        },
+        {
+            "type": "text",
+            "size": 24,
+            "x": 1355,
+            "y": 100,
+            "borderColor": "#ff1a82",
+            "align": "left",
+            "content": "{newScoreMilestone}\n{oldScoreMilestone}"
+        },
+        {
+            "type": "hitokoto",
+            "size": 24,
+            "x": 80,
+            "y": 1403,
+            "width": 1000,
+            "linebreak": true,
+            "borderColor": "#ff1a82",
+            "align": "left",
+            "probability": 0.1,
+            "customLines": [
+                "../../../../../../../hitokoto/general.json",
+                "../../../../../../../hitokoto/support/maimaidx.json"
+            ]
+        }
+    ]
+}

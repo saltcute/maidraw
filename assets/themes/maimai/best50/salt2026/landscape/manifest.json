@@ -1,0 +1,212 @@
+{
+    "displayName": "maimai でらっくす PRiSM PLUS, Landscape (April Fools 2026)",
+    "name": "salt-2026-landscape",
+    "width": 2560,
+    "height": 1440,
+    "elements": [
+        {
+            "type": "image",
+            "x": 0,
+            "y": -480,
+            "width": 2560,
+            "height": 1920,
+            "path": "../assets/background.webp"
+        },
+        {
+            "type": "image",
+            "x": 390,
+            "y": 90,
+            "width": 690,
+            "path": "../assets/chara.webp"
+        },
+        {
+            "type": "image",
+            "x": 100,
+            "y": 120,
+            "width": 550,
+            "path": "../assets/logo.webp"
+        },
+        {
+            "type": "score-grid",
+            "x": 70,
+            "y": 500,
+            "horizontalSize": 3,
+            "verticalSize": 5,
+            "region": "new",
+            "index": 0,
+            "scoreBubble": {
+                "width": 280,
+                "height": 155,
+                "margin": 10,
+                "gap": 20,
+                "color": {
+                    "basic": "#70E262",
+                    "advanced": "#FFBB00",
+                    "expert": "#FF4A5A",
+                    "master": "#A04FDA",
+                    "remaster": "#DDBDF5",
+                    "utage": "#70E262"
+                }
+            },
+            "sprites": {
+                "achievement": {
+                    "d": "../assets/achievement/d.webp",
+                    "c": "../assets/achievement/c.webp",
+                    "b": "../assets/achievement/b.webp",
+                    "bb": "../assets/achievement/bb.webp",
+                    "bbb": "../assets/achievement/bbb.webp",
+                    "a": "../assets/achievement/a.webp",
+                    "aa": "../assets/achievement/aa.webp",
+                    "aaa": "../assets/achievement/aaa.webp",
+                    "s": "../assets/achievement/s.webp",
+                    "sp": "../assets/achievement/sp.webp",
+                    "ss": "../assets/achievement/ss.webp",
+                    "ssp": "../assets/achievement/ssp.webp",
+                    "sss": "../assets/achievement/sss.webp",
+                    "sssp": "../assets/achievement/sssp.webp"
+                },
+                "mode": {
+                    "standard": "../assets/mode/standard.webp",
+                    "dx": "../assets/mode/dx.webp"
+                },
+                "milestone": {
+                    "ap": "../assets/milestone/ap.webp",
+                    "app": "../assets/milestone/app.webp",
+                    "fc": "../assets/milestone/fc.webp",
+                    "fcp": "../assets/milestone/fcp.webp",
+                    "fdx": "../assets/milestone/fdx.webp",
+                    "fdxp": "../assets/milestone/fdxp.webp",
+                    "fs": "../assets/milestone/fs.webp",
+                    "fsp": "../assets/milestone/fsp.webp",
+                    "sync": "../assets/milestone/sync.webp",
+                    "none": "../../versionless/milestone/none.webp"
+                }
+            }
+        },
+        {
+            "type": "score-grid",
+            "x": 1010,
+            "y": 150,
+            "horizontalSize": 5,
+            "verticalSize": 7,
+            "region": "old",
+            "index": 0,
+            "scoreBubble": {
+                "width": 280,
+                "height": 155,
+                "margin": 10,
+                "gap": 20,
+                "color": {
+                    "basic": "#70E262",
+                    "advanced": "#FFBB00",
+                    "expert": "#FF4A5A",
+                    "master": "#A04FDA",
+                    "remaster": "#DDBDF5",
+                    "utage": "#70E262"
+                }
+            },
+            "sprites": {
+                "achievement": {
+                    "d": "../assets/achievement/d.webp",
+                    "c": "../assets/achievement/c.webp",
+                    "b": "../assets/achievement/b.webp",
+                    "bb": "../assets/achievement/bb.webp",
+                    "bbb": "../assets/achievement/bbb.webp",
+                    "a": "../assets/achievement/a.webp",
+                    "aa": "../assets/achievement/aa.webp",
+                    "aaa": "../assets/achievement/aaa.webp",
+                    "s": "../assets/achievement/s.webp",
+                    "sp": "../assets/achievement/sp.webp",
+                    "ss": "../assets/achievement/ss.webp",
+                    "ssp": "../assets/achievement/ssp.webp",
+                    "sss": "../assets/achievement/sss.webp",
+                    "sssp": "../assets/achievement/sssp.webp"
+                },
+                "mode": {
+                    "standard": "../assets/mode/standard.webp",
+                    "dx": "../assets/mode/dx.webp"
+                },
+                "milestone": {
+                    "ap": "../assets/milestone/ap.webp",
+                    "app": "../assets/milestone/app.webp",
+                    "fc": "../assets/milestone/fc.webp",
+                    "fcp": "../assets/milestone/fcp.webp",
+                    "fdx": "../assets/milestone/fdx.webp",
+                    "fdxp": "../assets/milestone/fdxp.webp",
+                    "fs": "../assets/milestone/fs.webp",
+                    "fsp": "../assets/milestone/fsp.webp",
+                    "sync": "../assets/milestone/sync.webp",
+                    "none": "../../versionless/milestone/none.webp"
+                }
+            }
+        },
+        {
+            "type": "profile",
+            "x": 110,
+            "y": 345,
+            "height": 129,
+            "sprites": {
+                "dxRating": {
+                    "white": "../../versionless/dxRating/jp/white.webp",
+                    "blue": "../../versionless/dxRating/jp/blue.webp",
+                    "green": "../../versionless/dxRating/jp/green.webp",
+                    "yellow": "../../versionless/dxRating/jp/yellow.webp",
+                    "red": "../../versionless/dxRating/jp/red.webp",
+                    "purple": "../../versionless/dxRating/jp/purple.webp",
+                    "bronze": "../../versionless/dxRating/jp/bronze.webp",
+                    "silver": "../../versionless/dxRating/jp/silver.webp",
+                    "gold": "../../versionless/dxRating/jp/gold.webp",
+                    "platinum": "../../versionless/dxRating/jp/platinum.webp",
+                    "rainbow": "../../versionless/dxRating/jp/rainbow.webp"
+                },
+                "dxRatingNumberMap": "../../versionless/dxRating/numberMap.webp",
+                "profile": {
+                    "nameplate": "../../versionless/nameplate.webp",
+                    "icon": "../../versionless/icon.webp"
+                }
+            }
+        },
+        {
+            "type": "text",
+            "size": 32,
+            "x": 2480,
+            "y": 1407,
+            "borderColor": "#226180",
+            "align": "right",
+            "content": "Generated by saltbot | maimaidx.cab/discord | maimaidx.cab/invite"
+        },
+        {
+            "type": "text",
+            "size": 24,
+            "x": 1030,
+            "y": 100,
+            "borderColor": "#226180",
+            "align": "left",
+            "content": "{newScoreRatingAvgString}\n{oldScoreRatingAvgString}"
+        },
+        {
+            "type": "text",
+            "size": 24,
+            "x": 1355,
+            "y": 100,
+            "borderColor": "#226180",
+            "align": "left",
+            "content": "{newScoreMilestone}\n{oldScoreMilestone}"
+        },
+        {
+            "type": "hitokoto",
+            "size": 24,
+            "x": 80,
+            "y": 1403,
+            "width": 1000,
+            "linebreak": true,
+            "borderColor": "#226180",
+            "align": "left",
+            "probability": 0.1,
+            "customLines": [
+                "../../../../../hitokoto/general.json",
+                "../../../../../hitokoto/support/maimaidx.json"
+            ]
+        }
+    ]
+}
