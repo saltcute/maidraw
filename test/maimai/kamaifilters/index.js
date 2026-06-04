@@ -5,10 +5,10 @@ const upath = require("upath");
     const { MaiDraw } = require("../../../dist");
     const kamai = new MaiDraw.Maimai.Best50.KamaiTachi();
     MaiDraw.Maimai.Chart.Database.setLocalDatabasePath(
-        "../maimai-songs-database"
+        "../maimai-songs-database",
     );
 
-    const fs = require("fs");
+    const fs = require("node:fs");
 
     const themes = ["jp-prism-landscape"];
     const user = "salt";
@@ -18,7 +18,7 @@ const upath = require("upath");
     const score = await kamai.getPlayerBest50(user, {
         use: "AP",
     });
-    for (let theme of themes) {
+    for (const theme of themes) {
         const result = await MaiDraw.Maimai.Best50.draw(
             // "SALT♪☆＊♀∀＃＆＠",
             "salt",
@@ -28,7 +28,7 @@ const upath = require("upath");
             {
                 scale: 2,
                 theme,
-            }
+            },
         );
         if (result) {
             fs.writeFileSync(
@@ -37,7 +37,7 @@ const upath = require("upath");
                     .webp({
                         quality: 60,
                     })
-                    .toBuffer()
+                    .toBuffer(),
             );
             console.log(`${theme} passed.`);
         } else {

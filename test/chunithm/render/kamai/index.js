@@ -7,44 +7,42 @@ const upath = require("upath");
     MaiDraw.Chuni.Database.setLocalDatabasePath("../maimai-songs-database");
     const painter = new MaiDraw.Chuni.Painters.Best50();
 
-    const fs = require("fs");
+    const fs = require("node:fs");
     const themes = [
         "jp-xversex-landscape-recents",
         "jp-xversex-landscape-new",
-        "jp-paradiselost-landscape-recents",
-        "jp-paradiselost-landscape-new",
         "jp-xverse-landscape-recents",
         "jp-xverse-landscape-new",
         "jp-verse-landscape-recents",
         "jp-verse-landscape-new",
+        "jp-paradiselost-landscape-recents",
+        "jp-paradiselost-landscape-new",
         "jp-luminousplus-landscape-recents",
         "jp-luminousplus-landscape-new",
         "jp-luminous-landscape-recents",
         "jp-luminous-landscape-new",
     ];
-    for (let theme of themes) {
+    for (const theme of themes) {
         const { data: result, err } = await painter.drawWithScoreSource(
             (() => {
                 switch (theme) {
-                    case "jp-xversex-landscape-recents":
-                    case "jp-xversex-landscape-new":
-                        return kamai.xversex();
-                    case "jp-xverse-landscape-recents":
-                    case "jp-xverse-landscape-new":
-                        return kamai.xverse();
-                    case "jp-verse-landscape-recents":
-                    case "jp-verse-landscape-new":
-                        return kamai.verse();
-                    case "jp-luminousplus-landscape-recents":
-                    case "jp-luminousplus-landscape-new":
-                    default:
-                        return kamai.luminousPlus();
-                    case "jp-luminous-landscape-recents":
-                    case "jp-luminous-landscape-new":
-                        return kamai.luminous();
                     case "jp-paradiselost-landscape-recents":
                     case "jp-paradiselost-landscape-new":
                         return kamai.paradiseLost();
+                    case "jp-luminous-landscape-recents":
+                    case "jp-luminous-landscape-new":
+                        return kamai.luminous();
+                    case "jp-luminousplus-landscape-recents":
+                    case "jp-luminousplus-landscape-new":
+                        return kamai.luminousPlus();
+                    case "jp-verse-landscape-recents":
+                    case "jp-verse-landscape-new":
+                        return kamai.verse();
+                    case "jp-xverse-landscape-recents":
+                    case "jp-xverse-landscape-new":
+                        return kamai.xverse();
+                    default:
+                        return kamai.xversex();
                 }
             })(),
             { username: process.env.NAME },
@@ -54,23 +52,19 @@ const upath = require("upath");
                 theme,
                 version: (() => {
                     switch (theme) {
-                        case "jp-xverse-landscape-recents":
-                        case "jp-xverse-landscape-new":
-                        case "jp-verse-landscape-recents":
-                        case "jp-verse-landscape-new":
-                        default:
-                            return "verse";
-                        case "jp-luminousplus-landscape-recents":
-                        case "jp-luminousplus-landscape-new":
-                        case "jp-luminous-landscape-recents":
-                        case "jp-luminous-landscape-new":
-                            return "new";
                         case "jp-paradiselost-landscape-recents":
                         case "jp-paradiselost-landscape-new":
                             return "crystal";
+                        case "jp-luminous-landscape-recents":
+                        case "jp-luminous-landscape-new":
+                        case "jp-luminousplus-landscape-recents":
+                        case "jp-luminousplus-landscape-new":
+                            return "new";
+                        default:
+                            return "verse";
                     }
                 })(),
-            }
+            },
         );
 
         if (err) {
@@ -83,7 +77,7 @@ const upath = require("upath");
                     .webp({
                         quality: 60,
                     })
-                    .toBuffer()
+                    .toBuffer(),
             );
             console.log(`${theme} passed.`);
         }

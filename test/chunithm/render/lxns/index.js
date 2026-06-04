@@ -8,9 +8,9 @@ const upath = require("upath");
     const painter = new MaiDraw.Chuni.Painters.Best50();
     MaiDraw.Chuni.Database.setLocalDatabasePath("../maimai-songs-database");
 
-    const fs = require("fs");
+    const fs = require("node:fs");
     const themes = ["jp-verse-landscape-new"];
-    for (let theme of themes) {
+    for (const theme of themes) {
         const options = {
             scale: process.env.SCALE ?? 1,
             type: "new",
@@ -19,7 +19,7 @@ const upath = require("upath");
         const { data: result, err } = await painter.drawWithScoreSource(
             lxns,
             { username: process.env.NAME },
-            options
+            options,
         );
         if (err) {
             console.log(`${theme} failed!`);
@@ -31,7 +31,7 @@ const upath = require("upath");
                     .webp({
                         quality: 60,
                     })
-                    .toBuffer()
+                    .toBuffer(),
             );
             console.log(`${theme} passed.`);
         }

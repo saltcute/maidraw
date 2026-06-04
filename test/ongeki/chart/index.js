@@ -7,9 +7,9 @@ const upath = require("upath");
     const painter = new MaiDraw.Geki.Painters.Chart();
     MaiDraw.Geki.Database.setLocalDatabasePath("../maimai-songs-database");
 
-    const fs = require("fs");
+    const fs = require("node:fs");
     const themes = ["jp-refresh", "jp-brightmemory"];
-    for (let theme of themes) {
+    for (const theme of themes) {
         for (const region of ["JPN"]) {
             const { data: result, err } = await painter.drawWithScoreSource(
                 kamai,
@@ -22,7 +22,7 @@ const upath = require("upath");
                     scale: process.env.SCALE ?? 1,
                     theme,
                     region,
-                }
+                },
             );
 
             if (err) {
@@ -35,7 +35,7 @@ const upath = require("upath");
                         .webp({
                             quality: 60,
                         })
-                        .toBuffer()
+                        .toBuffer(),
                 );
                 console.log(`${theme} passed.`);
             }

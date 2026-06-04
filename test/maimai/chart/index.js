@@ -11,9 +11,9 @@ const upath = require("upath");
     const painter = new MaiDraw.Maimai.Painters.Chart();
     MaiDraw.Maimai.Database.setLocalDatabasePath("../maimai-songs-database");
 
-    const fs = require("fs");
+    const fs = require("node:fs");
     const themes = ["jp-circleplus", "jp-circle", "jp-prismplus", "jp-prism"];
-    for (let theme of themes) {
+    for (const theme of themes) {
         for (const region of ["DX", "EX", "CN"]) {
             const { data: result, err } = await painter.drawWithScoreSource(
                 (() => {
@@ -22,7 +22,6 @@ const upath = require("upath");
                             return lxns;
                         case "maishift":
                             return maishift;
-                        case "kamai":
                         default:
                             return kamai;
                     }
@@ -35,7 +34,7 @@ const upath = require("upath");
                     scale: process.env.SCALE ?? 1,
                     theme,
                     region,
-                }
+                },
             );
             if (err) {
                 console.log(`${theme} failed!`);
@@ -47,7 +46,7 @@ const upath = require("upath");
                         .webp({
                             quality: 60,
                         })
-                        .toBuffer()
+                        .toBuffer(),
                 );
                 console.log(`${theme}-${region} passed.`);
             }

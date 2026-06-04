@@ -5,10 +5,10 @@ const upath = require("upath");
     const { MaiDraw } = require("../../../dist");
     const kamai = new MaiDraw.Geki.Best50.KamaiTachi();
     MaiDraw.Geki.Chart.Database.setLocalDatabasePath(
-        "../maimai-songs-database"
+        "../maimai-songs-database",
     );
 
-    const fs = require("fs");
+    const fs = require("node:fs");
     const themes = [
         "jp-brightmemory-landscape-classic",
         "jp-brightmemory-landscape-refresh",
@@ -18,7 +18,7 @@ const upath = require("upath");
     const source = kamai.brightMemoryAct3();
     // const source = kamai.refresh();
     const username = "";
-    for (let theme of themes) {
+    for (const theme of themes) {
         const options = {
             scale: 0.5,
             type: theme.endsWith("-refresh") ? "refresh" : "classic",
@@ -27,7 +27,7 @@ const upath = require("upath");
         const result = await MaiDraw.Geki.Best50.drawWithScoreSource(
             source,
             username,
-            options
+            options,
         );
         if (result instanceof Buffer) {
             fs.writeFileSync(
@@ -36,7 +36,7 @@ const upath = require("upath");
                     .webp({
                         quality: 60,
                     })
-                    .toBuffer()
+                    .toBuffer(),
             );
             console.log(`${theme} passed.`);
         } else {

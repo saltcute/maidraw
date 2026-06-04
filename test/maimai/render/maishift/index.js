@@ -13,14 +13,14 @@ const upath = require("upath");
             "..",
             "..",
             "..",
-            "maimai-songs-database"
-        )
+            "maimai-songs-database",
+        ),
     );
 
-    const fs = require("fs");
+    const fs = require("node:fs");
 
     const themes = ["jp-circle-landscape"];
-    for (let theme of themes) {
+    for (const theme of themes) {
         const { data: result, err } = await painter.drawWithScoreSource(
             maishift,
             {
@@ -29,7 +29,7 @@ const upath = require("upath");
             {
                 scale: process.env.SCALE ?? 1,
                 theme,
-            }
+            },
         );
         if (err) {
             console.log(`${theme} failed!`);
@@ -41,7 +41,7 @@ const upath = require("upath");
                     .webp({
                         quality: 60,
                     })
-                    .toBuffer()
+                    .toBuffer(),
             );
             console.log(`${theme} passed.`);
         }

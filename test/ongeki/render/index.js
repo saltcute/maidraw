@@ -7,15 +7,14 @@ const upath = require("upath");
     const painter = new MaiDraw.Geki.Painters.Best50();
     MaiDraw.Geki.Database.setLocalDatabasePath("../maimai-songs-database");
 
-    const fs = require("fs");
+    const fs = require("node:fs");
     const themes = [
         "jp-brightmemory-landscape-classic",
         "jp-brightmemory-landscape-refresh",
         "jp-refresh-landscape-classic",
         "jp-refresh-landscape-refresh",
     ];
-    const source = kamai.brightMemoryAct3();
-    for (let theme of themes) {
+    for (const theme of themes) {
         const options = {
             scale: process.env.SCALE ?? 1,
             type: theme.endsWith("-refresh") ? "refresh" : "classic",
@@ -27,14 +26,12 @@ const upath = require("upath");
                     case "jp-brightmemory-landscape-classic":
                     case "jp-brightmemory-landscape-refresh":
                         return kamai.brightMemoryAct3();
-                    case "jp-refresh-landscape-classic":
-                    case "jp-refresh-landscape-refresh":
                     default:
                         return kamai.refresh();
                 }
             })(),
             { username: process.env.NAME },
-            options
+            options,
         );
 
         if (err) {
@@ -47,7 +44,7 @@ const upath = require("upath");
                     .webp({
                         quality: 60,
                     })
-                    .toBuffer()
+                    .toBuffer(),
             );
             console.log(`${theme} passed.`);
         }

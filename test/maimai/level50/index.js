@@ -5,10 +5,10 @@ const upath = require("upath");
     const { MaiDraw } = require("../../../dist");
     const kamai = new MaiDraw.Maimai.Best50.KamaiTachi();
     MaiDraw.Maimai.Chart.Database.setLocalDatabasePath(
-        "../maimai-songs-database"
+        "../maimai-songs-database",
     );
 
-    const fs = require("fs");
+    const fs = require("node:fs");
 
     const themes = [
         // "salt-2026-landscape",
@@ -37,19 +37,19 @@ const upath = require("upath");
                     {
                         scale: 0.5,
                         theme,
-                    }
+                    },
                 );
                 if (result) {
                     fs.writeFileSync(
                         upath.join(
                             __dirname,
-                            `${theme}-lv${level}-p${page}.webp`
+                            `${theme}-lv${level}-p${page}.webp`,
                         ),
                         await sharp(result)
                             .webp({
                                 quality: 60,
                             })
-                            .toBuffer()
+                            .toBuffer(),
                     );
                     console.log(`${theme} passed.`);
                 } else {

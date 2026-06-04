@@ -4,15 +4,12 @@ const upath = require("upath");
 (async () => {
     const { MaiDraw } = require("../../../dist");
     const kamai = new MaiDraw.Chuni.Adapters.KamaiTachi();
-    const lxns = new MaiDraw.Chuni.Adapters.LXNS({
-        auth: "",
-    });
     const painter = new MaiDraw.Chuni.Painters.Chart();
     MaiDraw.Chuni.Database.setLocalDatabasePath("../maimai-songs-database");
 
-    const fs = require("fs");
+    const fs = require("node:fs");
     const themes = ["jp-xversex", "jp-xverse", "jp-verse"];
-    for (let theme of themes) {
+    for (const theme of themes) {
         for (const region of ["JPN"]) {
             const { data: result, err } = await painter.drawWithScoreSource(
                 kamai,
@@ -25,7 +22,7 @@ const upath = require("upath");
                     scale: process.env.SCALE ?? 1,
                     theme,
                     region,
-                }
+                },
             );
 
             if (err) {
@@ -38,7 +35,7 @@ const upath = require("upath");
                         .webp({
                             quality: 60,
                         })
-                        .toBuffer()
+                        .toBuffer(),
                 );
                 console.log(`${theme} passed.`);
             }

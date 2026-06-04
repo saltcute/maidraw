@@ -7,14 +7,18 @@ const upath = require("upath");
     MaiDraw.Maimai.Database.setLocalDatabasePath("../maimai-songs-database");
     const painter = new MaiDraw.Maimai.Painters.Best50();
 
-    const fs = require("fs");
+    const fs = require("node:fs");
 
     for (let i = 0; i <= 100; i += 10) {
         const profile = await kamai.getPlayerInfo(process.env.NAME);
         const score = await kamai.getPlayerBest50(process.env.NAME);
-        score.new.forEach((v) => (v.optionalData.scale = i / 100));
-        score.old.forEach((v) => (v.optionalData.scale = i / 100));
-        let result = await painter.draw(
+        score.new.forEach((v) => {
+            v.optionalData.scale = i / 100;
+        });
+        score.old.forEach((v) => {
+            v.optionalData.scale = i / 100;
+        });
+        const result = await painter.draw(
             {
                 username: profile.name,
                 rating: profile.rating,
@@ -24,7 +28,7 @@ const upath = require("upath");
             {
                 scale: process.env.SCALE ?? 1,
                 theme: "jp-circle-landscape",
-            }
+            },
         );
 
         if (result) {
@@ -34,7 +38,7 @@ const upath = require("upath");
                     .webp({
                         quality: 100,
                     })
-                    .toBuffer()
+                    .toBuffer(),
             );
             console.log(`${i}%...`);
         }

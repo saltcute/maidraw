@@ -7,7 +7,7 @@ const upath = require("upath");
     MaiDraw.Maimai.Database.setLocalDatabasePath("../maimai-songs-database");
     const painter = new MaiDraw.Maimai.Painters.Best50();
 
-    const fs = require("fs");
+    const fs = require("node:fs");
 
     const themes = [
         "jp-circleplus-landscape",
@@ -31,8 +31,7 @@ const upath = require("upath");
         "jp-buddies-landscape",
         "jp-buddies-portrait",
     ];
-    const type = "full";
-    for (let theme of themes) {
+    for (const theme of themes) {
         const { data: result, err } = await painter.drawWithScoreSource(
             (() => {
                 switch (theme) {
@@ -73,7 +72,7 @@ const upath = require("upath");
             {
                 scale: process.env.SCALE ?? 1,
                 theme,
-            }
+            },
         );
         if (err) {
             console.log(`${theme} failed!`);
@@ -85,7 +84,7 @@ const upath = require("upath");
                     .webp({
                         quality: 60,
                     })
-                    .toBuffer()
+                    .toBuffer(),
             );
             console.log(`${theme} passed.`);
         }
