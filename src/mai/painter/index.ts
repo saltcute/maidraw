@@ -247,14 +247,13 @@ export namespace MaimaiPainterModule {
                     element,
                 );
                 if (ratingImgBuffer) {
-                    const { width, height } =
-                        await sharp(ratingImgBuffer).metadata();
+                    const ratingImg = await loadImage(ratingImgBuffer);
+                    const { width, height } = ratingImg;
                     if (width && height) {
                         const aspectRatio = width / height;
-                        const image = await loadImage(ratingImgBuffer);
                         const drawHeight = (element.height * 11) / 64;
                         ctx.drawImage(
-                            image,
+                            ratingImg,
                             element.x + element.height * 1.785,
                             element.y + element.height * 0.15,
                             drawHeight * aspectRatio,
@@ -828,10 +827,9 @@ export namespace MaimaiPainterModule {
                                 ? element.sprites.mode.dx
                                 : element.sprites.mode.standard,
                         );
-                        const { width, height } =
-                            await sharp(chartModeBadgeImg).metadata();
-                        const aspectRatio = (width ?? 0) / (height ?? 1) || 3;
                         const mode = await loadImage(chartModeBadgeImg);
+                        const aspectRatio =
+                            (mode.width ?? 0) / (mode.height ?? 1) || 3;
                         const drawHeight = (jacketSize * 6) / 8;
                         ctx.drawImage(
                             mode,
@@ -2231,10 +2229,9 @@ export namespace MaimaiPainterModule {
                             ? element.sprites.mode.dx
                             : element.sprites.mode.standard,
                     );
-                    const { width: modeWidth, height: modeHeight } =
-                        await sharp(chartModeBadgeImg).metadata();
+                    const mode = await loadImage(chartModeBadgeImg);
                     const aspectRatio =
-                        (modeWidth ?? 0) / (modeHeight ?? 1) || 3;
+                        (mode.width ?? 0) / (mode.height ?? 1) || 3;
 
                     const textLineWidth = element.width * (7 / 512);
                     const textColor = new Color(element.color.card)
@@ -2381,23 +2378,18 @@ export namespace MaimaiPainterModule {
                     );
 
                     /** Begin Chart Mode Draw */
-                    {
-                        const mode = await loadImage(chartModeBadgeImg);
-                        ctx.drawImage(
-                            mode,
-                            element.x +
-                                textMargin * (3 / 2) +
-                                titleMetrics.width,
-                            element.y +
-                                jacketMargin +
-                                textMargin * (1 / 2) +
-                                (element.width - jacketMargin * 2) -
-                                titleActualHeight / 2 +
-                                textSizeTitle / 2,
-                            textSizeTitle * aspectRatio,
-                            textSizeTitle,
-                        );
-                    }
+                    ctx.drawImage(
+                        mode,
+                        element.x + textMargin * (3 / 2) + titleMetrics.width,
+                        element.y +
+                            jacketMargin +
+                            textMargin * (1 / 2) +
+                            (element.width - jacketMargin * 2) -
+                            titleActualHeight / 2 +
+                            textSizeTitle / 2,
+                        textSizeTitle * aspectRatio,
+                        textSizeTitle,
+                    );
                     /** End Chart Mode Draw */
                 }
                 /* End Detail Draw */
