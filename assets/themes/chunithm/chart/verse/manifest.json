@@ -161,8 +161,8 @@
             "width": 1200,
             "linebreak": true,
             "customLines": [
-                "../../../../../hitokoto/general.json",
-                "../../../../../hitokoto/support/chunithm.json"
+                "../../../../hitokoto/general.json",
+                "../../../../hitokoto/support/chunithm.json"
             ]
         }
     ]

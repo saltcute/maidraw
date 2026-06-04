@@ -10,7 +10,7 @@
             "y": 1251,
             "width": 1595,
             "anchor": "mm",
-            "path": "../../best/brightmemory/landscape/background.webp"
+            "path": "../../best/brightmemory/assets/background.webp"
         },
         {
             "type": "chart-grid",
@@ -100,7 +100,7 @@
             "y": 820,
             "width": 310,
             "height": 251,
-            "path": "../../best/brightmemory/landscape/logo.webp"
+            "path": "../../best/brightmemory/assets/logo.webp"
         },
         {
             "type": "text",
@@ -131,8 +131,8 @@
             "linebreak": true,
             "probability": 0.1,
             "customLines": [
-                "../../../../../hitokoto/general.json",
-                "../../../../../hitokoto/support/ongeki.json"
+                "../../../../hitokoto/general.json",
+                "../../../../hitokoto/support/ongeki.json"
             ]
         },
         {

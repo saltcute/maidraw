@@ -225,8 +225,8 @@
             "linebreak": true,
             "probability": 0.1,
             "customLines": [
-                "../../../../../../hitokoto/general.json",
-                "../../../../../../hitokoto/support/maimai.json"
+                "../../../../../hitokoto/general.json",
+                "../../../../../hitokoto/support/maimai.json"
             ]
         }
     ]

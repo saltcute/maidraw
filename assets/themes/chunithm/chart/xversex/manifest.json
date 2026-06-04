@@ -161,8 +161,8 @@
             "linebreak": true,
             "probability": 0.1,
             "customLines": [
-                "../../../../../hitokoto/general.json",
-                "../../../../../hitokoto/support/chunithm.json"
+                "../../../../hitokoto/general.json",
+                "../../../../hitokoto/support/chunithm.json"
             ]
         }
     ]

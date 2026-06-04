@@ -10,7 +10,7 @@
             "y": -167,
             "width": 1595,
             "height": 2836,
-            "path": "../../best/refresh/landscape/background.webp"
+            "path": "../../best/refresh/assets/background.webp"
         },
         {
             "type": "chart-grid",
@@ -100,7 +100,7 @@
             "y": 820,
             "width": 310,
             "height": 251,
-            "path": "../../best/refresh/landscape/logo.webp"
+            "path": "../../best/refresh/assets/logo.webp"
         },
         {
             "type": "text",
@@ -131,8 +131,8 @@
             "linebreak": true,
             "probability": 0.1,
             "customLines": [
-                "../../../../../hitokoto/general.json",
-                "../../../../../hitokoto/support/ongeki.json"
+                "../../../../hitokoto/general.json",
+                "../../../../hitokoto/support/ongeki.json"
             ]
         },
         {
