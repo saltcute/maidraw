@@ -201,6 +201,15 @@
                 "../../../../../hitokoto/general.json",
                 "../../../../../hitokoto/support/maimai.json"
             ]
+        },
+        {
+            "type": "text",
+            "size": 32,
+            "x": 40,
+            "y": 72,
+            "borderColor": "#242B4A",
+            "align": "left",
+            "content": "{dateTime}"
         }
     ]
 }

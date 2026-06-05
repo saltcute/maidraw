@@ -313,6 +313,15 @@
                     "icon": "../../versionless/icon.webp"
                 }
             }
+        },
+        {
+            "type": "text",
+            "size": 32,
+            "x": 2300,
+            "y": 397,
+            "borderColor": "#b89f82",
+            "align": "right",
+            "content": "{dateTime}"
         }
     ]
 }

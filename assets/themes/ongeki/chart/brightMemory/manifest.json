@@ -175,6 +175,15 @@
                     "icon": "../../best/versionless/icon.webp"
                 }
             }
+        },
+        {
+            "type": "text",
+            "size": 32,
+            "x": 407,
+            "y": 287,
+            "borderColor": "#b89f82",
+            "align": "center",
+            "content": "{dateTime}"
         }
     ]
 }

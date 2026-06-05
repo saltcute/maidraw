@@ -184,6 +184,15 @@
                 "../../../../../hitokoto/general.json",
                 "../../../../../hitokoto/support/chunithm.json"
             ]
+        },
+        {
+            "type": "text",
+            "size": 32,
+            "x": 2280,
+            "y": 72,
+            "borderColor": "#178ea1",
+            "align": "right",
+            "content": "{dateTime}"
         }
     ]
 }

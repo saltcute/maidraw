@@ -244,6 +244,15 @@
                 "../../../../../hitokoto/general.json",
                 "../../../../../hitokoto/support/maimaidx.json"
             ]
+        },
+        {
+            "type": "text",
+            "size": 32,
+            "x": 1520,
+            "y": 72,
+            "borderColor": "#754F05",
+            "align": "right",
+            "content": "{dateTime}"
         }
     ]
 }

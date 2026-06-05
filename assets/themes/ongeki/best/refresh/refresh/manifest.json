@@ -266,6 +266,15 @@
                     "icon": "../../versionless/icon.webp"
                 }
             }
+        },
+        {
+            "type": "text",
+            "size": 32,
+            "x": 1980,
+            "y": 347,
+            "borderColor": "#547318",
+            "align": "right",
+            "content": "{dateTime}"
         }
     ]
 }

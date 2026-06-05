@@ -295,12 +295,14 @@ export namespace PainterModule {
             borderColor: color().optional(),
             font: z.string().optional(),
         });
-        const builtinVariables: Record<string, string> = {
-            date: (() => {
-                const date = new Date();
-                return `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, "0")}-${date.getDate().toString().padStart(2, "0")}`;
-            })(),
-        };
+        const dateFormat = new Intl.DateTimeFormat("en-CA", {
+            timeZone: "Asia/Tokyo",
+        });
+        const timeFormat = new Intl.DateTimeFormat("en-CA", {
+            timeZone: "Asia/Tokyo",
+            timeStyle: "medium",
+            hourCycle: "h23",
+        });
         export async function draw(
             ctx: CanvasRenderingContext2D,
             element: z.infer<typeof schema>,
@@ -309,6 +311,12 @@ export namespace PainterModule {
              */
             variables: Record<string, string> = {},
         ) {
+            const date = new Date();
+            const builtinVariables: Record<string, string> = {
+                date: dateFormat.format(date),
+                time: timeFormat.format(date),
+                dateTime: `${dateFormat.format(date)} ${timeFormat.format(date)} JST`,
+            };
             variables = {
                 ...builtinVariables,
                 ...variables,
