@@ -10,6 +10,8 @@ const upath = require("upath");
     const fs = require("node:fs");
 
     const themes = [
+        "cn-2026-landscape",
+        "cn-2026-portrait",
         "jp-circleplus-landscape",
         "jp-circleplus-portrait",
         "salt-2026-landscape",
@@ -44,24 +46,27 @@ const upath = require("upath");
                     case "jp-prismplus-landscape":
                     case "jp-prismplus-portrait":
                         return kamai.versions().prismPlus();
+                    case "cn-2026-landscape":
+                    case "cn-2026-portrait":
+                        return kamai.versions().CN().DX2026();
                     case "jp-prism-landscape":
                     case "jp-prism-portrait":
                         return kamai.versions().prism();
                     case "jp-buddiesplus-landscape":
                     case "jp-buddiesplus-portrait":
                         return kamai.versions().buddiesPlus();
-                    case "jp-buddies-landscape":
-                    case "jp-buddies-portrait":
-                        return kamai.versions().buddies();
-                    case "jp-finale-landscape":
-                    case "jp-finale-portrait":
-                        return kamai.versions().finale();
                     case "cn-2025-landscape":
                     case "cn-2025-portrait":
                         return kamai.versions().CN().DX2025();
+                    case "jp-buddies-landscape":
+                    case "jp-buddies-portrait":
+                        return kamai.versions().buddies();
                     case "cn-2024-landscape":
                     case "cn-2024-portrait":
                         return kamai.versions().CN().DX2024();
+                    case "jp-finale-landscape":
+                    case "jp-finale-portrait":
+                        return kamai.versions().finale();
                     default:
                         return kamai;
                 }

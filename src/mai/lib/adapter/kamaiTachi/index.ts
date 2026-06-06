@@ -831,6 +831,12 @@ export class KamaiTachiBuilder {
                     region: "CN",
                 });
             },
+            DX2026() {
+                return new KamaiTachi({
+                    version: KamaiTachi.GameVersions.PRISM_PLUS,
+                    region: "CN",
+                });
+            },
         };
     }
 }
@@ -974,13 +980,13 @@ export namespace KamaiTachi {
             kamai: "maimaiでらっくす CiRCLE",
             DX: "maimai でらっくす CiRCLE",
             EX: "maimai DX CiRCLE",
-            CN: "舞萌DX 2026",
+            CN: "",
         },
         PRISM_PLUS: {
             kamai: "maimaiでらっくす PRiSM PLUS",
             DX: "maimai でらっくす PRiSM PLUS",
             EX: "maimai DX PRiSM PLUS",
-            CN: "",
+            CN: "舞萌DX 2026",
         },
         PRISM: {
             kamai: "maimaiでらっくす PRiSM",
