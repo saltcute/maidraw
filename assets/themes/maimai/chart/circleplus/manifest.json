@@ -8,8 +8,8 @@
             "type": "image",
             "x": 1280,
             "y": 720,
-            "width": 2610,
-            "height": 1490,
+            "width": 2560,
+            "height": 1440,
             "anchor": "mm",
             "path": "../../best50/circleplus/assets/background/landscape.webp"
         },
