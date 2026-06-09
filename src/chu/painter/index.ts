@@ -1567,6 +1567,15 @@ export namespace ChunithmPainterModule {
                             );
 
                             if (actualEvents.length === maxFitTrendCount) {
+                                if (
+                                    actualEvents[actualEvents.length - 1] !==
+                                    trendEvents[trendEvents.length - 1]
+                                ) {
+                                    actualEvents.splice(1, 1);
+                                    actualEvents.push(
+                                        trendEvents[trendEvents.length - 1],
+                                    );
+                                }
                             } else if (actualEvents.length > maxFitTrendCount) {
                                 while (actualEvents.length > maxFitTrendCount)
                                     actualEvents.shift();
@@ -1653,20 +1662,25 @@ export namespace ChunithmPainterModule {
                                         v.version.region === targetRegion,
                                 ) as Database.Events.Removal | undefined;
                                 if (removalEvent) {
-                                    actualEvents.pop();
+                                    while (
+                                        actualEvents.length >= maxFitTrendCount
+                                    )
+                                        actualEvents.splice(1, 1);
                                     actualEvents.push(removalEvent);
                                 }
                             } else {
                                 actualEvents = [...trendEvents];
                             }
                             if (
+                                trendEvents.length > 0 &&
                                 ChunithmUtil.getNumberVersion(
-                                    actualEvents[actualEvents.length - 1]
-                                        .version,
-                                ) < CURRENT_VER
+                                    trendEvents[trendEvents.length - 1].version,
+                                ) < CURRENT_VER &&
+                                actualEvents[actualEvents.length - 1]?.type !==
+                                    "removal"
                             ) {
                                 while (actualEvents.length >= maxFitTrendCount)
-                                    actualEvents.pop();
+                                    actualEvents.splice(1, 1);
                                 actualEvents.push({
                                     type: "removal",
                                     version:

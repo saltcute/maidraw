@@ -1743,10 +1743,10 @@ export namespace MaimaiPainterModule {
                                 maxWidth / versionImageWidth,
                             );
                             const trendEvents = chart.events.filter(
-                                (v) =>
+                                (v): v is Database.Events.Existence =>
                                     v.type === "existence" &&
                                     v.version.region === targetRegion,
-                            ) as Database.Events.Existence[];
+                            );
                             let actualEvents: Database.Events[] = _.uniqWith(
                                 trendEvents,
                                 (a, b) => {
@@ -1757,6 +1757,15 @@ export namespace MaimaiPainterModule {
                                 },
                             );
                             if (actualEvents.length === maxFitTrendCount) {
+                                if (
+                                    actualEvents[actualEvents.length - 1] !==
+                                    trendEvents[trendEvents.length - 1]
+                                ) {
+                                    actualEvents.splice(1, 1);
+                                    actualEvents.push(
+                                        trendEvents[trendEvents.length - 1],
+                                    );
+                                }
                             } else if (actualEvents.length > maxFitTrendCount) {
                                 while (actualEvents.length > maxFitTrendCount)
                                     actualEvents.shift();
@@ -1839,23 +1848,28 @@ export namespace MaimaiPainterModule {
                                     );
                                 }
                                 const removalEvent = chart.events.find(
-                                    (v) =>
+                                    (v): v is Database.Events.Removal =>
                                         v.type === "removal" &&
                                         v.version.region === targetRegion,
-                                ) as Database.Events.Removal | undefined;
+                                );
                                 if (removalEvent) {
-                                    actualEvents.pop();
+                                    while (
+                                        actualEvents.length >= maxFitTrendCount
+                                    )
+                                        actualEvents.splice(1, 1);
                                     actualEvents.push(removalEvent);
                                 }
                             } else {
                                 actualEvents = [...trendEvents];
                             }
                             if (
-                                actualEvents[actualEvents.length - 1]?.version
-                                    .gameVersion.minor < CURRENT_MINOR
+                                trendEvents[trendEvents.length - 1]?.version
+                                    .gameVersion.minor < CURRENT_MINOR &&
+                                actualEvents[actualEvents.length - 1]?.type !==
+                                    "removal"
                             ) {
                                 while (actualEvents.length >= maxFitTrendCount)
-                                    actualEvents.pop();
+                                    actualEvents.splice(1, 1);
                                 actualEvents.push({
                                     type: "removal",
                                     version: MaimaiUtil.Version.toEventVersion(
