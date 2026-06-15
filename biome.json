@@ -1,5 +1,5 @@
 {
-    "$schema": "https://biomejs.dev/schemas/2.4.16/schema.json",
+    "$schema": "https://biomejs.dev/schemas/2.5.0/schema.json",
     "vcs": {
         "enabled": false,
         "clientKind": "git",
@@ -25,35 +25,27 @@
     "linter": {
         "enabled": true,
         "rules": {
-            "recommended": true,
+            "preset": "recommended",
             "style": {
-                "noRestrictedImports": {
+                "useNamingConvention": {
                     "level": "error",
                     "options": {
-                        "patterns": [
+                        "conventions": [
                             {
-                                "group": "^@mui/\\[^/\\]+$"
+                                "selector": {
+                                    "kind": "enumMember"
+                                },
+                                "formats": ["CONSTANT_CASE"]
                             }
                         ]
                     }
                 }
-            },
-            "nursery": {
-                "useSortedClasses": "error"
-            },
-            "complexity": {
-                "noStaticOnlyClass": "off"
             }
         }
     },
     "javascript": {
         "formatter": {
             "quoteStyle": "double"
-        }
-    },
-    "css": {
-        "parser": {
-            "tailwindDirectives": true
         }
     }
 }
