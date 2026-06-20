@@ -1,19 +1,23 @@
 {
     "compilerOptions": {
         "declaration": true,
-        "target": "ES2022",
-        "module": "node16",
+        "target": "ES2025",
+        "module": "nodenext",
         "moduleResolution": "node16",
+        "types": ["node"],
         "lib": [
-            "ES2022"
+            "ES2025"
         ],
-        "baseUrl": "./src",
         "paths": {
-            "@maidraw/*": [ "./*" ]
+            "@common/*": [ "./src/common/*" ],
+            "@maimai/*": [ "./src/maimai/*" ],
+            "@chunithm/*": [ "./src/chunithm/*" ],
+            "@ongeki/*": [ "./src/ongeki/*" ],
         },
         "rootDirs": [
             "src"
         ],
+        "rootDir": "./src",
         "outDir": "./dist",
         "strict": true,
         "typeRoots": [

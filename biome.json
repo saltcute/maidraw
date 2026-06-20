@@ -7,16 +7,10 @@
     },
     "files": {
         "ignoreUnknown": false,
-        "includes": [
-            "src/**/*",
-            "test/**/*",
-            "tools/**/*",
-            "assets/**/*",
-            ".vscode/**/*",
-            "vite.config.ts"
-        ]
+        "includes": ["src/**/*", "test/**/*", "tools/**/*", "assets/**/*", ".vscode/**/*", "vite.config.ts"]
     },
     "formatter": {
+        "lineWidth": 150,
         "enabled": true,
         "indentStyle": "space",
         "indentWidth": 4
