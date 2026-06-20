@@ -18,7 +18,8 @@
         "test": "export LOG_LEVEL=debug && tsx ./test/test.ts"
     },
     "files": [
-        "dist/"
+        "dist/",
+        "assets/"
     ],
     "repository": {
         "type": "git",
