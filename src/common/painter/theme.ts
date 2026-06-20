@@ -1,5 +1,5 @@
 import fs from "node:fs";
-import { logger } from "@common/logger";
+import { globalLogger } from "@saltcute/logger";
 import { globSync } from "glob";
 import upath from "upath";
 import z from "zod/v4";
@@ -18,7 +18,7 @@ export class Theme<T> {
     }
 }
 export class ThemeManager<Schema extends typeof ThemeManager.BASE_OBJECT> {
-    private logger = logger.child().withGroup(["maidraw", "painter", "theme_manager"]);
+    private logger = globalLogger.child().withGroup(["maidraw", "painter", "theme_manager"]);
 
     public static readonly ELEMENT = z.object({
         type: z.string(),
@@ -84,7 +84,7 @@ export class ThemeManager<Schema extends typeof ThemeManager.BASE_OBJECT> {
                 return true;
             } else return false;
         } catch (e) {
-            logger.withError(e).error(`Failed to validate the theme at ${path}`);
+            this.logger.withError(e).error(`Failed to validate the theme at ${path}`);
             return false;
         }
     }

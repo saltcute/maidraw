@@ -1,18 +1,16 @@
-import { Cache } from "@common/cache";
-import { logger as globalLogger } from "@common/logger";
+import { Cache } from "@saltcute/cache";
+import { globalLogger } from "@saltcute/logger";
 import axios, { type AxiosInstance } from "axios";
 
 export abstract class BaseScoreAdapter {
-    private static _cache = new Cache();
-    protected get cache() {
-        return BaseScoreAdapter._cache;
-    }
+    protected cache;
     protected axios: AxiosInstance;
     protected logger;
     constructor({ baseUrl, name }: { baseUrl?: string; name?: string } = {}) {
         // biome-ignore lint/style/useNamingConvention: external library axios violates naming convention
         this.axios = axios.create({ baseURL: baseUrl });
         this.logger = globalLogger.child().withGroup(["maidraw", "adapter", name || "base-adapter"]);
+        this.cache = new Cache(["maidraw", "adapter", name || "base-adapter"].join("/"));
     }
     private readonly maxLogLength = 1000;
     protected async get<T>(
