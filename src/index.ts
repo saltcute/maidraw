@@ -1,14 +1,2 @@
-import * as chu from "./chu";
-import * as geki from "./geki";
-import * as adapter from "./lib/adapter";
-import * as error from "./lib/error";
-import * as mai from "./mai";
-
-export namespace MaiDraw {
-    export import Maimai = mai.Maimai;
-    export import Chuni = chu.Chuni;
-    export import Geki = geki.Geki;
-
-    export import BaseScoreAdapter = adapter.BaseScoreAdapter;
-    export import BaseError = error.BaseError;
-}
+export { BaseScoreAdapter } from "@common/adapter";
+export * from "@common/error";

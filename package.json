@@ -9,7 +9,7 @@
         "make": "npm run clean && npm run format && npm run lint && npm run build",
         "format": "biome format --write",
         "lint": "biome lint --write",
-        "test": "export LOG_LEVEL=debug && npm run make && node ./test/test.js"
+        "test": "export LOG_LEVEL=debug && tsx ./test/test.ts"
     },
     "repository": {
         "type": "git",
@@ -28,35 +28,41 @@
     },
     "homepage": "https://github.com/saltcute/maidraw#readme",
     "dependencies": {
+        "@loglayer/log-level-manager-global": "^2.2.0",
+        "@loglayer/transport-pino": "^3.2.0",
         "axios": "^1.7.2",
-        "bunyan": "^1.8.15",
         "canvas": "^3.1.0",
         "cheerio": "^1.0.0",
         "color": "^4.2.3",
-        "gcm-database": "^1.0.1",
-        "gcm-database-local": "^1.0.4",
+        "gcm-database": "^1.0.3",
+        "gcm-database-local": "^1.0.8",
         "glob": "^11.0.0",
         "linebreak": "^1.1.0",
         "lodash": "^4.17.21",
         "memory-cache": "^0.2.0",
         "node-canvas-with-twemoji-and-discord-emoji": "^1.2.2",
-        "redis": "^4.7.0",
+        "pino": "^10.3.1",
+        "redis": "^6.0.0",
+        "rg-stats": "^1.2.1",
         "rimraf": "^5.0.8",
         "sharp": "^0.33.5",
         "string-template": "^1.0.0",
         "ts-node": "^10.9.1",
         "tsconfig-paths": "^4.1.2",
         "tsconfig-replace-paths": "^0.0.14",
-        "typescript": "^5.5.3",
         "upath": "^2.0.1",
         "zod": "^4.1.5"
     },
     "devDependencies": {
         "@biomejs/biome": "^2.5.0",
-        "@types/bunyan": "^1.8.11",
         "@types/color": "^3.0.6",
         "@types/lodash": "^4.17.16",
         "@types/memory-cache": "^0.2.6",
-        "@types/string-template": "^1.0.6"
+        "@types/string-template": "^1.0.6",
+        "typescript": "^6.0.3"
+    },
+    "allowScripts": {
+        "canvas@3.1.0": true,
+        "sharp@0.33.5": true
     }
 }
