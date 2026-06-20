@@ -38,8 +38,8 @@
     },
     "homepage": "https://github.com/saltcute/maidraw#readme",
     "dependencies": {
-        "@saltcute/cache": "^1.0.2",
-        "@saltcute/logger": "^1.0.0",
+        "@saltcute/cache": "^1.0.3",
+        "@saltcute/logger": "^1.0.1",
         "axios": "^1.18.0",
         "canvas": "^3.2.3",
         "color": "^5.0.3",
