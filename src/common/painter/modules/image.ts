@@ -32,11 +32,7 @@ export class ImageModule extends PainterModule {
             .optional(),
         path: z.string(),
     });
-    public async draw(
-        ctx: CanvasRenderingContext2D,
-        theme: Theme<unknown>,
-        element: z.infer<typeof ImageModule.SCHEMA>,
-    ) {
+    public async draw(ctx: CanvasRenderingContext2D, theme: Theme<unknown>, element: z.infer<typeof ImageModule.SCHEMA>) {
         const img = await safeLoadImage(theme.getFile(element.path));
         const { width: imgWidth, height: imgHeight } = img;
         const aspectRatio = imgWidth / imgHeight;

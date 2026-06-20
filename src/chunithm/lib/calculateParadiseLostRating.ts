@@ -6,10 +6,7 @@ import { truncateNumber } from "@common/utils/number";
  * @param score Score, range between 0 to 1010000.
  * @returns Raw decimal rating value.
  */
-export function calculateParadiseLostRating(
-    internalLevel: number,
-    score: number,
-): number {
+export function calculateParadiseLostRating(internalLevel: number, score: number): number {
     let bonus = 0;
     switch (true) {
         case score >= 1007500: {
@@ -33,16 +30,11 @@ export function calculateParadiseLostRating(
             break;
         }
         case score >= 800000: {
-            bonus =
-                -5.0 -
-                ((900000 - score) / 100000) * ((internalLevel - 5.0) / 2);
+            bonus = -5.0 - ((900000 - score) / 100000) * ((internalLevel - 5.0) / 2);
             break;
         }
         case score >= 500000: {
-            bonus =
-                -5.0 -
-                (internalLevel - 5.0) / 2 -
-                ((800000 - score) / 300000) * ((internalLevel - 5.0) / 2);
+            bonus = -5.0 - (internalLevel - 5.0) / 2 - ((800000 - score) / 300000) * ((internalLevel - 5.0) / 2);
             break;
         }
         default: {

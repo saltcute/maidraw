@@ -213,10 +213,7 @@
             "borderColor": "#754F05",
             "align": "left",
             "probability": 0.1,
-            "customLines": [
-                "../../../../../hitokoto/general.json",
-                "../../../../../hitokoto/support/maimaidx.json"
-            ]
+            "customLines": ["../../../../../hitokoto/general.json", "../../../../../hitokoto/support/maimaidx.json"]
         },
         {
             "type": "text",

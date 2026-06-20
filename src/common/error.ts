@@ -1,6 +1,4 @@
-export type DataOrError<T> =
-    | { data: T; err?: undefined }
-    | { data?: undefined; err: BaseError };
+export type DataOrError<T> = { data: T; err?: undefined } | { data?: undefined; err: BaseError };
 
 export class BaseError extends Error {
     public constructor(
@@ -21,49 +19,24 @@ export class MissingThemeError extends BaseError {
 
 export class MissingChartError extends BaseError {
     public constructor(namespace: string, chartIdentifier: string) {
-        super(
-            namespace,
-            "missing-chart",
-            `Cannot find chart with ID ${chartIdentifier}.`,
-            { chartIdentifier },
-        );
+        super(namespace, "missing-chart", `Cannot find chart with ID ${chartIdentifier}.`, { chartIdentifier });
     }
 }
 
 export class UnsupportedMethodError extends BaseError {
     public constructor(namespace: string, method: string) {
-        super(
-            namespace,
-            "unsupported-method",
-            `"${method}" is not supported by this adapter.`,
-            { method },
-        );
+        super(namespace, "unsupported-method", `"${method}" is not supported by this adapter.`, { method });
     }
 }
 
 export class FailedToFetchError extends BaseError {
-    public constructor(
-        namespace: string,
-        subject: string,
-        reason: string = "",
-        data?: unknown,
-    ) {
-        super(
-            namespace,
-            "failed-to-fetch",
-            `Failed to fetch ${subject}. ${reason}`,
-            data,
-        );
+    public constructor(namespace: string, subject: string, reason: string = "", data?: unknown) {
+        super(namespace, "failed-to-fetch", `Failed to fetch ${subject}. ${reason}`, data);
     }
 }
 
 export class IllegalArgumentError extends BaseError {
     public constructor(namespace: string, detail: string, data?: unknown) {
-        super(
-            namespace,
-            "illegal-argument",
-            `An argument specified is illegal. ${detail}`,
-            data,
-        );
+        super(namespace, "illegal-argument", `An argument specified is illegal. ${detail}`, data);
     }
 }

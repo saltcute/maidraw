@@ -1,8 +1,4 @@
-import type {
-    CanvasGradient,
-    CanvasPattern,
-    CanvasRenderingContext2D,
-} from "canvas";
+import type { CanvasGradient, CanvasPattern, CanvasRenderingContext2D } from "canvas";
 import { drawText } from "./drawText";
 
 export function drawVerticalText(
@@ -47,20 +43,12 @@ export function drawVerticalText(
             ctx.rotate((90 * Math.PI) / 180);
             ctx.textBaseline = "bottom";
             const width = ctx.measureText(char).width;
-            drawText(
-                ctx,
-                char,
-                width * (3 / 16),
-                width * (3 / 16),
-                fontSize,
-                linewidth,
-                {
-                    textAlign: "left",
-                    mainColor,
-                    borderColor,
-                    font,
-                },
-            );
+            drawText(ctx, char, width * (3 / 16), width * (3 / 16), fontSize, linewidth, {
+                textAlign: "left",
+                mainColor,
+                borderColor,
+                font,
+            });
             ctx.restore();
             curY += width + verticalSpacing;
         }

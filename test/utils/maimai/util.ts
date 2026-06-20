@@ -5,12 +5,12 @@ import { AchievementTypes, ComboLamp, type Score, SyncLamp } from "../../../src/
 import { getRandomEnum, getRandomString } from "../util";
 
 export const best50Theme = new Theme(
-    join(__dirname, "..","..","..", "assets/themes/maimai/best50/circleplus/landscape"),
-    require(join(__dirname, "..","..","..", "assets/themes/maimai/best50/circleplus/landscape/manifest.json")),
+    join(__dirname, "..", "..", "..", "assets/themes/maimai/best50/circleplus/landscape"),
+    require(join(__dirname, "..", "..", "..", "assets/themes/maimai/best50/circleplus/landscape/manifest.json")),
 );
 export const chartTheme = new Theme(
-    join(__dirname, "..", "..","..","assets/themes/maimai/chart/circleplus"),
-    require(join(__dirname, "..", "..","..","assets/themes/maimai/chart/circleplus/manifest.json")),
+    join(__dirname, "..", "..", "..", "assets/themes/maimai/chart/circleplus"),
+    require(join(__dirname, "..", "..", "..", "assets/themes/maimai/chart/circleplus/manifest.json")),
 );
 
 export function getDummyChart(): Chart {

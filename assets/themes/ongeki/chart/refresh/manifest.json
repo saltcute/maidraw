@@ -130,10 +130,7 @@
             "width": 580,
             "linebreak": true,
             "probability": 0.1,
-            "customLines": [
-                "../../../../hitokoto/general.json",
-                "../../../../hitokoto/support/ongeki.json"
-            ]
+            "customLines": ["../../../../hitokoto/general.json", "../../../../hitokoto/support/ongeki.json"]
         },
         {
             "type": "profile",

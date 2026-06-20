@@ -12,9 +12,7 @@ export abstract class BaseScoreAdapter {
     constructor({ baseUrl, name }: { baseUrl?: string; name?: string } = {}) {
         // biome-ignore lint/style/useNamingConvention: external library axios violates naming convention
         this.axios = axios.create({ baseURL: baseUrl });
-        this.logger = globalLogger
-            .child()
-            .withGroup(["maidraw", "adapter", name || "base-adapter"]);
+        this.logger = globalLogger.child().withGroup(["maidraw", "adapter", name || "base-adapter"]);
     }
     private readonly maxLogLength = 1000;
     protected async get<T>(
@@ -26,24 +24,11 @@ export abstract class BaseScoreAdapter {
         cacheTtl: number = 30 * 60 * 1000,
         options: axios.AxiosRequestConfig = {},
     ): Promise<T | undefined> {
-        const cacheKey = `${this.axios.defaults.baseURL}${endpoint}${
-            data
-                ? `-${JSON.stringify(data).substring(0, this.maxLogLength)}`
-                : ""
-        }`;
+        const cacheKey = `${this.axios.defaults.baseURL}${endpoint}${data ? `-${JSON.stringify(data).substring(0, this.maxLogLength)}` : ""}`;
         if (cacheTtl > 0) {
             const cacheContent = await this.cache.get(cacheKey);
             if (cacheContent) {
-                this.logger.trace(
-                    `GET ${endpoint}${
-                        data
-                            ? ` ${JSON.stringify(data).substring(
-                                  0,
-                                  this.maxLogLength,
-                              )}`
-                            : ""
-                    }, cache HIT`,
-                );
+                this.logger.trace(`GET ${endpoint}${data ? ` ${JSON.stringify(data).substring(0, this.maxLogLength)}` : ""}, cache HIT`);
                 return cacheContent as T;
             }
         }
@@ -61,31 +46,18 @@ export abstract class BaseScoreAdapter {
             });
         const timeDifference = Date.now() - beginTimestamp;
         this.logger.trace(
-            `GET ${endpoint}${
-                data
-                    ? ` ${JSON.stringify(data).substring(0, this.maxLogLength)}`
-                    : ""
-            }, cache MISS, took ${timeDifference}ms`,
+            `GET ${endpoint}${data ? ` ${JSON.stringify(data).substring(0, this.maxLogLength)}` : ""}, cache MISS, took ${timeDifference}ms`,
         );
         return res;
     }
-    protected async post<T>(
-        endpoint: string,
-        data?: unknown,
-    ): Promise<T | undefined> {
+    protected async post<T>(endpoint: string, data?: unknown): Promise<T | undefined> {
         const beginTimestamp = Date.now();
         const res = await this.axios
             .post(endpoint, data)
             .then((r) => r.data)
             .catch((e) => e.response?.data);
         const timeDifference = Date.now() - beginTimestamp;
-        this.logger.trace(
-            `POST ${endpoint}${
-                data
-                    ? ` ${JSON.stringify(data).substring(0, this.maxLogLength)}`
-                    : ""
-            }, took ${timeDifference}ms`,
-        );
+        this.logger.trace(`POST ${endpoint}${data ? ` ${JSON.stringify(data).substring(0, this.maxLogLength)}` : ""}, took ${timeDifference}ms`);
         return res;
     }
 }

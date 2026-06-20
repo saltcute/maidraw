@@ -1,8 +1,8 @@
 import { Cache as MemCache } from "memory-cache";
 import { createClient } from "redis";
-import { buildLogger } from "./utils/logger";
+import { logger } from "./logger";
 export class Cache<T> {
-    private logger = buildLogger(["maidraw", "cache"]);
+    private logger = logger.child().withGroup(["maidraw", "cache"]);
 
     private memCache;
     private redisClient;

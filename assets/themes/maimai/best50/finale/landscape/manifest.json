@@ -197,10 +197,7 @@
             "borderColor": "#242B4A",
             "align": "left",
             "probability": 0.1,
-            "customLines": [
-                "../../../../../hitokoto/general.json",
-                "../../../../../hitokoto/support/maimai.json"
-            ]
+            "customLines": ["../../../../../hitokoto/general.json", "../../../../../hitokoto/support/maimai.json"]
         },
         {
             "type": "text",
