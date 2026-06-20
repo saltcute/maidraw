@@ -9,7 +9,7 @@ export abstract class BaseScoreAdapter {
     constructor({ baseUrl, name }: { baseUrl?: string; name?: string } = {}) {
         // biome-ignore lint/style/useNamingConvention: external library axios violates naming convention
         this.axios = axios.create({ baseURL: baseUrl });
-        this.logger = globalLogger.child().withGroup(["maidraw", "adapter", name || "base-adapter"]);
+        this.logger = globalLogger.child().withPrefix(`[${["maidraw", "adapter", name || "base-adapter"].join("/")}]`);
         this.cache = new Cache(["maidraw", "adapter", name || "base-adapter"].join("/"));
     }
     private readonly maxLogLength = 1000;

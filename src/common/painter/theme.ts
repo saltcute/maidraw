@@ -18,7 +18,7 @@ export class Theme<T> {
     }
 }
 export class ThemeManager<Schema extends typeof ThemeManager.BASE_OBJECT> {
-    private logger = globalLogger.child().withGroup(["maidraw", "painter", "theme_manager"]);
+    private logger = globalLogger.child().withPrefix(`[${["maidraw", "painter", "theme_manager"].join("/")}]`);
 
     public static readonly ELEMENT = z.object({
         type: z.string(),
