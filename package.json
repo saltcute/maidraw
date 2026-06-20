@@ -3,6 +3,12 @@
     "version": "0.12.20",
     "description": "A simple library to draw geki/chu/mai images",
     "main": "dist/index.js",
+    "exports": {
+        ".": "./dist/exports/common.js",
+        "./maimai": "./dist/exports/maimai.js",
+        "./chunithm": "./dist/exports/chunithm.js",
+        "./ongeki": "./dist/exports/ongeki.js"
+    },
     "scripts": {
         "build": "tsc && tsc-alias",
         "clean": "rimraf dist/*",
