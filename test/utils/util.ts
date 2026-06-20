@@ -1,9 +1,9 @@
 import fs from "node:fs";
+import { globalLogger } from "@saltcute/logger";
 import { Canvas, loadImage } from "canvas";
 import sharp from "sharp";
 import { join } from "upath";
 import type { DataOrError } from "../../src/common/error";
-import { logger as globalLogger } from "../../src/common/logger";
 
 export const logger = globalLogger.child();
 
