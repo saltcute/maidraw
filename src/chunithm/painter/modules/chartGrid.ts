@@ -1,5 +1,5 @@
 import { AchievementTypes, ComboLamp, type Score } from "@chunithm/lib/types";
-import { CHN_LATEST, findNewerVersion, findVersion, INT_LATEST, JPN_LATEST } from "@chunithm/lib/version";
+import { CHN_LATEST, findNewerVersion, findVersion, getNumberVersion, INT_LATEST, JPN_LATEST } from "@chunithm/lib/version";
 import { PainterModule } from "@common/painter/painter";
 import { type Theme, ThemeManager } from "@common/painter/theme";
 import { wrapBackground, wrapBorder, wrapClip, wrapTranslate } from "@common/utils/ctxWrapper";
@@ -501,7 +501,7 @@ export class ChartGridModule extends PainterModule {
                         _.isEqual(a.version.gameVersion.minor, b.version.gameVersion.minor)
                     );
                 });
-                actualEvents = _.sortBy(actualEvents, (v) => v.version.gameVersion.minor);
+                actualEvents = _.sortBy(actualEvents, (v) => getNumberVersion(v.version.gameVersion.major, v.version.gameVersion.minor));
                 if (trendEvents.length > 1) {
                     if (actualEvents.length >= maxFitTrendCount) actualEvents.pop();
                     actualEvents.push(trendEvents[trendEvents.length - 1]);
@@ -516,8 +516,10 @@ export class ChartGridModule extends PainterModule {
             } else {
                 actualEvents = [...trendEvents];
             }
+            const lastTrendEvent = trendEvents[trendEvents.length - 1];
             if (
-                trendEvents[trendEvents.length - 1]?.version.gameVersion.minor < CurrentMinor &&
+                lastTrendEvent &&
+                getNumberVersion(lastTrendEvent.version.gameVersion.major, lastTrendEvent.version.gameVersion.minor) < CurrentMinor &&
                 actualEvents[actualEvents.length - 1]?.type !== "removal"
             ) {
                 while (actualEvents.length >= maxFitTrendCount) actualEvents.splice(1, 1);
