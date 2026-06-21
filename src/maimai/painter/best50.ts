@@ -5,10 +5,12 @@ import { TextModule } from "@common/painter/modules/text";
 import { ThemeManager } from "@common/painter/theme";
 import { toFullWidth } from "@common/utils/halfFullWidthConvert";
 import type { ModuleObjectFromClassArray, SchemaOfModuleTuple } from "@common/utils/misc";
-import { truncate } from "@common/utils/number";
+import { ceilWithPercision, truncate } from "@common/utils/number";
 import type { Score } from "@maimai/lib/types";
 import { ProfileModule } from "@maimai/painter/modules/profile";
 import type { Chart, Database } from "gcm-database/maimai";
+import _ from "lodash";
+import { MaimaiDXRate } from "rg-stats";
 import upath from "upath";
 import { z } from "zod/v4";
 import type { MaimaiScoreAdapter } from "../lib/adapter";
@@ -38,6 +40,56 @@ export class Best50Painter extends MaimaiPainter<typeof Best50Painter.THEME> {
         >;
     }
 
+    private getRatingBase(scores: Score[], length: number) {
+        if (scores.length < length) return 0;
+        return (
+            scores
+                .map((v) =>
+                    MaimaiDXRate.calculate(
+                        v.achievement,
+                        v.chart.internalLevel ?? parseInt(v.chart.level, 10) + (v.chart.level.includes("+") ? 0.6 : 0),
+                        "CLEAR",
+                    ),
+                )
+                .sort((a, b) => a - b)
+                .slice(0, length)[0] || 0
+        );
+    }
+    private getRatingAvg(scores: Score[], length: number) {
+        if (scores.length <= 0) return 0;
+        return scores.map((v) => v.dxRating).reduce((sum, v) => sum + v, 0) / length;
+    }
+    private getRatingTargetLevel(rating: number, achievement: number) {
+        for (let level = 10; level <= 150; ++level) {
+            const calculateRating = MaimaiDXRate.calculate(achievement, level / 10, "CLEAR");
+            if (Math.trunc(calculateRating) > Math.trunc(rating)) {
+                return level / 10;
+            }
+        }
+        return null;
+    }
+    private getMilestone(scores: Score[], length: number) {
+        const base = this.getRatingBase(scores, length);
+        const targets = [];
+        for (const score of [100, 100.1, 100.2, 100.3, 100.4, 100.5]) {
+            const level = this.getRatingTargetLevel(base, score);
+            if (level) {
+                targets.push({
+                    level,
+                    score,
+                });
+            }
+        }
+        if (scores.length >= length && targets.length > 0)
+            return `Next rating boost: ${_.uniqWith(
+                targets.sort((a, b) => a.level - b.level),
+                (a, b) => a.level === b.level,
+            )
+                .map((v) => `lv. ${ceilWithPercision(v.level, 1)} ${v.score >= 100.5 ? "SSS+" : `SSS ${truncate(v.score, 1)}%`}`)
+                .join("/")}`;
+        else return "Good job!";
+    }
+
     public async draw(
         variables: {
             username: string;
@@ -60,6 +112,10 @@ export class Best50Painter extends MaimaiPainter<typeof Best50Painter.THEME> {
                     variables: {
                         username: toFullWidth(variables.username),
                         rating: truncate(variables.rating, 0),
+                        newScoreRatingAvgString: `NEW scores average: ${ceilWithPercision(this.getRatingAvg(variables.newScores, 15), 0)}`,
+                        oldScoreRatingAvgString: `OLD scores average: ${ceilWithPercision(this.getRatingAvg(variables.oldScores, 35), 0)}`,
+                        newScoreMilestone: this.getMilestone(variables.newScores, 15),
+                        oldScoreMilestone: this.getMilestone(variables.oldScores, 35),
                     },
                 });
             }

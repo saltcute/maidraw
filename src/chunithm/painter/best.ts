@@ -1,6 +1,6 @@
 import type { Score } from "@chunithm/lib/types";
 import { ProfileModule } from "@chunithm/painter/modules/profile";
-import type { DataOrError } from "@common/error";
+import { type DataOrError, IllegalArgumentError } from "@common/error";
 import { HitokotoModule } from "@common/painter/modules/hitokoto";
 import { ImageModule } from "@common/painter/modules/image";
 import { TextModule } from "@common/painter/modules/text";
@@ -37,7 +37,13 @@ export class BestPainter extends ChunithmPainter<typeof BestPainter.THEME> {
             typeof LOADED_SCHEMAS
         >;
     }
-
+    private getNaiveRating(bestScores: Score[], length: number) {
+        return this.getRatingAvg(bestScores.slice(0, length), length);
+    }
+    private getRatingAvg(scores: Score[], length: number) {
+        if (scores.length <= 0) return 0;
+        return scores.map((v) => v.rating).reduce((sum, v) => sum + v, 0) / length;
+    }
     public async draw(
         variables: {
             username: string;
@@ -68,6 +74,10 @@ export class BestPainter extends ChunithmPainter<typeof BestPainter.THEME> {
                     variables: {
                         username: toFullWidth(variables.username),
                         rating: truncate(variables.rating, 0),
+                        naiveBest30: truncate(this.getNaiveRating(options.bestScores ?? [], 30), 2),
+                        naiveBest50: truncate(this.getNaiveRating(options.bestScores ?? [], 50), 2),
+                        newScoreRatingAvg: truncate(this.getRatingAvg(variables.newScores, options.type === "recents" ? 10 : 20), 2),
+                        oldScoreRatingAvg: truncate(this.getRatingAvg(variables.oldScores.slice(0, 30), 30), 2),
                     },
                 });
             }
@@ -84,16 +94,33 @@ export class BestPainter extends ChunithmPainter<typeof BestPainter.THEME> {
             version?: "chunithm" | "crystal" | "new" | "verse";
         },
     ) {
-        const { data: profile, err: perr } = await source.getPlayerInfo(variables.username, options.type ?? "new");
+        if (!options.type) options.type = "new";
+        const { data: profile, err: perr } = await source.getPlayerInfo(variables.username, options.type);
         if (perr) return { err: perr };
-        const { data: score, err: serr } = await source.getPlayerBest50(variables.username);
-        if (serr) return { err: serr };
+        let newScores: Score[], oldScores: Score[], bestScores: Score[] | undefined;
+        if (options.type === "new") {
+            const { data: score, err: serr } = await source.getPlayerBest50(variables.username);
+            if (serr) return { err: serr };
+            newScores = score.new;
+            oldScores = score.old;
+            bestScores = score.best;
+        } else if (options.type === "recents") {
+            const { data: score, err: serr } = await source.getPlayerRecent40(variables.username);
+            if (serr) return { err: serr };
+            newScores = score.recent;
+            oldScores = score.best;
+            bestScores = score.best;
+        } else {
+            return {
+                err: new IllegalArgumentError("maidraw.chunithm.painter.best50", `Type can only be "recents" or "new". Found ${options.type}.`),
+            };
+        }
         return this.draw(
             {
                 username: profile.name,
                 rating: profile.rating,
-                newScores: score.new,
-                oldScores: score.old,
+                newScores,
+                oldScores,
             },
             {
                 ...options,
@@ -103,6 +130,7 @@ export class BestPainter extends ChunithmPainter<typeof BestPainter.THEME> {
                     if (pfperr) return undefined;
                     return pfp;
                 })(),
+                bestScores,
             },
         );
     }
