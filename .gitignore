@@ -5,3 +5,5 @@ src/config/config.json5
 dist/
 
 test/**/*.webp
+
+.DS_Store
