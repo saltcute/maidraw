@@ -22,7 +22,7 @@ export class BestPainter extends ChunithmPainter<typeof BestPainter.THEME> {
         elements: z.array(z.discriminatedUnion("type", LOADED_SCHEMAS.map((v) => v.SCHEMA) as unknown as SchemaOfModuleTuple<typeof LOADED_SCHEMAS>)),
     });
 
-    private static readonly DEFAULT_THEME = "jp-xversex-landscape-new";
+    private static readonly DEFAULT_THEME = "jp-mate-landscape-new";
 
     private modules;
     public constructor(database: Database<Chart>) {

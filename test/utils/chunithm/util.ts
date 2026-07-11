@@ -5,8 +5,8 @@ import { Theme } from "../../../src/common/painter/theme";
 import { getRandomEnum, getRandomString } from "../util";
 
 export const best50Theme = new Theme(
-    join(__dirname, "..", "..", "..", "assets/themes/chunithm/best/xversex/new"),
-    require(join(__dirname, "..", "..", "..", "assets/themes/chunithm/best/xversex/new/manifest.json")),
+    join(__dirname, "..", "..", "..", "assets/themes/chunithm/best/mate/new"),
+    require(join(__dirname, "..", "..", "..", "assets/themes/chunithm/best/mate/new/manifest.json")),
 );
 export const chartTheme = new Theme(
     join(__dirname, "..", "..", "..", "assets/themes/chunithm/chart/xversex"),
