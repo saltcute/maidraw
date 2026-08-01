@@ -24,7 +24,7 @@ export class ChartPainter extends ChunithmPainter<typeof ChartPainter.THEME> {
         elements: z.array(z.discriminatedUnion("type", LOADED_SCHEMAS.map((v) => v.SCHEMA) as unknown as SchemaOfModuleTuple<typeof LOADED_SCHEMAS>)),
     });
 
-    private static readonly DEFAULT_THEME = "jp-xversex";
+    private static readonly DEFAULT_THEME = "jp-mate";
 
     private modules;
     public constructor(private database: Database<Chart>) {
