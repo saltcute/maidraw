@@ -189,7 +189,7 @@ export class ScoreGridModule extends PainterModule {
         if (err === undefined) {
             jacket = databaseJacket;
         } else {
-            const { data: dummyJacket, err } = await this.database.getJacket("0");
+            const { data: dummyJacket, err } = await this.database.getJacket("dummy");
             if (err === undefined) {
                 jacket = dummyJacket;
             }
