@@ -17,6 +17,12 @@ export class MissingThemeError extends BaseError {
     }
 }
 
+export class LayoutError extends BaseError {
+    public constructor(detail: string, data?: unknown) {
+        super("maidraw.painter.layout", "layout", `Cannot resolve painter layout. ${detail}`, data);
+    }
+}
+
 export class MissingChartError extends BaseError {
     public constructor(namespace: string, chartIdentifier: string) {
         super(namespace, "missing-chart", `Cannot find chart with ID ${chartIdentifier}.`, { chartIdentifier });
