@@ -1,4 +1,4 @@
-import { PainterModule } from "@common/painter/painter";
+import { type Bounds, PainterModule } from "@common/painter/painter";
 import { type Theme, ThemeManager } from "@common/painter/theme";
 import { wrapBackground, wrapBorder, wrapClip, wrapTranslate } from "@common/utils/ctxWrapper";
 import { safeLoadImage } from "@common/utils/loadImage";
@@ -396,6 +396,21 @@ export class ScoreGridModule extends PainterModule {
             }
         });
     };
+    public async getBounds(_ctx: CanvasRenderingContext2D, _theme: Theme<unknown>, element: z.infer<typeof ScoreGridModule.SCHEMA>): Promise<Bounds> {
+        return {
+            x: element.x,
+            y: element.y,
+            width: element.horizontalSize * element.scoreBubble.width + (element.horizontalSize - 1) * element.scoreBubble.gap,
+            height: element.verticalSize * element.scoreBubble.height + (element.verticalSize - 1) * element.scoreBubble.gap,
+        };
+    }
+    public async getMinimumBounds(
+        ctx: CanvasRenderingContext2D,
+        theme: Theme<unknown>,
+        element: z.infer<typeof ScoreGridModule.SCHEMA>,
+    ): Promise<Bounds> {
+        return this.getBounds(ctx, theme, element);
+    }
     public async draw(
         ctx: CanvasRenderingContext2D,
         theme: Theme<unknown>,

@@ -99,27 +99,27 @@ export class Best50Painter extends MaimaiPainter<typeof Best50Painter.THEME> {
         },
         options?: { scale?: number; theme?: string; profilePicture?: Buffer },
     ): Promise<DataOrError<Buffer>> {
-        return this.wrapPainter(async (ctx, currentTheme) => {
-            for (const element of currentTheme.content.elements) {
-                await this.modules[element.type].draw(ctx, currentTheme, element as unknown as never, {
-                    username: variables.username,
-                    rating: variables.rating,
-                    profilePicture: options?.profilePicture,
-                    scores: {
-                        new: variables.newScores,
-                        old: variables.oldScores,
-                    },
-                    variables: {
-                        username: toFullWidth(variables.username),
-                        rating: truncate(variables.rating, 0),
-                        newScoreRatingAvgString: `NEW scores average: ${ceilWithPercision(this.getRatingAvg(variables.newScores, 15), 0)}`,
-                        oldScoreRatingAvgString: `OLD scores average: ${ceilWithPercision(this.getRatingAvg(variables.oldScores, 35), 0)}`,
-                        newScoreMilestone: this.getMilestone(variables.newScores, 15),
-                        oldScoreMilestone: this.getMilestone(variables.oldScores, 35),
-                    },
-                });
-            }
-        }, options ?? {});
+        return this.wrapPainter({
+            ...options,
+            modules: this.modules,
+            painterCtx: {
+                username: variables.username,
+                rating: variables.rating,
+                profilePicture: options?.profilePicture,
+                scores: {
+                    new: variables.newScores,
+                    old: variables.oldScores,
+                },
+                variables: {
+                    username: toFullWidth(variables.username),
+                    rating: truncate(variables.rating, 0),
+                    newScoreRatingAvgString: `NEW scores average: ${ceilWithPercision(this.getRatingAvg(variables.newScores, 15), 0)}`,
+                    oldScoreRatingAvgString: `OLD scores average: ${ceilWithPercision(this.getRatingAvg(variables.oldScores, 35), 0)}`,
+                    newScoreMilestone: this.getMilestone(variables.newScores, 15),
+                    oldScoreMilestone: this.getMilestone(variables.oldScores, 35),
+                },
+            },
+        });
     }
     public async drawWithScoreSource(
         source: MaimaiScoreAdapter,

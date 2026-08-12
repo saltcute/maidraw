@@ -9,7 +9,7 @@
             "x": 1280,
             "y": 720,
             "height": 1440,
-            "anchor": "cm",
+            "align": "cm",
             "path": "../../best/mate/assets/background/new.webp"
         },
         {
@@ -17,7 +17,7 @@
             "x": 2152,
             "y": 262,
             "height": 255,
-            "anchor": "mt",
+            "align": "mt",
             "path": "../../best/mate/assets/logo.webp"
         },
         {

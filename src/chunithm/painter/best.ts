@@ -60,28 +60,28 @@ export class BestPainter extends ChunithmPainter<typeof BestPainter.THEME> {
             version?: "chunithm" | "crystal" | "new" | "verse";
         },
     ): Promise<DataOrError<Buffer>> {
-        return this.wrapPainter(async (ctx, currentTheme) => {
-            for (const element of currentTheme.content.elements) {
-                await this.modules[element.type].draw(ctx, currentTheme, element as unknown as never, {
-                    username: variables.username,
-                    rating: variables.rating,
-                    profilePicture: options?.profilePicture,
-                    scores: {
-                        new: variables.newScores,
-                        old: variables.oldScores,
-                    },
-                    type: options.version ?? (options.type === "new" ? "verse" : "new"),
-                    variables: {
-                        username: toFullWidth(variables.username),
-                        rating: truncate(variables.rating, 0),
-                        naiveBest30: truncate(this.getNaiveRating(options.bestScores ?? [], 30), 2),
-                        naiveBest50: truncate(this.getNaiveRating(options.bestScores ?? [], 50), 2),
-                        newScoreRatingAvg: truncate(this.getRatingAvg(variables.newScores, options.type === "recents" ? 10 : 20), 2),
-                        oldScoreRatingAvg: truncate(this.getRatingAvg(variables.oldScores.slice(0, 30), 30), 2),
-                    },
-                });
-            }
-        }, options ?? {});
+        return this.wrapPainter({
+            ...options,
+            modules: this.modules,
+            painterCtx: {
+                username: variables.username,
+                rating: variables.rating,
+                profilePicture: options?.profilePicture,
+                scores: {
+                    new: variables.newScores,
+                    old: variables.oldScores,
+                },
+                type: options.version ?? (options.type === "new" ? "verse" : "new"),
+                variables: {
+                    username: toFullWidth(variables.username),
+                    rating: truncate(variables.rating, 0),
+                    naiveBest30: truncate(this.getNaiveRating(options.bestScores ?? [], 30), 2),
+                    naiveBest50: truncate(this.getNaiveRating(options.bestScores ?? [], 50), 2),
+                    newScoreRatingAvg: truncate(this.getRatingAvg(variables.newScores, options.type === "recents" ? 10 : 20), 2),
+                    oldScoreRatingAvg: truncate(this.getRatingAvg(variables.oldScores.slice(0, 30), 30), 2),
+                },
+            },
+        });
     }
     public async drawWithScoreSource(
         source: ChunithmScoreAdapter,

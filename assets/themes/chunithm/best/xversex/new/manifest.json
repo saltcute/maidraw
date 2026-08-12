@@ -15,7 +15,7 @@
             "type": "image",
             "x": 925,
             "y": 150,
-            "anchor": "lc",
+            "align": "lc",
             "width": 450,
             "path": "../assets/logo.webp"
         },

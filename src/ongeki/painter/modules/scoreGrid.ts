@@ -1,4 +1,4 @@
-import { PainterModule } from "@common/painter/painter";
+import { type Bounds, PainterModule } from "@common/painter/painter";
 import { type Theme, ThemeManager } from "@common/painter/theme";
 import { safeLoadImage } from "@common/utils/loadImage";
 import { truncate } from "@common/utils/number";
@@ -442,6 +442,26 @@ export class ScoreGridModule extends PainterModule {
 
         ctx.restore();
     }
+    public async getBounds(_ctx: CanvasRenderingContext2D, _theme: Theme<unknown>, element: z.infer<typeof ScoreGridModule.SCHEMA>): Promise<Bounds> {
+        const { x: gapx, y: gapy } = this.getGap(element);
+        return {
+            x: element.x,
+            y: element.y,
+            width: element.horizontalSize * element.scoreBubble.width + (element.horizontalSize - 1) * gapx,
+            height: element.verticalSize * element.scoreBubble.height + (element.verticalSize - 1) * gapy,
+        };
+    }
+    public async getMinimumBounds(
+        ctx: CanvasRenderingContext2D,
+        theme: Theme<unknown>,
+        element: z.infer<typeof ScoreGridModule.SCHEMA>,
+    ): Promise<Bounds> {
+        return this.getBounds(ctx, theme, element);
+    }
+    private getGap(element: z.infer<typeof ScoreGridModule.SCHEMA>) {
+        const { gap } = element.scoreBubble;
+        return typeof gap === "number" ? { x: gap, y: gap } : gap;
+    }
     public async draw(
         ctx: CanvasRenderingContext2D,
         theme: Theme<unknown>,
@@ -449,8 +469,7 @@ export class ScoreGridModule extends PainterModule {
         painterCtx: ScoreGridModulePainterContext,
     ): Promise<void> {
         const scores = painterCtx.scores[element.region];
-        const gapx = typeof element.scoreBubble.gap === "number" ? element.scoreBubble.gap : element.scoreBubble.gap.x;
-        const gapy = typeof element.scoreBubble.gap === "number" ? element.scoreBubble.gap : element.scoreBubble.gap.y;
+        const { x: gapx, y: gapy } = this.getGap(element);
         for (let y = element.y, index = element.index, i = 0; i < element.verticalSize; ++i, y += element.scoreBubble.height + gapy) {
             for (let x = element.x, j = 0; j < element.horizontalSize; ++j, ++index, x += element.scoreBubble.width + gapx) {
                 const curScore = scores[index];

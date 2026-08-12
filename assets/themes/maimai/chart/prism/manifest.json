@@ -8,7 +8,7 @@
             "type": "image",
             "x": 1280,
             "y": 720,
-            "anchor": "cm",
+            "align": "cm",
             "width": 2560,
             "path": "../../best50/prism/assets/background.webp"
         },

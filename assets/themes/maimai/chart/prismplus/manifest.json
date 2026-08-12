@@ -9,7 +9,7 @@
             "x": 1280,
             "y": 720,
             "width": 2560,
-            "anchor": "mm",
+            "align": "mm",
             "path": "../../best50/prismplus/assets/background.webp"
         },
         {
@@ -17,7 +17,7 @@
             "x": 2152,
             "y": 262,
             "height": 305,
-            "anchor": "mt",
+            "align": "mt",
             "path": "../../best50/prismplus/assets/logo.webp"
         },
         {

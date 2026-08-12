@@ -48,27 +48,25 @@ export class Level50Painter extends MaimaiPainter<typeof Best50Painter.THEME> {
         },
         options?: { scale?: number; theme?: string; profilePicture?: Buffer },
     ): Promise<DataOrError<Buffer>> {
-        return this.wrapPainter(async (ctx, currentTheme) => {
-            const newScores = variables.scores.slice(0, 15);
-            const oldScores = variables.scores.slice(15, 50);
-            for (const element of currentTheme.content.elements) {
-                await this.modules[element.type].draw(ctx, currentTheme, element as unknown as never, {
-                    username: variables.username,
-                    rating: variables.rating,
-                    profilePicture: options?.profilePicture,
-                    scores: {
-                        new: newScores,
-                        old: oldScores,
-                    },
-                    variables: {
-                        username: toFullWidth(variables.username),
-                        rating: truncate(variables.rating, 0),
-                        level50Title: `Top Scores From Lv. ${this.getTextLevel(variables.level, 6)}`,
-                        level50Subtitle: `(Showing scores from ${(variables.page - 1) * 50 + 1} to ${variables.page * 50})`,
-                    },
-                });
-            }
-        }, options ?? {});
+        return this.wrapPainter({
+            ...options,
+            modules: this.modules,
+            painterCtx: {
+                username: variables.username,
+                rating: variables.rating,
+                profilePicture: options?.profilePicture,
+                scores: {
+                    new: variables.scores.slice(0, 15),
+                    old: variables.scores.slice(15, 50),
+                },
+                variables: {
+                    username: toFullWidth(variables.username),
+                    rating: truncate(variables.rating, 0),
+                    level50Title: `Top Scores From Lv. ${this.getTextLevel(variables.level, 6)}`,
+                    level50Subtitle: `(Showing scores from ${(variables.page - 1) * 50 + 1} to ${variables.page * 50})`,
+                },
+            },
+        });
     }
     async drawWithScoreSource(
         source: MaimaiScoreAdapter,

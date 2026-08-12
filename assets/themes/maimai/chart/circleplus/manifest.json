@@ -10,7 +10,7 @@
             "y": 720,
             "width": 2560,
             "height": 1440,
-            "anchor": "mm",
+            "align": "mm",
             "path": "../../best50/circleplus/assets/background/landscape.webp"
         },
         {
@@ -18,7 +18,7 @@
             "x": 2152,
             "y": 262,
             "height": 290,
-            "anchor": "mt",
+            "align": "mt",
             "path": "../../best50/circleplus/assets/logo.webp"
         },
         {

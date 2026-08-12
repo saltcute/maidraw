@@ -55,18 +55,11 @@ export class ChartPainter extends ChunithmPainter<typeof ChartPainter.THEME> {
             version?: "chunithm" | "crystal" | "new" | "verse";
         } = {},
     ): Promise<DataOrError<Buffer>> {
-        return this.wrapPainter(async (ctx, currentTheme) => {
-            const charts = [];
-            for (const difficulty of Object.values(Difficulty)) {
-                charts.push(this.database.getChart(variables.chartIdentifier, difficulty));
-            }
-            if (!charts.length) {
-                return {
-                    err: new MissingChartError("maidraw.chunithm.painter.chart", variables.chartIdentifier),
-                };
-            }
-            for (const element of currentTheme.content.elements) {
-                await this.modules[element.type].draw(ctx, currentTheme, element as unknown as never, {
+        return this.wrapPainter(
+            {
+                ...options,
+                modules: this.modules,
+                painterCtx: {
                     username: variables.username,
                     rating: variables.rating,
                     profilePicture: options?.profilePicture,
@@ -78,9 +71,21 @@ export class ChartPainter extends ChunithmPainter<typeof ChartPainter.THEME> {
                         username: toFullWidth(variables.username),
                         rating: truncate(variables.rating, 0),
                     },
-                });
-            }
-        }, options ?? {});
+                },
+            },
+            async (_ctx, _currentTheme, drawElements) => {
+                const charts = [];
+                for (const difficulty of Object.values(Difficulty)) {
+                    charts.push(this.database.getChart(variables.chartIdentifier, difficulty));
+                }
+                if (!charts.length) {
+                    return {
+                        err: new MissingChartError("maidraw.chunithm.painter.chart", variables.chartIdentifier),
+                    };
+                }
+                await drawElements();
+            },
+        );
     }
     public async drawWithScoreSource(
         source: ChunithmScoreAdapter,

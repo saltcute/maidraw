@@ -9,7 +9,7 @@
             "x": 1000,
             "y": 1604,
             "width": 2000,
-            "anchor": "cc",
+            "align": "cc",
             "path": "../assets/background.webp"
         },
         {
@@ -153,7 +153,7 @@
             "x": 1800,
             "y": 2811,
             "width": 260,
-            "anchor": "cc",
+            "align": "cc",
             "path": "../../versionless/emote2.webp"
         },
         {
@@ -209,7 +209,7 @@
             "x": 1970,
             "y": -60,
             "height": 430,
-            "anchor": "rt",
+            "align": "rt",
             "path": "../assets/logo.webp"
         },
         {

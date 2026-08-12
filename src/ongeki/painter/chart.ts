@@ -55,22 +55,11 @@ export class ChartPainter extends OngekiPainter<typeof ChartPainter.THEME> {
             region?: Regions;
         } = {},
     ): Promise<DataOrError<Buffer>> {
-        return this.wrapPainter(async (ctx, currentTheme) => {
-            let hasChart = false;
-            for (const difficulty of Object.values(Difficulty)) {
-                const { data } = await this.database.getChart(variables.chartIdentifier, difficulty);
-                if (data) {
-                    hasChart = true;
-                    break;
-                }
-            }
-            if (!hasChart) {
-                return {
-                    err: new MissingChartError("maidraw.ongeki.painter.chart", variables.chartIdentifier),
-                };
-            }
-            for (const element of currentTheme.content.elements) {
-                await this.modules[element.type].draw(ctx, currentTheme, element as unknown as never, {
+        return this.wrapPainter(
+            {
+                ...options,
+                modules: this.modules,
+                painterCtx: {
                     username: variables.username,
                     rating: variables.rating,
                     profilePicture: options?.profilePicture,
@@ -82,9 +71,25 @@ export class ChartPainter extends OngekiPainter<typeof ChartPainter.THEME> {
                         username: toFullWidth(variables.username),
                         rating: truncate(variables.rating, variables.type === "refresh" ? 3 : 2),
                     },
-                });
-            }
-        }, options ?? {});
+                },
+            },
+            async (_ctx, _currentTheme, drawElements) => {
+                let hasChart = false;
+                for (const difficulty of Object.values(Difficulty)) {
+                    const { data } = await this.database.getChart(variables.chartIdentifier, difficulty);
+                    if (data) {
+                        hasChart = true;
+                        break;
+                    }
+                }
+                if (!hasChart) {
+                    return {
+                        err: new MissingChartError("maidraw.ongeki.painter.chart", variables.chartIdentifier),
+                    };
+                }
+                await drawElements();
+            },
+        );
     }
     public async drawWithScoreSource(
         source: OngekiScoreAdapter,

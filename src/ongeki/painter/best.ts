@@ -55,53 +55,53 @@ export class Best50Painter extends OngekiPainter<typeof Best50Painter.THEME> {
         } = {},
     ): Promise<DataOrError<Buffer>> {
         const type = options.type ?? "refresh";
-        return this.wrapPainter(async (ctx, currentTheme) => {
-            const getRatingAvg = (scores: Score[], length: number, ratingType: "score" | "star" = "score") => {
-                if (scores.length <= 0) return 0;
-                return scores.slice(0, length).reduce((sum, v) => sum + (ratingType === "star" ? v.starRating : v.rating), 0) / length;
-            };
-            const getNaiveRating = () => {
-                const bestScores = options.bestScores;
-                if (!bestScores) return 0;
-                if (type === "refresh") {
-                    const scoreRating = bestScores
-                        .slice(0, 60)
-                        .map((v) => v.rating)
-                        .reduce((sum, v) => sum + v, 0);
-                    const starRating = variables.recentOrPlatinumScores
-                        .slice(0, 50)
-                        .map((v) => v.starRating)
-                        .reduce((sum, v) => sum + v, 0);
-                    return truncateNumber(scoreRating / 50, 3) + truncateNumber(starRating / 50, 3);
-                } else {
-                    return truncateNumber(getRatingAvg(bestScores, 45), 2);
-                }
-            };
-            for (const element of currentTheme.content.elements) {
-                await this.modules[element.type].draw(ctx, currentTheme, element as unknown as never, {
-                    username: variables.username,
-                    rating: variables.rating,
-                    profilePicture: options?.profilePicture,
-                    type,
-                    scores: {
-                        new: variables.newScores,
-                        old: variables.oldScores,
-                        recent: variables.recentOrPlatinumScores,
-                    },
-                    variables: {
-                        username: toFullWidth(variables.username),
-                        rating: truncate(variables.rating, type === "refresh" ? 3 : 2),
-                        naiveRatingAverage: `NAIVE ${type === "refresh" ? 60 : 45} average: ${truncate(getNaiveRating(), type === "refresh" ? 3 : 2)}`,
-                        newScoreRatingAvg: truncate(getRatingAvg(variables.newScores, type === "refresh" ? 10 : 15), type === "refresh" ? 3 : 2),
-                        oldScoreRatingAvg: truncate(getRatingAvg(variables.oldScores, type === "refresh" ? 50 : 30), type === "refresh" ? 3 : 2),
-                        recentOrPlatinumScoreAvg: truncate(
-                            getRatingAvg(variables.recentOrPlatinumScores, type === "refresh" ? 50 : 10, type === "refresh" ? "star" : "score"),
-                            type === "refresh" ? 3 : 2,
-                        ),
-                    },
-                });
+        const getRatingAvg = (scores: Score[], length: number, ratingType: "score" | "star" = "score") => {
+            if (scores.length <= 0) return 0;
+            return scores.slice(0, length).reduce((sum, v) => sum + (ratingType === "star" ? v.starRating : v.rating), 0) / length;
+        };
+        const getNaiveRating = () => {
+            const bestScores = options.bestScores;
+            if (!bestScores) return 0;
+            if (type === "refresh") {
+                const scoreRating = bestScores
+                    .slice(0, 60)
+                    .map((v) => v.rating)
+                    .reduce((sum, v) => sum + v, 0);
+                const starRating = variables.recentOrPlatinumScores
+                    .slice(0, 50)
+                    .map((v) => v.starRating)
+                    .reduce((sum, v) => sum + v, 0);
+                return truncateNumber(scoreRating / 50, 3) + truncateNumber(starRating / 50, 3);
+            } else {
+                return truncateNumber(getRatingAvg(bestScores, 45), 2);
             }
-        }, options ?? {});
+        };
+        return this.wrapPainter({
+            ...options,
+            modules: this.modules,
+            painterCtx: {
+                username: variables.username,
+                rating: variables.rating,
+                profilePicture: options?.profilePicture,
+                type,
+                scores: {
+                    new: variables.newScores,
+                    old: variables.oldScores,
+                    recent: variables.recentOrPlatinumScores,
+                },
+                variables: {
+                    username: toFullWidth(variables.username),
+                    rating: truncate(variables.rating, type === "refresh" ? 3 : 2),
+                    naiveRatingAverage: `NAIVE ${type === "refresh" ? 60 : 45} average: ${truncate(getNaiveRating(), type === "refresh" ? 3 : 2)}`,
+                    newScoreRatingAvg: truncate(getRatingAvg(variables.newScores, type === "refresh" ? 10 : 15), type === "refresh" ? 3 : 2),
+                    oldScoreRatingAvg: truncate(getRatingAvg(variables.oldScores, type === "refresh" ? 50 : 30), type === "refresh" ? 3 : 2),
+                    recentOrPlatinumScoreAvg: truncate(
+                        getRatingAvg(variables.recentOrPlatinumScores, type === "refresh" ? 50 : 10, type === "refresh" ? "star" : "score"),
+                        type === "refresh" ? 3 : 2,
+                    ),
+                },
+            },
+        });
     }
     public async drawWithScoreSource(
         source: OngekiScoreAdapter,
