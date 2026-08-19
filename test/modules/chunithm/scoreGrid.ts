@@ -1,8 +1,8 @@
+import { ScoreGridModule } from "@chunithm/painter/modules/scoreGrid";
+import { Painter } from "@common/painter/painter";
+import { best50Theme, getDummyScore } from "@utils/chunithm/util";
+import { localDatabasePath, moduleTestWrapper } from "@utils/util";
 import { Database } from "gcm-database-local/chunithm";
-import { ScoreGridModule } from "../../../src/chunithm/painter/modules/scoreGrid";
-import { Painter } from "../../../src/common/painter/painter";
-import { best50Theme, getDummyScore } from "../../utils/chunithm/util";
-import { localDatabasePath, moduleTestWrapper } from "../../utils/util";
 
 moduleTestWrapper(1220 + 100, 855 + 100, false, async (canvas) => {
     const module = new ScoreGridModule(new Database(localDatabasePath));

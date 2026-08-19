@@ -1,5 +1,5 @@
-import { TextModule } from "../../../src/common/painter/modules/text";
-import { Painter } from "../../../src/common/painter/painter";
+import { TextModule } from "@common/painter/modules/text";
+import { Painter } from "@common/painter/painter";
 import { best50Theme, moduleTestWrapper } from "../../util";
 
 moduleTestWrapper(828, 168, false, async (canvas) => {

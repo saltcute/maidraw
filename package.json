@@ -16,7 +16,7 @@
         "format": "biome format --write",
         "lint": "biome lint --write",
         "check": "biome check --write",
-        "test": "export LOG_LEVEL=debug && tsx ./test/test.ts"
+        "test": "export LOG_LEVEL=debug && tsx --tsconfig ./test/tsconfig.json ./test/test.ts"
     },
     "files": [
         "dist/",

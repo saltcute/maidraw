@@ -1,11 +1,11 @@
+import { Painter } from "@common/painter/painter";
+import { AchievementTypes, ComboLamp, type Score, SyncLamp } from "@maimai/lib/types";
+import { ChartGridModule } from "@maimai/painter/modules/chartGrid";
+import { chartTheme } from "@utils/maimai/util";
+import { moduleTestWrapper } from "@utils/util";
 import { type Chart, Difficulty } from "gcm-database/maimai";
 import { Database } from "gcm-database-local/maimai";
 import { join } from "upath";
-import { Painter } from "../../../src/common/painter/painter";
-import { AchievementTypes, ComboLamp, type Score, SyncLamp } from "../../../src/maimai/lib/types";
-import { ChartGridModule } from "../../../src/maimai/painter/modules/chartGrid";
-import { chartTheme } from "../../utils/maimai/util";
-import { moduleTestWrapper } from "../../utils/util";
 
 function randomEnum<T extends object>(anEnum: T): T[keyof T] {
     const enumValues = Object.values(anEnum) as unknown as T[keyof T][];

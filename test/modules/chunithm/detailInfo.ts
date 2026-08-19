@@ -1,8 +1,8 @@
+import { DetailInfoModule } from "@chunithm/painter/modules/detailInfo";
+import { Painter } from "@common/painter/painter";
+import { chartTheme } from "@utils/chunithm/util";
+import { localDatabasePath, moduleTestWrapper } from "@utils/util";
 import { Database } from "gcm-database-local/chunithm";
-import { DetailInfoModule } from "../../../src/chunithm/painter/modules/detailInfo";
-import { Painter } from "../../../src/common/painter/painter";
-import { chartTheme } from "../../utils/chunithm/util";
-import { localDatabasePath, moduleTestWrapper } from "../../utils/util";
 
 moduleTestWrapper(615 + 100, 745 + 100, false, async (canvas) => {
     const database = new Database(localDatabasePath);

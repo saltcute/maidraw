@@ -1,6 +1,6 @@
-import { ProfileModule } from "../../../src/maimai/painter/modules/profile";
-import { best50Theme } from "../../utils/maimai/util";
-import { moduleTestWrapper } from "../../utils/util";
+import { ProfileModule } from "@maimai/painter/modules/profile";
+import { best50Theme } from "@utils/maimai/util";
+import { moduleTestWrapper } from "@utils/util";
 
 moduleTestWrapper(720, 116, false, async (canvas) => {
     const module = new ProfileModule();

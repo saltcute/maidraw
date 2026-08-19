@@ -1,9 +1,9 @@
+import { Painter } from "@common/painter/painter";
+import { type Folder, FolderLamp } from "@maimai/lib/types";
+import { FolderModule, type FolderModulePainterContext } from "@maimai/painter/modules/folder";
+import { best50Theme, getDummyChart, getDummyScoreOfChart } from "@utils/maimai/util";
+import { localDatabasePath, moduleTestWrapper } from "@utils/util";
 import { Database } from "gcm-database-local/maimai";
-import { Painter } from "../../../src/common/painter/painter";
-import { type Folder, FolderLamp } from "../../../src/maimai/lib/types";
-import { FolderModule, type FolderModulePainterContext } from "../../../src/maimai/painter/modules/folder";
-import { best50Theme, getDummyChart, getDummyScoreOfChart } from "../../utils/maimai/util";
-import { localDatabasePath, moduleTestWrapper } from "../../utils/util";
 
 const folders: Folder[] = [
     { title: "Achievement rank", lamp: FolderLamp.ACHIEVEMENT_RANK, elements: Array.from({ length: 23 }, () => getDummyChart()) },

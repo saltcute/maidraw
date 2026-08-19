@@ -1,8 +1,8 @@
+import { ChartPainter } from "@chunithm/painter/chart";
+import { getDummyScore } from "@utils/chunithm/util";
+import { localDatabasePath, painterTestWrapper } from "@utils/util";
 import { Difficulty } from "gcm-database/chunithm";
 import { Database } from "gcm-database-local/chunithm";
-import { ChartPainter } from "../../../src/chunithm/painter/chart";
-import { getDummyScore } from "../../utils/chunithm/util";
-import { localDatabasePath, painterTestWrapper } from "../../utils/util";
 
 painterTestWrapper(async () => {
     const database = new Database(localDatabasePath);

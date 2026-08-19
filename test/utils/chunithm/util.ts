@@ -1,7 +1,7 @@
+import { AchievementTypes, ChainLamp, ClearLamp, ComboLamp, type Score } from "@chunithm/lib/types";
+import { Theme } from "@common/painter/theme";
 import { type Chart, Difficulty } from "gcm-database/chunithm";
 import { join } from "upath";
-import { AchievementTypes, ChainLamp, ClearLamp, ComboLamp, type Score } from "../../../src/chunithm/lib/types";
-import { Theme } from "../../../src/common/painter/theme";
 import { getRandomEnum, getRandomString } from "../util";
 
 export const best50Theme = new Theme(

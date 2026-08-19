@@ -1,7 +1,7 @@
+import { Level50Painter } from "@maimai/painter/level50";
+import { getDummyScore } from "@utils/maimai/util";
+import { localDatabasePath, painterTestWrapper } from "@utils/util";
 import { Database } from "gcm-database-local/maimai";
-import { Level50Painter } from "../../../src/maimai/painter/level50";
-import { getDummyScore } from "../../utils/maimai/util";
-import { localDatabasePath, painterTestWrapper } from "../../utils/util";
 
 painterTestWrapper(async () => {
     const database = new Database(localDatabasePath);

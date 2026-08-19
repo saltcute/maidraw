@@ -1,7 +1,7 @@
+import { BestPainter } from "@chunithm/painter/best";
+import { getDummyScore } from "@utils/chunithm/util";
+import { localDatabasePath, painterTestWrapper } from "@utils/util";
 import { Database } from "gcm-database-local/chunithm";
-import { BestPainter } from "../../../src/chunithm/painter/best";
-import { getDummyScore } from "../../utils/chunithm/util";
-import { localDatabasePath, painterTestWrapper } from "../../utils/util";
 
 painterTestWrapper(async () => {
     const database = new Database(localDatabasePath);

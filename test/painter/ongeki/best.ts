@@ -1,7 +1,7 @@
+import { Best50Painter } from "@ongeki/painter/best";
+import { getDummyScore } from "@utils/ongeki/util";
+import { localDatabasePath, painterTestWrapper } from "@utils/util";
 import { Database } from "gcm-database-local/ongeki";
-import { Best50Painter } from "../../../src/ongeki/painter/best";
-import { getDummyScore } from "../../utils/ongeki/util";
-import { localDatabasePath, painterTestWrapper } from "../../utils/util";
 
 painterTestWrapper(async () => {
     const database = new Database(localDatabasePath);

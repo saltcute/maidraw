@@ -1,8 +1,8 @@
+import { ChartPainter } from "@ongeki/painter/chart";
+import { getDummyScore } from "@utils/ongeki/util";
+import { localDatabasePath, painterTestWrapper } from "@utils/util";
 import { Difficulty } from "gcm-database/ongeki";
 import { Database } from "gcm-database-local/ongeki";
-import { ChartPainter } from "../../../src/ongeki/painter/chart";
-import { getDummyScore } from "../../utils/ongeki/util";
-import { localDatabasePath, painterTestWrapper } from "../../utils/util";
 
 painterTestWrapper(async () => {
     const database = new Database(localDatabasePath);

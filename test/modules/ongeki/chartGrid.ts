@@ -1,10 +1,10 @@
+import { Painter } from "@common/painter/painter";
+import type { Score } from "@ongeki/lib/types";
+import { ChartGridModule } from "@ongeki/painter/modules/chartGrid";
+import { chartTheme, getDummyScore, getElement } from "@utils/ongeki/util";
+import { localDatabasePath, moduleTestWrapper } from "@utils/util";
 import { Difficulty } from "gcm-database/ongeki";
 import { Database } from "gcm-database-local/ongeki";
-import { Painter } from "../../../src/common/painter/painter";
-import type { Score } from "../../../src/ongeki/lib/types";
-import { ChartGridModule } from "../../../src/ongeki/painter/modules/chartGrid";
-import { chartTheme, getDummyScore, getElement } from "../../utils/ongeki/util";
-import { localDatabasePath, moduleTestWrapper } from "../../utils/util";
 
 moduleTestWrapper(chartTheme.content.width, chartTheme.content.height, false, async (canvas) => {
     Painter.registerFonts("assets");

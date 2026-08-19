@@ -1,10 +1,10 @@
+import type { Score } from "@chunithm/lib/types";
+import { ChartGridModule } from "@chunithm/painter/modules/chartGrid";
+import { Painter } from "@common/painter/painter";
+import { chartTheme, getDummyScore } from "@utils/chunithm/util";
+import { localDatabasePath, moduleTestWrapper } from "@utils/util";
 import { Difficulty } from "gcm-database/chunithm";
 import { Database } from "gcm-database-local/chunithm";
-import type { Score } from "../../../src/chunithm/lib/types";
-import { ChartGridModule } from "../../../src/chunithm/painter/modules/chartGrid";
-import { Painter } from "../../../src/common/painter/painter";
-import { chartTheme, getDummyScore } from "../../utils/chunithm/util";
-import { localDatabasePath, moduleTestWrapper } from "../../utils/util";
 
 moduleTestWrapper(1645 + 100, 1045 + 100, false, async (canvas) => {
     const database = new Database(localDatabasePath);

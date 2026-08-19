@@ -1,8 +1,8 @@
+import { ChartPainter } from "@maimai/painter/chart";
+import { getDummyScore } from "@utils/maimai/util";
+import { localDatabasePath, painterTestWrapper } from "@utils/util";
 import { Difficulty } from "gcm-database/maimai";
 import { Database } from "gcm-database-local/maimai";
-import { ChartPainter } from "../../../src/maimai/painter/chart";
-import { getDummyScore } from "../../utils/maimai/util";
-import { localDatabasePath, painterTestWrapper } from "../../utils/util";
 
 painterTestWrapper(async () => {
     const database = new Database(localDatabasePath);

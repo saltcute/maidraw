@@ -1,8 +1,8 @@
+import { Painter } from "@common/painter/painter";
+import { ScoreGridModule } from "@maimai/painter/modules/scoreGrid";
+import { best50Theme, getDummyScore } from "@utils/maimai/util";
+import { moduleTestWrapper } from "@utils/util";
 import { Database } from "gcm-database-local/maimai";
-import { Painter } from "../../../src/common/painter/painter";
-import { ScoreGridModule } from "../../../src/maimai/painter/modules/scoreGrid";
-import { best50Theme, getDummyScore } from "../../utils/maimai/util";
-import { moduleTestWrapper } from "../../utils/util";
 
 moduleTestWrapper(2080 + 100, 855 + 100, false, async (canvas) => {
     const module = new ScoreGridModule(new Database("../maimai-songs-database"));

@@ -1,9 +1,9 @@
+import { Painter } from "@common/painter/painter";
+import { DetailInfoModule } from "@maimai/painter/modules/detailInfo";
+import { chartTheme } from "@utils/maimai/util";
+import { moduleTestWrapper } from "@utils/util";
 import { Database } from "gcm-database-local/maimai";
 import { join } from "upath";
-import { Painter } from "../../../src/common/painter/painter";
-import { DetailInfoModule } from "../../../src/maimai/painter/modules/detailInfo";
-import { chartTheme } from "../../utils/maimai/util";
-import { moduleTestWrapper } from "../../utils/util";
 
 moduleTestWrapper(615 + 100, 745 + 100, false, async (canvas) => {
     const database = new Database(join(__dirname, "..", "..", "..", "..", "maimai-songs-database"));

@@ -1,0 +1,17 @@
+{
+    "extends": "../tsconfig.base.json",
+    "compilerOptions": {
+        "rootDirs": ["."],
+        "paths": {
+            "@common/*": ["../src/common/*"],
+            "@maimai/*": ["../src/maimai/*"],
+            "@chunithm/*": ["../src/chunithm/*"],
+            "@ongeki/*": ["../src/ongeki/*"],
+            "@modules/*": ["./modules/*"],
+            "@painter/*": ["./painter/*"],
+            "@utils/*": ["./utils/*"]
+        },
+        "rootDir": "../"
+    },
+    "include": ["./**/*.ts"]
+}

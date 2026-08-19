@@ -1,8 +1,8 @@
+import { Painter } from "@common/painter/painter";
+import { DetailInfoModule } from "@ongeki/painter/modules/detailInfo";
+import { chartTheme, getElement } from "@utils/ongeki/util";
+import { localDatabasePath, moduleTestWrapper } from "@utils/util";
 import { Database } from "gcm-database-local/ongeki";
-import { Painter } from "../../../src/common/painter/painter";
-import { DetailInfoModule } from "../../../src/ongeki/painter/modules/detailInfo";
-import { chartTheme, getElement } from "../../utils/ongeki/util";
-import { localDatabasePath, moduleTestWrapper } from "../../utils/util";
 
 moduleTestWrapper(chartTheme.content.width, chartTheme.content.height, false, async (canvas) => {
     Painter.registerFonts("assets");

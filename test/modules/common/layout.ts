@@ -1,13 +1,13 @@
+import { resolveLayout } from "@common/painter/layout";
+import { ImageModule } from "@common/painter/modules/image";
+import { TextModule } from "@common/painter/modules/text";
+import { type Bounds, Painter, PainterModule } from "@common/painter/painter";
+import { Theme, ThemeManager } from "@common/painter/theme";
+import { wrapTranslate } from "@common/utils/ctxWrapper";
+import { logger, moduleTestWrapper } from "@utils/util";
 import type { CanvasRenderingContext2D } from "canvas";
 import { join } from "upath";
 import z from "zod/v4";
-import { resolveLayout } from "../../../src/common/painter/layout";
-import { ImageModule } from "../../../src/common/painter/modules/image";
-import { TextModule } from "../../../src/common/painter/modules/text";
-import { type Bounds, Painter, PainterModule } from "../../../src/common/painter/painter";
-import { Theme, ThemeManager } from "../../../src/common/painter/theme";
-import { wrapTranslate } from "../../../src/common/utils/ctxWrapper";
-import { logger, moduleTestWrapper } from "../../utils/util";
 
 /**
  * Stands in for a module drawing more than the dimensions declared in the theme.

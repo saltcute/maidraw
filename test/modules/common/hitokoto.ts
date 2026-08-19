@@ -1,5 +1,5 @@
-import { HitokotoModule } from "../../../src/common/painter/modules/hitokoto";
-import { Painter } from "../../../src/common/painter/painter";
+import { HitokotoModule } from "@common/painter/modules/hitokoto";
+import { Painter } from "@common/painter/painter";
 import { best50Theme, moduleTestWrapper } from "../../util";
 
 moduleTestWrapper(70 * 12, 9 * 12, false, async (canvas) => {

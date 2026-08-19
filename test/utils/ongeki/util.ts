@@ -1,8 +1,8 @@
+import { Theme } from "@common/painter/theme";
+import { AchievementTypes, BellLamp, ComboLamp, type Score } from "@ongeki/lib/types";
+import { getMaxPlatinumScore } from "@ongeki/lib/util";
 import { type Chart, Difficulty, LunaticType } from "gcm-database/ongeki";
 import { join } from "upath";
-import { Theme } from "../../../src/common/painter/theme";
-import { AchievementTypes, BellLamp, ComboLamp, type Score } from "../../../src/ongeki/lib/types";
-import { getMaxPlatinumScore } from "../../../src/ongeki/lib/util";
 import { getRandomEnum, getRandomString } from "../util";
 
 export const best50Theme = new Theme(

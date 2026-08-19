@@ -1,9 +1,9 @@
+import { type Folder, FolderLamp } from "@maimai/lib/types";
+import { FolderPainter } from "@maimai/painter/folder";
+import type { FolderModulePainterContext } from "@maimai/painter/modules/folder";
+import { getDummyChart, getDummyScoreOfChart } from "@utils/maimai/util";
+import { localDatabasePath, painterTestWrapper } from "@utils/util";
 import { Database } from "gcm-database-local/maimai";
-import { type Folder, FolderLamp } from "../../../src/maimai/lib/types";
-import { FolderPainter } from "../../../src/maimai/painter/folder";
-import type { FolderModulePainterContext } from "../../../src/maimai/painter/modules/folder";
-import { getDummyChart, getDummyScoreOfChart } from "../../utils/maimai/util";
-import { localDatabasePath, painterTestWrapper } from "../../utils/util";
 
 painterTestWrapper(async () => {
     const painter = new FolderPainter(new Database(localDatabasePath));

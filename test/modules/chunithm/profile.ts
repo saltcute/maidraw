@@ -1,6 +1,6 @@
-import { ProfileModule } from "../../../src/chunithm/painter/modules/profile";
-import { best50Theme } from "../../utils/chunithm/util";
-import { moduleTestWrapper } from "../../utils/util";
+import { ProfileModule } from "@chunithm/painter/modules/profile";
+import { best50Theme } from "@utils/chunithm/util";
+import { moduleTestWrapper } from "@utils/util";
 
 moduleTestWrapper(1000, 320 + 100, false, async (canvas) => {
     const module = new ProfileModule();

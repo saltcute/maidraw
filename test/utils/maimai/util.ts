@@ -1,8 +1,8 @@
+import { Theme } from "@common/painter/theme";
+import { AchievementTypes, ComboLamp, type Score, SyncLamp } from "@maimai/lib/types";
+import { getMaxDxScore } from "@maimai/lib/util";
 import { type Chart, Difficulty, Type } from "gcm-database/maimai";
 import { join } from "upath";
-import { Theme } from "../../../src/common/painter/theme";
-import { AchievementTypes, ComboLamp, type Score, SyncLamp } from "../../../src/maimai/lib/types";
-import { getMaxDxScore } from "../../../src/maimai/lib/util";
 import { getRandomEnum, getRandomString } from "../util";
 
 export const best50Theme = new Theme(
