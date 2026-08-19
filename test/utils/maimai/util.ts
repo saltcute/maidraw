@@ -2,6 +2,7 @@ import { type Chart, Difficulty, Type } from "gcm-database/maimai";
 import { join } from "upath";
 import { Theme } from "../../../src/common/painter/theme";
 import { AchievementTypes, ComboLamp, type Score, SyncLamp } from "../../../src/maimai/lib/types";
+import { getMaxDxScore } from "../../../src/maimai/lib/util";
 import { getRandomEnum, getRandomString } from "../util";
 
 export const best50Theme = new Theme(
@@ -43,5 +44,16 @@ export function getDummyScore(): Score {
         dxRating: 114,
         dxScore: 1919,
         chart: getDummyChart(),
+    };
+}
+
+/**
+ * Dummy score of a known chart, with a DX score that stays within the maximum of that chart.
+ */
+export function getDummyScoreOfChart(chart: Chart): Score {
+    return {
+        ...getDummyScore(),
+        chart,
+        dxScore: Math.floor(getMaxDxScore(chart) * (0.8 + Math.random() * 0.2)),
     };
 }

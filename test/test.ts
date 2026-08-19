@@ -1,4 +1,5 @@
 import upath from "upath";
+import "../src/common/utils/injectThrowIf";
 
 try {
     console.log(`Running test ${upath.join(__dirname, ...process.argv.slice(2))}`);

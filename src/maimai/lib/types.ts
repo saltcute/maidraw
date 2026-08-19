@@ -44,3 +44,21 @@ export interface Score extends BaseScore {
     dxRating: number;
     dxScore: number;
 }
+
+/**
+ * Achievement drawn on top of every jacket of a folder.
+ */
+export enum FolderLamp {
+    ACHIEVEMENT_RANK = "achievement_rank",
+    ACHIEVEMENT_RATE = "achievement_rate",
+    COMBO = "combo",
+    SYNC = "sync",
+    DX_SCORE = "dx_score",
+    NONE = "none",
+}
+
+export interface Folder {
+    title: string;
+    lamp: FolderLamp;
+    elements: Chart[];
+}

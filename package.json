@@ -15,6 +15,7 @@
         "make": "npm run clean && npm run format && npm run lint && npm run build",
         "format": "biome format --write",
         "lint": "biome lint --write",
+        "check": "biome check --write",
         "test": "export LOG_LEVEL=debug && tsx ./test/test.ts"
     },
     "files": [
@@ -44,7 +45,7 @@
         "canvas": "^3.2.3",
         "color": "^5.0.3",
         "gcm-database": "^1.0.3",
-        "gcm-database-local": "^1.0.8",
+        "gcm-database-local": "^1.1.1",
         "glob": "^13.0.6",
         "linebreak": "^1.1.0",
         "lodash": "^4.17.21",

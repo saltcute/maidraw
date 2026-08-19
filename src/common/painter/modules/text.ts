@@ -1,10 +1,11 @@
 import { drawText } from "@common/utils/textDraw/drawText";
+import { measureText } from "@common/utils/textDraw/utils";
 import { color } from "@common/utils/zod";
 import type { CanvasRenderingContext2D } from "canvas";
 import Color from "color";
 import z from "zod/v4";
-import { PainterModule } from "../painter";
-import { ThemeManager } from "../theme";
+import { type Bounds, PainterModule } from "../painter";
+import { type Theme, ThemeManager } from "../theme";
 
 export interface TextModulePainterContext {
     variables?: Record<string, string>;
@@ -60,5 +61,14 @@ export class TextModule extends PainterModule {
                 ...painterCtx.variables,
             },
         });
+    }
+    public async getBounds(ctx: CanvasRenderingContext2D, _theme: Theme<unknown>, element: z.infer<typeof TextModule.SCHEMA>): Promise<Bounds> {
+        const measurement = measureText(ctx, element.content, element.size, element.width ?? Infinity);
+        return {
+            x: element.x,
+            y: element.y,
+            width: measurement.actualBoundingBoxRight - measurement.actualBoundingBoxLeft,
+            height: measurement.actualBoundingBoxDescent - measurement.actualBoundingBoxAscent,
+        };
     }
 }
