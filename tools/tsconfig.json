@@ -1,0 +1,15 @@
+{
+    "extends": "../tsconfig.base.json",
+    "compilerOptions": {
+        "noEmit": true,
+        "rootDir": "../",
+        "paths": {
+            "@common/*": ["../src/common/*"],
+            "@maimai/*": ["../src/maimai/*"],
+            "@chunithm/*": ["../src/chunithm/*"],
+            "@ongeki/*": ["../src/ongeki/*"],
+            "@theme-tools/*": ["./themes/*"]
+        }
+    },
+    "include": ["./**/*.ts", "../src/common/linebreak.d.ts"]
+}
