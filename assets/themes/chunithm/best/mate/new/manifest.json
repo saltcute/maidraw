@@ -16,8 +16,8 @@
             "type": "image",
             "x": 1150,
             "y": 155,
-            "width": 450,
             "align": "cm",
+            "width": 450,
             "path": "../assets/logo.webp"
         },
         {
@@ -167,10 +167,10 @@
             "size": 24,
             "x": 80,
             "y": 1303,
-            "width": 1000,
-            "linebreak": true,
             "borderColor": "#d68324",
             "align": "left",
+            "width": 1000,
+            "linebreak": true,
             "probability": 0.1,
             "customLines": ["../../../../../hitokoto/general.json", "../../../../../hitokoto/support/chunithm.json"]
         },

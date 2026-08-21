@@ -8,16 +8,16 @@
             "type": "image",
             "x": 1280,
             "y": 720,
-            "height": 1440,
             "align": "cm",
+            "height": 1440,
             "path": "../../best/mate/assets/background/new.webp"
         },
         {
             "type": "image",
             "x": 2152,
             "y": 262,
-            "height": 255,
             "align": "mt",
+            "height": 255,
             "path": "../../best/mate/assets/logo.webp"
         },
         {
@@ -66,47 +66,28 @@
                     "none": "../../best/versionless/void.webp"
                 },
                 "versions": {
-                    "JPN": {
-                        "100": "../versionless/logo/jpn/100.webp",
-                        "105": "../versionless/logo/jpn/105.webp",
-                        "110": "../versionless/logo/jpn/110.webp",
-                        "115": "../versionless/logo/jpn/115.webp",
-                        "120": "../versionless/logo/jpn/120.webp",
-                        "125": "../versionless/logo/jpn/125.webp",
-                        "130": "../versionless/logo/jpn/130.webp",
-                        "135": "../versionless/logo/jpn/135.webp",
-                        "140": "../versionless/logo/jpn/140.webp",
-                        "145": "../versionless/logo/jpn/145.webp",
-                        "150": "../versionless/logo/jpn/150.webp",
-                        "155": "../versionless/logo/jpn/155.webp",
-                        "200": "../versionless/logo/jpn/200.webp",
-                        "205": "../versionless/logo/jpn/205.webp",
-                        "210": "../versionless/logo/jpn/210.webp",
-                        "215": "../versionless/logo/jpn/215.webp",
-                        "220": "../versionless/logo/jpn/220.webp",
-                        "225": "../versionless/logo/jpn/225.webp",
-                        "230": "../versionless/logo/jpn/230.webp",
-                        "240": "../versionless/logo/jpn/240.webp",
-                        "245": "../versionless/logo/jpn/245.webp",
-                        "250": "../versionless/logo/jpn/250.webp"
-                    },
-                    "INT": {
-                        "100": "../versionless/logo/int/100.webp",
-                        "105": "../versionless/logo/int/105.webp",
-                        "110": "../versionless/logo/jpn/200.webp",
-                        "115": "../versionless/logo/jpn/205.webp",
-                        "120": "../versionless/logo/jpn/210.webp",
-                        "125": "../versionless/logo/jpn/215.webp",
-                        "130": "../versionless/logo/jpn/220.webp",
-                        "135": "../versionless/logo/jpn/225.webp",
-                        "140": "../versionless/logo/jpn/230.webp"
-                    },
-                    "CHN": {
-                        "100": "../versionless/logo/chn/100.webp",
-                        "110": "../versionless/logo/chn/110.webp",
-                        "120": "../versionless/logo/chn/120.webp",
-                        "130": "../versionless/logo/chn/130.webp"
-                    }
+                    "100": "../versionless/logo/jpn/100.webp",
+                    "105": "../versionless/logo/jpn/105.webp",
+                    "110": "../versionless/logo/jpn/110.webp",
+                    "115": "../versionless/logo/jpn/115.webp",
+                    "120": "../versionless/logo/jpn/120.webp",
+                    "125": "../versionless/logo/jpn/125.webp",
+                    "130": "../versionless/logo/jpn/130.webp",
+                    "135": "../versionless/logo/jpn/135.webp",
+                    "140": "../versionless/logo/jpn/140.webp",
+                    "145": "../versionless/logo/jpn/145.webp",
+                    "150": "../versionless/logo/jpn/150.webp",
+                    "155": "../versionless/logo/jpn/155.webp",
+                    "200": "../versionless/logo/jpn/200.webp",
+                    "205": "../versionless/logo/jpn/205.webp",
+                    "210": "../versionless/logo/jpn/210.webp",
+                    "215": "../versionless/logo/jpn/215.webp",
+                    "220": "../versionless/logo/jpn/220.webp",
+                    "225": "../versionless/logo/jpn/225.webp",
+                    "230": "../versionless/logo/jpn/230.webp",
+                    "240": "../versionless/logo/jpn/240.webp",
+                    "245": "../versionless/logo/jpn/245.webp",
+                    "250": "../versionless/logo/jpn/250.webp"
                 }
             }
         },

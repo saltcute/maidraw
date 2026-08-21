@@ -8,8 +8,8 @@
             "type": "image",
             "x": 1000,
             "y": 1604,
-            "width": 2000,
             "align": "cc",
+            "width": 2000,
             "path": "../assets/background.webp"
         },
         {
@@ -152,8 +152,8 @@
             "type": "image",
             "x": 1800,
             "y": 2811,
-            "width": 260,
             "align": "cc",
+            "width": 260,
             "path": "../../versionless/emote2.webp"
         },
         {
@@ -197,10 +197,10 @@
             "size": 24,
             "x": 80,
             "y": 2955,
-            "width": 800,
-            "linebreak": true,
             "borderColor": "#547318",
             "align": "left",
+            "width": 800,
+            "linebreak": true,
             "probability": 0.1,
             "customLines": ["../../../../../hitokoto/general.json", "../../../../../hitokoto/support/ongeki.json"]
         },
@@ -208,8 +208,8 @@
             "type": "image",
             "x": 1970,
             "y": -60,
-            "height": 430,
             "align": "rt",
+            "height": 430,
             "path": "../assets/logo.webp"
         },
         {
@@ -218,7 +218,6 @@
             "x": 210,
             "y": 282,
             "color": "black",
-            "lineWidth": 0,
             "borderColor": "rgba(255, 255, 255, 0)",
             "align": "left",
             "content": "{naiveRatingAverage}"

@@ -13,6 +13,7 @@ This file applies to the entire repository.
 - `src/exports/`: package entry points. Keep the `@common/utils/injectThrowIf` side-effect import at the top of public entry points.
 - `assets/themes/<game>/<painter>/`: theme manifests and their WebP resources. Paths inside a manifest are relative to that manifest's directory.
 - `assets/fonts/` and `assets/hitokoto/`: bundled fonts and text data used at render time.
+- `tools/themes/`: the generator that produces every theme manifest. See `tools/themes/README.md`.
 - `test/modules/`: focused rendering harnesses for individual painter modules.
 - `test/painter/`: end-to-end rendering harnesses for complete painters.
 - `test/utils/`: dummy game data and shared rendering helpers.
@@ -35,7 +36,10 @@ Run commands from the repository root.
 - `npm run clean`: remove generated files under `dist/`.
 - `npm run format`: format all paths included by `biome.json` in place.
 - `npm run lint`: lint all included paths and apply safe fixes in place.
-- `npm run make`: clean, format, lint, and build. This is broad and mutates files, so do not use it when unrelated worktree changes are present.
+- `npm run themes`: regenerate every `assets/themes/**/manifest.json` from `tools/themes/`.
+- `npm run themes:check`: fail if a committed manifest is out of date, without writing anything.
+- `npm run themes:verify`: fail if a generated manifest is not equivalent to the committed one once both are parsed through the painter schema.
+- `npm run make`: clean, regenerate themes, format, lint, and build. This is broad and mutates files, so do not use it when unrelated worktree changes are present.
 - `npx biome check <changed paths...>`: run non-writing format/lint diagnostics on a focused set of files.
 - `npx biome format --write <changed paths...>` and `npx biome lint --write <changed paths...>`: apply formatting or lint fixes only to files in the current change.
 
@@ -57,8 +61,9 @@ The repository scripts intentionally use Biome's `--write` mode. Before running 
 
 - A complete painter extends the game-specific painter base and defines a static Zod theme schema, a default theme name, and the modules it supports.
 - A painter module extends `PainterModule`, exposes a static `SCHEMA` with a literal `type`, and implements asynchronous `draw(...)`. When adding a module, register it in the relevant painter's `LOADED_SCHEMAS` tuple and module map.
-- Theme manifests are runtime API. If a module schema changes, update every affected manifest and the relevant render harnesses in the same change.
-- Keep theme names and sprite paths accurate and case-sensitive. A missing asset currently becomes an empty buffer in `Theme.getFile`, so a successful build alone does not prove that a theme renders correctly.
+- Theme manifests are generated. Never hand-edit `assets/themes/**/manifest.json`: change the builder in `tools/themes/` and run `npm run themes`. A hand edit is silently reverted by the next generation, and `npm run themes:check` reports it as drift.
+- Theme manifests are runtime API. If a module schema changes, update the matching builder under `tools/themes/`, regenerate, and update the relevant render harnesses in the same change. The builders are typed against the painter theme schemas, so a schema change surfaces as a compile error in `tools/`.
+- Keep theme names and sprite paths accurate and case-sensitive. Paths inside `tools/themes/` are written relative to `assets/` and converted to manifest-relative paths on the way out, so never write `../` by hand. A missing asset becomes an empty buffer in `Theme.getFile`, so generation stats every referenced path and fails on anything that does not exist; genuine exceptions belong in `tools/themes/lib/allowlist.ts` with a reason.
 - Fonts are registered from `assets/fonts` by `Painter.registerFonts`; preserve the existing font-family names when changing text rendering.
 - Reuse common modules (`image`, `text`, and `hitokoto`) where possible instead of creating game-specific copies.
 - Avoid recompressing, renaming, or replacing unrelated binary assets. New visual resources should normally be WebP and should be referenced by a manifest or source code in the same change.
@@ -97,9 +102,10 @@ Important testing limitations:
 Use the narrowest checks that cover the change:
 
 1. Run targeted Biome diagnostics/fixes on changed TypeScript or JSON files.
-2. Run `npm run build` for every source or public API change.
-3. Run the most relevant render harness and visually inspect `test/result.webp` for painter, module, manifest, font, or asset changes.
-4. Check `git diff` and `git status`; leave out `dist/`, `test/result.webp`, and unrelated formatting changes.
+2. Run `npm run themes` after any change under `tools/themes/`, and `npm run themes:check` to confirm nothing else drifted.
+3. Run `npm run build` for every source or public API change.
+4. Run the most relevant render harness and visually inspect `test/result.webp` for painter, module, manifest, font, or asset changes.
+5. Check `git diff` and `git status`; leave out `dist/`, `test/result.webp`, and unrelated formatting changes.
 
 For documentation-only changes, a content/diff review is sufficient. The GitHub publish workflow runs only `npm ci`, `npm run build`, and `npm publish` for `v*` tags; it does not run the render harnesses. Do not bump versions, create tags, or publish unless explicitly requested.
 
@@ -107,4 +113,4 @@ For documentation-only changes, a content/diff review is sufficient. The GitHub 
 
 - Keep changes focused and preserve unrelated worktree edits.
 - Recent commits use short Conventional Commit-style subjects such as `feat:`, `fix:`, and `chore:`; follow that style when asked to commit.
-- Commit source, manifests, tests, assets, and lockfile updates together when they form one logical change, but do not commit generated render output or `dist/`.
+- Commit source, theme generator changes, the manifests they produce, tests, assets, and lockfile updates together when they form one logical change, but do not commit generated render output or `dist/`.

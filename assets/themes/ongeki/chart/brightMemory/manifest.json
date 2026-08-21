@@ -8,8 +8,8 @@
             "type": "image",
             "x": 797.5,
             "y": 1251,
-            "width": 1595,
             "align": "mm",
+            "width": 1595,
             "path": "../../best/brightmemory/assets/background.webp"
         },
         {
@@ -49,8 +49,8 @@
                     "sssp": "../../best/versionless/achievement/sssp.webp"
                 },
                 "milestone": {
-                    "abp": "../../best/versionless/milestone/abp.webp",
                     "ab": "../../best/versionless/milestone/ab.webp",
+                    "abp": "../../best/versionless/milestone/abp.webp",
                     "fc": "../../best/versionless/milestone/fc.webp",
                     "fb": "../../best/versionless/milestone/fb.webp",
                     "none": "../../best/versionless/void.webp"

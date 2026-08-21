@@ -8,16 +8,16 @@
             "type": "image",
             "x": 1280,
             "y": 720,
-            "height": 1440,
             "align": "mm",
+            "height": 1440,
             "path": "../../best50/circle/assets/background/landscape.webp"
         },
         {
             "type": "image",
             "x": 2152,
             "y": 262,
-            "height": 290,
             "align": "mt",
+            "height": 290,
             "path": "../../best50/circle/assets/logo.webp"
         },
         {
@@ -176,10 +176,10 @@
             "size": 24,
             "x": 80,
             "y": 1403,
-            "width": 1000,
-            "linebreak": true,
             "borderColor": "#ff1a82",
             "align": "left",
+            "width": 1000,
+            "linebreak": true,
             "probability": 0.1,
             "customLines": ["../../../../hitokoto/general.json", "../../../../hitokoto/support/maimaidx.json"]
         },

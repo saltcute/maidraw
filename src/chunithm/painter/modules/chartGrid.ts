@@ -69,14 +69,11 @@ export class ChartGridModule extends PainterModule {
                 fc: z.string(),
                 none: z.string(),
             }),
-            versions: z.object({
-                // biome-ignore lint/style/useNamingConvention: use country code
-                JPN: z.record(z.string(), z.string()),
-                // biome-ignore lint/style/useNamingConvention: use country code
-                INT: z.record(z.string(), z.string()),
-                // biome-ignore lint/style/useNamingConvention: use country code
-                CHN: z.record(z.string(), z.string()),
-            }),
+            /**
+             * Version logos, keyed by the raw version number. CHUNITHM uses the same logo in every
+             * region, so unlike maimai there is no per region table.
+             */
+            versions: z.record(z.string(), z.string()),
         }),
     });
     private getBubbleColorByDifficulty: ReplaceReturnType<ExtendParameters<typeof this.draw, [chart: Chart]>, string> = (
@@ -355,10 +352,9 @@ export class ChartGridModule extends PainterModule {
         ) {
             const version = versions[i];
             if (version.version) {
-                const region = "JPN" as const;
                 const rawVersion = findVersion(version.version.gameVersion.major, version.version.gameVersion.minor, painterCtx.region || "JPN");
                 if (rawVersion != null) {
-                    const versionImage = theme.getFile(element.sprites.versions[region][rawVersion]);
+                    const versionImage = theme.getFile(element.sprites.versions[rawVersion]);
                     try {
                         if (versionImage) {
                             sharp(versionImage);
@@ -380,7 +376,8 @@ export class ChartGridModule extends PainterModule {
                             }
                             curx -= versionImageWidth;
                             ctx.drawImage(versionImg, curx, cury, versionImageWidth, versionImageHeight);
-                            // TODO: CHUNITHM version is regionless? <- verify
+                            // CHUNITHM is regionless: the same logo ships in every region, so the region marker is
+                            // blanked out here. The gap it used to occupy is kept so spacing does not shift.
                             if (version.region) {
                                 text = "";
                                 await drawEmojiOrGlyph(
@@ -586,15 +583,9 @@ export class ChartGridModule extends PainterModule {
                 ) {
                     const event = actualEvents[i];
                     if (!event) continue;
-                    let logoRegion: "JPN" | "INT" | "CHN" = options.targetRegion;
-                    if (logoRegion === "INT") {
-                        if (!(10 <= event.version.gameVersion.minor && event.version.gameVersion.minor < 20)) {
-                            logoRegion = "JPN";
-                        }
-                    }
                     const rawVersion = findVersion(event.version.gameVersion.major, event.version.gameVersion.minor, options.targetRegion);
                     if (rawVersion != null) {
-                        const versionImage = theme.getFile(element.sprites.versions[logoRegion][rawVersion]);
+                        const versionImage = theme.getFile(element.sprites.versions[rawVersion]);
                         try {
                             if (!versionImage) throw "No versionImage";
                             sharp(versionImage);
