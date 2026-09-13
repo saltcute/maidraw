@@ -13,6 +13,7 @@ export interface ProfileModulePainterContext {
     username: string;
     rating: number;
     profilePicture?: Buffer;
+    type?: "dx" | "circleplus";
 }
 
 export class ProfileModule extends PainterModule {
@@ -114,26 +115,6 @@ export class ProfileModule extends PainterModule {
         );
     };
     private drawDxRating: typeof this.draw = async (ctx, theme, element, painterCtx) => {
-        const tiers = [
-            [15000, element.sprites.dxRating.rainbow],
-            [14500, element.sprites.dxRating.platinum],
-            [14000, element.sprites.dxRating.gold],
-            [13000, element.sprites.dxRating.silver],
-            [12000, element.sprites.dxRating.bronze],
-            [10000, element.sprites.dxRating.purple],
-            [8000, element.sprites.dxRating.red],
-            [6000, element.sprites.dxRating.yellow],
-            [4000, element.sprites.dxRating.green],
-            [2000, element.sprites.dxRating.blue],
-            [0, element.sprites.dxRating.white],
-        ] as const;
-        const tier = tiers.find(([min]) => painterCtx.rating >= min)?.[1] ?? element.sprites.dxRating.white;
-        const dxRating = await safeLoadImage(theme.getFile(tier));
-        const { width, height } = dxRating;
-        const aspectRatio = width / height;
-        ctx.drawImage(dxRating, element.height, element.height * 0.064, (element.height / 3) * aspectRatio, element.height / 3);
-    };
-    private drawUsername: typeof this.draw = async (ctx, theme, element, painterCtx) => {
         async function getRatingNumber(num: number, theme: Theme<unknown>, element: z.infer<typeof ProfileModule.SCHEMA>) {
             async function getRatingDigit(map: Buffer, digit: number, unitWidth: number, unitHeight: number) {
                 digit = Math.trunc(digit % 10);
@@ -168,21 +149,66 @@ export class ProfileModule extends PainterModule {
             }
             return canvas.toBuffer();
         }
+        const tiers = [
+            [15000, element.sprites.dxRating.rainbow],
+            [14500, element.sprites.dxRating.platinum],
+            [14000, element.sprites.dxRating.gold],
+            [13000, element.sprites.dxRating.silver],
+            [12000, element.sprites.dxRating.bronze],
+            [10000, element.sprites.dxRating.purple],
+            [8000, element.sprites.dxRating.red],
+            [6000, element.sprites.dxRating.yellow],
+            [4000, element.sprites.dxRating.green],
+            [2000, element.sprites.dxRating.blue],
+        ] as const;
+        const tiersCircleplus = [
+            [16000, element.sprites.dxRating.circleplus.kiwami],
+            [15000, element.sprites.dxRating.circleplus.rainbow],
+            [14500, element.sprites.dxRating.circleplus.platinum],
+            [14000, element.sprites.dxRating.circleplus.gold],
+            [13000, element.sprites.dxRating.silver],
+            [12000, element.sprites.dxRating.bronze],
+            [10000, element.sprites.dxRating.purple],
+            [8000, element.sprites.dxRating.red],
+            [6000, element.sprites.dxRating.yellow],
+            [4000, element.sprites.dxRating.green],
+            [2000, element.sprites.dxRating.blue],
+        ] as const;
+        const tiersStars = [
+            [16750, element.sprites.dxRatingStar[4]],
+            [16500, element.sprites.dxRatingStar[2]],
+            [16250, element.sprites.dxRatingStar[2]],
+            [16000, element.sprites.dxRatingStar[1]],
+            [15750, element.sprites.dxRatingStar[4]],
+            [15500, element.sprites.dxRatingStar[2]],
+            [15250, element.sprites.dxRatingStar[2]],
+            [15000, element.sprites.dxRatingStar[1]],
+            [14750, element.sprites.dxRatingStar[2]],
+            [14500, element.sprites.dxRatingStar[1]],
+            [14250, element.sprites.dxRatingStar[2]],
+            [14000, element.sprites.dxRatingStar[1]],
+        ] as const;
+        await wrapTranslate(ctx, element.height, element.height * 0.064, async () => {
+            const tier =
+                (painterCtx.type === "circleplus" ? tiersCircleplus : tiers).find(([min]) => painterCtx.rating >= min)?.[1] ??
+                element.sprites.dxRating.white;
+            const dxRating = await safeLoadImage(theme.getFile(tier));
+            const { width, height } = dxRating;
+            const aspectRatio = width / height;
+            const dxRatingDrawHeight = element.height / 3;
+            const dxRatingDrawWidth = dxRatingDrawHeight * aspectRatio;
+            ctx.drawImage(dxRating, 0, 0, dxRatingDrawWidth, dxRatingDrawHeight);
 
-        // Username background
-        ctx.beginPath();
-        ctx.roundRect(
-            element.height * (1 + 1 / 32),
-            element.height * (0.064 + 0.333 + 1 / 32),
-            ((element.height / 3) * 5.108 * 6) / 5,
-            (element.height * 7) / 24,
-            element.height / 20,
-        );
-        ctx.fillStyle = "white";
-        ctx.strokeStyle = Color.rgb(180, 180, 180).hex();
-        ctx.lineWidth = element.height / 32;
-        ctx.stroke();
-        ctx.fill();
+            if (painterCtx.type === "circleplus" && painterCtx.rating >= 14000) {
+                const starTier = tiersStars.find(([min]) => painterCtx.rating >= min)?.[1] ?? element.sprites.dxRatingStar[1];
+                const stars = await safeLoadImage(theme.getFile(starTier));
+                const { width: starsWidth, height: starsHeight } = stars;
+                const aspectRatio = starsWidth / starsHeight;
+                const starsDrawHeight = element.height / 3;
+                const starsDrawWidth = starsDrawHeight * aspectRatio;
+                ctx.drawImage(stars, dxRatingDrawWidth * (616 / 664), 0, starsDrawWidth, starsDrawHeight);
+            }
+        });
 
         const ratingImgBuffer = await getRatingNumber(painterCtx.rating, theme, element);
         if (ratingImgBuffer) {
@@ -192,23 +218,41 @@ export class ProfileModule extends PainterModule {
             const drawHeight = (element.height * 11) / 64;
             ctx.drawImage(ratingImg, element.height * 1.785, element.height * 0.15, drawHeight * aspectRatio, drawHeight);
         }
-
-        drawText(
-            ctx,
-            toFullWidth(painterCtx.username),
-            element.height * (1 + 1 / 16),
-            element.height * (0.064 + 0.333 + 1 / 4),
-            (element.height * 1) / 6,
-            0,
-            {
-                maxWidth: ((element.height / 3) * 5.108 * 6) / 5,
-                textAlign: "left",
-                mainColor: "black",
-                borderColor: "black",
-                font: "standard-font-username",
-                widthConstraintType: "shrink",
-                shrinkAnchor: "center",
-            },
+    };
+    private drawUsername: typeof this.draw = async (ctx, _theme, element, painterCtx) => {
+        const dimension = [0, 0, ((element.height / 3) * 5.108 * 6) / 5, (element.height * 7) / 24, element.height / 20] as const;
+        return wrapTranslate(ctx, element.height * (1 + 1 / 64), element.height * (0.064 + 0.333 + 1 / 32), () =>
+            wrapBorder(
+                ctx,
+                Color.rgb(180, 180, 180).hex(),
+                element.height / 32,
+                () =>
+                    wrapBackground(
+                        ctx,
+                        "white",
+                        () => {
+                            drawText(
+                                ctx,
+                                toFullWidth(painterCtx.username),
+                                element.height * (1 / 64),
+                                element.height * (7 / 32),
+                                (element.height * 1) / 6,
+                                0,
+                                {
+                                    maxWidth: ((element.height / 3) * 5.108 * 6) / 5,
+                                    textAlign: "left",
+                                    mainColor: "black",
+                                    borderColor: "black",
+                                    font: "standard-font-username",
+                                    widthConstraintType: "shrink",
+                                    shrinkAnchor: "center",
+                                },
+                            );
+                        },
+                        ...dimension,
+                    ),
+                ...dimension,
+            ),
         );
     };
     public async draw(
