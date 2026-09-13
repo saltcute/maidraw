@@ -32,6 +32,18 @@ export class ProfileModule extends PainterModule {
                 gold: z.string(),
                 platinum: z.string(),
                 rainbow: z.string(),
+                circleplus: z.object({
+                    gold: z.string(),
+                    platinum: z.string(),
+                    rainbow: z.string(),
+                    kiwami: z.string(),
+                }),
+            }),
+            dxRatingStar: z.object({
+                1: z.string(),
+                2: z.string(),
+                3: z.string(),
+                4: z.string(),
             }),
             dxRatingNumberMap: z.string(),
             profile: z.object({

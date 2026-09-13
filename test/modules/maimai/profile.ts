@@ -26,6 +26,18 @@ moduleTestWrapper(720, 116, false, async (canvas) => {
                     gold: "../../versionless/dxRating/jp/gold.webp",
                     platinum: "../../versionless/dxRating/jp/platinum.webp",
                     rainbow: "../../versionless/dxRating/jp/rainbow.webp",
+                    circleplus: {
+                        gold: "../../versionless/dxRating/jp/circleplus/gold.webp",
+                        platinum: "../../versionless/dxRating/jp/circleplus/platinum.webp",
+                        rainbow: "../../versionless/dxRating/jp/circleplus/rainbow.webp",
+                        kiwami: "../../versionless/dxRating/jp/circleplus/kiwami.webp",
+                    },
+                },
+                dxRatingStar: {
+                    1: "../../versionless/dxRating/star/01.webp",
+                    2: "../../versionless/dxRating/star/02.webp",
+                    3: "../../versionless/dxRating/star/03.webp",
+                    4: "../../versionless/dxRating/star/04.webp",
                 },
                 dxRatingNumberMap: "../../versionless/dxRating/numberMap.webp",
                 profile: {
