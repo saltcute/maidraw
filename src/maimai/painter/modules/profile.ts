@@ -176,11 +176,11 @@ export class ProfileModule extends PainterModule {
         ] as const;
         const tiersStars = [
             [16750, element.sprites.dxRatingStar[4]],
-            [16500, element.sprites.dxRatingStar[2]],
+            [16500, element.sprites.dxRatingStar[3]],
             [16250, element.sprites.dxRatingStar[2]],
             [16000, element.sprites.dxRatingStar[1]],
             [15750, element.sprites.dxRatingStar[4]],
-            [15500, element.sprites.dxRatingStar[2]],
+            [15500, element.sprites.dxRatingStar[3]],
             [15250, element.sprites.dxRatingStar[2]],
             [15000, element.sprites.dxRatingStar[1]],
             [14750, element.sprites.dxRatingStar[2]],

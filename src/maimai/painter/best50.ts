@@ -110,7 +110,7 @@ export class Best50Painter extends MaimaiPainter<typeof Best50Painter.THEME> {
                     new: variables.newScores,
                     old: variables.oldScores,
                 },
-                dxRatingType: options?.dxRatingType,
+                dxRatingType: options?.dxRatingType ?? "circleplus",
                 variables: {
                     username: toFullWidth(variables.username),
                     rating: truncate(variables.rating, 0),
