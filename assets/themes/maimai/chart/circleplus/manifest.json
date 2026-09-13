@@ -154,7 +154,19 @@
                     "silver": "../../best50/versionless/dxRating/jp/silver.webp",
                     "gold": "../../best50/versionless/dxRating/jp/gold.webp",
                     "platinum": "../../best50/versionless/dxRating/jp/platinum.webp",
-                    "rainbow": "../../best50/versionless/dxRating/jp/rainbow.webp"
+                    "rainbow": "../../best50/versionless/dxRating/jp/rainbow.webp",
+                    "circleplus": {
+                        "gold": "../../best50/versionless/dxRating/jp/circleplus/gold.webp",
+                        "platinum": "../../best50/versionless/dxRating/jp/circleplus/platinum.webp",
+                        "rainbow": "../../best50/versionless/dxRating/jp/circleplus/rainbow.webp",
+                        "kiwami": "../../best50/versionless/dxRating/jp/circleplus/kiwami.webp"
+                    }
+                },
+                "dxRatingStar": {
+                    "1": "../../best50/versionless/dxRating/star/01.webp",
+                    "2": "../../best50/versionless/dxRating/star/02.webp",
+                    "3": "../../best50/versionless/dxRating/star/03.webp",
+                    "4": "../../best50/versionless/dxRating/star/04.webp"
                 },
                 "dxRatingNumberMap": "../../best50/versionless/dxRating/numberMap.webp",
                 "profile": {
