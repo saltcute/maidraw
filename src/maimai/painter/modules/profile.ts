@@ -13,7 +13,7 @@ export interface ProfileModulePainterContext {
     username: string;
     rating: number;
     profilePicture?: Buffer;
-    type?: "dx" | "circleplus";
+    dxRatingType?: "dx" | "circleplus";
 }
 
 export class ProfileModule extends PainterModule {
@@ -190,7 +190,7 @@ export class ProfileModule extends PainterModule {
         ] as const;
         await wrapTranslate(ctx, element.height, element.height * 0.064, async () => {
             const tier =
-                (painterCtx.type === "circleplus" ? tiersCircleplus : tiers).find(([min]) => painterCtx.rating >= min)?.[1] ??
+                (painterCtx.dxRatingType === "circleplus" ? tiersCircleplus : tiers).find(([min]) => painterCtx.rating >= min)?.[1] ??
                 element.sprites.dxRating.white;
             const dxRating = await safeLoadImage(theme.getFile(tier));
             const { width, height } = dxRating;
@@ -199,7 +199,7 @@ export class ProfileModule extends PainterModule {
             const dxRatingDrawWidth = dxRatingDrawHeight * aspectRatio;
             ctx.drawImage(dxRating, 0, 0, dxRatingDrawWidth, dxRatingDrawHeight);
 
-            if (painterCtx.type === "circleplus" && painterCtx.rating >= 14000) {
+            if (painterCtx.dxRatingType === "circleplus" && painterCtx.rating >= 14000) {
                 const starTier = tiersStars.find(([min]) => painterCtx.rating >= min)?.[1] ?? element.sprites.dxRatingStar[1];
                 const stars = await safeLoadImage(theme.getFile(starTier));
                 const { width: starsWidth, height: starsHeight } = stars;
