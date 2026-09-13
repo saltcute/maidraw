@@ -56,6 +56,7 @@ export class FolderPainter extends MaimaiPainter<typeof FolderPainter.THEME> {
                 profilePicture: options?.profilePicture,
                 folders: variables.folders,
                 scores: variables.scores,
+                dxRatingType: "circleplus",
                 variables: {
                     username: toFullWidth(variables.username),
                     rating: truncate(variables.rating, 0),

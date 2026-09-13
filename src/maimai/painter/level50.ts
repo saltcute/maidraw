@@ -55,6 +55,7 @@ export class Level50Painter extends MaimaiPainter<typeof Best50Painter.THEME> {
                 username: variables.username,
                 rating: variables.rating,
                 profilePicture: options?.profilePicture,
+                dxRatingType: "circleplus",
                 scores: {
                     new: variables.scores.slice(0, 15),
                     old: variables.scores.slice(15, 50),

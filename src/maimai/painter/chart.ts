@@ -64,6 +64,7 @@ export class ChartPainter extends MaimaiPainter<typeof ChartPainter.THEME> {
                     chartIdentifier: variables.chartIdentifier,
                     scores: variables.scores,
                     region: options?.region,
+                    dxRatingType: "circleplus",
                     variables: {
                         username: toFullWidth(variables.username),
                         rating: truncate(variables.rating, 0),

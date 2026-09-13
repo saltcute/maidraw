@@ -97,7 +97,7 @@ export class Best50Painter extends MaimaiPainter<typeof Best50Painter.THEME> {
             newScores: Score[];
             oldScores: Score[];
         },
-        options?: { scale?: number; theme?: string; profilePicture?: Buffer },
+        options?: { scale?: number; theme?: string; profilePicture?: Buffer; dxRatingType?: "dx" | "circleplus" },
     ): Promise<DataOrError<Buffer>> {
         return this.wrapPainter({
             ...options,
@@ -128,6 +128,7 @@ export class Best50Painter extends MaimaiPainter<typeof Best50Painter.THEME> {
             scale?: number;
             theme?: string;
             profilePicture?: Buffer | null;
+            dxRatingType?: "dx" | "circleplus";
         },
     ) {
         const { data: profile, err: perr } = await source.getPlayerInfo(variables.username);
