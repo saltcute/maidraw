@@ -6,6 +6,17 @@ import { z } from "zod/v4";
 import { resolveLayout } from "./layout";
 import { type Theme, ThemeManager } from "./theme";
 
+type ModuleContext<M extends PainterModule> =
+    Parameters<M["draw"]> extends infer Args extends unknown[] ? ("3" extends keyof Args ? NonNullable<Args[3]> : unknown) : never;
+
+// Infer an intersection so the shared context satisfies every module, including
+// modules with an optional context or no context parameter at all.
+type PainterContext<Modules extends Record<string, PainterModule>> = {
+    [K in keyof Modules]: (context: ModuleContext<Modules[K]>) => void;
+}[keyof Modules] extends (context: infer Context) => void
+    ? Context
+    : never;
+
 export abstract class Painter<Adapter, Schema extends typeof ThemeManager.BASE_THEME> {
     public static registerFonts(path: string) {
         registerFont(upath.join(path, "fonts", "gen-jyuu-gothic", "GenJyuuGothic-Bold.ttf"), {
@@ -30,7 +41,7 @@ export abstract class Painter<Adapter, Schema extends typeof ThemeManager.BASE_T
         return upath.join(__dirname, "..", "..", "..", "assets");
     }
 
-    protected async wrapPainter(
+    protected async wrapPainter<Modules extends Record<string, PainterModule>>(
         {
             theme,
             scale = 1,
@@ -39,8 +50,8 @@ export abstract class Painter<Adapter, Schema extends typeof ThemeManager.BASE_T
         }: {
             theme?: string;
             scale?: number;
-            modules: Record<string, PainterModule>;
-            painterCtx: unknown;
+            modules: Modules;
+            painterCtx: NoInfer<PainterContext<Modules>>;
         },
         /**
          * Drawing steps of the painter. Every element of the theme is drawn in
