@@ -72,19 +72,38 @@ export function drawText(
         const lines: string[] = [];
         if (widthConstraintType === "break-lines") {
             const breaker = new LineBreaker(filledContent);
-            let lastPossibleBreak = 0,
-                lastBreak = 0;
-            for (let bk = breaker.nextBreak(); bk; ) {
-                const cur = filledContent.substring(lastBreak, bk.position);
-                if (ctx.measureText(cur).width > maxWidth) {
-                    lines.push(filledContent.substring(lastBreak, lastPossibleBreak).trim());
-                    lastBreak = lastPossibleBreak;
+            const segmenter = new Intl.Segmenter(undefined, { granularity: "grapheme" });
+            let lastBreak = 0;
+            let line = "";
+            for (let bk = breaker.nextBreak(); bk; bk = breaker.nextBreak()) {
+                const segment = filledContent.substring(lastBreak, bk.position);
+                lastBreak = bk.position;
+                // The iterator does not mark a hard break at the end of the input as required.
+                const hardBreak = bk.required || /[\n\r\v\f\u0085\u2028\u2029]$/u.test(segment);
+                const text = segment.replace(/[\n\r\v\f\u0085\u2028\u2029]+$/u, "");
+                if (ctx.measureText((line + text).trim()).width <= maxWidth) {
+                    line += text;
                 } else {
-                    lastPossibleBreak = bk.position;
-                    bk = breaker.nextBreak();
+                    if (line.trim()) {
+                        lines.push(line.trim());
+                    }
+                    line = "";
+                    // Split oversized words without splitting emoji or combining sequences.
+                    // A grapheme wider than maxWidth occupies a line on its own.
+                    for (const { segment: grapheme } of segmenter.segment(text.trimStart())) {
+                        if (line && ctx.measureText(line + grapheme).width > maxWidth) {
+                            lines.push(line.trim());
+                            line = "";
+                        }
+                        line += grapheme;
+                    }
+                }
+                if (hardBreak) {
+                    lines.push(line.trim());
+                    line = "";
                 }
             }
-            lines.push(filledContent.substring(lastBreak).trim());
+            lines.push(line.trim());
         } else if (widthConstraintType !== "none") {
             const naiveLines = filledContent.split("\n");
             for (const originalContent of naiveLines) {

@@ -353,7 +353,9 @@ export class ChartGridModule extends PainterModule {
         const CurrentVer = JPN_LATEST;
 
         const maxWidth = options.width - options.height * 2 - element.bubble.margin * 4 - noteCountLength - versionImageWidth;
-        const maxFitTrendCount = Math.trunc(maxWidth / versionImageWidth);
+        if (!(versionImageWidth > 0) || !Number.isFinite(versionImageWidth)) return;
+        const maxFitTrendCount = Math.max(0, Math.trunc(maxWidth / versionImageWidth));
+        if (!(maxFitTrendCount > 0)) return;
         const trendEvents = options.chart.optionalData.presences.filter(
             (v): v is Existence => v.type === "existence" && v.version.region === options.targetRegion,
         );
@@ -361,13 +363,19 @@ export class ChartGridModule extends PainterModule {
             return _.isEqual(a.data.level, b.data.level);
         });
 
-        if (actualEvents.length === maxFitTrendCount) {
+        if (maxFitTrendCount === 1) {
+            // A single slot represents the latest state, including an explicit removal.
+            const removalEvent = options.chart.optionalData.presences.find(
+                (v): v is Removal => v.type === "removal" && v.version.region === options.targetRegion,
+            );
+            actualEvents = removalEvent ? [removalEvent] : trendEvents.slice(-1);
+        } else if (actualEvents.length === maxFitTrendCount) {
             if (actualEvents[actualEvents.length - 1] !== trendEvents[trendEvents.length - 1]) {
                 actualEvents.splice(1, 1);
                 actualEvents.push(trendEvents[trendEvents.length - 1]);
             }
         } else if (actualEvents.length > maxFitTrendCount) {
-            while (actualEvents.length > maxFitTrendCount) actualEvents.shift();
+            actualEvents = actualEvents.slice(-maxFitTrendCount);
             actualEvents.shift();
             actualEvents.shift();
             actualEvents.unshift(trendEvents[0]);
@@ -408,7 +416,7 @@ export class ChartGridModule extends PainterModule {
                 (v): v is Removal => v.type === "removal" && v.version.region === options.targetRegion,
             );
             if (removalEvent) {
-                while (actualEvents.length >= maxFitTrendCount) actualEvents.splice(1, 1);
+                actualEvents.splice(maxFitTrendCount === 1 ? 0 : 1, Math.max(0, actualEvents.length - maxFitTrendCount + 1));
                 actualEvents.push(removalEvent);
             }
         } else {
@@ -420,7 +428,7 @@ export class ChartGridModule extends PainterModule {
                 CurrentVer &&
             actualEvents[actualEvents.length - 1]?.type !== "removal"
         ) {
-            while (actualEvents.length >= maxFitTrendCount) actualEvents.splice(1, 1);
+            actualEvents.splice(maxFitTrendCount === 1 ? 0 : 1, Math.max(0, actualEvents.length - maxFitTrendCount + 1));
             const tmpEvent = trendEvents[trendEvents.length - 1];
             actualEvents.push({
                 type: "removal",
@@ -444,8 +452,8 @@ export class ChartGridModule extends PainterModule {
             );
         });
         if (actualEvents.length <= 0) return;
-        let positionAdjustment = 0;
-        let addGap = (maxWidth - actualEvents.length * versionImageWidth) / (actualEvents.length - 1);
+        let positionAdjustment = actualEvents.length === 1 ? (maxWidth - versionImageWidth) / 2 : 0;
+        let addGap = actualEvents.length > 1 ? (maxWidth - actualEvents.length * versionImageWidth) / (actualEvents.length - 1) : 0;
         if (addGap > maxWidth / 5) {
             addGap = maxWidth / 5;
             positionAdjustment = (maxWidth - (addGap * (actualEvents.length - 1) + versionImageWidth * actualEvents.length)) / 2;
