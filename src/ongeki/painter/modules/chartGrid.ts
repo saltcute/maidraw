@@ -274,10 +274,10 @@ export class ChartGridModule extends PainterModule {
         const curColor = this.getBubbleColorByDifficulty(element, options.chart);
         const scorePartWidth = element.bubble.margin * (3 / 2) + options.height * 2;
         const noteCountTexts = Object.entries(options.chart.notes)
-            .filter(([_k, v]) => !!v)
+            .filter(([_, v]) => !!v)
             .map(([k, v]) => `${capitalize(k)}: ${v}`);
         const noteCountTextSize = (() => {
-            let base = (options.height - element.bubble.margin * 4) / noteCountTexts.length;
+            let base = (options.height - element.bubble.margin * 4) / (noteCountTexts.length || 5);
             for (
                 ;
                 base > 4 && noteCountTexts.map((v) => measureText(ctx, v, base, Infinity)).find((v) => v.width > options.width - scorePartWidth);
@@ -286,8 +286,8 @@ export class ChartGridModule extends PainterModule {
             return base;
         })();
         const noteCountTextWidth = noteCountTexts
-            .map((v) => measureText(ctx, v, noteCountTextSize, Infinity))
-            .reduce((a, b) => (a.width > b.width ? a : b)).width;
+            .map((v) => measureText(ctx, v, noteCountTextSize, Infinity).width)
+            .reduce((a, b) => Math.max(a, b), 0);
         let noteCountLength = 0;
         noteCountTexts.forEach((v, i) => {
             drawText(

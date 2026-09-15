@@ -407,7 +407,7 @@ export class ChartGridModule extends PainterModule {
     > = async (ctx, theme, element, painterCtx, options, callback) => {
         const curColor = this.getBubbleColorByDifficulty(ctx, theme, element, painterCtx, options.chart);
         const noteCountTexts = Object.entries(options.chart.notes)
-            .filter(([_, v]) => !!v)
+            .filter(([k]) => ![Difficulty.BASIC, Difficulty.ADVANCED, Difficulty.EXPERT].includes(options.chart.difficulty) || k !== "flick")
             .map(([k, v]) => `${capitalize(k)}: ${v}`);
         const noteCountTextSize = (options.height - element.bubble.margin * 4) / noteCountTexts.length;
         let noteCountLength = 0;
