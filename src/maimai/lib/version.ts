@@ -1,7 +1,7 @@
 import type { Regions } from "gcm-database-local/maimai";
 
-export const DX_LATEST = 65;
-export const EX_LATEST = 60;
+export const DX_LATEST = 70;
+export const EX_LATEST = 65;
 export const CN_LATEST = 55;
 
 const MAIMAI_VERSIONS = [99, 95, 90, 85, 80, 70, 60, 50, 40, 30, 20, 10, 0] as const;
