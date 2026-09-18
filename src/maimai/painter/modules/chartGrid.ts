@@ -684,7 +684,6 @@ export class ChartGridModule extends PainterModule {
                         const versionImage = theme.getFile(element.sprites.versions[logoRegion][rawVersion]);
                         try {
                             if (!versionImage) throw "No versionImage";
-                            sharp(versionImage);
                             const versionImg = await safeLoadImage(versionImage);
                             ctx.drawImage(versionImg, curx, cury, versionImageWidth, versionImageHeight);
                         } catch {

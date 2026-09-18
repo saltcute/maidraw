@@ -17,7 +17,7 @@ import { MaimaiPainter } from "./painter";
 const LOADED_SCHEMAS = [ScoreGridModule, ProfileModule, ImageModule, TextModule, HitokotoModule] as const;
 
 export class Level50Painter extends MaimaiPainter<typeof Best50Painter.THEME> {
-    private static readonly DEFAULT_THEME = "jp-circleplus-landscape";
+    private static readonly DEFAULT_THEME = "jp-magical-landscape";
 
     private modules;
     public constructor(database: Database<Chart>) {

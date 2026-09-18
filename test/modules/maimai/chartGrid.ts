@@ -119,6 +119,7 @@ moduleTestWrapper(1645 + 100, 1045 + 100, false, async (canvas) => {
                         "55": "../versionless/logo/jp/255.webp",
                         "60": "../versionless/logo/jp/260.webp",
                         "65": "../versionless/logo/jp/265.webp",
+                        "70": "../versionless/logo/jp/270.webp",
                     },
                     // biome-ignore lint/style/useNamingConvention: region code
                     EX: {

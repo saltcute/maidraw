@@ -24,7 +24,7 @@ export class ChartPainter extends MaimaiPainter<typeof ChartPainter.THEME> {
         elements: z.array(z.discriminatedUnion("type", LOADED_SCHEMAS.map((v) => v.SCHEMA) as unknown as SchemaOfModuleTuple<typeof LOADED_SCHEMAS>)),
     });
 
-    private static readonly DEFAULT_THEME = "jp-circleplus";
+    private static readonly DEFAULT_THEME = "jp-magical";
 
     private modules;
     public constructor(private database: Database<Chart>) {

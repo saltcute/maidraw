@@ -5,7 +5,7 @@ export const EX_LATEST = 60;
 export const CN_LATEST = 55;
 
 const MAIMAI_VERSIONS = [99, 95, 90, 85, 80, 70, 60, 50, 40, 30, 20, 10, 0] as const;
-const MAIMAIDX_VERSIONS = [65, 60, 55, 50, 45, 40, 35, 30, 25, 20, 15, 10, 5, 0] as const;
+const MAIMAIDX_VERSIONS = [70, 65, 60, 55, 50, 45, 40, 35, 30, 25, 20, 15, 10, 5, 0] as const;
 const WUMENGDX_VERSIONS = [55, 50, 40, 30, 20, 10, 0] as const;
 
 const targetMap = {
