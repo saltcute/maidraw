@@ -364,9 +364,10 @@ export class ChartGridModule extends PainterModule {
             version.version = VerDx;
             version.region = "DX";
         }
-        const VerUsaMinor = lastUsaLockVersion
+        const inferredUsaMinor = lastUsaLockVersion
             ? findNewerMinorVersion(lastUsaLockVersion.gameVersion.major, lastUsaLockVersion.gameVersion.minor, "EX")
             : VerEx?.gameVersion.minor;
+        const VerUsaMinor = inferredUsaMinor != null && inferredUsaMinor <= EX_LATEST ? inferredUsaMinor : null;
         if (VerEx) {
             let appenedEx = false;
             for (let i = 0; i < 2; ++i) {
