@@ -34,6 +34,7 @@ moduleTestWrapper(2080 + 100, 855 + 100, false, async (canvas) => {
                     remaster: "#DDBDF5",
                     utage: "#70E262",
                 },
+                strictScoreCount: 0,
             },
             sprites: {
                 achievement: {
@@ -70,7 +71,7 @@ moduleTestWrapper(2080 + 100, 855 + 100, false, async (canvas) => {
                 },
             },
         },
-        { scores: { old: Array.from({ length: envNumber("TEST_SCORES_COUNT", 33, true) }, () => getDummyScore()) } },
+        { scores: { new: [], old: Array.from({ length: envNumber("TEST_SCORES_COUNT", 33, true) }, () => getDummyScore()) } },
     );
     return canvas;
 });

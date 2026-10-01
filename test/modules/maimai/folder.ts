@@ -56,7 +56,7 @@ moduleTestWrapper(2400 + 100, 1600, false, async (canvas) => {
             gap: 32,
             horizontalSize: 16,
             color: { card: "#bbdefa" },
-            title: { size: 40, gap: 16, color: "#226180" },
+            title: { size: 40, gap: 16, borderColor: "#226180" },
             jacket: { size: 130, gap: 16, margin: 10 },
             bubble: {
                 color: {
