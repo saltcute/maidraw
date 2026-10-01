@@ -4,6 +4,7 @@ import { TextModule } from "@common/painter/modules/text";
 import { type Bounds, Painter, PainterModule } from "@common/painter/painter";
 import { Theme, ThemeManager } from "@common/painter/theme";
 import { wrapTranslate } from "@common/utils/ctxWrapper";
+import { envString } from "@utils/env";
 import { logger, moduleTestWrapper } from "@utils/util";
 import type { CanvasRenderingContext2D } from "canvas";
 import { join } from "upath";
@@ -107,7 +108,7 @@ const modules: Record<string, PainterModule> = {
 };
 
 (async () => {
-    Painter.registerFonts("assets");
+    Painter.registerFonts(envString("TEST_ASSETS_PATH", "assets"));
 
     const layout = await resolveLayout({
         theme,

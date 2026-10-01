@@ -1,6 +1,7 @@
 import { Painter } from "@common/painter/painter";
 import { AchievementTypes, ComboLamp, type Score, SyncLamp } from "@maimai/lib/types";
 import { ChartGridModule } from "@maimai/painter/modules/chartGrid";
+import { envString } from "@utils/env";
 import { chartTheme } from "@utils/maimai/util";
 import { moduleTestWrapper } from "@utils/util";
 import { type Chart, Difficulty } from "gcm-database/maimai";
@@ -27,11 +28,11 @@ function getDummyScore(chart: Chart): Score {
 }
 
 moduleTestWrapper(1645 + 100, 1045 + 100, false, async (canvas) => {
-    const database = new Database(join(__dirname, "..", "..", "..", "..", "maimai-songs-database"));
+    const database = new Database(envString("TEST_DATABASE_PATH", join(__dirname, "..", "..", "..", "..", "maimai-songs-database")));
     const module = new ChartGridModule(database);
 
-    Painter.registerFonts("assets");
-    const identifier = "11686";
+    Painter.registerFonts(envString("TEST_ASSETS_PATH", "assets"));
+    const identifier = envString("TEST_CHART_IDENTIFIER", "11686");
     await module.draw(
         canvas.getContext("2d"),
         chartTheme,

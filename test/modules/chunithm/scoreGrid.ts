@@ -1,13 +1,14 @@
 import { ScoreGridModule } from "@chunithm/painter/modules/scoreGrid";
 import { Painter } from "@common/painter/painter";
 import { best50Theme, getDummyScore } from "@utils/chunithm/util";
+import { envNumber, envString } from "@utils/env";
 import { localDatabasePath, moduleTestWrapper } from "@utils/util";
 import { Database } from "gcm-database-local/chunithm";
 
 moduleTestWrapper(1220 + 100, 855 + 100, false, async (canvas) => {
     const module = new ScoreGridModule(new Database(localDatabasePath));
 
-    Painter.registerFonts("assets");
+    Painter.registerFonts(envString("TEST_ASSETS_PATH", "assets"));
 
     await module.draw(
         canvas.getContext("2d"),
@@ -59,7 +60,7 @@ moduleTestWrapper(1220 + 100, 855 + 100, false, async (canvas) => {
                 },
             },
         },
-        { scores: { new: Array.from({ length: 15 }, () => getDummyScore()) } },
+        { scores: { new: Array.from({ length: envNumber("TEST_SCORES_COUNT", 15, true) }, () => getDummyScore()) } },
     );
     return canvas;
 });

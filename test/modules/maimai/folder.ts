@@ -1,23 +1,36 @@
 import { Painter } from "@common/painter/painter";
 import { type Folder, FolderLamp } from "@maimai/lib/types";
 import { FolderModule, type FolderModulePainterContext } from "@maimai/painter/modules/folder";
+import { envNumber, envString } from "@utils/env";
 import { best50Theme, getDummyChart, getDummyScoreOfChart } from "@utils/maimai/util";
 import { localDatabasePath, moduleTestWrapper } from "@utils/util";
 import { Database } from "gcm-database-local/maimai";
 
 const folders: Folder[] = [
-    { title: "Achievement rank", lamp: FolderLamp.ACHIEVEMENT_RANK, elements: Array.from({ length: 23 }, () => getDummyChart()) },
-    { title: "Combo lamp", lamp: FolderLamp.COMBO, elements: Array.from({ length: 12 }, () => getDummyChart()) },
-    { title: "Sync lamp", lamp: FolderLamp.SYNC, elements: Array.from({ length: 8 }, () => getDummyChart()) },
-    { title: "Achievement rate", lamp: FolderLamp.ACHIEVEMENT_RATE, elements: Array.from({ length: 12 }, () => getDummyChart()) },
-    { title: "DX score", lamp: FolderLamp.DX_SCORE, elements: Array.from({ length: 12 }, () => getDummyChart()) },
+    {
+        title: "Achievement rank",
+        lamp: FolderLamp.ACHIEVEMENT_RANK,
+        elements: Array.from({ length: envNumber("TEST_FOLDER_SIZE", 23, true) }, () => getDummyChart()),
+    },
+    { title: "Combo lamp", lamp: FolderLamp.COMBO, elements: Array.from({ length: envNumber("TEST_FOLDER_SIZE", 12, true) }, () => getDummyChart()) },
+    { title: "Sync lamp", lamp: FolderLamp.SYNC, elements: Array.from({ length: envNumber("TEST_FOLDER_SIZE", 8, true) }, () => getDummyChart()) },
+    {
+        title: "Achievement rate",
+        lamp: FolderLamp.ACHIEVEMENT_RATE,
+        elements: Array.from({ length: envNumber("TEST_FOLDER_SIZE", 12, true) }, () => getDummyChart()),
+    },
+    {
+        title: "DX score",
+        lamp: FolderLamp.DX_SCORE,
+        elements: Array.from({ length: envNumber("TEST_FOLDER_SIZE", 12, true) }, () => getDummyChart()),
+    },
 ];
 
 // Leave about a third of the charts unplayed to check the jacket only cells.
 const scores: FolderModulePainterContext["scores"] = {};
 for (const folder of folders) {
     for (const chart of folder.elements) {
-        if (Math.random() < 1 / 3) continue;
+        if (Math.random() < envNumber("TEST_UNPLAYED_PROBABILITY", 1 / 3)) continue;
         scores[chart.identifier] = {
             ...scores[chart.identifier],
             [chart.difficulty]: getDummyScoreOfChart(chart),
@@ -28,7 +41,7 @@ for (const folder of folders) {
 moduleTestWrapper(2400 + 100, 1600, false, async (canvas) => {
     const module = new FolderModule(new Database(localDatabasePath));
 
-    Painter.registerFonts("assets");
+    Painter.registerFonts(envString("TEST_ASSETS_PATH", "assets"));
 
     await module.draw(
         canvas.getContext("2d"),

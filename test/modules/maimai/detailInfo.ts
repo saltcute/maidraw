@@ -1,16 +1,17 @@
 import { Painter } from "@common/painter/painter";
 import { DetailInfoModule } from "@maimai/painter/modules/detailInfo";
+import { envChoice, envString } from "@utils/env";
 import { chartTheme } from "@utils/maimai/util";
 import { moduleTestWrapper } from "@utils/util";
 import { Database } from "gcm-database-local/maimai";
 import { join } from "upath";
 
 moduleTestWrapper(615 + 100, 745 + 100, false, async (canvas) => {
-    const database = new Database(join(__dirname, "..", "..", "..", "..", "maimai-songs-database"));
+    const database = new Database(envString("TEST_DATABASE_PATH", join(__dirname, "..", "..", "..", "..", "maimai-songs-database")));
     const module = new DetailInfoModule(database);
 
-    Painter.registerFonts("assets");
-    const identifier = "11451";
+    Painter.registerFonts(envString("TEST_ASSETS_PATH", "assets"));
+    const identifier = envString("TEST_CHART_IDENTIFIER", "11451");
     await module.draw(
         canvas.getContext("2d"),
         chartTheme,
@@ -33,7 +34,7 @@ moduleTestWrapper(615 + 100, 745 + 100, false, async (canvas) => {
         },
         {
             chartIdentifier: identifier,
-            region: "DX",
+            region: envChoice("TEST_REGION", ["DX", "EX", "CN"], "DX"),
         },
     );
     return canvas;

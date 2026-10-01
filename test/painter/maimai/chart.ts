@@ -1,4 +1,5 @@
 import { ChartPainter } from "@maimai/painter/chart";
+import { envNumber, envString } from "@utils/env";
 import { getDummyScore } from "@utils/maimai/util";
 import { localDatabasePath, painterTestWrapper } from "@utils/util";
 import { Difficulty } from "gcm-database/maimai";
@@ -10,9 +11,9 @@ painterTestWrapper(async () => {
     const painter = new ChartPainter(database);
 
     return await painter.draw({
-        username: "♪Lxns♪",
-        rating: 11451,
-        chartIdentifier: "11822",
+        username: envString("TEST_USERNAME", "♪Lxns♪"),
+        rating: envNumber("TEST_RATING", 11451),
+        chartIdentifier: envString("TEST_CHART_IDENTIFIER", "11822"),
         scores: {
             [Difficulty.EASY]: null,
             [Difficulty.BASIC]: null,

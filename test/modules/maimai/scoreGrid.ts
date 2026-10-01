@@ -1,13 +1,14 @@
 import { Painter } from "@common/painter/painter";
 import { ScoreGridModule } from "@maimai/painter/modules/scoreGrid";
+import { envNumber, envString } from "@utils/env";
 import { best50Theme, getDummyScore } from "@utils/maimai/util";
 import { moduleTestWrapper } from "@utils/util";
 import { Database } from "gcm-database-local/maimai";
 
 moduleTestWrapper(2080 + 100, 855 + 100, false, async (canvas) => {
-    const module = new ScoreGridModule(new Database("../maimai-songs-database"));
+    const module = new ScoreGridModule(new Database(envString("TEST_DATABASE_PATH", "../maimai-songs-database")));
 
-    Painter.registerFonts("assets");
+    Painter.registerFonts(envString("TEST_ASSETS_PATH", "assets"));
 
     await module.draw(
         canvas.getContext("2d"),
@@ -69,7 +70,7 @@ moduleTestWrapper(2080 + 100, 855 + 100, false, async (canvas) => {
                 },
             },
         },
-        { scores: { old: Array.from({ length: 33 }, () => getDummyScore()) } },
+        { scores: { old: Array.from({ length: envNumber("TEST_SCORES_COUNT", 33, true) }, () => getDummyScore()) } },
     );
     return canvas;
 });

@@ -1,5 +1,6 @@
 import { ProfileModule } from "@chunithm/painter/modules/profile";
 import { best50Theme } from "@utils/chunithm/util";
+import { envChoice, envNumber, envString } from "@utils/env";
 import { moduleTestWrapper } from "@utils/util";
 
 moduleTestWrapper(1000, 320 + 100, false, async (canvas) => {
@@ -29,7 +30,11 @@ moduleTestWrapper(1000, 320 + 100, false, async (canvas) => {
                 },
             },
         },
-        { rating: 17.45, username: "♪Lxns♪", type: "verse" },
+        {
+            rating: envNumber("TEST_RATING", 17.45),
+            username: envString("TEST_USERNAME", "♪Lxns♪"),
+            type: envChoice("TEST_TYPE", ["chunithm", "crystal", "new", "verse"], "verse"),
+        },
     );
     return canvas;
 });

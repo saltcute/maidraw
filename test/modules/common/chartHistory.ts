@@ -4,6 +4,7 @@ import { Painter } from "@common/painter/painter";
 import { ChartGridModule as MaiModule } from "@maimai/painter/modules/chartGrid";
 import { ChartGridModule as GekiModule } from "@ongeki/painter/modules/chartGrid";
 import { chartTheme as chuTheme } from "@utils/chunithm/util";
+import { envString } from "@utils/env";
 import { chartTheme as maiTheme } from "@utils/maimai/util";
 import { chartTheme as gekiTheme } from "@utils/ongeki/util";
 import { localDatabasePath, moduleTestWrapper } from "@utils/util";
@@ -178,7 +179,7 @@ async function prepareGeki(ctx: CanvasRenderingContext2D) {
 }
 
 moduleTestWrapper(1200, 1500, false, async (canvas) => {
-    Painter.registerFonts("assets");
+    Painter.registerFonts(envString("TEST_ASSETS_PATH", "assets"));
     const ctx = canvas.getContext("2d");
     const fillText = ctx.fillText.bind(ctx);
     ctx.fillText = (text, x, y, maxWidth) => {

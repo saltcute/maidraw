@@ -3,16 +3,13 @@ import { AchievementTypes, BellLamp, ComboLamp, type Score } from "@ongeki/lib/t
 import { getMaxPlatinumScore } from "@ongeki/lib/util";
 import { type Chart, Difficulty, LunaticType } from "gcm-database/ongeki";
 import { join } from "upath";
+import { envString } from "../env";
 import { getRandomEnum, getRandomString } from "../util";
 
-export const best50Theme = new Theme(
-    join(__dirname, "..", "..", "..", "assets/themes/ongeki/best/refresh/refresh"),
-    require(join(__dirname, "..", "..", "..", "assets/themes/ongeki/best/refresh/refresh/manifest.json")),
-);
-export const chartTheme = new Theme(
-    join(__dirname, "..", "..", "..", "assets/themes/ongeki/chart/refresh"),
-    require(join(__dirname, "..", "..", "..", "assets/themes/ongeki/chart/refresh/manifest.json")),
-);
+const best50ThemePath = envString("TEST_BEST_THEME_PATH", join(__dirname, "..", "..", "..", "assets/themes/ongeki/best/refresh/refresh"));
+export const best50Theme = new Theme(best50ThemePath, require(join(best50ThemePath, "manifest.json")));
+const chartThemePath = envString("TEST_CHART_THEME_PATH", join(__dirname, "..", "..", "..", "assets/themes/ongeki/chart/refresh"));
+export const chartTheme = new Theme(chartThemePath, require(join(chartThemePath, "manifest.json")));
 
 // biome-ignore lint/suspicious/noExplicitAny: theme manifest is loaded untyped
 export function getElement(theme: Theme<any>, type: string, region?: string) {

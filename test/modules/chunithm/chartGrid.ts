@@ -2,6 +2,7 @@ import type { Score } from "@chunithm/lib/types";
 import { ChartGridModule } from "@chunithm/painter/modules/chartGrid";
 import { Painter } from "@common/painter/painter";
 import { chartTheme, getDummyScore } from "@utils/chunithm/util";
+import { envString } from "@utils/env";
 import { localDatabasePath, moduleTestWrapper } from "@utils/util";
 import { Difficulty } from "gcm-database/chunithm";
 import { Database } from "gcm-database-local/chunithm";
@@ -10,8 +11,8 @@ moduleTestWrapper(1645 + 100, 1045 + 100, false, async (canvas) => {
     const database = new Database(localDatabasePath);
     const module = new ChartGridModule(database);
 
-    Painter.registerFonts("assets");
-    const identifier = "2718";
+    Painter.registerFonts(envString("TEST_ASSETS_PATH", "assets"));
+    const identifier = envString("TEST_CHART_IDENTIFIER", "2718");
     await module.draw(
         canvas.getContext("2d"),
         chartTheme,

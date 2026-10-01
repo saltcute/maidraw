@@ -3,16 +3,13 @@ import { AchievementTypes, ComboLamp, type Score, SyncLamp } from "@maimai/lib/t
 import { getMaxDxScore } from "@maimai/lib/util";
 import { type Chart, Difficulty, Type } from "gcm-database/maimai";
 import { join } from "upath";
+import { envString } from "../env";
 import { getRandomEnum, getRandomString } from "../util";
 
-export const best50Theme = new Theme(
-    join(__dirname, "..", "..", "..", "assets/themes/maimai/best50/circleplus/landscape"),
-    require(join(__dirname, "..", "..", "..", "assets/themes/maimai/best50/circleplus/landscape/manifest.json")),
-);
-export const chartTheme = new Theme(
-    join(__dirname, "..", "..", "..", "assets/themes/maimai/chart/circleplus"),
-    require(join(__dirname, "..", "..", "..", "assets/themes/maimai/chart/circleplus/manifest.json")),
-);
+const best50ThemePath = envString("TEST_BEST_THEME_PATH", join(__dirname, "..", "..", "..", "assets/themes/maimai/best50/circleplus/landscape"));
+export const best50Theme = new Theme(best50ThemePath, require(join(best50ThemePath, "manifest.json")));
+const chartThemePath = envString("TEST_CHART_THEME_PATH", join(__dirname, "..", "..", "..", "assets/themes/maimai/chart/circleplus"));
+export const chartTheme = new Theme(chartThemePath, require(join(chartThemePath, "manifest.json")));
 
 export function getDummyChart(): Chart {
     return {

@@ -2,16 +2,13 @@ import { AchievementTypes, ChainLamp, ClearLamp, ComboLamp, type Score } from "@
 import { Theme } from "@common/painter/theme";
 import { type Chart, Difficulty } from "gcm-database/chunithm";
 import { join } from "upath";
+import { envString } from "../env";
 import { getRandomEnum, getRandomString } from "../util";
 
-export const best50Theme = new Theme(
-    join(__dirname, "..", "..", "..", "assets/themes/chunithm/best/mate/new"),
-    require(join(__dirname, "..", "..", "..", "assets/themes/chunithm/best/mate/new/manifest.json")),
-);
-export const chartTheme = new Theme(
-    join(__dirname, "..", "..", "..", "assets/themes/chunithm/chart/xversex"),
-    require(join(__dirname, "..", "..", "..", "assets/themes/chunithm/chart/xversex/manifest.json")),
-);
+const best50ThemePath = envString("TEST_BEST_THEME_PATH", join(__dirname, "..", "..", "..", "assets/themes/chunithm/best/mate/new"));
+export const best50Theme = new Theme(best50ThemePath, require(join(best50ThemePath, "manifest.json")));
+const chartThemePath = envString("TEST_CHART_THEME_PATH", join(__dirname, "..", "..", "..", "assets/themes/chunithm/chart/xversex"));
+export const chartTheme = new Theme(chartThemePath, require(join(chartThemePath, "manifest.json")));
 
 export function getDummyChart(): Chart {
     const difficulty = getRandomEnum(Difficulty);

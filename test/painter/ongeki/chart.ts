@@ -1,4 +1,5 @@
 import { ChartPainter } from "@ongeki/painter/chart";
+import { envChoice, envNumber, envString } from "@utils/env";
 import { getDummyScore } from "@utils/ongeki/util";
 import { localDatabasePath, painterTestWrapper } from "@utils/util";
 import { Difficulty } from "gcm-database/ongeki";
@@ -10,10 +11,10 @@ painterTestWrapper(async () => {
     const painter = new ChartPainter(database);
 
     return await painter.draw({
-        username: "♪Lxns♪",
-        rating: 22.69,
-        chartIdentifier: "1027",
-        type: "refresh",
+        username: envString("TEST_USERNAME", "♪Lxns♪"),
+        rating: envNumber("TEST_RATING", 22.69),
+        chartIdentifier: envString("TEST_CHART_IDENTIFIER", "1027"),
+        type: envChoice("TEST_TYPE", ["refresh", "classic"], "refresh"),
         scores: {
             [Difficulty.BASIC]: null,
             [Difficulty.ADVANCED]: getDummyScore(),

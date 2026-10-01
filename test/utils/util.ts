@@ -4,10 +4,12 @@ import { Canvas, loadImage } from "canvas";
 import sharp from "sharp";
 import { join } from "upath";
 import type { DataOrError } from "../../src/common/error";
+import { envBoolean, envNumber, envString } from "./env";
 
 export const logger = globalLogger.child();
 
-export const localDatabasePath = join(__dirname, "..", "..", "..", "maimai-songs-database");
+export const localDatabasePath = envString("TEST_DATABASE_PATH", join(__dirname, "..", "..", "..", "maimai-songs-database"));
+const outputPath = envString("TEST_OUTPUT_PATH", join(__dirname, "..", "result.webp"));
 
 export async function createCheckerBoardCanvas(...args: ConstructorParameters<typeof Canvas>) {
     const canvas = new Canvas(...args);
@@ -60,7 +62,7 @@ export async function painterTestWrapper(callback: () => Promise<DataOrError<Buf
     if (result.err !== undefined) {
         console.error(result.err);
     } else {
-        fs.writeFileSync(join(__dirname, "..", "result.webp"), result.data);
+        fs.writeFileSync(outputPath, result.data);
     }
 
     logger.info(`Finished after ${lapsed.toFixed(1)}ms`);
@@ -68,9 +70,12 @@ export async function painterTestWrapper(callback: () => Promise<DataOrError<Buf
 }
 
 export async function moduleTestWrapper(width: number, height: number, useCheckerBoard: boolean, callback: (canvas: Canvas) => Promise<Canvas>) {
+    width = envNumber("TEST_WIDTH", width, true);
+    height = envNumber("TEST_HEIGHT", height, true);
+    useCheckerBoard = envBoolean("TEST_CHECKERBOARD", useCheckerBoard);
     const canvas = useCheckerBoard ? await createCheckerBoardCanvas(width, height, "image") : new Canvas(width, height, "image");
     const result = await callback(canvas);
-    fs.writeFileSync(join(__dirname, "..", "result.webp"), await sharp(result.toBuffer("image/png")).webp({ quality: 100 }).toBuffer());
+    fs.writeFileSync(outputPath, await sharp(result.toBuffer("image/png")).webp({ quality: 100 }).toBuffer());
     process.exit(0);
 }
 
