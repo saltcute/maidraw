@@ -326,28 +326,37 @@ export class FolderModule extends PainterModule {
     ) {
         const curColor = this.getBubbleColorByDifficulty(element, chart);
         const score = painterCtx.scores[chart.identifier]?.[chart.difficulty];
-        const cellDimensions = [0, 0, element.jacket.size, element.jacket.size, element.jacket.size / 7] as const;
-        await wrapBorder(
+        const size = element.jacket.size;
+        const radius = size / 7;
+        const cellDimensions = [0, 0, size, size, radius] as const;
+        /**
+         * The difficulty band is drawn inside the cell, so the jacket shrinks instead of the cell growing.
+         */
+        const band = element.jacket.margin * 0.8;
+        const outline = element.jacket.margin / 5;
+        const inner = size - band * 2;
+        const innerDimensions = [band, band, inner, inner, Math.max(0, radius - band)] as const;
+        wrapBackground(ctx, curColor, () => {}, ...cellDimensions);
+        await wrapClip(
             ctx,
-            new Color(curColor).darken(0.3).hexa(),
-            element.jacket.margin / 3,
             () =>
-                wrapBackground(
-                    ctx,
-                    curColor,
-                    () =>
-                        wrapClip(
-                            ctx,
-                            async () => {
-                                await this.drawJacket(ctx, element, chart);
-                                if (score) await this.drawLamp(ctx, theme, element, folder.lamp, score, curColor);
-                            },
-                            ...cellDimensions,
-                        ),
-                    ...cellDimensions,
+                wrapTranslate(ctx, band, band, () =>
+                    wrapContext(ctx, async () => {
+                        // Scale the jacket and its lamp down to the inner area, keeping every jacket relative dimension intact.
+                        ctx.scale(inner / size, inner / size);
+                        await this.drawJacket(ctx, element, chart);
+                        if (score) await this.drawLamp(ctx, theme, element, folder.lamp, score, curColor);
+                    }),
                 ),
-            ...cellDimensions,
+            ...innerDimensions,
         );
+        wrapContext(ctx, () => {
+            ctx.beginPath();
+            ctx.roundRect(outline / 2, outline / 2, size - outline, size - outline, radius - outline / 2);
+            ctx.strokeStyle = new Color(curColor).darken(0.3).hexa();
+            ctx.lineWidth = outline;
+            ctx.stroke();
+        });
         if (score && folder.check?.(score, chart)) this.drawCheck(ctx, element);
     }
     private async drawFolder(
