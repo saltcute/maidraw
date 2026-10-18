@@ -1,6 +1,7 @@
 export { MaimaiScoreAdapter } from "@maimai/lib/adapter";
 
 export { AchievementTypes, ComboLamp, Folder, FolderLamp, Score, SyncLamp } from "@maimai/lib/types";
+export { compareAchievementRank, compareComboLamp, compareSyncLamp, getDxStar, getDxStarOfScore, getMaxDxScore } from "@maimai/lib/util";
 
 export { Best50Painter } from "@maimai/painter/best50";
 export { ChartPainter } from "@maimai/painter/chart";

@@ -1,5 +1,6 @@
 import { Painter } from "@common/painter/painter";
-import { type Folder, FolderLamp } from "@maimai/lib/types";
+import { AchievementTypes, ComboLamp, type Folder, FolderLamp, SyncLamp } from "@maimai/lib/types";
+import { compareAchievementRank, compareComboLamp, compareSyncLamp, getDxStarOfScore } from "@maimai/lib/util";
 import { FolderModule, type FolderModulePainterContext } from "@maimai/painter/modules/folder";
 import { envNumber, envString } from "@utils/env";
 import { best50Theme, getDummyChart, getDummyScoreOfChart } from "@utils/maimai/util";
@@ -11,18 +12,31 @@ const folders: Folder[] = [
         title: "Achievement rank",
         lamp: FolderLamp.ACHIEVEMENT_RANK,
         elements: Array.from({ length: envNumber("TEST_FOLDER_SIZE", 23, true) }, () => getDummyChart()),
+        check: (score) => compareAchievementRank(score.achievementRank, AchievementTypes.SS) >= 0,
     },
-    { title: "Combo lamp", lamp: FolderLamp.COMBO, elements: Array.from({ length: envNumber("TEST_FOLDER_SIZE", 12, true) }, () => getDummyChart()) },
-    { title: "Sync lamp", lamp: FolderLamp.SYNC, elements: Array.from({ length: envNumber("TEST_FOLDER_SIZE", 8, true) }, () => getDummyChart()) },
+    {
+        title: "Combo lamp",
+        lamp: FolderLamp.COMBO,
+        elements: Array.from({ length: envNumber("TEST_FOLDER_SIZE", 12, true) }, () => getDummyChart()),
+        check: (score) => compareComboLamp(score.combo, ComboLamp.FULL_COMBO_PLUS) >= 0,
+    },
+    {
+        title: "Sync lamp",
+        lamp: FolderLamp.SYNC,
+        elements: Array.from({ length: envNumber("TEST_FOLDER_SIZE", 8, true) }, () => getDummyChart()),
+        check: (score) => compareSyncLamp(score.sync, SyncLamp.FULL_SYNC) >= 0,
+    },
     {
         title: "Achievement rate",
         lamp: FolderLamp.ACHIEVEMENT_RATE,
         elements: Array.from({ length: envNumber("TEST_FOLDER_SIZE", 12, true) }, () => getDummyChart()),
+        check: (score) => score.achievement >= 50,
     },
     {
         title: "DX score",
         lamp: FolderLamp.DX_SCORE,
         elements: Array.from({ length: envNumber("TEST_FOLDER_SIZE", 12, true) }, () => getDummyChart()),
+        check: (score) => getDxStarOfScore(score) > 1,
     },
 ];
 
@@ -58,6 +72,7 @@ moduleTestWrapper(2400 + 100, 1600, false, async (canvas) => {
             color: { card: "#bbdefa" },
             title: { size: 40, gap: 16, borderColor: "#226180" },
             jacket: { size: 130, gap: 16, margin: 10 },
+            check: { color: "#22c55e", tickColor: "#ffffff", size: 0.28 },
             bubble: {
                 color: {
                     basic: "#70E262",

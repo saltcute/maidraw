@@ -1,6 +1,7 @@
 import type { DataOrError } from "@common/error";
 import { HitokotoModule } from "@common/painter/modules/hitokoto";
 import { ImageModule } from "@common/painter/modules/image";
+import { ShapeModule } from "@common/painter/modules/shape";
 import { TextModule } from "@common/painter/modules/text";
 import { ThemeManager } from "@common/painter/theme";
 import { toFullWidth } from "@common/utils/halfFullWidthConvert";
@@ -15,14 +16,14 @@ import { z } from "zod/v4";
 import type { MaimaiScoreAdapter } from "../lib/adapter";
 import { MaimaiPainter } from "./painter";
 
-const LOADED_SCHEMAS = [FolderModule, ProfileModule, ImageModule, TextModule, HitokotoModule] as const;
+const LOADED_SCHEMAS = [FolderModule, ProfileModule, ShapeModule, ImageModule, TextModule, HitokotoModule] as const;
 
 export class FolderPainter extends MaimaiPainter<typeof FolderPainter.THEME> {
     public static readonly THEME = ThemeManager.BASE_THEME.extend({
         elements: z.array(z.discriminatedUnion("type", LOADED_SCHEMAS.map((v) => v.SCHEMA) as unknown as SchemaOfModuleTuple<typeof LOADED_SCHEMAS>)),
     });
 
-    private static readonly DEFAULT_THEME = "jp-prismplus";
+    private static readonly DEFAULT_THEME = "jp-magical";
 
     private modules;
     public constructor(database: Database<Chart>) {

@@ -1,4 +1,5 @@
-import { type Folder, FolderLamp } from "@maimai/lib/types";
+import { AchievementTypes, ComboLamp, type Folder, FolderLamp, SyncLamp } from "@maimai/lib/types";
+import { compareAchievementRank, compareComboLamp, compareSyncLamp, getDxStarOfScore } from "@maimai/lib/util";
 import { FolderPainter } from "@maimai/painter/folder";
 import type { FolderModulePainterContext } from "@maimai/painter/modules/folder";
 import { envNumber, envString } from "@utils/env";
@@ -14,21 +15,25 @@ painterTestWrapper(async () => {
             title: "Lv. 15",
             lamp: FolderLamp.ACHIEVEMENT_RANK,
             elements: Array.from({ length: envNumber("TEST_FOLDER_SIZE", 15 * Math.random() + 10, true) }, () => getDummyChart()),
+            check: (score) => compareAchievementRank(score.achievementRank, AchievementTypes.SSS) >= 0,
         },
         {
             title: "Lv. 14+",
             lamp: FolderLamp.COMBO,
             elements: Array.from({ length: envNumber("TEST_FOLDER_SIZE", 15 * Math.random() + 10, true) }, () => getDummyChart()),
+            check: (score) => compareComboLamp(score.combo, ComboLamp.FULL_COMBO_PLUS) >= 0,
         },
         {
             title: "Lv. 14",
             lamp: FolderLamp.SYNC,
             elements: Array.from({ length: envNumber("TEST_FOLDER_SIZE", 15 * Math.random() + 10, true) }, () => getDummyChart()),
+            check: (score) => compareSyncLamp(score.sync, SyncLamp.FULL_SYNC) >= 0,
         },
         {
             title: "Lv. 13+",
             lamp: FolderLamp.DX_SCORE,
             elements: Array.from({ length: envNumber("TEST_FOLDER_SIZE", 15 * Math.random() + 10, true) }, () => getDummyChart()),
+            check: (score) => getDxStarOfScore(score) > 1,
         },
     ];
     const scores: FolderModulePainterContext["scores"] = {};

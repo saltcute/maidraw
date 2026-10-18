@@ -1,4 +1,4 @@
-import type { CanvasGradient, CanvasPattern, CanvasRenderingContext2D, CanvasTextAlign, CanvasTextBaseline } from "canvas";
+import type { CanvasGradient, CanvasPattern, CanvasRenderingContext2D, CanvasTextAlign, CanvasTextBaseline, TextMetrics } from "canvas";
 import LineBreaker from "linebreak";
 import stringFormat from "string-template";
 import { wrapContext } from "../ctxWrapper";
@@ -61,7 +61,10 @@ export function drawText(
                 y -= originalHeight;
                 y += newHeight;
             } else if (shrinkAnchor === "center") {
-                y -= (originalHeight - newHeight) / 2;
+                // Keep the vertical center of the glyphs in place, so the top and the bottom edge move by the same distance.
+                // The bounding box is relative to the current baseline, which makes this hold for every baseline.
+                const getCenter = (metrics: TextMetrics) => (metrics.actualBoundingBoxDescent - metrics.actualBoundingBoxAscent) / 2;
+                y += getCenter(originalMesurement) - getCenter(measurement);
             }
             fontSize = fs;
         }

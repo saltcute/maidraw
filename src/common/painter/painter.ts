@@ -97,7 +97,9 @@ export abstract class Painter<Adapter, Schema extends typeof ThemeManager.BASE_T
             for (const { element, type, offset } of layout.elements) {
                 const module = modules[type];
                 if (!module) continue;
-                await wrapTranslate(ctx, offset.x, offset.y, () => module.draw(ctx, currentTheme, element, painterCtx));
+                await wrapTranslate(ctx, offset.x, offset.y, () =>
+                    module.draw(ctx, currentTheme, element, painterCtx, { canvas: { width: layout.width, height: layout.height }, offset }),
+                );
             }
         };
         if (callback) await callback(ctx, currentTheme, drawElements);
@@ -135,6 +137,20 @@ export interface Bounds {
     height: number;
 }
 
+/**
+ * Resolved layout of the painter, available to a module while it draws.
+ */
+export interface DrawLayout {
+    /**
+     * Final dimensions of the canvas, including the growth of the layout contributors.
+     */
+    canvas: { width: number; height: number };
+    /**
+     * Position of the anchor of the element on the canvas.
+     */
+    offset: { x: number; y: number };
+}
+
 export abstract class PainterModule {
     public static readonly SCHEMA: z.ZodType;
 
@@ -150,6 +166,7 @@ export abstract class PainterModule {
         theme: Theme<unknown>,
         element: z.infer<typeof PainterModule.SCHEMA>,
         painterCtx: unknown,
+        layout?: DrawLayout,
     ): Promise<void>;
 
     /**

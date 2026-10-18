@@ -61,4 +61,8 @@ export interface Folder {
     title: string;
     lamp: FolderLamp;
     elements: Chart[];
+    /**
+     * Whether a played chart is checked off in this folder. Not called for unplayed charts.
+     */
+    check?: (score: Score, chart: Chart) => boolean;
 }

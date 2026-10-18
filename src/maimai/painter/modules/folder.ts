@@ -1,12 +1,12 @@
 import { type Bounds, PainterModule } from "@common/painter/painter";
 import { type Theme, ThemeManager } from "@common/painter/theme";
-import { wrapBackground, wrapBorder, wrapClip, wrapTranslate } from "@common/utils/ctxWrapper";
+import { wrapBackground, wrapBorder, wrapClip, wrapContext, wrapTranslate } from "@common/utils/ctxWrapper";
 import { safeLoadImage } from "@common/utils/loadImage";
 import { truncate } from "@common/utils/number";
 import { drawText } from "@common/utils/textDraw/drawText";
 import { color } from "@common/utils/zod";
 import { AchievementTypes, ComboLamp, type Folder, FolderLamp, type Score, SyncLamp } from "@maimai/lib/types";
-import { getDxStar, getMaxDxScore } from "@maimai/lib/util";
+import { getDxStarOfScore } from "@maimai/lib/util";
 import type { CanvasGradient, CanvasRenderingContext2D } from "canvas";
 import Color from "color";
 import { type Chart, type Database, Difficulty } from "gcm-database/maimai";
@@ -56,6 +56,19 @@ export class FolderModule extends PainterModule {
             gap: z.number().min(0),
             margin: z.number().min(0),
         }),
+        /**
+         * Badge drawn on the top right corner of a jacket checked off by the folder.
+         */
+        check: z
+            .object({
+                color: color().default("#22c55e"),
+                tickColor: color().default("#ffffff"),
+                /**
+                 * Diameter of the badge, relative to the size of a jacket.
+                 */
+                size: z.number().min(0).max(1).default(0.28),
+            })
+            .prefault({}),
         bubble: z.object({
             color: z.object({
                 basic: color(),
@@ -178,15 +191,25 @@ export class FolderModule extends PainterModule {
         }
     }
     /**
-     * Darken the bottom of the jacket, so that a lamp stays readable on top of a bright jacket.
+     * Dim the jacket, so that a lamp centered on it stays readable on top of a bright jacket.
      */
     private drawLampScrim(ctx: CanvasRenderingContext2D, element: z.infer<typeof FolderModule.SCHEMA>) {
-        const scrimHeight = element.jacket.size * 0.45;
-        const scrim = ctx.createLinearGradient(0, element.jacket.size - scrimHeight, 0, element.jacket.size);
-        scrim.addColorStop(0, "#00000000");
-        scrim.addColorStop(1, "#000000a6");
-        ctx.fillStyle = scrim;
-        ctx.fillRect(0, element.jacket.size - scrimHeight, element.jacket.size, scrimHeight);
+        ctx.fillStyle = "#00000066";
+        ctx.fillRect(0, 0, element.jacket.size, element.jacket.size);
+    }
+    /**
+     * Draw a sprite of the given width at the center of the jacket.
+     */
+    private async drawCenteredSprite(
+        ctx: CanvasRenderingContext2D,
+        theme: Theme<unknown>,
+        element: z.infer<typeof FolderModule.SCHEMA>,
+        path: string,
+        width: number,
+    ) {
+        const sprite = await safeLoadImage(theme.getFile(path));
+        const height = (width / sprite.width) * sprite.height;
+        ctx.drawImage(sprite, (element.jacket.size - width) / 2, (element.jacket.size - height) / 2, width, height);
     }
     private async drawAchievementRank(
         ctx: CanvasRenderingContext2D,
@@ -194,33 +217,37 @@ export class FolderModule extends PainterModule {
         element: z.infer<typeof FolderModule.SCHEMA>,
         path: string,
     ) {
-        const sprite = await safeLoadImage(theme.getFile(path));
-        const width = element.jacket.size * 0.72;
-        const height = (width / sprite.width) * sprite.height;
-        ctx.drawImage(sprite, (element.jacket.size - width) / 2, element.jacket.size - element.jacket.margin - height, width, height);
+        return this.drawCenteredSprite(ctx, theme, element, path, element.jacket.size * 0.72);
     }
     private async drawLampSprite(ctx: CanvasRenderingContext2D, theme: Theme<unknown>, element: z.infer<typeof FolderModule.SCHEMA>, path: string) {
-        const sprite = await safeLoadImage(theme.getFile(path));
-        const width = element.jacket.size * 0.36;
-        const height = (width / sprite.width) * sprite.height;
-        ctx.drawImage(sprite, (element.jacket.size - width) / 2, element.jacket.size - element.jacket.margin - height, width, height);
+        return this.drawCenteredSprite(ctx, theme, element, path, element.jacket.size * 0.5);
     }
     private drawLampText(
         ctx: CanvasRenderingContext2D,
         element: z.infer<typeof FolderModule.SCHEMA>,
         content: string,
         curColor: string,
-        borderStyle?: string | CanvasGradient,
+        {
+            borderStyle,
+            margin = element.jacket.margin,
+        }: {
+            borderStyle?: string | CanvasGradient;
+            /**
+             * Space kept free on both the left and the right side of the text.
+             */
+            margin?: number;
+        } = {},
     ) {
-        const margin = element.jacket.margin * 2;
-        const fontSize = element.jacket.size * 0.16;
-        drawText(ctx, content, element.jacket.size - margin, element.jacket.size - margin, fontSize, fontSize * 0.28, {
+        const fontSize = element.jacket.size * 0.3;
+        drawText(ctx, content, element.jacket.size / 2, element.jacket.size / 2, fontSize, fontSize * 0.28, {
             maxWidth: element.jacket.size - margin * 2,
-            textAlign: "right",
+            textAlign: "center",
+            textBaseLine: "middle",
+            shrinkAnchor: "center",
             mainColor: "white",
             borderColor: borderStyle ?? new Color(curColor).darken(0.3).hexa(),
             widthConstraintType: "shrink-cut",
-            shrinkMinFontSize: fontSize * 0.7,
+            shrinkMinFontSize: fontSize * 0.4,
         });
     }
     private async drawLamp(
@@ -236,42 +263,72 @@ export class FolderModule extends PainterModule {
                 this.drawLampScrim(ctx, element);
                 return this.drawAchievementRank(ctx, theme, element, this.getAchievementRankImagePath(element, score));
             case FolderLamp.COMBO:
+                if (score.combo === ComboLamp.NONE) return;
                 this.drawLampScrim(ctx, element);
                 return this.drawLampSprite(ctx, theme, element, this.getComboLampImagePath(element, score));
             case FolderLamp.SYNC:
+                if (score.sync === SyncLamp.NONE) return;
                 this.drawLampScrim(ctx, element);
                 return this.drawLampSprite(ctx, theme, element, this.getSyncLampImagePath(element, score));
             case FolderLamp.ACHIEVEMENT_RATE:
                 this.drawLampScrim(ctx, element);
-                return this.drawLampText(ctx, element, `${truncate(score.achievement, 2)}%`, curColor);
+                return this.drawLampText(ctx, element, `${truncate(score.achievement, 2)}%`, curColor, { margin: element.jacket.margin * 1.5 });
             case FolderLamp.DX_SCORE: {
-                const maxDxScore = getMaxDxScore(score.chart);
-                const star = maxDxScore > 0 ? getDxStar(score.dxScore / maxDxScore) : 0;
+                const star = getDxStarOfScore(score);
                 if (star <= 0) return;
-                const margin = element.jacket.margin * 2;
-                const rainbow = ctx.createLinearGradient(margin, 0, element.jacket.size - margin, 0);
+                const rainbow = ctx.createLinearGradient(element.jacket.margin, 0, element.jacket.size - element.jacket.margin, 0);
                 RAINBOW.forEach((v, i, arr) => {
                     rainbow.addColorStop(i / (arr.length - 1), v);
                 });
                 this.drawLampScrim(ctx, element);
-                return this.drawLampText(ctx, element, `★${star}`, curColor, star >= 5 ? rainbow : undefined);
+                return this.drawLampText(ctx, element, `★${star}`, curColor, { borderStyle: star >= 5 ? rainbow : undefined });
             }
             case FolderLamp.NONE:
                 return;
         }
+    }
+    /**
+     * Draw a badge with a tick on the top right corner of the jacket. It is drawn outside of the clip of the jacket,
+     * so the rounded corner of the jacket never cuts it.
+     */
+    private drawCheck(ctx: CanvasRenderingContext2D, element: z.infer<typeof FolderModule.SCHEMA>) {
+        const radius = (element.jacket.size * element.check.size) / 2;
+        if (radius <= 0) return;
+        const inset = element.jacket.margin / 2;
+        const x = element.jacket.size - inset - radius;
+        const y = inset + radius;
+        wrapContext(ctx, () => {
+            ctx.beginPath();
+            ctx.arc(x, y, radius, 0, Math.PI * 2);
+            ctx.fillStyle = element.check.color;
+            ctx.fill();
+            ctx.strokeStyle = new Color(element.check.color).darken(0.3).hexa();
+            ctx.lineWidth = element.jacket.margin / 3;
+            ctx.stroke();
+
+            ctx.beginPath();
+            ctx.moveTo(x - radius * 0.45, y + radius * 0.02);
+            ctx.lineTo(x - radius * 0.12, y + radius * 0.35);
+            ctx.lineTo(x + radius * 0.45, y - radius * 0.3);
+            ctx.strokeStyle = element.check.tickColor;
+            ctx.lineWidth = radius * 0.28;
+            ctx.lineCap = "round";
+            ctx.lineJoin = "round";
+            ctx.stroke();
+        });
     }
     private async drawCell(
         ctx: CanvasRenderingContext2D,
         theme: Theme<unknown>,
         element: z.infer<typeof FolderModule.SCHEMA>,
         painterCtx: FolderModulePainterContext,
-        lamp: FolderLamp,
+        folder: Folder,
         chart: Chart,
     ) {
         const curColor = this.getBubbleColorByDifficulty(element, chart);
         const score = painterCtx.scores[chart.identifier]?.[chart.difficulty];
         const cellDimensions = [0, 0, element.jacket.size, element.jacket.size, element.jacket.size / 7] as const;
-        return wrapBorder(
+        await wrapBorder(
             ctx,
             new Color(curColor).darken(0.3).hexa(),
             element.jacket.margin / 3,
@@ -284,7 +341,7 @@ export class FolderModule extends PainterModule {
                             ctx,
                             async () => {
                                 await this.drawJacket(ctx, element, chart);
-                                if (score) await this.drawLamp(ctx, theme, element, lamp, score, curColor);
+                                if (score) await this.drawLamp(ctx, theme, element, folder.lamp, score, curColor);
                             },
                             ...cellDimensions,
                         ),
@@ -292,6 +349,7 @@ export class FolderModule extends PainterModule {
                 ),
             ...cellDimensions,
         );
+        if (score && folder.check?.(score, chart)) this.drawCheck(ctx, element);
     }
     private async drawFolder(
         ctx: CanvasRenderingContext2D,
@@ -311,7 +369,7 @@ export class FolderModule extends PainterModule {
             const chart = folder.elements[i];
             const x = (i % element.horizontalSize) * (element.jacket.size + element.jacket.gap);
             const y = top + Math.trunc(i / element.horizontalSize) * (element.jacket.size + element.jacket.gap);
-            await wrapTranslate(ctx, x, y, () => this.drawCell(ctx, theme, element, painterCtx, folder.lamp, chart));
+            await wrapTranslate(ctx, x, y, () => this.drawCell(ctx, theme, element, painterCtx, folder, chart));
         }
     }
     public async getBounds(
