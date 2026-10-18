@@ -1,5 +1,5 @@
 import type { BaseScore } from "@common/types/score";
-import type { Chart } from "gcm-database/maimai";
+import type { Chart, Difficulty } from "gcm-database/maimai";
 
 export enum ComboLamp {
     NONE = "none",
@@ -66,3 +66,8 @@ export interface Folder {
      */
     check?: (score: Score, chart: Chart) => boolean;
 }
+
+/**
+ * Scores of a player, indexed by chart identifier and difficulty.
+ */
+export type FolderScores = Partial<Record<string, Partial<Record<Difficulty, Score>>>>;

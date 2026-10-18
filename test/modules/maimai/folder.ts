@@ -1,7 +1,7 @@
 import { Painter } from "@common/painter/painter";
-import { AchievementTypes, ComboLamp, type Folder, FolderLamp, SyncLamp } from "@maimai/lib/types";
+import { AchievementTypes, ComboLamp, type Folder, FolderLamp, type FolderScores, SyncLamp } from "@maimai/lib/types";
 import { compareAchievementRank, compareComboLamp, compareSyncLamp, getDxStarOfScore } from "@maimai/lib/util";
-import { FolderModule, type FolderModulePainterContext } from "@maimai/painter/modules/folder";
+import { FolderModule } from "@maimai/painter/modules/folder";
 import { envNumber, envString } from "@utils/env";
 import { best50Theme, getDummyChart, getDummyScoreOfChart } from "@utils/maimai/util";
 import { localDatabasePath, moduleTestWrapper } from "@utils/util";
@@ -41,7 +41,7 @@ const folders: Folder[] = [
 ];
 
 // Leave about a third of the charts unplayed to check the jacket only cells.
-const scores: FolderModulePainterContext["scores"] = {};
+const scores: FolderScores = {};
 for (const folder of folders) {
     for (const chart of folder.elements) {
         if (Math.random() < envNumber("TEST_UNPLAYED_PROBABILITY", 1 / 3)) continue;

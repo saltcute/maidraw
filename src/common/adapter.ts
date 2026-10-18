@@ -14,6 +14,7 @@ const cachedResponseSchema = z.object({
     statusText: z.string(),
     headers: z.record(z.string(), z.union([z.string(), z.number(), z.boolean(), z.array(z.string()), z.null()])),
 });
+type CachedResponse = z.infer<typeof cachedResponseSchema>;
 
 export abstract class BaseScoreAdapter {
     protected cache;
@@ -27,6 +28,10 @@ export abstract class BaseScoreAdapter {
     }
     private readonly maxLogLength = 1000;
     private readonly cachePartition = randomUUID();
+    /**
+     * Cacheable requests that are waiting for a response, by cache key.
+     */
+    private readonly inflight = new Map<string, Promise<CachedResponse | undefined>>();
 
     private getCacheKey(config: axios.InternalAxiosRequestConfig): string | undefined {
         // These hooks run before/after the transport; cache the raw transport response.
@@ -84,21 +89,43 @@ export abstract class BaseScoreAdapter {
                             cacheHit = true;
                             return { ...cached.data, config };
                         }
+                        // Share the response of an identical request that is already in flight.
+                        // Look it up without awaiting first, so that the request is registered before any other caller resumes.
+                        const inflight = this.inflight.get(cacheKey);
+                        const shared = inflight && (await inflight.catch(() => undefined));
+                        if (shared) {
+                            cacheHit = true;
+                            return { ...shared, config };
+                        }
                     }
-                    const response = await getTransport(transport, request)(request);
-                    // Streams and other mutable transport values cannot be replayed safely.
-                    if (cacheKey && typeof response.data === "string") {
-                        await this.cache.put(
-                            cacheKey,
-                            {
+                    const pending = getTransport(transport, request)(request);
+                    if (!cacheKey) return pending;
+                    const snapshot = pending.then(
+                        async (response) => {
+                            // Streams and other mutable transport values cannot be replayed safely.
+                            if (typeof response.data !== "string") return undefined;
+                            const cachedResponse = {
                                 data: response.data,
                                 status: response.status,
                                 statusText: response.statusText,
                                 headers: response.headers instanceof axios.AxiosHeaders ? response.headers.toJSON() : response.headers,
-                            },
-                            cacheTtl,
-                        );
-                    }
+                            };
+                            await this.cache.put(cacheKey, cachedResponse, cacheTtl);
+                            // Share it the same way a cache hit replays it.
+                            const parsed = cachedResponseSchema.safeParse(cachedResponse);
+                            return parsed.success ? parsed.data : undefined;
+                        },
+                        // Failed requests are not shared, waiting requests retry on their own.
+                        () => undefined,
+                    );
+                    this.inflight.set(cacheKey, snapshot);
+                    snapshot
+                        .finally(() => {
+                            if (this.inflight.get(cacheKey) === snapshot) this.inflight.delete(cacheKey);
+                        })
+                        .catch(() => {});
+                    const response = await pending;
+                    await snapshot;
                     return response;
                 },
             })

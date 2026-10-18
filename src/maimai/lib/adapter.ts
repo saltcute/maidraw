@@ -17,6 +17,7 @@ export interface MaimaiScoreAdapter {
     >;
     getPlayerProfilePicture(username: string): Promise<DataOrError<Buffer>>;
     getPlayerScore(username: string, chartIdentifier: string): Promise<DataOrError<Record<Difficulty, Score | null>>>;
+    getPlayerScores?(username: string, chartIdentifiers: string[]): Promise<DataOrError<Score[]>>;
     getPlayerLevel50(
         username: string,
         level: number,

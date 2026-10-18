@@ -1,7 +1,6 @@
-import { AchievementTypes, ComboLamp, type Folder, FolderLamp, SyncLamp } from "@maimai/lib/types";
+import { AchievementTypes, ComboLamp, type Folder, FolderLamp, type FolderScores, SyncLamp } from "@maimai/lib/types";
 import { compareAchievementRank, compareComboLamp, compareSyncLamp, getDxStarOfScore } from "@maimai/lib/util";
 import { FolderPainter } from "@maimai/painter/folder";
-import type { FolderModulePainterContext } from "@maimai/painter/modules/folder";
 import { envNumber, envString } from "@utils/env";
 import { getDummyChart, getDummyScoreOfChart } from "@utils/maimai/util";
 import { localDatabasePath, painterTestWrapper } from "@utils/util";
@@ -36,7 +35,7 @@ painterTestWrapper(async () => {
             check: (score) => getDxStarOfScore(score) > 1,
         },
     ];
-    const scores: FolderModulePainterContext["scores"] = {};
+    const scores: FolderScores = {};
     for (const folder of folders) {
         for (const chart of folder.elements) {
             if (Math.random() < envNumber("TEST_UNPLAYED_PROBABILITY", 1 / 4)) continue;

@@ -5,10 +5,10 @@ import { ShapeModule } from "@common/painter/modules/shape";
 import { TextModule } from "@common/painter/modules/text";
 import { ThemeManager } from "@common/painter/theme";
 import { toFullWidth } from "@common/utils/halfFullWidthConvert";
-import type { ModuleObjectFromClassArray, SchemaOfModuleTuple } from "@common/utils/misc";
+import { type ModuleObjectFromClassArray, mapWithConcurrency, type SchemaOfModuleTuple } from "@common/utils/misc";
 import { truncate } from "@common/utils/number";
-import type { Folder, Score } from "@maimai/lib/types";
-import { FolderModule, type FolderModulePainterContext } from "@maimai/painter/modules/folder";
+import type { Folder, FolderScores, Score } from "@maimai/lib/types";
+import { FolderModule } from "@maimai/painter/modules/folder";
 import { ProfileModule } from "@maimai/painter/modules/profile";
 import type { Chart, Database, Difficulty } from "gcm-database/maimai";
 import upath from "upath";
@@ -24,6 +24,10 @@ export class FolderPainter extends MaimaiPainter<typeof FolderPainter.THEME> {
     });
 
     private static readonly DEFAULT_THEME = "jp-magical";
+    /**
+     * Maximum amount of `getPlayerScore` calls in flight, for sources that do not implement `getPlayerScores`.
+     */
+    private static readonly SCORE_FETCH_CONCURRENCY = 8;
 
     private modules;
     public constructor(database: Database<Chart>) {
@@ -44,7 +48,7 @@ export class FolderPainter extends MaimaiPainter<typeof FolderPainter.THEME> {
             username: string;
             rating: number;
             folders: Folder[];
-            scores: FolderModulePainterContext["scores"];
+            scores: FolderScores;
         },
         options?: { scale?: number; theme?: string; profilePicture?: Buffer },
     ): Promise<DataOrError<Buffer>> {
@@ -80,10 +84,16 @@ export class FolderPainter extends MaimaiPainter<typeof FolderPainter.THEME> {
         const { data: profile, err: perr } = await source.getPlayerInfo(variables.username);
         if (perr) return { err: perr };
 
-        const scores: FolderModulePainterContext["scores"] = {};
-        const identifiers = new Set(variables.folders.flatMap((folder) => folder.elements.map((chart) => chart.identifier)));
-        await Promise.all(
-            [...identifiers].map(async (identifier) => {
+        // Scores that fail to fetch are dropped, so the folder is still drawn without their lamps.
+        const scores: FolderScores = {};
+        const identifiers = [...new Set(variables.folders.flatMap((folder) => folder.elements.map((chart) => chart.identifier)))];
+        if (source.getPlayerScores) {
+            const { data } = await source.getPlayerScores(variables.username, identifiers);
+            for (const score of data ?? []) {
+                scores[score.chart.identifier] = { ...scores[score.chart.identifier], [score.chart.difficulty]: score };
+            }
+        } else {
+            await mapWithConcurrency(identifiers, FolderPainter.SCORE_FETCH_CONCURRENCY, async (identifier) => {
                 const { data, err } = await source.getPlayerScore(variables.username, identifier);
                 if (err) return;
                 const played: Partial<Record<Difficulty, Score>> = {};
@@ -91,8 +101,8 @@ export class FolderPainter extends MaimaiPainter<typeof FolderPainter.THEME> {
                     if (score) played[difficulty as Difficulty] = score;
                 }
                 scores[identifier] = played;
-            }),
-        );
+            });
+        }
 
         return this.draw(
             {

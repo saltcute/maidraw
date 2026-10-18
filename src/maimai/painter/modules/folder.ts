@@ -5,7 +5,7 @@ import { safeLoadImage } from "@common/utils/loadImage";
 import { truncate } from "@common/utils/number";
 import { drawText } from "@common/utils/textDraw/drawText";
 import { color } from "@common/utils/zod";
-import { AchievementTypes, ComboLamp, type Folder, FolderLamp, type Score, SyncLamp } from "@maimai/lib/types";
+import { AchievementTypes, ComboLamp, type Folder, FolderLamp, type FolderScores, type Score, SyncLamp } from "@maimai/lib/types";
 import { getDxStarOfScore } from "@maimai/lib/util";
 import type { CanvasGradient, CanvasRenderingContext2D } from "canvas";
 import Color from "color";
@@ -15,10 +15,9 @@ import z from "zod/v4";
 export interface FolderModulePainterContext {
     folders: Folder[];
     /**
-     * Scores of the player, indexed by chart identifier and difficulty.
      * A chart without a score is drawn without a lamp.
      */
-    scores: Partial<Record<string, Partial<Record<Difficulty, Score>>>>;
+    scores: FolderScores;
 }
 
 const RAINBOW = ["#e81416", "#ffa500", "#faeb36", "#79c314", "#487de7", "#4b369d", "#70369d"];
