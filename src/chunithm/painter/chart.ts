@@ -117,7 +117,8 @@ export class ChartPainter extends ChunithmPainter<typeof ChartPainter.THEME> {
             {
                 ...options,
                 profilePicture: await (async () => {
-                    if (options?.profilePicture) return options?.profilePicture;
+                    if (options?.profilePicture === null) return undefined;
+                    if (options?.profilePicture) return options.profilePicture;
                     const { data: pfp, err: pfperr } = await source.getPlayerProfilePicture(variables.username);
                     if (pfperr) return undefined;
                     return pfp;
